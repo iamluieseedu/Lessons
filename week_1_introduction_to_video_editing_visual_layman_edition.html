@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 1: Introduction to Video Editing (Visual & Layman Edition)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Lato:wght@300;400;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+      * { box-sizing: border-box; }
+      body {
+        background-color: #020617;
+        margin: 0;
+        padding: 20px 0;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 30px;
+        place-items: center;
+        font-family: 'Lato', sans-serif;
+        color: #f8fafc;
+      }
+      p { margin: 0 0 10px 0; }
+      .slide-container {
+        width: 1280px;
+        height: 720px;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        border-radius: 12px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        padding: 35px 45px;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .slide-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 42px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        padding-bottom: 12px;
+      }
+      .slide-title {
+        font-family: 'Lexend', 'Poppins', sans-serif;
+        font-size: 25px;
+        font-weight: 700;
+        color: #38bdf8;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .module-tag {
+        background: rgba(56, 189, 248, 0.15);
+        color: #38bdf8;
+        padding: 5px 14px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 13px;
+        border: 1px solid rgba(56, 189, 248, 0.3);
+      }
+      .content-area {
+        flex-grow: 1;
+        margin-top: 18px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: calc(100% - 60px);
+      }
+      
+      /* Grid Layouts */
+      .single-topic-grid {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 25px;
+        height: 100%;
+        align-items: stretch;
+      }
+      .topic-card-main {
+        background: rgba(30, 41, 59, 0.75);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 12px;
+        padding: 22px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        overflow: hidden;
+      }
+      .topic-card-main h3 {
+        font-family: 'Lexend', 'Poppins', sans-serif;
+        font-size: 21px;
+        color: #f8fafc;
+        margin: 0 0 12px 0;
+        font-weight: 600;
+      }
+      .topic-card-main p, .topic-card-main li {
+        font-size: 15px;
+        line-height: 1.5;
+        color: #cbd5e1;
+      }
+      .topic-card-main ul {
+        margin: 0;
+        padding-left: 18px;
+      }
+      .topic-card-main li {
+        margin-bottom: 8px;
+      }
+      
+      /* Layman Callout Boxes */
+      .layman-box {
+        background: rgba(250, 204, 21, 0.1);
+        border-left: 4px solid #facc15;
+        padding: 12px 16px;
+        border-radius: 0 8px 8px 0;
+        margin-top: 12px;
+      }
+      .layman-box strong {
+        color: #facc15;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+        font-family: 'Lexend', sans-serif;
+      }
+      .layman-box p {
+        margin: 0;
+        font-size: 14px;
+        color: #fef08a;
+      }
+
+      .visual-trick-box {
+        background: rgba(52, 211, 153, 0.1);
+        border-left: 4px solid #34d399;
+        padding: 12px 16px;
+        border-radius: 0 8px 8px 0;
+        margin-top: 12px;
+      }
+      .visual-trick-box strong {
+        color: #34d399;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+        font-family: 'Lexend', sans-serif;
+      }
+      .visual-trick-box p {
+        margin: 0;
+        font-size: 14px;
+        color: #a7f3d0;
+      }
+
+      .key-insight-box {
+        background: rgba(56, 189, 248, 0.1);
+        border-left: 4px solid #38bdf8;
+        padding: 12px 16px;
+        border-radius: 0 8px 8px 0;
+        margin-top: 12px;
+      }
+      .key-insight-box strong {
+        color: #38bdf8;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+        font-family: 'Lexend', sans-serif;
+      }
+      .key-insight-box p {
+        margin: 0;
+        font-size: 14px;
+        color: #e2e8f0;
+      }
+
+      .pioneer-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(251, 113, 133, 0.15);
+        color: #fb7185;
+        border: 1px solid rgba(251, 113, 133, 0.3);
+        padding: 5px 12px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 12px;
+      }
+
+      .topic-image-frame {
+        width: 100%;
+        height: 100%;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        position: relative;
+        background: #090d16;
+        display: flex;
+        flex-direction: column;
+      }
+      .topic-image-frame img {
+        width: 100%;
+        height: calc(100% - 36px);
+        object-fit: cover;
+        display: block;
+      }
+      .image-caption {
+        background: rgba(15, 23, 42, 0.95);
+        color: #94a3b8;
+        font-size: 12px;
+        padding: 8px 12px;
+        text-align: center;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        font-family: 'Poppins', sans-serif;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+
+      /* Cover & Section Styles */
+      .cover-layout {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        height: 100%;
+      }
+      .cover-title {
+        font-family: 'Lexend', 'Poppins', sans-serif;
+        font-size: 50px;
+        font-weight: 800;
+        color: #f8fafc;
+        line-height: 1.15;
+        margin-bottom: 18px;
+      }
+      .cover-title span { color: #38bdf8; }
+      .cover-subtitle {
+        font-size: 19px;
+        color: #94a3b8;
+        max-width: 850px;
+        line-height: 1.5;
+        margin-bottom: 35px;
+      }
+      .meta-grid {
+        display: flex;
+        gap: 30px;
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+        padding-top: 22px;
+        width: 100%;
+      }
+      .meta-item { display: flex; flex-direction: column; gap: 4px; }
+      .meta-item .label { font-size: 12px; text-transform: uppercase; color: #64748b; letter-spacing: 1px; }
+      .meta-item .val { font-size: 15px; font-weight: 600; color: #f8fafc; }
+
+      /* Section Header Slide */
+      .section-break-layout {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        height: 100%;
+      }
+      .section-num {
+        font-family: 'Lexend', sans-serif;
+        font-size: 16px;
+        font-weight: 700;
+        color: #fb7185;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+      }
+      .section-title {
+        font-family: 'Lexend', 'Poppins', sans-serif;
+        font-size: 46px;
+        font-weight: 800;
+        color: #f8fafc;
+        margin-bottom: 14px;
+      }
+      .section-desc {
+        font-size: 18px;
+        color: #94a3b8;
+        max-width: 720px;
+        line-height: 1.5;
+      }
+
+      .versus-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-top: 10px;
+      }
+      .versus-box {
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 12px;
+      }
+      .versus-box h4 {
+        margin: 0 0 6px 0;
+        font-size: 15px;
+        font-family: 'Lexend', sans-serif;
+      }
+      .versus-box p {
+        font-size: 13px;
+        margin: 0;
+        color: #94a3b8;
+      }
+    </style>
+</head>
+<body>
+
+<!-- SLIDE 1: Cover Slide -->
+<div class="slide-container" id="slide1">
+    <div class="cover-layout">
+        <div class="module-tag" style="margin-bottom: 20px;"><i class="fa-solid fa-graduation-cap"></i> Trimex Colleges — VIDEODIT Lecture Series</div>
+        <h1 class="cover-title">Introduction to <span>Video Editing</span></h1>
+        <p class="cover-subtitle">Visual Learner's Guide: Master fundamental video concepts through simple layman terms, clear real-world analogies, step-by-step history, and interface mechanics.</p>
+        <div class="meta-grid">
+            <div class="meta-item"><span class="label">Course Code</span><span class="val">VIDEODIT</span></div>
+            <div class="meta-item"><span class="label">Course Title</span><span class="val">Video Editing Techniques</span></div>
+            <div class="meta-item"><span class="label">Credit Units</span><span class="val">3 Units (5 Hrs/Wk)</span></div>
+            <div class="meta-item"><span class="label">Teaching Approach</span><span class="val">Visual & Layman Explanation</span></div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 2: Target Learning Competencies -->
+<div class="slide-container" id="slide2">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-bullseye"></i> Week 1 Learning Goals (Made Simple)</h2>
+        <span class="module-tag">Syllabus Overview</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <h3>What You Will Learn Today</h3>
+                    <p>Instead of hard technical jargon, we break this week down into 3 simple milestones:</p>
+                    <ul>
+                        <li><strong>Goal 1: Understand Video Basics</strong> — Learn how video clips are cut, arranged, and put together to tell a smooth story.</li>
+                        <li><strong>Goal 2: Explore History & Inventors</strong> — Discover how video editing changed from physical razor blade splicing to modern computers.</li>
+                        <li><strong>Goal 3: Master the Software Interface</strong> — Get comfortable with the 4 screen areas used in software like Premiere Pro.</li>
+                    </ul>
+                </div>
+                <div class="layman-box">
+                    <strong><i class="fa-solid fa-lightbulb"></i> Think Of It Like This:</strong>
+                    <p>Learning video editing is just like learning how to cook! You select raw ingredients (video footage), chop them up, and arrange them into a delicious meal (the final movie).</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=800&q=80" alt="Learning Roadmap" />
+                    <div class="image-caption"><i class="fa-solid fa-list-check"></i> Visual Learning Competencies & Roadmap Strategy</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 3: Lecture Agenda Blueprint -->
+<div class="slide-container" id="slide3">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-map"></i> Lecture Roadmap & Visual Plan</h2>
+        <span class="module-tag">Week 1 Agenda</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <h3>4 Easy Steps to Complete Week 1</h3>
+                <ul>
+                    <li><strong>Part 1: Video Fundamentals</strong> — The Lego block rules of cutting footage, frame speeds, screen shapes, and story rules.</li>
+                    <li><strong>Part 2: The Time Travel History</strong> — How movie pioneers invented cuts by mistake and revolutionized media.</li>
+                    <li><strong>Part 3: The 4-Quadrant Screen</strong> — Unlocking the 4 main rooms inside video editing software.</li>
+                    <li><strong>Part 4: Real-World Scenarios</strong> — How to fix real video mistakes using simple editing tricks.</li>
+                </ul>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80" alt="Agenda Planning" />
+                    <div class="image-caption"><i class="fa-solid fa-list-check"></i> Visual Step-by-Step Learning Flow</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 4: Section Header Module 1 -->
+<div class="slide-container" id="slide4">
+    <div class="section-break-layout">
+        <div class="section-num">Module 01</div>
+        <h2 class="section-title">Fundamentals of Video Editing</h2>
+        <p class="section-desc">Learning the language of video: how cuts work, why footage is structured like Lego bricks, and the simple rules of storytelling.</p>
+    </div>
+</div>
+
+<!-- SLIDE 5: What is Video Editing? -->
+<div class="slide-container" id="slide5">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-film"></i> What is Video Editing? (The Lego Analogy)</h2>
+        <span class="module-tag">Module 01</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <h3>Rearranging Clips to Tell a Story</h3>
+                    <p>Video editing is simply taking individual recorded video clips, trimming away the boring parts, and stitching them together in a specific order.</p>
+                    <p>Without editing, video is just a pile of random recorded moments. The edit turns chaos into a smooth, exciting story.</p>
+                </div>
+                <div class="layman-box">
+                    <strong><i class="fa-solid fa-puzzle-piece"></i> The Lego Block Analogy:</strong>
+                    <p>Raw video clips are like individual Lego blocks. Video editing is picking the right colored blocks and snapping them together to build a castle!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1536240478700-b869070f9279?auto=format&fit=crop&w=800&q=80" alt="Video Editing Timeline" />
+                    <div class="image-caption"><i class="fa-solid fa-puzzle-piece"></i> Raw Video Clips Assembled into a Finished Timeline</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 6: Visual Storytelling & Continuity -->
+<div class="slide-container" id="slide6">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-wand-magic-sparkles"></i> Continuity (The Invisible Magic Trick)</h2>
+        <span class="module-tag">Module 01</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <h3>Making Cuts Feel Seamless</h3>
+                    <p><strong>Continuity Editing</strong> means making cuts so smooth that the audience doesn't even notice a cut happened.</p>
+                    <p>If an actor raises a cup in a wide shot, they must still be holding the cup when you cut to a close-up shot!</p>
+                </div>
+                <div class="visual-trick-box">
+                    <strong><i class="fa-solid fa-eye-slash"></i> The "Invisible Edit" Rule:</strong>
+                    <p>If the audience notices the cut, their brain stops paying attention to the movie. Good editing feels continuous, like watching real life unfold.</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=800&q=80" alt="Camera Set Continuity" />
+                    <div class="image-caption"><i class="fa-solid fa-camera"></i> Camera Setup & Continuity Alignment Example</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 7: Active vs Passive Viewing -->
+<div class="slide-container" id="slide7">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-brain"></i> Active vs. Passive Viewing Dynamics</h2>
+        <span class="module-tag">Module 01</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <h3>Waking Up the Viewer's Brain</h3>
+                    <div class="versus-container">
+                        <div class="versus-box">
+                            <h4 style="color: #94a3b8;"><i class="fa-solid fa-tv"></i> Passive Viewing</h4>
+                            <p>Watching a boring, unedited security camera feed. The audience gets sleepy because nothing guides their attention.</p>
+                        </div>
+                        <div class="versus-box">
+                            <h4 style="color: #38bdf8;"><i class="fa-solid fa-bolt"></i> Active Viewing</h4>
+                            <p>Fast, energetic edits that show close-ups of reactions. The audience's brain is fully awake, guessing what happens next!</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="key-insight-box">
+                    <strong><i class="fa-solid fa-bullseye"></i> Lesson for Editors:</strong>
+                    <p>Your job as an editor is to act like a tour guide for the audience's eyes. Show them exactly what matters at each second!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1518173946687-a4c8a383392e?auto=format&fit=crop&w=800&q=80" alt="Cinema Audience Engagement" />
+                    <div class="image-caption"><i class="fa-solid fa-chart-line"></i> Engagement Example: Passive vs Active Viewer Reactions</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 8: A-Roll Footage -->
+<div class="slide-container" id="slide8">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-microphone"></i> A-Roll (The Main Storyteller)</h2>
+        <span class="module-tag">Module 01</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <h3>The Backbone of Your Video</h3>
+                    <p><strong>A-Roll</strong> is the primary video and audio footage that carries the main message or plot.</p>
+                    <p>Think of news anchors speaking, a person being interviewed, or an actor delivering monologue dialogue.</p>
+                </div>
+                <div class="layman-box">
+                    <strong><i class="fa-solid fa-user-voice"></i> The Singer Analogy:</strong>
+                    <p>A-Roll is like the lead singer in a music band. It provides the main lyrics and melody that everything else is built around.</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1598899134739-24c46f58b8c0?auto=format&fit=crop&w=800&q=80" alt="A-Roll Interview Filming" />
+                    <div class="image-caption"><i class="fa-solid fa-video"></i> Standard A-Roll Talking Head Interview Visual Setup</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 9: B-Roll Footage -->
+<div class="slide-container" id="slide9">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-images"></i> B-Roll (The Picture Book / Visual Helper)</h2>
+        <span class="module-tag">Module 01</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <h3>Extra Footage that Illustrates Words</h3>
+                    <p><strong>B-Roll</strong> is extra background video played *over* the voice of the speaker to show what they are talking about.</p>
+                    <p>If a chef talks about baking bread (A-Roll), you show video clips of flour mixing and oven baking (B-Roll)!</p>
+                </div>
+                <div class="visual-trick-box">
+                    <strong><i class="fa-solid fa-book-open"></i> The Picture Book Metaphor:</strong>
+                    <p>A-Roll is someone reading an audiobook to you. B-Roll is opening the picture book so you can see what they are describing!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=800&q=80" alt="B-Roll Cutaway Footage" />
+                    <div class="image-caption"><i class="fa-solid fa-layer-group"></i> Overlaying B-Roll Action Footage Over Main Voice Audio</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 10: Linear Editing -->
+<div class="slide-container" id="slide10">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-tape"></i> Linear Editing (The Old VHS Tape System)</h2>
+        <span class="module-tag">Module 01</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <h3>Copying Video in Fixed Order (Tape-to-Tape)</h3>
+                    <p>In the past, video editing was <strong>Linear</strong>. You had to copy scenes from Tape 1 to Tape 2 in strict chronological order (Scene A -&gt; B -&gt; C -&gt; D).</p>
+                    <p><strong>The Biggest Pain:</strong> If you made a mistake on Scene A, you had to re-record the ENTIRE tape from start to finish!</p>
+                </div>
+                <div class="layman-box">
+                    <strong><i class="fa-solid fa-keyboard"></i> Typewriter Analogy:</strong>
+                    <p>Linear editing is like using a typewriter. If you make a typo on paragraph 1, you can't just press 'Backspace'—you must re-type the whole page!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1524712245354-2c4e5e7121c0?auto=format&fit=crop&w=800&q=80" alt="Vintage Videotape Editing" />
+                    <div class="image-caption"><i class="fa-solid fa-tape"></i> Legacy Videotape Tape-to-Tape Sequential Editing System</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 11: Non-Linear Editing (NLE) -->
+<div class="slide-container" id="slide11">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-computer"></i> Non-Linear Editing / NLE (Digital Word Processor)</h2>
+        <span class="module-tag">Module 01</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <h3>Instant Drag-and-Drop Freedom</h3>
+                    <p>Modern video editing software is <strong>Non-Linear (NLE)</strong>. All footage is saved digitally on a computer hard drive.</p>
+                    <p>You can grab any video clip at any time, slice it in half, move it to the front, or delete it without destroying anything else!</p>
+                </div>
+                <div class="visual-trick-box">
+                    <strong><i class="fa-solid fa-file-word"></i> Microsoft Word Analogy:</strong>
+                    <p>NLE is like typing on Microsoft Word. You can highlight text, copy, paste, delete, and undo mistakes instantly with no hassle!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=800&q=80" alt="Modern NLE Computer Workspace" />
+                    <div class="image-caption"><i class="fa-solid fa-hard-drive"></i> Modern Non-Linear Digital Editing Workspace</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 12: Non-Destructive Paradigm -->
+<div class="slide-container" id="slide12">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-shield-halved"></i> Non-Destructive Editing (The Safety Net)</h2>
+        <span class="module-tag">Module 01</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <h3>Your Original Files Are Always Safe</h3>
+                    <p>When you cut a clip in Premiere Pro, you are NOT cutting the original camera file on your hard drive!</p>
+                    <p>The software only creates "virtual pointers" (instructions) telling the computer when to start playing and when to stop playing.</p>
+                </div>
+                <div class="layman-box">
+                    <strong><i class="fa-solid fa-copy"></i> The Stencil / Trace Paper Analogy:</strong>
+                    <p>It's like placing tracing paper over a valuable painting and drawing on it. If you ruin the tracing paper, the original painting remains 100% perfect!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80" alt="Digital Storage Hard Drive" />
+                    <div class="image-caption"><i class="fa-solid fa-shield-halved"></i> Original File Protection on Hard Drive Storage</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 13: Temporal Resolution - Frame Rates -->
+<div class="slide-container" id="slide13">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-film"></i> Frame Rates (The Flipbook Speed Test)</h2>
+        <span class="module-tag">Module 01</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <h3>Frames Per Second (FPS) Explained</h3>
+                    <p>Video is just a stack of still photographs played really fast. **FPS** stands for how many pictures flash on screen in 1 second.</p>
+                    <ul>
+                        <li><strong>24 FPS (Cinema Look):</strong> Classic movie feel with natural motion blur.</li>
+                        <li><strong>30 FPS (TV &amp; News):</strong> Crisp, realistic look used in live TV and news.</li>
+                        <li><strong>60 FPS (Gaming &amp; Slow-Mo):</strong> Ultra-smooth motion used for esports and slow-motion video playback.</li>
+                    </ul>
+                </div>
+                <div class="visual-trick-box">
+                    <strong><i class="fa-solid fa-book"></i> The Flipbook Test:</strong>
+                    <p>Imagine a drawing flipbook. If you flip 24 pages per second, it looks like a movie. If you flip 60 pages per second, the action looks buttery smooth!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=800&q=80" alt="Film Frame Rate Reel" />
+                    <div class="image-caption"><i class="fa-solid fa-film"></i> Film Strip Frame Density Example (24 vs 30 vs 60 FPS)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 14: Aspect Ratio - 16:9 Widescreen -->
+<div class="slide-container" id="slide14">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-tv"></i> Aspect Ratio: 16:9 Horizontal Widescreen</h2>
+        <span class="module-tag">Module 01</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <h3>The Standard TV &amp; YouTube Shape</h3>
+                    <p><strong>Aspect Ratio</strong> is the shape rectangle of the video screen (Width vs Height).</p>
+                    <p><strong>16:9 Widescreen (1920x1080):</strong> The universal horizontal standard for TV screens, cinema displays, desktop computers, and YouTube.</p>
+                </div>
+                <div class="layman-box">
+                    <strong><i class="fa-solid fa-eye"></i> Human Sight Match:</strong>
+                    <p>Our eyes are placed side-by-side on our face, so human eyes naturally see the world in horizontal widescreen format!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1593784991095-a205069470b6?auto=format&fit=crop&w=800&q=80" alt="16:9 Widescreen TV" />
+                    <div class="image-caption"><i class="fa-solid fa-desktop"></i> Standard 16:9 Horizontal Widescreen Display Frame</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 15: Aspect Ratio - 9:16 Vertical -->
+<div class="slide-container" id="slide15">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-mobile-screen"></i> Aspect Ratio: 9:16 Vertical Mobile</h2>
+        <span class="module-tag">Module 01</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <h3>The Smartphone / TikTok Standard</h3>
+                    <p><strong>9:16 Vertical (1080x1920):</strong> The portrait-oriented video shape made specifically for smartphone screens.</p>
+                    <p>Used for TikTok, Instagram Reels, and YouTube Shorts so users don't have to turn their phone sideways.</p>
+                </div>
+                <div class="key-insight-box">
+                    <strong><i class="fa-solid fa-triangle-exclamation"></i> Editor Warning:</strong>
+                    <p>When editing vertical video, keep people's faces right in the middle! Mobile app buttons on TikTok can block text on the top and bottom.</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=800&q=80" alt="Smartphone Vertical Screen" />
+                    <div class="image-caption"><i class="fa-solid fa-mobile"></i> Vertical 9:16 Smartphone Screen Format Example</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 16: Murch's Rule of Six Overview -->
+<div class="slide-container" id="slide16">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-list-ol"></i> Walter Murch’s "Rule of Six" (Priority Recipe)</h2>
+        <span class="module-tag">Module 01</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <div class="pioneer-badge"><i class="fa-solid fa-award"></i> Legendary Editor: Walter Murch</div>
+                    <h3>How to Judge Every Single Cut</h3>
+                    <p>Oscar-winning editor Walter Murch created a 6-rule checklist to know when to cut, ranked from most important to least important:</p>
+                    <ul>
+                        <li><strong>1. Emotion (51%)</strong> — How does the cut feel?</li>
+                        <li><strong>2. Story (23%)</strong> — Does it advance the plot?</li>
+                        <li><strong>3. Rhythm (10%)</strong> — Does it feel musical?</li>
+                        <li><strong>4. Eye-Trace (7%)</strong> — Where are eyes looking?</li>
+                        <li><strong>5. 2D Screen Line (5%)</strong> — Camera angle rules.</li>
+                        <li><strong>6. 3D Room Space (4%)</strong> — Physical object positions.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=800&q=80" alt="Film Editor at Work" />
+                    <div class="image-caption"><i class="fa-solid fa-chart-pie"></i> Walter Murch's Cut Priority Breakdown</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 17: Rule 1 & 2: Emotion & Story -->
+<div class="slide-container" id="slide17">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-heart"></i> Rule 1 &amp; 2: Emotion (51%) &amp; Story (23%)</h2>
+        <span class="module-tag">Module 01</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <h3>The Golden 74% of Video Editing</h3>
+                    <p><strong>Emotion (51%):</strong> Does the cut make the viewer feel sad, happy, or scared at the exact right second? Emotion beats everything!</p>
+                    <p><strong>Story (23%):</strong> Does the cut help the audience understand the plot?</p>
+                </div>
+                <div class="layman-box">
+                    <strong><i class="fa-solid fa-circle-check"></i> The Golden Secret:</strong>
+                    <p>If a cut makes the audience cry or laugh at the right moment, nobody will care if a coffee cup on the table moved slightly between shots!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=800&q=80" alt="Emotional Film Scene" />
+                    <div class="image-caption"><i class="fa-solid fa-heart"></i> Emotional Acting Priority in Cinema Editing</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 18: Rule 3 & 4: Rhythm & Eye-Trace -->
+<div class="slide-container" id="slide18">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-music"></i> Rule 3 &amp; 4: Rhythm (10%) &amp; Eye-Trace (7%)</h2>
+        <span class="module-tag">Module 01</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <h3>The Dance Beat &amp; Focal Pointer</h3>
+                    <p><strong>Rhythm (10%):</strong> Cutting to the beat of music or natural speaking rhythm so the video flows like a song.</p>
+                    <p><strong>Eye-Trace (7%):</strong> Ensuring the audience's eyes don't have to jump across the screen to find the subject in the next shot.</p>
+                </div>
+                <div class="visual-trick-box">
+                    <strong><i class="fa-solid fa-bullseye"></i> The Laser Pointer Metaphor:</strong>
+                    <p>Imagine pointing a red laser at the screen. If Shot 1 puts the laser on the left side, Shot 2 should keep the action on the left side so viewers don't get dizzy!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=800&q=80" alt="Audio Music Waveform Rhythm" />
+                    <div class="image-caption"><i class="fa-solid fa-eye"></i> Visualizing Rhythm and Eye-Trace Motion Flow</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 19: Rule 5 & 6: 2D Plane & 3D Space -->
+<div class="slide-container" id="slide19">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-cubes"></i> Rule 5 &amp; 6: 2D Line (5%) &amp; 3D Space (4%)</h2>
+        <span class="module-tag">Module 01</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <h3>Keeping Spatial Rules &amp; Physics Logical</h3>
+                    <p><strong>2D Screen Line (5%):</strong> Respecting the 180-degree camera line so two people talking keep looking at each other.</p>
+                    <p><strong>3D Spatial Continuity (4%):</strong> Making sure physical objects stay in the same position in the room from shot to shot.</p>
+                </div>
+                <div class="key-insight-box">
+                    <strong><i class="fa-solid fa-lightbulb"></i> Why Are These Lowest?</strong>
+                    <p>These spatial rules are important, but Walter Murch proved that audiences gladly forgive minor continuity glitches if the Emotion and Story are amazing!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1535016120720-40c646be5580?auto=format&fit=crop&w=800&q=80" alt="3D Spatial Camera Layout" />
+                    <div class="image-caption"><i class="fa-solid fa-vector-square"></i> Spatial Camera Placement &amp; Axis Orientation</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 20: Section Header Module 2 -->
+<div class="slide-container" id="slide20">
+    <div class="section-break-layout">
+        <div class="section-num">Module 02</div>
+        <h2 class="section-title">History &amp; Evolution of Video Editing</h2>
+        <p class="section-desc">From 1895 celluloid film strips to modern AI cloud workstations—how film pioneers invented video editing step-by-step.</p>
+    </div>
+</div>
+
+<!-- SLIDE 21: Macro Timeline Overview -->
+<div class="slide-container" id="slide21">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-clock-rotate-left"></i> Macro Timeline of Video History (1895 - Today)</h2>
+        <span class="module-tag">Module 02</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <h3>The 5 Great Historical Eras</h3>
+                <ul>
+                    <li><strong>1895–1903: Uncut Film to Story Splicing</strong> (Edison, Lumière, Porter)</li>
+                    <li><strong>1918–1925: Mind Tricks &amp; Soviet Montage</strong> (Kuleshov, Eisenstein)</li>
+                    <li><strong>1924–1950s: Razor Blades &amp; Moviola Machine</strong> (Serrurier)</li>
+                    <li><strong>1956–1980s: Magnetic Videotapes &amp; Light Pens</strong> (Ampex, CMX 600)</li>
+                    <li><strong>1989–Present: Digital NLE Computers &amp; AI</strong> (Avid, Premiere)</li>
+                </ul>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=800&q=80" alt="Vintage Cinema Projector" />
+                    <div class="image-caption"><i class="fa-solid fa-clock"></i> Evolution Timeline of Post-Production Tools</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 22: 1895 Edison & Lumière -->
+<div class="slide-container" id="slide22">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-video"></i> 1895: Edison &amp; Lumières (Zero Cuts Allowed!)</h2>
+        <span class="module-tag">Module 02</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <div class="pioneer-badge"><i class="fa-solid fa-lightbulb"></i> Pioneers: Thomas Edison &amp; Lumière Brothers (1895)</div>
+                    <h3>The Era of Uncut 50-Second Clips</h3>
+                    <p>In 1895, the Lumière brothers projected the world's first movies in Paris. Cameras were set up on a tripod, recorded 50 seconds, and stopped.</p>
+                    <p>Films like *"Arrival of a Train"* had zero cuts. People stared at a single continuous, unedited shot!</p>
+                </div>
+                <div class="layman-box">
+                    <strong><i class="fa-solid fa-mobile-screen"></i> Layman Metaphor:</strong>
+                    <p>It was like recording a short 50-second Instagram story video on your phone without editing or trimming anything!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1505686994434-e3cc5abf1330?auto=format&fit=crop&w=800&q=80" alt="Antique Vintage Camera 1895" />
+                    <div class="image-caption"><i class="fa-solid fa-camera-retro"></i> Early Cinema 1895 Single-Take Camera Setup</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 23: 1896 Georges Méliès -->
+<div class="slide-container" id="slide23">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-wand-magic-sparkles"></i> 1896: Georges Méliès (The Magic Camera Jam)</h2>
+        <span class="module-tag">Module 02</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <div class="pioneer-badge"><i class="fa-solid fa-wand-sparkles"></i> Pioneer: Georges Méliès (French Magician)</div>
+                    <h3>Discovering the "Stop-Trick" Cut by Accident</h3>
+                    <p>In 1896, magician Georges Méliès was filming a street in Paris when his camera jammed for a few seconds. He cleared the jam and kept filming.</p>
+                    <p>When he played the movie back, a passing bus instantly vanished and turned into a horse hearse! He realized cutting film creates magic!</p>
+                </div>
+                <div class="visual-trick-box">
+                    <strong><i class="fa-solid fa-hat-wizard"></i> The First Special Effect:</strong>
+                    <p>Méliès realized you can make people disappear on screen simply by stopping the recording, having them walk away, and recording again!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1518676599625-585804595232?auto=format&fit=crop&w=800&q=80" alt="Magic Special Effects Stage" />
+                    <div class="image-caption"><i class="fa-solid fa-wand-sparkles"></i> Georges Méliès Accidental "Stop-Trick" Trick Cut</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 24: 1903 Edwin S. Porter -->
+<div class="slide-container" id="slide24">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-masks-theater"></i> 1903: Edwin S. Porter (Cutting Between Two Places)</h2>
+        <span class="module-tag">Module 02</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <div class="pioneer-badge"><i class="fa-solid fa-film"></i> Pioneer: Edwin S. Porter (1903)</div>
+                    <h3>Inventing Cross-Cutting (Parallel Action)</h3>
+                    <p>In 1903, Edwin S. Porter directed *"The Great Train Robbery"*. Instead of showing one scene at a time, he cut back and forth between two locations!</p>
+                    <p>He showed robbers tying up a telegraph guy, then cut to police chasing them down horseback!</p>
+                </div>
+                <div class="layman-box">
+                    <strong><i class="fa-solid fa-bolt"></i> Why This Changed Everything:</strong>
+                    <p>Before Porter, movies only showed one place at a time. Porter proved you can cut between two different places happening at the exact same time!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=800&q=80" alt="Vintage Train Robbery Era" />
+                    <div class="image-caption"><i class="fa-solid fa-train"></i> Edwin S. Porter's Cross-Cutting Parallel Action Example</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 25: 1918 Lev Kuleshov -->
+<div class="slide-container" id="slide25">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-brain"></i> 1918: Lev Kuleshov (The Mind Trick Experiment)</h2>
+        <span class="module-tag">Module 02</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <div class="pioneer-badge"><i class="fa-solid fa-brain"></i> Pioneer: Lev Kuleshov (Russian Scientist)</div>
+                    <h3>The Kuleshov Effect (Context Changes Meaning)</h3>
+                    <p>Kuleshov filmed an actor with a neutral expression. He cut that face next to 3 different images:</p>
+                    <ul>
+                        <li>Face + Bowl of Soup = Audience says: *"He looks hungry!"*</li>
+                        <li>Face + Dead Child in Coffin = Audience says: *"He looks sad!"*</li>
+                        <li>Face + Pretty Woman = Audience says: *"He looks in love!"*</li>
+                    </ul>
+                </div>
+                <div class="visual-trick-box">
+                    <strong><i class="fa-solid fa-lightbulb"></i> The Big Discovery:</strong>
+                    <p>The actor's face never changed! The audience created emotion inside their own heads based purely on the next picture!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=800&q=80" alt="Facial Expressions Montage" />
+                    <div class="image-caption"><i class="fa-solid fa-images"></i> Historical Kuleshov Experiment Visual Context</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 26: 1925 Sergei Eisenstein -->
+<div class="slide-container" id="slide26">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-burst"></i> 1925: Sergei Eisenstein (Clash &amp; Collision Editing)</h2>
+        <span class="module-tag">Module 02</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <div class="pioneer-badge"><i class="fa-solid fa-clapperboard"></i> Pioneer: Sergei Eisenstein (1925)</div>
+                    <h3>Soviet Montage Theory (1 + 1 = 3)</h3>
+                    <p>Eisenstein believed cutting shouldn't be peaceful—it should be a collision of two opposing shots to shock the viewer's brain!</p>
+                    <p>In *"Battleship Potemkin"*, he cut between marching soldiers and a baby carriage rolling down steps to create intense panic.</p>
+                </div>
+                <div class="layman-box">
+                    <strong><i class="fa-solid fa-fire"></i> Math Metaphor:</strong>
+                    <p>Shot A (Soldier with Gun) + Shot B (Crying Baby) = Shot C in your brain (Fear &amp; Outrage!).</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=800&q=80" alt="Dramatic Movie Still Eisenstein" />
+                    <div class="image-caption"><i class="fa-solid fa-film"></i> Soviet Intellectual Montage Collision Example</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 27: 1924 Iwan Serrurier -->
+<div class="slide-container" id="slide27">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-gears"></i> 1924: Iwan Serrurier (The Moviola Machine)</h2>
+        <span class="module-tag">Module 02</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <div class="pioneer-badge"><i class="fa-solid fa-toolbox"></i> Inventor: Iwan Serrurier (1924)</div>
+                    <h3>The First Movie Preview Machine</h3>
+                    <p>Before 1924, editors held film strips up to a magnifying glass over light bulbs to see frames! It was painful and slow.</p>
+                    <p>Serrurier invented the **Moviola**—a machine with a tiny glass screen and foot pedals where editors could view film in motion!</p>
+                </div>
+                <div class="key-insight-box">
+                    <strong><i class="fa-solid fa-check"></i> Why It Prevailed:</strong>
+                    <p>The Moviola became the standard viewing workbench in Hollywood studios for over 50 years until digital screens arrived!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1524712245354-2c4e5e7121c0?auto=format&fit=crop&w=800&q=80" alt="Vintage Moviola Film Reel Machine" />
+                    <div class="image-caption"><i class="fa-solid fa-desktop"></i> Upright Moviola Film Viewing &amp; Editing Workbench</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 28: Physical Film Splicing Mechanics -->
+<div class="slide-container" id="slide28">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-scissors"></i> Physical Film Splicing (Razor Blades &amp; Glue)</h2>
+        <span class="module-tag">Module 02</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <h3>Literal Cut &amp; Paste on Film Strips</h3>
+                    <p>Old-school editing was a manual trade. Editors sat at tables with literal razor blades, special glue, and tape blocks.</p>
+                    <p>They chopped physical celluloid film strips, glued them together, and hung unused pieces in cloth-lined **Trim Bins** using clothes pins!</p>
+                </div>
+                <div class="layman-box">
+                    <strong><i class="fa-solid fa-folder"></i> Where "Bin" Comes From:</strong>
+                    <p>That's why digital folders in Premiere Pro are still called **"Bins"** today! They are named after those physical cloth bins from 100 years ago!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=800&q=80" alt="35mm Film Strip Splicing" />
+                    <div class="image-caption"><i class="fa-solid fa-scissors"></i> Physical 35mm Celluloid Film Splicing &amp; Trim Bins</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 29: 1956 Charles Ginsburg -->
+<div class="slide-container" id="slide29">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-cassette-tape"></i> 1956: Charles Ginsburg (Magnetic Videotape)</h2>
+        <span class="module-tag">Module 02</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <div class="pioneer-badge"><i class="fa-solid fa-tape"></i> Pioneer: Charles Ginsburg &amp; Ampex (1956)</div>
+                    <h3>Replacing Glass Film with Magnetic Tape</h3>
+                    <p>In 1956, Ampex invented the **VR-1000**—the first machine to record video onto magnetic tape instead of developing film in chemical baths.</p>
+                    <p>TV channels could now record live TV shows and broadcast them immediately without waiting days for film processing!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1598899134739-24c46f58b8c0?auto=format&fit=crop&w=800&q=80" alt="Magnetic Tape Deck Console" />
+                    <div class="image-caption"><i class="fa-solid fa-tape"></i> Ampex Magnetic Broadcast Videotape Console</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 30: 1971 CMX 600 Electronic Controller -->
+<div class="slide-container" id="slide30">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-sliders"></i> 1971: CMX 600 (The $300,000 Computer Controller)</h2>
+        <span class="module-tag">Module 02</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <div class="pioneer-badge"><i class="fa-solid fa-microchip"></i> Milestone: CMX Systems (1971)</div>
+                    <h3>The First Computer-Assisted Tape Editing</h3>
+                    <p>The **CMX 600** was a giant computer system using light pens to point at screen monitors and trigger tape decks automatically.</p>
+                    <p>It cost over $300,000 per machine, so only rich TV networks could buy one, but it introduced computer-assisted editing!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80" alt="Retro Computer Monitor Terminal" />
+                    <div class="image-caption"><i class="fa-solid fa-desktop"></i> Early Computer Controller Terminal Concept</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 31: 1989 Bill Warner -->
+<div class="slide-container" id="slide31">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-desktop"></i> 1989: Bill Warner &amp; Avid (Digital Computer Age)</h2>
+        <span class="module-tag">Module 02</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <div class="pioneer-badge"><i class="fa-solid fa-computer"></i> Founder: Bill Warner (Avid, 1989)</div>
+                    <h3>Digitizing Video onto Macintosh Hard Drives</h3>
+                    <p>Bill Warner introduced **Avid Media Composer** on Macintosh computers, turning recorded video into digital files on hard drives.</p>
+                    <p>It created the multi-track timeline, visual timeline tracks, and instant trimming that we still use in software today!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=800&q=80" alt="Vintage Macintosh Computer" />
+                    <div class="image-caption"><i class="fa-solid fa-hard-drive"></i> Digital Multi-Track Timeline on Macintosh Workstation</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 32: 1991 Randy Ubillos -->
+<div class="slide-container" id="slide32">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-laptop-code"></i> 1991: Randy Ubillos &amp; Adobe Premiere 1.0</h2>
+        <span class="module-tag">Module 02</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <div class="pioneer-badge"><i class="fa-solid fa-window-maximize"></i> Creator: Randy Ubillos (Adobe, 1991)</div>
+                    <h3>Video Editing for Everyday Desktop PCs</h3>
+                    <p>In December 1991, Randy Ubillos released **Adobe Premiere 1.0** for Apple Mac computers.</p>
+                    <p>Before Premiere, editing required $100,000 Hollywood equipment. Premiere allowed students and creators to edit video on everyday home PCs!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=800&q=80" alt="Desktop PC Video Editing Software" />
+                    <div class="image-caption"><i class="fa-solid fa-desktop"></i> Desktop PC Video Editing Software Workspace</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 33: Modern Era AI & Cloud -->
+<div class="slide-container" id="slide33">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-cloud-arrow-up"></i> Modern Era: AI Speech &amp; Cloud Workflows</h2>
+        <span class="module-tag">Module 02</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <h3>Editing Video by Editing Text Transcripts</h3>
+                    <p>Today, NLE software uses Artificial Intelligence to automatically generate speech transcripts of your video clips.</p>
+                    <p>If you delete a word in the text transcript, the software automatically cuts that word out of the video clip instantly!</p>
+                </div>
+                <div class="visual-trick-box">
+                    <strong><i class="fa-solid fa-wand-magic-sparkles"></i> AI Magic:</strong>
+                    <p>Editors no longer spend hours hunting for dialogue. You type a keyword in the search bar, and AI jumps directly to that frame!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80" alt="AI Cloud Digital Network" />
+                    <div class="image-caption"><i class="fa-solid fa-cloud"></i> AI Automated Text-Based Editing Example</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 34: Section Header Module 3 -->
+<div class="slide-container" id="slide34">
+    <div class="section-break-layout">
+        <div class="section-num">Module 03</div>
+        <h2 class="section-title">NLE Software Interface Anatomy</h2>
+        <p class="section-desc">Demystifying the video editing workspace: understanding the 4 major screen quadrants and essential keyboard tools.</p>
+    </div>
+</div>
+
+<!-- SLIDE 35: Standard 4-Quadrant Architecture -->
+<div class="slide-container" id="slide35">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-table-cells-large"></i> The 4-Quadrant Screen Layout (The 4 Rooms)</h2>
+        <span class="module-tag">Module 03</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <h3>Every Video Software Uses These 4 Windows</h3>
+                    <p>Whether you open Adobe Premiere Pro, Final Cut Pro, or DaVinci Resolve, the screen is always split into 4 functional rooms:</p>
+                    <ul>
+                        <li><strong>Quadrant 1 (Bottom Left):</strong> Project Panel (Storage Bin)</li>
+                        <li><strong>Quadrant 2 (Top Left):</strong> Source Monitor (Inspection Room)</li>
+                        <li><strong>Quadrant 3 (Top Right):</strong> Program Monitor (Final Movie Screen)</li>
+                        <li><strong>Quadrant 4 (Bottom Right):</strong> Timeline Canvas (Workbench)</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=800&q=80" alt="4 Quadrant NLE Workspace" />
+                    <div class="image-caption"><i class="fa-solid fa-desktop"></i> Standard 4-Quadrant NLE Software Screen Architecture</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 36: Quadrant 1 Project Panel -->
+<div class="slide-container" id="slide36">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-folder-open"></i> Quadrant 1: Project Panel (The Organized Closet)</h2>
+        <span class="module-tag">Module 03</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <h3>Where All Your Files Live</h3>
+                    <p>The **Project Panel** (Bottom-Left) holds all raw video files, music audio tracks, logos, and photos imported from your computer.</p>
+                    <p>Good editors keep files organized using color-coded digital folders called **Bins** (e.g., `01_FOOTAGE`, `02_AUDIO`, `03_TITLES`).</p>
+                </div>
+                <div class="layman-box">
+                    <strong><i class="fa-solid fa-box"></i> Toy Box Analogy:</strong>
+                    <p>The Project Panel is like a toy box. Before you start playing, you dump all your toys inside so you know where everything is stored!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1544396821-4dd40b938ad3?auto=format&fit=crop&w=800&q=80" alt="Organized Digital Folders" />
+                    <div class="image-caption"><i class="fa-solid fa-folder"></i> Organizing Raw Assets Inside Project Bins</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 37: Quadrant 2 Source Monitor -->
+<div class="slide-container" id="slide37">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-magnifying-glass"></i> Quadrant 2: Source Monitor (The Fitting Room)</h2>
+        <span class="module-tag">Module 03</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <h3>Testing &amp; Trimming Clips Before Placing Them</h3>
+                    <p>Double-clicking a clip in the Project Panel opens it inside the **Source Monitor** (Top-Left).</p>
+                    <p>Press **[I]** on your keyboard to mark an **In-Point** (Start) and **[O]** to mark an **Out-Point** (End) to trim away bad footage before dragging!</p>
+                </div>
+                <div class="visual-trick-box">
+                    <strong><i class="fa-solid fa-shirt"></i> The Fitting Room Analogy:</strong>
+                    <p>You try on clothes in a fitting room before buying them. The Source Monitor lets you test a clip and trim bad parts before putting it in your main movie!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1536240478700-b869070f9279?auto=format&fit=crop&w=800&q=80" alt="Source Monitor Trimming" />
+                    <div class="image-caption"><i class="fa-solid fa-scissors"></i> Setting In/Out Trimming Points in Source Window</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 38: Quadrant 3 Program Monitor -->
+<div class="slide-container" id="slide38">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-tv"></i> Quadrant 3: Program Monitor (The Cinema Screen)</h2>
+        <span class="module-tag">Module 03</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <h3>Your Movie's Live Output Display</h3>
+                    <p>The **Program Monitor** (Top-Right) shows live playback of whatever sits directly under the playhead blue line on your timeline.</p>
+                    <p>It includes overlay guides like **Action Safe (90%)** and **Title Safe (80%)** lines so text isn't cut off on television screens!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=800&q=80" alt="Program Monitor Preview" />
+                    <div class="image-caption"><i class="fa-solid fa-display"></i> Program Output Screen with Title Safe Margins</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 39: Quadrant 4 Multi-Track Timeline -->
+<div class="slide-container" id="slide39">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-layer-group"></i> Quadrant 4: Multi-Track Timeline (The Sandwich Workbench)</h2>
+        <span class="module-tag">Module 03</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <h3>Arranging Clips Chronologically</h3>
+                    <p>The **Timeline Canvas** (Bottom-Right) lays out video clips left-to-right along a time ruler (`00:00:00:00`).</p>
+                    <ul>
+                        <li><strong>Video Tracks (V1, V2, V3):</strong> Higher tracks cover up lower tracks (Top layer covers bottom layer).</li>
+                        <li><strong>Audio Tracks (A1, A2, A3):</strong> All audio tracks play together at the exact same time!</li>
+                    </ul>
+                </div>
+                <div class="layman-box">
+                    <strong><i class="fa-solid fa-burger"></i> Sandwich Layer Analogy:</strong>
+                    <p>Top video track V2 is like cheese placed over meat V1. You only see the top cheese, but you hear both audio layers below!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=800&q=80" alt="Multi Track Timeline Software" />
+                    <div class="image-caption"><i class="fa-solid fa-sliders"></i> Multi-Track Video and Audio Stacking Canvas</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 40: Essential Tools - Selection Tool -->
+<div class="slide-container" id="slide40">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-arrow-pointer"></i> Tool 1: Selection Tool [Key V] (Your Virtual Hand)</h2>
+        <span class="module-tag">Module 03</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <h3>Default Arrow Pointer</h3>
+                    <p><strong>Shortcut [V]:</strong> The main pointer tool used to click, select, drag, move, and reposition clips on your timeline workbench.</p>
+                    <p>Whenever you don't know what tool to use, press **[V]** to go back to safety!</p>
+                </div>
+                <div class="layman-box">
+                    <strong><i class="fa-solid fa-hand"></i> Virtual Hand:</strong>
+                    <p>Think of key **[V]** as extending your physical hand onto the screen to grab and move clips around!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?auto=format&fit=crop&w=800&q=80" alt="Computer Pointer Tool" />
+                    <div class="image-caption"><i class="fa-solid fa-arrow-pointer"></i> Using Selection Tool [V] to Move Timeline Clips</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 41: Essential Tools - Razor Tool -->
+<div class="slide-container" id="slide41">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-scissors"></i> Tool 2: Razor Cut Tool [Key C] (Your Virtual Scissors)</h2>
+        <span class="module-tag">Module 03</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <h3>Slicing Clips in Half</h3>
+                    <p><strong>Shortcut [C]:</strong> Turns your mouse cursor into a razor blade icon to cut clips into separate pieces at any frame.</p>
+                    <p>Used to slice out unwanted coughs, awkward pauses, or mistakes in recorded interviews.</p>
+                </div>
+                <div class="visual-trick-box">
+                    <strong><i class="fa-solid fa-scissors"></i> Pair with Key V:</strong>
+                    <p>Press **[C]** to make two cuts around a mistake, then press **[V]** to select the mistake clip and hit `Delete`!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1503792501406-2c40da09e1e2?auto=format&fit=crop&w=800&q=80" alt="Cutting Razor Tool Concept" />
+                    <div class="image-caption"><i class="fa-solid fa-scissors"></i> Cutting Timeline Clips into Segments with Razor Tool [C]</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 42: Essential Tools - Ripple & Rolling -->
+<div class="slide-container" id="slide42">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-arrows-left-right"></i> Ripple [B] &amp; Rolling [N] (Dynamic Magnet Trimmers)</h2>
+        <span class="module-tag">Module 03</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <h3>Trimming Without Leaving Empty Gaps</h3>
+                    <p><strong>Ripple Edit [B]:</strong> Trims a clip and automatically pulls all remaining clips behind it forward so no empty blank gaps are left!</p>
+                    <p><strong>Rolling Edit [N]:</strong> Moves the cut border between two clips at the same time without changing the total length of the movie.</p>
+                </div>
+                <div class="layman-box">
+                    <strong><i class="fa-solid fa-magnet"></i> Magnet Analogy:</strong>
+                    <p>Ripple Edit acts like a magnet. When you delete a clip segment, it snaps the rest of the timeline together instantly!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80" alt="Timeline Magnet Gap Closing" />
+                    <div class="image-caption"><i class="fa-solid fa-arrows-left-right"></i> Ripple Edit [B] Auto-Closing Timeline Black Gaps</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 43: Audio Peak Metering -->
+<div class="slide-container" id="slide43">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-volume-high"></i> Audio Metering (The Traffic Light Loudness Rule)</h2>
+        <span class="module-tag">Module 03</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <h3>Decibels &amp; Avoiding Ear-Bleeding Distortion</h3>
+                    <p>In digital audio, **0 dB is the dangerous roof**. If audio touches 0 dB, the sound clips and turns into harsh static distortion!</p>
+                    <ul>
+                        <li><strong>Voice / Speech Target:</strong> Keep voice volume peaking between **-6 dB and -12 dB** (Green to Yellow zone).</li>
+                        <li><strong>Background Music Target:</strong> Lower background music down to **-18 dB to -24 dB** so speech is crystal clear!</li>
+                    </ul>
+                </div>
+                <div class="visual-trick-box">
+                    <strong><i class="fa-solid fa-traffic-light"></i> Traffic Light Metering Rule:</strong>
+                    <p>Green is good, Yellow is loud and clear, RED is DANGER! Never let your audio meters hit red 0 dB!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=800&q=80" alt="Audio Mixing Console Decibel Meters" />
+                    <div class="image-caption"><i class="fa-solid fa-volume-high"></i> Audio Peak Metering Decibel Green-Yellow-Red Zones</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 44: Motion Parameters & Keyframing -->
+<div class="slide-container" id="slide44">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-sliders"></i> Keyframe Animation (Connecting Point A to Point B)</h2>
+        <span class="module-tag">Module 03</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <h3>Animating Position, Scale, and Opacity</h3>
+                    <p>**Keyframes** let you animate movement across time.</p>
+                    <p>You place **Point A** at second 1 (Small size) and **Point B** at second 3 (Large size). The computer automatically calculates the smooth zoom in between!</p>
+                </div>
+                <div class="layman-box">
+                    <strong><i class="fa-solid fa-route"></i> GPS Destination Analogy:</strong>
+                    <p>Keyframes are like setting Start Location A and Destination B on Google Maps. The computer drives the smooth path automatically!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80" alt="Keyframe Animation Workspace" />
+                    <div class="image-caption"><i class="fa-solid fa-sliders"></i> Setting Motion Keyframe Interpolation Points</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 45: The 6-Step Post Production Pipeline -->
+<div class="slide-container" id="slide45">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-diagram-project"></i> The 6-Step Editing Recipe (Start to Finish)</h2>
+        <span class="module-tag">Module 03</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <h3>Systematic Workflow Order</h3>
+                <ul>
+                    <li><strong>1. Ingest &amp; Organize:</strong> Import files into clean Project Bins.</li>
+                    <li><strong>2. Assembly Cut:</strong> Lay clips down in rough chronological order.</li>
+                    <li><strong>3. Rough to Fine Cut:</strong> Trim bad footage and layer B-Roll illustrations.</li>
+                    <li><strong>4. Audio Mixing:</strong> Balance speech volume and background music.</li>
+                    <li><strong>5. Color &amp; Titles:</strong> Fix dark footage exposure and add title names.</li>
+                    <li><strong>6. Export &amp; Master:</strong> Render final `.MP4` video file!</li>
+                </ul>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80" alt="Step by Step Editing Recipe Strategy" />
+                    <div class="image-caption"><i class="fa-solid fa-diagram-project"></i> Step-by-Step Post-Production Workflow Chart</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 46: Rendering Codecs & Export Formats -->
+<div class="slide-container" id="slide46">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-file-export"></i> Codecs vs. Containers (Gift Wrapping vs. Present)</h2>
+        <span class="module-tag">Module 03</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <h3>Understanding Export Formats</h3>
+                    <p><strong>Codec (Compressor):</strong> The invisible software engine that shrinks massive video files down (e.g., **H.264**).</p>
+                    <p><strong>Container Format:</strong> The file box extension holding video and audio together (e.g., `.MP4`, `.MOV`).</p>
+                </div>
+                <div class="layman-box">
+                    <strong><i class="fa-solid fa-gift"></i> The Gift Box Analogy:</strong>
+                    <p>The **Container (.MP4)** is the cardboard gift box. The **Codec (H.264)** is how tightly the sweater inside was folded to fit in the box!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80" alt="Video File Export Settings" />
+                    <div class="image-caption"><i class="fa-solid fa-file-export"></i> Exporting Preset H.264 MP4 Render Concept</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 47: Section Header Module 4 -->
+<div class="slide-container" id="slide47">
+    <div class="section-break-layout">
+        <div class="section-num">Module 04</div>
+        <h2 class="section-title">Practical Scenarios &amp; Assessment</h2>
+        <p class="section-desc">Applying Week 1 principles to fix real-world video editing problems and testing your knowledge.</p>
+    </div>
+</div>
+
+<!-- SLIDE 48: Practical Scenario 1 -->
+<div class="slide-container" id="slide48">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-wrench"></i> Scenario 1: Fixing Speech Stumbles with B-Roll Band-Aids</h2>
+        <span class="module-tag">Module 04</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <h3>Problem &amp; Fix</h3>
+                    <p><strong>Problem:</strong> An interview speaker stumbles over their words: *"I love editing... uh... cough... video."* If you cut out the cough, their face jumps awkwardly on screen (Jump Cut!).</p>
+                    <p><strong>Solution:</strong> Cut out the cough on the audio track, slice the video, and place a 3-second B-Roll clip on Track V2 directly over the cut!</p>
+                </div>
+                <div class="visual-trick-box">
+                    <strong><i class="fa-solid fa-band-aid"></i> B-Roll Band-Aid:</strong>
+                    <p>The audio remains smooth, and the viewer sees B-Roll video covering up the ugly cut jump!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1598899134739-24c46f58b8c0?auto=format&fit=crop&w=800&q=80" alt="Interview Filming Setup" />
+                    <div class="image-caption"><i class="fa-solid fa-wrench"></i> Masking Interview Speech Cuts using B-Roll Video Overlays</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 49: Practical Scenario 2 -->
+<div class="slide-container" id="slide49">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-bullseye"></i> Scenario 2: Guiding the Eye in Fast Action Scenes</h2>
+        <span class="module-tag">Module 04</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <h3>Problem &amp; Fix</h3>
+                    <p><strong>Problem:</strong> In a basketball video, Player 1 throws a pass on the far right side of screen in Shot A, but Shot B cuts to Player 2 catching the ball on the far left side, confusing audience eyes.</p>
+                    <p><strong>Solution:</strong> Shift or crop Shot B slightly using motion parameters to align focal points, respecting Murch's Eye-Trace rule!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=800&q=80" alt="Action Sports Filming" />
+                    <div class="image-caption"><i class="fa-solid fa-eye"></i> Realigning Focal Points to Keep Audience Eye-Trace Natural</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 50: Student Visual Self-Checklist -->
+<div class="slide-container" id="slide50">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-check-double"></i> Week 1 Visual Mastery Self-Checklist</h2>
+        <span class="module-tag">Module 04</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <h3>Can You Explain These Simple Concepts?</h3>
+                <ul>
+                    <li><i class="fa-solid fa-check" style="color: #38bdf8;"></i> **Linear vs. NLE:** Typewriter tape editing vs. Word Processor drag-and-drop.</li>
+                    <li><i class="fa-solid fa-check" style="color: #38bdf8;"></i> **A-Roll vs. B-Roll:** Lead singer voice vs. Picture book illustrations.</li>
+                    <li><i class="fa-solid fa-check" style="color: #38bdf8;"></i> **Murch's #1 Rule:** Emotion (51%) beats technical perfection!</li>
+                    <li><i class="fa-solid fa-check" style="color: #38bdf8;"></i> **4 Screen Quadrants:** Storage Closet, Fitting Room, Cinema Screen, Sandwich Workbench.</li>
+                    <li><i class="fa-solid fa-check" style="color: #38bdf8;"></i> **Tool Keys:** Key **[V]** (Hand) and Key **[C]** (Scissors).</li>
+                </ul>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?auto=format&fit=crop&w=800&q=80" alt="Mastery Checklist Success" />
+                    <div class="image-caption"><i class="fa-solid fa-list-check"></i> Trimex Colleges Week 1 Competency Verification</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 51: Quiz Preview & Week 2 Teaser -->
+<div class="slide-container" id="slide51">
+    <div class="slide-header">
+        <h2 class="slide-title"><i class="fa-solid fa-forward"></i> Quiz Preview &amp; Week 2 Teaser</h2>
+        <span class="module-tag">Module 04</span>
+    </div>
+    <div class="content-area">
+        <div class="single-topic-grid">
+            <div class="topic-card-main">
+                <div>
+                    <h3>Upcoming Quiz &amp; Next Lesson</h3>
+                    <p><strong>Quiz Preview:</strong> 15 simple questions testing historical pioneers (Porter, Kuleshov, Murch), NLE software screen quadrants, and green/yellow/red audio decibel targets.</p>
+                    <p><strong>Week 2 Preview:</strong> *"Narrative Structure and Storytelling"*—3-act movie structures, pacing curves, and editing clips for emotional payoff!</p>
+                </div>
+            </div>
+            <div class="topic-card-main">
+                <div class="topic-image-frame">
+                    <img src="https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=800&q=80" alt="Film Slate Clapboard Week 2" />
+                    <div class="image-caption"><i class="fa-solid fa-film"></i> Week 2 Teaser: Narrative Structure &amp; Movie Pacing</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
