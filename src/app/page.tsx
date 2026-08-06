@@ -6,9 +6,11 @@ import { SlideViewer } from '@/components/SlideViewer';
 import { NavigationControls } from '@/components/NavigationControls';
 import { ThumbnailDrawer } from '@/components/ThumbnailDrawer';
 import { KeyboardHelpModal } from '@/components/KeyboardHelpModal';
-import { Video, Film, Sparkles, GraduationCap } from 'lucide-react';
+import { QuizView } from '@/components/QuizView';
+import { Film, Sparkles, BookOpen, Award } from 'lucide-react';
 
 export default function Home() {
+  const [activeTab, setActiveTab] = useState<'lesson' | 'quiz'>('lesson');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
@@ -42,8 +44,10 @@ export default function Home() {
     }
   }, []);
 
-  // Keyboard navigation
+  // Keyboard navigation - only active when viewing the lesson
   useEffect(() => {
+    if (activeTab !== 'lesson') return;
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (isDrawerOpen || isHelpOpen) {
         if (e.key === 'Escape') {
@@ -67,10 +71,15 @@ export default function Home() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleNext, handlePrev, toggleFullscreen, isDrawerOpen, isHelpOpen]);
+  }, [activeTab, handleNext, handlePrev, toggleFullscreen, isDrawerOpen, isHelpOpen]);
 
-  // Auto-play timer
+  // Auto-play timer - only active when viewing the lesson
   useEffect(() => {
+    if (activeTab !== 'lesson') {
+      setIsPlaying(false);
+      return;
+    }
+
     let interval: NodeJS.Timeout;
     if (isPlaying) {
       interval = setInterval(() => {
@@ -84,12 +93,12 @@ export default function Home() {
       }, 5000);
     }
     return () => clearInterval(interval);
-  }, [isPlaying, totalSlides]);
+  }, [isPlaying, totalSlides, activeTab]);
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900 flex flex-col justify-between py-4">
       {/* Top Application Header */}
-      <header className="w-full max-w-6xl mx-auto px-4 mb-2 flex items-center justify-between">
+      <header className="w-full max-w-6xl mx-auto px-4 mb-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between print:hidden">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-xl bg-gradient-to-br from-sky-500 to-blue-500 text-white shadow-md">
             <Film className="w-5 h-5" />
@@ -104,26 +113,60 @@ export default function Home() {
             <p className="text-xs text-slate-500 font-medium">Week 1: Introduction to Video Editing</p>
           </div>
         </div>
+
+        {/* Tab Selection Switcher */}
+        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-slate-200/60 border border-slate-300/30 shadow-sm self-stretch sm:self-auto">
+          <button
+            onClick={() => setActiveTab('lesson')}
+            className={`flex-grow sm:flex-grow-0 flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-bold rounded-lg transition ${
+              activeTab === 'lesson'
+                ? 'bg-white text-sky-700 shadow-sm'
+                : 'text-slate-600 hover:text-slate-950'
+            }`}
+          >
+            <BookOpen className="w-3.5 h-3.5" />
+            Lecture Slides
+          </button>
+          <button
+            onClick={() => setActiveTab('quiz')}
+            className={`flex-grow sm:flex-grow-0 flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-bold rounded-lg transition ${
+              activeTab === 'quiz'
+                ? 'bg-white text-sky-700 shadow-sm'
+                : 'text-slate-600 hover:text-slate-950'
+            }`}
+          >
+            <Award className="w-3.5 h-3.5" />
+            Interactive Quiz
+          </button>
+        </div>
       </header>
 
-      {/* Main Slide Viewer Frame */}
-      <div className="flex-grow flex items-center justify-center py-2">
-        <SlideViewer slide={currentSlide} />
+      {/* Main Content Area */}
+      <div className="flex-grow flex items-center justify-center py-2 px-4">
+        {activeTab === 'lesson' ? (
+          <SlideViewer slide={currentSlide} />
+        ) : (
+          <QuizView />
+        )}
       </div>
 
-      {/* Control Bar & Progress */}
-      <NavigationControls
-        currentIndex={currentIndex}
-        totalSlides={totalSlides}
-        onPrev={handlePrev}
-        onNext={handleNext}
-        onReset={handleReset}
-        onToggleDrawer={() => setIsDrawerOpen(true)}
-        onToggleFullscreen={toggleFullscreen}
-        isPlaying={isPlaying}
-        onTogglePlay={() => setIsPlaying(!isPlaying)}
-        onOpenHelp={() => setIsHelpOpen(true)}
-      />
+      {/* Control Bar & Progress (Only show for Lecture Tab) */}
+      {activeTab === 'lesson' && (
+        <div className="print:hidden">
+          <NavigationControls
+            currentIndex={currentIndex}
+            totalSlides={totalSlides}
+            onPrev={handlePrev}
+            onNext={handleNext}
+            onReset={handleReset}
+            onToggleDrawer={() => setIsDrawerOpen(true)}
+            onToggleFullscreen={toggleFullscreen}
+            isPlaying={isPlaying}
+            onTogglePlay={() => setIsPlaying(!isPlaying)}
+            onOpenHelp={() => setIsHelpOpen(true)}
+          />
+        </div>
+      )}
 
       {/* Slide Selection Drawer */}
       <ThumbnailDrawer
@@ -141,7 +184,7 @@ export default function Home() {
       />
 
       {/* Bottom Footer signature */}
-      <footer className="w-full max-w-6xl mx-auto px-4 mt-4 text-center text-xs text-slate-500 font-semibold tracking-wide">
+      <footer className="w-full max-w-6xl mx-auto px-4 mt-4 text-center text-xs text-slate-500 font-semibold tracking-wide print:hidden">
         Developed by Luiese Amstrong
       </footer>
     </main>
