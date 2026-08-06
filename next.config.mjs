@@ -2,6 +2,7 @@
 const nextConfig = {
   output: 'export',
   basePath: '/Lessons',
+  assetPrefix: '/Lessons',
   images: {
     unoptimized: true,
     remotePatterns: [
