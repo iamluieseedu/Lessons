@@ -36,9 +36,9 @@ export const ThumbnailDrawer: React.FC<ThumbnailDrawerProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex justify-end transition-opacity">
-      <div className="w-full max-w-xl bg-white border-l border-slate-200 h-full flex flex-col p-6 overflow-hidden shadow-2xl">
+      <div className="w-full max-w-xl bg-white border-l border-slate-200 h-full flex flex-col p-4 sm:p-6 overflow-hidden shadow-2xl">
         {/* Drawer Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-slate-200">
+        <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-slate-200">
           <div className="flex items-center gap-2">
             <Layers className="w-5 h-5 text-sky-600" />
             <h3 className="font-lexend text-lg font-bold text-slate-800">Slide Overview ({slides.length} Slides)</h3>
@@ -52,7 +52,7 @@ export const ThumbnailDrawer: React.FC<ThumbnailDrawerProps> = ({
         </div>
 
         {/* Search Input */}
-        <div className="relative my-4">
+        <div className="relative my-3 sm:my-4">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
           <input
             type="text"
@@ -64,7 +64,7 @@ export const ThumbnailDrawer: React.FC<ThumbnailDrawerProps> = ({
         </div>
 
         {/* Slides Grid List */}
-        <div className="flex-grow overflow-y-auto pr-1 space-y-3">
+        <div className="flex-grow overflow-y-auto pr-1 space-y-2.5 sm:space-y-3">
           {filteredSlides.map(({ slide, originalIndex }) => {
             const isActive = originalIndex === currentIndex;
             return (
@@ -74,7 +74,7 @@ export const ThumbnailDrawer: React.FC<ThumbnailDrawerProps> = ({
                   onSelectSlide(originalIndex);
                   onClose();
                 }}
-                className={`w-full text-left p-3.5 rounded-xl border transition flex items-start justify-between gap-3 ${
+                className={`w-full text-left p-2.5 sm:p-3.5 rounded-xl border transition flex items-start justify-between gap-3 ${
                   isActive
                     ? 'bg-sky-500/10 border-sky-400 shadow-sm'
                     : 'bg-slate-50/50 border-slate-200 hover:bg-slate-50 hover:border-slate-350'

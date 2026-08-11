@@ -119,11 +119,11 @@ export const QuizView: React.FC = () => {
 
   if (!isRegistered) {
     return (
-      <div className="w-full max-w-xl mx-auto p-8 rounded-2xl bg-white border border-slate-200 shadow-xl relative z-10 text-slate-800">
-        <div className="text-center mb-6">
-          <Award className="w-12 h-12 text-sky-600 mx-auto mb-3" />
-          <h2 className="font-lexend text-2xl font-extrabold text-slate-900">Interactive Quiz</h2>
-          <p className="text-sm text-slate-500 mt-1">Please enter your details below to start the Week 1 quiz assessment.</p>
+      <div className="w-full max-w-xl mx-auto p-5 sm:p-8 rounded-2xl bg-white border border-slate-200 shadow-xl relative z-10 text-slate-800">
+        <div className="text-center mb-5 sm:mb-6">
+          <Award className="w-10 h-10 sm:w-12 sm:h-12 text-sky-600 mx-auto mb-2 sm:mb-3" />
+          <h2 className="font-lexend text-xl sm:text-2xl font-extrabold text-slate-900">Interactive Quiz</h2>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">Please enter your details below to start the Week 1 quiz assessment.</p>
         </div>
 
         <form onSubmit={handleRegisterSubmit} className="space-y-4">
@@ -138,7 +138,7 @@ export const QuizView: React.FC = () => {
               value={studentName}
               onChange={(e) => setStudentName(e.target.value)}
               placeholder="e.g. Jane Doe"
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-sky-500"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-455 focus:outline-none focus:border-sky-500"
             />
           </div>
 
@@ -152,13 +152,13 @@ export const QuizView: React.FC = () => {
               value={studentId}
               onChange={(e) => setStudentId(e.target.value)}
               placeholder="e.g. 2026-10492"
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-sky-500"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-455 focus:outline-none focus:border-sky-500"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full mt-4 bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2"
+            className="w-full mt-4 bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 sm:py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm sm:text-base"
           >
             Start Quiz Assessment
             <ArrowRight className="w-4 h-4" />
@@ -171,34 +171,34 @@ export const QuizView: React.FC = () => {
   if (quizFinished) {
     const percent = Math.round((score / totalQuestions) * 100);
     return (
-      <div className="w-full max-w-2xl mx-auto p-6 md:p-8 rounded-2xl bg-white border border-slate-200 shadow-xl relative z-10 text-slate-800 print:border-none print:shadow-none print:p-0">
+      <div className="w-full max-w-2xl mx-auto p-4 sm:p-6 md:p-8 rounded-2xl bg-white border border-slate-200 shadow-xl relative z-10 text-slate-800 print:border-none print:shadow-none print:p-0">
         
         {/* Certificate Section for Printing */}
-        <div id="certificate-print" className="p-8 border-4 border-double border-slate-300 rounded-xl text-center bg-slate-50 relative overflow-hidden shadow-inner mb-6 print:mb-0">
+        <div id="certificate-print" className="p-4 sm:p-8 border-4 border-double border-slate-300 rounded-xl text-center bg-slate-50 relative overflow-hidden shadow-inner mb-6 print:mb-0">
           <div className="absolute top-0 right-0 w-24 h-24 bg-sky-500/[0.03] rounded-full blur-xl pointer-events-none" />
           
-          <Award className="w-14 h-14 text-sky-600 mx-auto mb-4" />
-          <span className="font-lexend text-[10px] tracking-widest text-slate-400 font-bold uppercase">Certificate of Completion</span>
+          <Award className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 text-sky-600 mx-auto mb-3 sm:mb-4" />
+          <span className="font-lexend text-[9px] sm:text-[10px] tracking-widest text-slate-400 font-bold uppercase">Certificate of Completion</span>
           
-          <h2 className="font-lexend text-2xl md:text-3xl font-extrabold text-slate-900 mt-2">Week 1: Video Editing Basics</h2>
+          <h2 className="font-lexend text-lg sm:text-2xl md:text-3xl font-extrabold text-slate-900 mt-2">Week 1: Video Editing Basics</h2>
           <p className="text-xs text-slate-500 mt-1">This document certifies that</p>
           
-          <h3 className="font-lexend text-xl md:text-2xl font-bold text-sky-700 underline decoration-sky-400/40 my-4">
+          <h3 className="font-lexend text-lg sm:text-xl md:text-2xl font-bold text-sky-700 underline decoration-sky-400/40 my-3 sm:my-4">
             {studentName}
           </h3>
           
-          {studentId && <p className="text-xs text-slate-450 -mt-2 mb-3">Student ID: {studentId}</p>}
+          {studentId && <p className="text-[11px] sm:text-xs text-slate-450 -mt-2 mb-3">Student ID: {studentId}</p>}
           
-          <p className="text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
+          <p className="text-[11px] sm:text-xs text-slate-655 max-w-md mx-auto leading-relaxed">
             Has successfully finished the multiple-choice assessment covering video timelines, A-Roll/B-Roll layering, frame speeds, aspect ratios, and editor quadrants.
           </p>
 
-          <div className="mt-6 flex flex-col items-center justify-center border-t border-slate-200/80 pt-4">
-            <span className="text-xs font-semibold text-slate-500">Assessment Score Received</span>
-            <span className="font-lexend text-2xl font-black text-slate-900 mt-1">
+          <div className="mt-5 sm:mt-6 flex flex-col items-center justify-center border-t border-slate-200/80 pt-3 sm:pt-4">
+            <span className="text-[11px] sm:text-xs font-semibold text-slate-500">Assessment Score Received</span>
+            <span className="font-lexend text-xl sm:text-2xl font-black text-slate-900 mt-1">
               {score} / {totalQuestions} ({percent}%)
             </span>
-            <span className="text-[10px] text-slate-400 mt-1">Completed on {new Date().toLocaleDateString()}</span>
+            <span className="text-[10px] text-slate-455 mt-1">Completed on {new Date().toLocaleDateString()}</span>
           </div>
         </div>
 
@@ -225,21 +225,21 @@ export const QuizView: React.FC = () => {
 
           {/* Submission options */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold text-slate-750 uppercase tracking-wider flex items-center gap-1.5">
+            <h4 className="text-xs font-bold text-slate-755 uppercase tracking-wider flex items-center gap-1.5">
               <FileText className="w-4 h-4 text-sky-600" />
               Submit Score to Teacher
             </h4>
             
-            <div className="flex items-stretch gap-2">
+            <div className="flex flex-col sm:flex-row items-stretch gap-2">
               <input
                 type="text"
                 readOnly
                 value={`${studentName} - Score: ${score}/${totalQuestions} (${percent}%)`}
-                className="flex-grow bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-650"
+                className="flex-grow bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-655"
               />
               <button
                 onClick={handleCopySummary}
-                className={`px-4 rounded-xl border font-bold text-xs flex items-center gap-1.5 transition ${
+                className={`px-4 py-2 sm:py-0 rounded-xl border font-bold text-xs flex items-center justify-center gap-1.5 transition ${
                   copied
                     ? 'bg-emerald-500/10 text-emerald-700 border-emerald-300'
                     : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-250'
@@ -283,11 +283,11 @@ export const QuizView: React.FC = () => {
   }
 
   return (
-    <div className="w-full max-w-2xl mx-auto p-6 md:p-8 rounded-2xl bg-white border border-slate-200 shadow-xl relative z-10 text-slate-800">
+    <div className="w-full max-w-2xl mx-auto p-4 sm:p-6 md:p-8 rounded-2xl bg-white border border-slate-200 shadow-xl relative z-10 text-slate-800">
       
       {/* Quiz Progress Header */}
-      <div className="flex justify-between items-center pb-3 border-b border-slate-200 mb-5">
-        <span className="text-xs font-semibold text-slate-500">
+      <div className="flex justify-between items-center pb-2.5 border-b border-slate-200 mb-4 sm:mb-5">
+        <span className="text-xs font-semibold text-slate-505">
           Question <strong className="text-sky-600 font-bold">{currentIdx + 1}</strong> of {totalQuestions}
         </span>
         <span className="text-xs font-bold px-2 py-0.5 rounded bg-sky-500/10 text-sky-700">
@@ -296,12 +296,12 @@ export const QuizView: React.FC = () => {
       </div>
 
       {/* Quiz Question Statement */}
-      <h3 className="font-lexend text-base md:text-lg font-bold text-slate-900 leading-relaxed mb-6">
+      <h3 className="font-lexend text-sm sm:text-base md:text-lg font-bold text-slate-900 leading-relaxed mb-4 sm:mb-6">
         {currentQuestion.question}
       </h3>
 
       {/* Multiple-Choice Options Grid */}
-      <div className="space-y-3">
+      <div className="space-y-2.5 sm:space-y-3">
         {currentQuestion.options.map((opt, idx) => {
           const isSelected = selectedOpt === idx;
           const isAnswerCorrect = idx === currentQuestion.answer;
@@ -322,13 +322,13 @@ export const QuizView: React.FC = () => {
               key={idx}
               disabled={isAnswered}
               onClick={() => handleSelectOption(idx)}
-              className={`w-full text-left px-4 py-3.5 rounded-xl border text-sm flex items-center justify-between transition ${optStyle}`}
+              className={`w-full text-left px-3.5 py-3 sm:px-4 sm:py-3.5 rounded-xl border text-xs sm:text-sm flex items-center justify-between transition ${optStyle}`}
             >
               <span>{opt}</span>
               {isAnswered && (
                 <>
-                  {isAnswerCorrect && <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0" />}
-                  {isSelected && !isAnswerCorrect && <XCircle className="w-5 h-5 text-rose-600 flex-shrink-0" />}
+                  {isAnswerCorrect && <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 flex-shrink-0" />}
+                  {isSelected && !isAnswerCorrect && <XCircle className="w-4 h-4 sm:w-5 sm:h-5 text-rose-600 flex-shrink-0" />}
                 </>
               )}
             </button>
@@ -338,7 +338,7 @@ export const QuizView: React.FC = () => {
 
       {/* Answer Explanation Box */}
       {isAnswered && (
-        <div className="mt-5 p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-650 animate-fadeIn">
+        <div className="mt-4 sm:mt-5 p-3 sm:p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-650 animate-fadeIn">
           <strong className="text-slate-900 block mb-1">Explanation:</strong>
           {currentQuestion.explanation}
         </div>
@@ -346,13 +346,13 @@ export const QuizView: React.FC = () => {
 
       {/* Navigation Footer */}
       {isAnswered && (
-        <div className="mt-6 pt-4 border-t border-slate-200 flex justify-end">
+        <div className="mt-5 sm:mt-6 pt-3 sm:pt-4 border-t border-slate-200 flex justify-end">
           <button
             onClick={handleNext}
-            className="py-2.5 px-5 bg-sky-600 hover:bg-sky-700 text-white font-bold text-sm rounded-xl shadow-md transition flex items-center gap-1.5"
+            className="py-2 px-4 sm:py-2.5 sm:px-5 bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition flex items-center gap-1.5"
           >
             {currentIdx === totalQuestions - 1 ? 'Finish Assessment' : 'Next Question'}
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </div>
       )}
