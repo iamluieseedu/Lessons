@@ -16,6 +16,7 @@ interface Lesson {
   difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
   thumbnail: string;
   isActive: boolean;
+  quizEnabled?: boolean;
 }
 
 function QuizPageContent() {
@@ -97,8 +98,8 @@ function QuizPageContent() {
     }
   }, [lessonId]);
 
-  // If lesson is not found or not active
-  if (!lesson || !lesson.isActive) {
+  // If lesson is not found, not active, or quiz is disabled
+  if (!lesson || !lesson.isActive || lesson.quizEnabled === false) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-6 text-center">
         <div className="w-full max-w-md bg-white border border-slate-200 rounded-3xl p-8 shadow-xl">

@@ -29,6 +29,7 @@ interface Lesson {
   difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
   thumbnail: string;
   isActive: boolean;
+  quizEnabled?: boolean;
 }
 
 const ADMIN_HASH = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9'; // SHA-256 for admin123
@@ -44,6 +45,7 @@ const DEFAULT_LESSONS: Lesson[] = [
     difficulty: 'Beginner',
     thumbnail: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=800&q=80',
     isActive: true,
+    quizEnabled: true,
   }
 ];
 
@@ -65,6 +67,7 @@ export default function AdminPage() {
   const [newDifficulty, setNewDifficulty] = useState<'Beginner' | 'Intermediate' | 'Advanced'>('Beginner');
   const [newThumbnail, setNewThumbnail] = useState('');
   const [newIsActive, setNewIsActive] = useState(true);
+  const [newQuizEnabled, setNewQuizEnabled] = useState(true);
   const [lessonAddStatus, setLessonAddStatus] = useState<string | null>(null);
 
   // Hydrate client-side state
@@ -149,7 +152,8 @@ export default function AdminPage() {
       slidesCount: Number(newSlidesCount),
       difficulty: newDifficulty,
       thumbnail: newThumbnail.trim() || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80',
-      isActive: newIsActive
+      isActive: newIsActive,
+      quizEnabled: newQuizEnabled
     };
 
     const updated = [...lessons, newLesson].sort((a, b) => a.week - b.week);
@@ -167,6 +171,7 @@ export default function AdminPage() {
     setNewDifficulty('Beginner');
     setNewThumbnail('');
     setNewIsActive(true);
+    setNewQuizEnabled(true);
 
     setLessonAddStatus('Lesson Uploaded Successfully!');
     setTimeout(() => setLessonAddStatus(null), 2500);
@@ -185,6 +190,19 @@ export default function AdminPage() {
       }
       setLessons(updated);
     }
+  };
+
+  const handleToggleQuiz = (id: string) => {
+    const updated = lessons.map(l => {
+      if (l.id === id) {
+        return { ...l, quizEnabled: l.quizEnabled === false ? true : false };
+      }
+      return l;
+    });
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('vid_lessons', JSON.stringify(updated));
+    }
+    setLessons(updated);
   };
 
   const handleClearHistory = () => {
@@ -455,9 +473,20 @@ export default function AdminPage() {
                   id="isActive"
                   checked={newIsActive}
                   onChange={(e) => setNewIsActive(e.target.checked)}
-                  className="rounded border-slate-200 text-sky-600 focus:ring-sky-500"
+                  className="rounded border-slate-200 text-sky-600 focus:ring-sky-500 cursor-pointer"
                 />
-                <label htmlFor="isActive" className="text-xs font-bold text-slate-700">Make Lesson Immediately Active</label>
+                <label htmlFor="isActive" className="text-xs font-bold text-slate-700 cursor-pointer">Make Lesson Immediately Active</label>
+              </div>
+
+              <div className="flex items-center gap-2 pt-0.5">
+                <input
+                  type="checkbox"
+                  id="quizEnabled"
+                  checked={newQuizEnabled}
+                  onChange={(e) => setNewQuizEnabled(e.target.checked)}
+                  className="rounded border-slate-200 text-sky-600 focus:ring-sky-500 cursor-pointer"
+                />
+                <label htmlFor="quizEnabled" className="text-xs font-bold text-slate-700 cursor-pointer">Enable Assessment Quiz</label>
               </div>
 
               {lessonAddStatus && (
@@ -495,7 +524,20 @@ export default function AdminPage() {
                       </div>
                     </div>
                     
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2.5">
+                      {/* Quiz toggle status */}
+                      <button
+                        onClick={() => handleToggleQuiz(lesson.id)}
+                        className={`px-2 py-0.5 rounded border text-[8px] font-bold uppercase tracking-wider transition ${
+                          lesson.quizEnabled !== false
+                            ? 'bg-sky-500/10 text-sky-700 border-sky-500/20 hover:bg-sky-500/20'
+                            : 'bg-slate-200 text-slate-500 border-slate-300 hover:bg-slate-300/50'
+                        }`}
+                        title="Click to toggle quiz active status"
+                      >
+                        {lesson.quizEnabled !== false ? 'Quiz On' : 'Quiz Off'}
+                      </button>
+
                       <span className={`px-2 py-0.5 rounded-full font-bold text-[8px] uppercase tracking-wider border ${
                         lesson.isActive 
                           ? 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20' 

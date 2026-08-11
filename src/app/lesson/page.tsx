@@ -20,6 +20,7 @@ interface Lesson {
   difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
   thumbnail: string;
   isActive: boolean;
+  quizEnabled?: boolean;
 }
 
 function SlidePageContent() {

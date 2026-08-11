@@ -25,6 +25,7 @@ interface Lesson {
   difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
   thumbnail: string;
   isActive: boolean;
+  quizEnabled?: boolean;
 }
 
 const DEFAULT_LESSONS: Lesson[] = [
@@ -38,6 +39,7 @@ const DEFAULT_LESSONS: Lesson[] = [
     difficulty: 'Beginner',
     thumbnail: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=800&q=80',
     isActive: true,
+    quizEnabled: true,
   }
 ];
 
@@ -214,49 +216,74 @@ export default function Home() {
                     </div>
                     <div className="flex items-center gap-1.5">
                       <Award className="w-4 h-4 text-sky-500" />
-                      <span>Includes Quiz</span>
+                      <span>{lesson.quizEnabled !== false ? 'Includes Quiz' : 'No Quiz Active'}</span>
                     </div>
                   </div>
 
                   {/* Action Buttons */}
                   {isWeekActive ? (
                     <div className="space-y-2">
-                      <div className="grid grid-cols-2 gap-3">
-                        <Link
-                          href={`/lesson?id=${lesson.id}`}
-                          className="py-2.5 px-4 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-sm transition flex items-center justify-center gap-1.5"
-                        >
-                          Start Lesson
-                          <ExternalLink className="w-3.5 h-3.5" />
-                        </Link>
-                        <Link
-                          href={`/quiz?id=${lesson.id}`}
-                          className="py-2.5 px-4 rounded-xl border border-sky-200 bg-sky-500/5 hover:bg-sky-500/10 text-sky-750 text-xs font-bold transition flex items-center justify-center gap-1.5"
-                        >
-                          Take Quiz
-                          <Award className="w-3.5 h-3.5" />
-                        </Link>
-                      </div>
+                      {lesson.quizEnabled !== false ? (
+                        <div className="grid grid-cols-2 gap-3">
+                          <Link
+                            href={`/lesson?id=${lesson.id}`}
+                            className="py-2.5 px-4 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-sm transition flex items-center justify-center gap-1.5"
+                          >
+                            Start Lesson
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </Link>
+                          <Link
+                            href={`/quiz?id=${lesson.id}`}
+                            className="py-2.5 px-4 rounded-xl border border-sky-200 bg-sky-500/5 hover:bg-sky-500/10 text-sky-750 text-xs font-bold transition flex items-center justify-center gap-1.5"
+                          >
+                            Take Quiz
+                            <Award className="w-3.5 h-3.5" />
+                          </Link>
+                        </div>
+                      ) : (
+                        <div className="w-full">
+                          <Link
+                            href={`/lesson?id=${lesson.id}`}
+                            className="w-full py-2.5 px-4 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-sm transition flex items-center justify-center gap-1.5"
+                          >
+                            Start Lesson
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </Link>
+                        </div>
+                      )}
 
                       {/* Share links buttons row */}
-                      <div className="grid grid-cols-2 gap-3 border-t border-slate-100 pt-2.5">
-                        <button
-                          onClick={() => copyToClipboard(`/lesson?id=${lesson.id}`, 'Lesson')}
-                          className="py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600 text-[10px] font-bold transition flex items-center justify-center gap-1"
-                          title="Copy direct link for students"
-                        >
-                          <Copy className="w-3 h-3" />
-                          Copy Lesson Link
-                        </button>
-                        <button
-                          onClick={() => copyToClipboard(`/quiz?id=${lesson.id}`, 'Quiz')}
-                          className="py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600 text-[10px] font-bold transition flex items-center justify-center gap-1"
-                          title="Copy direct quiz link"
-                        >
-                          <Copy className="w-3 h-3" />
-                          Copy Quiz Link
-                        </button>
-                      </div>
+                      {lesson.quizEnabled !== false ? (
+                        <div className="grid grid-cols-2 gap-3 border-t border-slate-100 pt-2.5">
+                          <button
+                            onClick={() => copyToClipboard(`/lesson?id=${lesson.id}`, 'Lesson')}
+                            className="py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600 text-[10px] font-bold transition flex items-center justify-center gap-1"
+                            title="Copy direct link for students"
+                          >
+                            <Copy className="w-3 h-3" />
+                            Copy Lesson Link
+                          </button>
+                          <button
+                            onClick={() => copyToClipboard(`/quiz?id=${lesson.id}`, 'Quiz')}
+                            className="py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600 text-[10px] font-bold transition flex items-center justify-center gap-1"
+                            title="Copy direct quiz link"
+                          >
+                            <Copy className="w-3 h-3" />
+                            Copy Quiz Link
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="w-full border-t border-slate-100 pt-2.5">
+                          <button
+                            onClick={() => copyToClipboard(`/lesson?id=${lesson.id}`, 'Lesson')}
+                            className="w-full py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600 text-[10px] font-bold transition flex items-center justify-center gap-1"
+                            title="Copy direct link for students"
+                          >
+                            <Copy className="w-3 h-3" />
+                            Copy Lesson Link
+                          </button>
+                        </div>
+                      )}
                     </div>
                   ) : (
                     <button
