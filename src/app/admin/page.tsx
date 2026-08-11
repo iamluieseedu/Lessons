@@ -31,7 +31,7 @@ interface Lesson {
   isActive: boolean;
 }
 
-const ADMIN_HASH = '0814f9d0c64ff3b6808129a008c2a9ccb4dbfcf66fcd55c06ff49071c77ec26f'; // SHA-256 for videodit2026
+const ADMIN_HASH = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9'; // SHA-256 for admin123
 
 const DEFAULT_LESSONS: Lesson[] = [
   {
