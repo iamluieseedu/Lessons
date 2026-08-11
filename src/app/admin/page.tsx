@@ -59,6 +59,7 @@ export default function AdminPage() {
   const [allowedDomain, setAllowedDomain] = useState('');
   const [studentScores, setStudentScores] = useState<any[]>([]);
   const [saveStatus, setSaveStatus] = useState<string | null>(null);
+  const [isLoadingScores, setIsLoadingScores] = useState(false);
 
   // Lesson Management states
   const [lessons, setLessons] = useState<Lesson[]>([]);
@@ -99,6 +100,32 @@ export default function AdminPage() {
       }
     }
   }, []);
+
+  // Fetch real-time student scores from Google Sheets Webhook
+  useEffect(() => {
+    if (isAuthorized && webhookUrl.trim()) {
+      const fetchScores = async () => {
+        setIsLoadingScores(true);
+        try {
+          const response = await fetch(webhookUrl);
+          if (response.ok) {
+            const data = await response.json();
+            if (Array.isArray(data)) {
+              setStudentScores(data);
+              localStorage.setItem('vid_student_scores', JSON.stringify(data));
+            }
+          }
+        } catch (err) {
+          console.error("Error loading online grades from Google Sheets:", err);
+          const storedScores = JSON.parse(localStorage.getItem('vid_student_scores') || '[]');
+          setStudentScores(storedScores);
+        } finally {
+          setIsLoadingScores(false);
+        }
+      };
+      fetchScores();
+    }
+  }, [isAuthorized, webhookUrl]);
 
   const hashPassword = async (pwd: string): Promise<string> => {
     const encoder = new TextEncoder();
@@ -215,7 +242,7 @@ export default function AdminPage() {
   };
 
   const handleClearHistory = () => {
-    if (confirm('Are you sure you want to permanently delete all student quiz grade history? This action cannot be undone.')) {
+    if (confirm('Are you sure you want to clear student quiz grade history from your local browser cache? To permanently delete student records, please edit or clear rows directly inside your Google Sheet.')) {
       if (typeof window !== 'undefined') {
         localStorage.removeItem('vid_student_scores');
         setStudentScores([]);
@@ -228,8 +255,8 @@ export default function AdminPage() {
     
     // Header
     const csvContent = [
-      ['Student Name', 'Email Address', 'Class Section', 'Score', 'Total Questions', 'Percentage', 'Date Completed'],
-      ...studentScores.map(s => [s.name, s.email || 'N/A', s.section || 'N/A', s.score, s.total, `${s.percent}%`, s.date])
+      ['Student Name', 'Email Address', 'Class Section', 'Quiz Module', 'Score', 'Total Questions', 'Percentage', 'Date Completed'],
+      ...studentScores.map(s => [s.name, s.email || 'N/A', s.section || 'N/A', s.quizTitle || 'Week 1 Quiz', s.score, s.total, `${s.percent}%`, s.date])
     ]
       .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
       .join('\n');
@@ -649,6 +676,11 @@ export default function AdminPage() {
               <div className="flex items-center gap-2">
                 <Users className="w-4 h-4 text-sky-655" />
                 <h3 className="font-lexend text-sm font-bold text-slate-800">Student Assessment Attempts</h3>
+                {isLoadingScores && (
+                  <span className="text-[10px] text-sky-600 font-semibold animate-pulse bg-sky-50 px-2 py-0.5 rounded border border-sky-100">
+                    Syncing Sheet...
+                  </span>
+                )}
               </div>
 
               <div className="flex gap-2">
@@ -682,6 +714,7 @@ export default function AdminPage() {
                       <th className="py-2.5 px-3">Student Name</th>
                       <th className="py-2.5 px-3">Email Address</th>
                       <th className="py-2.5 px-3">Class Section</th>
+                      <th className="py-2.5 px-3">Quiz Module</th>
                       <th className="py-2.5 px-3">Completion Date</th>
                       <th className="py-2.5 px-3 text-center">Score Ratio</th>
                       <th className="py-2.5 px-3 text-right">Percentage</th>
@@ -696,6 +729,7 @@ export default function AdminPage() {
                           <td className="py-2 px-3 text-slate-900 font-semibold">{scoreRecord.name}</td>
                           <td className="py-2 px-3 text-slate-500">{scoreRecord.email || 'N/A'}</td>
                           <td className="py-2 px-3 text-slate-500">{scoreRecord.section || 'N/A'}</td>
+                          <td className="py-2 px-3 text-slate-500 font-semibold text-[10px] text-sky-700">{scoreRecord.quizTitle || 'Week 1 Quiz'}</td>
                           <td className="py-2 px-3 text-slate-500">{scoreRecord.date}</td>
                           <td className="py-2 px-3 text-center text-slate-800">{scoreRecord.score} / {scoreRecord.total}</td>
                           <td className="py-2 px-3 text-right text-slate-900 font-bold">{scoreRecord.percent}%</td>
