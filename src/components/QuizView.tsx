@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { quizQuestions } from '@/data/quizData';
+import { CONFIG } from '@/config';
 import { 
   CheckCircle, 
   XCircle, 
@@ -51,9 +52,9 @@ export const QuizView: React.FC<QuizViewProps> = ({ questions, title }) => {
   const [copied, setCopied] = useState(false);
   const [webhookUrl, setWebhookUrl] = useState(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('vid_webhook_url') || '';
+      return localStorage.getItem('vid_webhook_url') || CONFIG.webhookUrl;
     }
-    return '';
+    return CONFIG.webhookUrl;
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<string | null>(null);
@@ -65,9 +66,9 @@ export const QuizView: React.FC<QuizViewProps> = ({ questions, title }) => {
   // Hydrate client-side variables and load Google GIS SDK
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const storedClientId = localStorage.getItem('vid_google_client_id') || '';
+      const storedClientId = localStorage.getItem('vid_google_client_id') || CONFIG.googleClientId;
       setGoogleClientId(storedClientId);
-      const storedDomain = localStorage.getItem('vid_google_allowed_domain') || '';
+      const storedDomain = localStorage.getItem('vid_google_allowed_domain') || CONFIG.allowedDomain;
       setAllowedDomain(storedDomain);
 
       if ((window as any).google) {

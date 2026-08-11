@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { CONFIG } from '@/config';
 import { 
   Lock, 
   Settings, 
@@ -78,11 +79,11 @@ export default function AdminPage() {
       const storedScores = JSON.parse(localStorage.getItem('vid_student_scores') || '[]');
       setStudentScores(storedScores);
       
-      const storedWebhook = localStorage.getItem('vid_webhook_url') || '';
+      const storedWebhook = localStorage.getItem('vid_webhook_url') || CONFIG.webhookUrl;
       setWebhookUrl(storedWebhook);
-      const storedGoogleClientId = localStorage.getItem('vid_google_client_id') || '';
+      const storedGoogleClientId = localStorage.getItem('vid_google_client_id') || CONFIG.googleClientId;
       setGoogleClientId(storedGoogleClientId);
-      const storedAllowedDomain = localStorage.getItem('vid_google_allowed_domain') || '';
+      const storedAllowedDomain = localStorage.getItem('vid_google_allowed_domain') || CONFIG.allowedDomain;
       setAllowedDomain(storedAllowedDomain);
 
       const storedLessons = localStorage.getItem('vid_lessons');
