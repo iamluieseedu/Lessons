@@ -54,6 +54,8 @@ export default function AdminPage() {
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const [webhookUrl, setWebhookUrl] = useState('');
+  const [googleClientId, setGoogleClientId] = useState('');
+  const [allowedDomain, setAllowedDomain] = useState('');
   const [studentScores, setStudentScores] = useState<any[]>([]);
   const [saveStatus, setSaveStatus] = useState<string | null>(null);
 
@@ -78,6 +80,10 @@ export default function AdminPage() {
       
       const storedWebhook = localStorage.getItem('vid_webhook_url') || '';
       setWebhookUrl(storedWebhook);
+      const storedGoogleClientId = localStorage.getItem('vid_google_client_id') || '';
+      setGoogleClientId(storedGoogleClientId);
+      const storedAllowedDomain = localStorage.getItem('vid_google_allowed_domain') || '';
+      setAllowedDomain(storedAllowedDomain);
 
       const storedLessons = localStorage.getItem('vid_lessons');
       if (storedLessons) {
@@ -129,6 +135,8 @@ export default function AdminPage() {
     setSaveStatus(null);
     if (typeof window !== 'undefined') {
       localStorage.setItem('vid_webhook_url', webhookUrl.trim());
+      localStorage.setItem('vid_google_client_id', googleClientId.trim());
+      localStorage.setItem('vid_google_allowed_domain', allowedDomain.trim());
       setSaveStatus('Configuration Saved Successfully!');
       setTimeout(() => setSaveStatus(null), 2500);
     }
@@ -587,6 +595,32 @@ export default function AdminPage() {
                 />
               </div>
 
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider font-semibold">
+                  Google Cloud Client ID
+                </label>
+                <input
+                  type="text"
+                  placeholder="123456789-abc.apps.googleusercontent.com"
+                  value={googleClientId}
+                  onChange={(e) => setGoogleClientId(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-sky-500"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider font-semibold">
+                  Allowed Email Domain (Optional)
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. @school.edu.ph"
+                  value={allowedDomain}
+                  onChange={(e) => setAllowedDomain(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-sky-500"
+                />
+              </div>
+
               {saveStatus && (
                 <p className="text-[11px] font-semibold text-emerald-600 text-center bg-emerald-500/10 border border-emerald-500/25 py-1.5 rounded-lg flex items-center justify-center gap-1">
                   <Check className="w-3.5 h-3.5" />
@@ -598,7 +632,7 @@ export default function AdminPage() {
                 type="submit"
                 className="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-2 rounded-xl text-xs shadow-sm transition"
               >
-                Save Connection URL
+                Save Settings
               </button>
             </form>
 

@@ -7,7 +7,8 @@ import {
   XCircle, 
   Award, 
   Printer, 
-  ArrowRight, 
+  ArrowRight,
+  ArrowLeft,
   RotateCcw, 
   User, 
   Hash, 
@@ -37,12 +38,16 @@ export const QuizView: React.FC<QuizViewProps> = ({ questions, title }) => {
   const [studentEmail, setStudentEmail] = useState('');
   const [studentSection, setStudentSection] = useState('');
   const [isRegistered, setIsRegistered] = useState(false);
+  
+  const [googleClientId, setGoogleClientId] = useState('');
+  const [allowedDomain, setAllowedDomain] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [sdkLoaded, setSdkLoaded] = useState(false);
+
   const [currentIdx, setCurrentIdx] = useState(0);
-  const [selectedOpt, setSelectedOpt] = useState<number | null>(null);
-  const [isAnswered, setIsAnswered] = useState(false);
+  const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
   const [score, setScore] = useState(0);
   const [quizFinished, setQuizFinished] = useState(false);
-  const [answersLog, setAnswersLog] = useState<{ qIdx: number; selected: number; correct: boolean }[]>([]);
   const [copied, setCopied] = useState(false);
   const [webhookUrl, setWebhookUrl] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -57,93 +62,164 @@ export const QuizView: React.FC<QuizViewProps> = ({ questions, title }) => {
   const totalQuestions = activeQuestions.length;
   const currentQuestion = activeQuestions[currentIdx];
 
-  // Auto-save and auto-submit on quiz finished
+  // Hydrate client-side variables and load Google GIS SDK
   useEffect(() => {
-    if (quizFinished) {
-      const newScoreRecord = {
-        name: studentName,
-        email: studentEmail,
-        section: studentSection,
-        score,
-        total: totalQuestions,
-        percent: Math.round((score / totalQuestions) * 105), // wait, standard 100% cap
-        date: new Date().toLocaleDateString()
+    if (typeof window !== 'undefined') {
+      const storedClientId = localStorage.getItem('vid_google_client_id') || '';
+      setGoogleClientId(storedClientId);
+      const storedDomain = localStorage.getItem('vid_google_allowed_domain') || '';
+      setAllowedDomain(storedDomain);
+
+      if ((window as any).google) {
+        setSdkLoaded(true);
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.async = true;
+      script.defer = true;
+      script.onload = () => setSdkLoaded(true);
+      document.body.appendChild(script);
+
+      return () => {
+        // clean up script on unmount if needed
+        try {
+          document.body.removeChild(script);
+        } catch (e) {}
       };
-      // let's cap percent at 100
-      newScoreRecord.percent = Math.min(newScoreRecord.percent, 100);
-      newScoreRecord.percent = Math.round((score / totalQuestions) * 100);
-      
-      if (typeof window !== 'undefined') {
-        const existingScores = JSON.parse(localStorage.getItem('vid_student_scores') || '[]');
-        const alreadyLogged = existingScores.some((s: any) => 
-          s.name === studentName && s.score === score && s.date === newScoreRecord.date
-        );
-        if (!alreadyLogged) {
-          existingScores.push(newScoreRecord);
-          localStorage.setItem('vid_student_scores', JSON.stringify(existingScores));
+    }
+  }, []);
+
+  // Initialize and Render Google Sign-in button
+  useEffect(() => {
+    if (googleClientId && sdkLoaded && !isRegistered && studentSection.trim() !== '' && typeof window !== 'undefined' && (window as any).google) {
+      const initializeAndRender = () => {
+        try {
+          (window as any).google.accounts.id.initialize({
+            client_id: googleClientId,
+            callback: handleGoogleLoginResponse
+          });
+          const btnParent = document.getElementById('google-login-btn');
+          if (btnParent) {
+            btnParent.innerHTML = ''; // Clear previous button instance
+            (window as any).google.accounts.id.renderButton(
+              btnParent,
+              { theme: 'outline', size: 'large', width: 280 }
+            );
+          }
+        } catch (e) {
+          console.error("Error rendering Google button:", e);
+        }
+      };
+
+      const timer = setTimeout(initializeAndRender, 120);
+      return () => clearTimeout(timer);
+    }
+  }, [googleClientId, sdkLoaded, isRegistered, studentSection]);
+
+  const handleGoogleLoginResponse = (response: any) => {
+    try {
+      const token = response.credential;
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+      const payload = JSON.parse(jsonPayload);
+      const name = payload.name;
+      const email = payload.email;
+
+      // Restrict domain if configured
+      if (allowedDomain.trim()) {
+        const domainFilter = allowedDomain.trim().toLowerCase();
+        if (!email.toLowerCase().endsWith(domainFilter)) {
+          setLoginError(`Access Denied: You must sign in using a Google account ending in ${domainFilter}`);
+          return;
         }
       }
 
-      if (webhookUrl.trim()) {
-        const autoSubmit = async () => {
-          setIsSubmitting(true);
-          try {
-            await fetch(webhookUrl, {
-              method: 'POST',
-              mode: 'no-cors',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(newScoreRecord)
-            });
-            setSubmitStatus("Success! Your score has been submitted to your teacher's Google Sheet.");
-          } catch (err) {
-            console.error(err);
-            setSubmitStatus("Submission attempted. (Verify webhook configurations if issues arise.)");
-          } finally {
-            setIsSubmitting(false);
-          }
-        };
-        autoSubmit();
-      }
-    }
-  }, [quizFinished, studentName, studentEmail, studentSection, score, totalQuestions, webhookUrl]);
-
-  const handleRegisterSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (studentName.trim()) {
+      setStudentName(name);
+      setStudentEmail(email);
+      setLoginError('');
       setIsRegistered(true);
+    } catch (err) {
+      console.error(err);
+      setLoginError('Authentication parsing error. Please try again.');
     }
   };
 
   const handleSelectOption = (optIdx: number) => {
-    if (isAnswered) return;
-    setSelectedOpt(optIdx);
-    setIsAnswered(true);
-    
-    const isCorrect = optIdx === currentQuestion.answer;
-    if (isCorrect) {
-      setScore((prev) => prev + 1);
-    }
-
-    setAnswersLog((prev) => [...prev, { qIdx: currentIdx, selected: optIdx, correct: isCorrect }]);
+    setSelectedAnswers(prev => ({ ...prev, [currentIdx]: optIdx }));
   };
 
-  const handleNext = () => {
-    if (currentIdx < totalQuestions - 1) {
-      setCurrentIdx((prev) => prev + 1);
-      setSelectedOpt(null);
-      setIsAnswered(false);
-    } else {
-      setQuizFinished(true);
+  const handleSubmitQuiz = async () => {
+    if (Object.keys(selectedAnswers).length < totalQuestions) {
+      alert("Please answer all questions before submitting your quiz.");
+      return;
     }
+
+    // Compute score
+    let finalScore = 0;
+    activeQuestions.forEach((q, idx) => {
+      if (selectedAnswers[idx] === q.answer) {
+        finalScore += 1;
+      }
+    });
+    setScore(finalScore);
+
+    const newScoreRecord = {
+      name: studentName,
+      email: studentEmail,
+      section: studentSection,
+      score: finalScore,
+      total: totalQuestions,
+      percent: Math.round((finalScore / totalQuestions) * 100),
+      date: new Date().toLocaleDateString()
+    };
+
+    // Save locally
+    if (typeof window !== 'undefined') {
+      const existingScores = JSON.parse(localStorage.getItem('vid_student_scores') || '[]');
+      const alreadyLogged = existingScores.some((s: any) => 
+        s.name === studentName && s.score === finalScore && s.date === newScoreRecord.date
+      );
+      if (!alreadyLogged) {
+        existingScores.push(newScoreRecord);
+        localStorage.setItem('vid_student_scores', JSON.stringify(existingScores));
+      }
+    }
+
+    // Submit webhook
+    if (webhookUrl.trim()) {
+      setIsSubmitting(true);
+      try {
+        await fetch(webhookUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newScoreRecord)
+        });
+        setSubmitStatus("Success! Your score has been submitted to your teacher's Google Sheet.");
+      } catch (err) {
+        console.error(err);
+        setSubmitStatus("Submission attempted. (Verify webhook configurations if issues arise.)");
+      } finally {
+        setIsSubmitting(false);
+      }
+    }
+
+    setQuizFinished(true);
   };
 
   const handleRestart = () => {
     setCurrentIdx(0);
-    setSelectedOpt(null);
-    setIsAnswered(false);
+    setSelectedAnswers({});
     setScore(0);
     setQuizFinished(false);
-    setAnswersLog([]);
     setSubmitStatus(null);
   };
 
@@ -151,7 +227,8 @@ export const QuizView: React.FC<QuizViewProps> = ({ questions, title }) => {
     window.print();
   };
 
-  const scoreTextSummary = `STUDENT QUIZ REPORT\nName: ${studentName}\nEmail: ${studentEmail}\nSection: ${studentSection}\nQuiz: ${title || 'Week 1 Video Editing'}\nScore: ${score} / ${totalQuestions} (${Math.round((score / totalQuestions) * 100)}%)\nDate: ${new Date().toLocaleDateString()}`;
+  const percent = Math.round((score / totalQuestions) * 100);
+  const scoreTextSummary = `STUDENT QUIZ REPORT\nName: ${studentName}\nEmail: ${studentEmail}\nSection: ${studentSection}\nQuiz: ${title || 'Week 1 Video Editing'}\nScore: ${score} / ${totalQuestions} (${percent}%)\nDate: ${new Date().toLocaleDateString()}`;
 
   const handleCopySummary = () => {
     navigator.clipboard.writeText(scoreTextSummary);
@@ -159,76 +236,19 @@ export const QuizView: React.FC<QuizViewProps> = ({ questions, title }) => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleSubmitScore = async () => {
-    if (!webhookUrl.trim()) {
-      alert("Please enter a valid Google App Script Webhook URL provided by your teacher.");
-      return;
-    }
-    setIsSubmitting(true);
-    setSubmitStatus(null);
-    try {
-      await fetch(webhookUrl, {
-        method: 'POST',
-        mode: 'no-cors', // standard for simple app script redirects
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          studentName,
-          email: studentEmail,
-          section: studentSection,
-          score,
-          total: totalQuestions,
-          date: new Date().toLocaleDateString()
-        })
-      });
-      setSubmitStatus("Success! Your score has been submitted to your teacher's Google Sheet.");
-    } catch (err) {
-      console.error(err);
-      setSubmitStatus("Submission attempted. (Verify webhook configurations if issues arise.)");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
+  // 1. REGISTRATION GATEWAY (Requires Google Login)
   if (!isRegistered) {
     return (
       <div className="w-full max-w-xl mx-auto p-5 sm:p-8 rounded-2xl bg-white border border-slate-200 shadow-xl relative z-10 text-slate-800">
         <div className="text-center mb-5 sm:mb-6">
           <Award className="w-10 h-10 sm:w-12 sm:h-12 text-sky-600 mx-auto mb-2 sm:mb-3" />
           <h2 className="font-lexend text-xl sm:text-2xl font-extrabold text-slate-900">Interactive Quiz</h2>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">Please enter your details below to start the {title || 'Week 1'} quiz assessment.</p>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            Please sign in with your student Google Account to begin the {title || 'Week 1'} quiz assessment.
+          </p>
         </div>
 
-        <form onSubmit={handleRegisterSubmit} className="space-y-4">
-          <div className="flex flex-col gap-1">
-            <label className="text-xs font-bold text-slate-650 uppercase tracking-wider flex items-center gap-1.5">
-              <User className="w-3.5 h-3.5 text-sky-600" />
-              Full Name
-            </label>
-            <input
-              type="text"
-              required
-              value={studentName}
-              onChange={(e) => setStudentName(e.target.value)}
-              placeholder="e.g. Jane Doe"
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-sky-500"
-            />
-          </div>
-
-          <div className="flex flex-col gap-1">
-            <label className="text-xs font-bold text-slate-650 uppercase tracking-wider flex items-center gap-1.5">
-              <Mail className="w-3.5 h-3.5 text-sky-600" />
-              Email Address
-            </label>
-            <input
-              type="email"
-              required
-              value={studentEmail}
-              onChange={(e) => setStudentEmail(e.target.value)}
-              placeholder="e.g. jane@example.com"
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-sky-500"
-            />
-          </div>
-
+        <div className="space-y-4">
           <div className="flex flex-col gap-1">
             <label className="text-xs font-bold text-slate-650 uppercase tracking-wider flex items-center gap-1.5">
               <Layers className="w-3.5 h-3.5 text-sky-600" />
@@ -240,24 +260,41 @@ export const QuizView: React.FC<QuizViewProps> = ({ questions, title }) => {
               value={studentSection}
               onChange={(e) => setStudentSection(e.target.value)}
               placeholder="e.g. Grade 12 - Diamond"
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-sky-500"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-850 placeholder-slate-400 focus:outline-none focus:border-sky-500"
             />
           </div>
 
-          <button
-            type="submit"
-            className="w-full mt-4 bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 sm:py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm sm:text-base"
-          >
-            Start Quiz Assessment
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        </form>
+          {loginError && (
+            <p className="text-xs text-rose-600 text-center font-bold bg-rose-50 border border-rose-200/50 py-2 rounded-xl">
+              {loginError}
+            </p>
+          )}
+
+          {googleClientId ? (
+            <div className="pt-2 flex flex-col items-center">
+              {studentSection.trim() ? (
+                <div className="flex justify-center my-2" id="google-login-btn"></div>
+              ) : (
+                <p className="w-full text-center py-3 bg-slate-50 border border-slate-200/60 rounded-xl text-xs text-slate-400 font-semibold select-none">
+                  Please enter your Class Section above to enable Google Sign-In.
+                </p>
+              )}
+            </div>
+          ) : (
+            <div className="p-4 rounded-xl bg-amber-500/[0.04] border border-amber-200 text-center text-xs text-amber-800 leading-relaxed font-semibold">
+              Google Sign-In is not configured.
+              <p className="font-medium text-[10px] text-slate-500 mt-1">
+                Please log in as Admin to configure the Google Client ID.
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     );
   }
 
+  // 2. QUIZ FINISHED / SCORE CARD & CERTIFICATE
   if (quizFinished) {
-    const percent = Math.round((score / totalQuestions) * 100);
     return (
       <div className="w-full max-w-2xl mx-auto p-4 sm:p-6 md:p-8 rounded-2xl bg-white border border-slate-200 shadow-xl relative z-10 text-slate-800 print:border-none print:shadow-none print:p-0">
         
@@ -282,7 +319,7 @@ export const QuizView: React.FC<QuizViewProps> = ({ questions, title }) => {
           </p>
 
           <div className="mt-5 sm:mt-6 flex flex-col items-center justify-center border-t border-slate-200/80 pt-3 sm:pt-4">
-            <span className="text-[11px] sm:text-xs font-semibold text-slate-500">Assessment Score Received</span>
+            <span className="text-[11px] sm:text-xs font-semibold text-slate-505">Assessment Score Received</span>
             <span className="font-lexend text-xl sm:text-2xl font-black text-slate-900 mt-1">
               {score} / {totalQuestions} ({percent}%)
             </span>
@@ -361,7 +398,7 @@ export const QuizView: React.FC<QuizViewProps> = ({ questions, title }) => {
                 <p className="text-[11px] font-semibold text-amber-700">
                   Global Webhook URL not configured.
                 </p>
-                <p className="text-[10px] text-slate-505 mt-0.5">
+                <p className="text-[10px] text-slate-500 mt-0.5">
                   Copy the score above and send it to your teacher, or ask them to configure the Webhook URL in the Admin Portal.
                 </p>
               </div>
@@ -372,16 +409,19 @@ export const QuizView: React.FC<QuizViewProps> = ({ questions, title }) => {
     );
   }
 
+  // 3. QUIZ ACTIVE TEST VIEW
+  const currentSelectedOpt = selectedAnswers[currentIdx];
+
   return (
     <div className="w-full max-w-2xl mx-auto p-4 sm:p-6 md:p-8 rounded-2xl bg-white border border-slate-200 shadow-xl relative z-10 text-slate-800">
       
       {/* Quiz Progress Header */}
       <div className="flex justify-between items-center pb-2.5 border-b border-slate-200 mb-4 sm:mb-5">
-        <span className="text-xs font-semibold text-slate-505">
+        <span className="text-xs font-semibold text-slate-500">
           Question <strong className="text-sky-600 font-bold">{currentIdx + 1}</strong> of {totalQuestions}
         </span>
-        <span className="text-xs font-bold px-2 py-0.5 rounded bg-sky-500/10 text-sky-700">
-          Score: {score}
+        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-sky-500/10 text-sky-700">
+          Answers: {Object.keys(selectedAnswers).length} / {totalQuestions}
         </span>
       </div>
 
@@ -393,59 +433,56 @@ export const QuizView: React.FC<QuizViewProps> = ({ questions, title }) => {
       {/* Multiple-Choice Options Grid */}
       <div className="space-y-2.5 sm:space-y-3">
         {currentQuestion.options.map((opt, idx) => {
-          const isSelected = selectedOpt === idx;
-          const isAnswerCorrect = idx === currentQuestion.answer;
-          
-          let optStyle = 'border-slate-200 bg-slate-50/50 hover:bg-slate-50 hover:border-slate-350';
-          if (isAnswered) {
-            if (isAnswerCorrect) {
-              optStyle = 'border-emerald-500 bg-emerald-500/10 text-emerald-800 font-semibold';
-            } else if (isSelected) {
-              optStyle = 'border-rose-500 bg-rose-500/10 text-rose-800';
-            } else {
-              optStyle = 'border-slate-100 opacity-60 bg-slate-50';
-            }
+          const isSelected = currentSelectedOpt === idx;
+          let optStyle = 'border-slate-200 bg-slate-50/50 hover:bg-slate-50 hover:border-slate-350 text-slate-850';
+          if (isSelected) {
+            optStyle = 'border-sky-500 bg-sky-50/75 text-sky-850 font-semibold ring-2 ring-sky-500/20';
           }
 
           return (
             <button
               key={idx}
-              disabled={isAnswered}
               onClick={() => handleSelectOption(idx)}
               className={`w-full text-left px-3.5 py-3 sm:px-4 sm:py-3.5 rounded-xl border text-xs sm:text-sm flex items-center justify-between transition ${optStyle}`}
             >
               <span>{opt}</span>
-              {isAnswered && (
-                <>
-                  {isAnswerCorrect && <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 flex-shrink-0" />}
-                  {isSelected && !isAnswerCorrect && <XCircle className="w-4 h-4 sm:w-5 sm:h-5 text-rose-600 flex-shrink-0" />}
-                </>
-              )}
+              {isSelected && <Check className="w-4 h-4 text-sky-600 flex-shrink-0" />}
             </button>
           );
         })}
       </div>
 
-      {/* Answer Explanation Box */}
-      {isAnswered && (
-        <div className="mt-4 sm:mt-5 p-3 sm:p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-650 animate-fadeIn">
-          <strong className="text-slate-900 block mb-1">Explanation:</strong>
-          {currentQuestion.explanation}
-        </div>
-      )}
-
       {/* Navigation Footer */}
-      {isAnswered && (
-        <div className="mt-5 sm:mt-6 pt-3 sm:pt-4 border-t border-slate-200 flex justify-end">
+      <div className="mt-6 pt-4 border-t border-slate-200 flex justify-between items-center">
+        <button
+          onClick={() => setCurrentIdx(prev => Math.max(0, prev - 1))}
+          disabled={currentIdx === 0}
+          className="px-4 py-2 border border-slate-250 bg-white hover:bg-slate-50 disabled:opacity-30 disabled:hover:bg-white text-slate-700 text-xs font-bold rounded-xl transition flex items-center gap-1.5"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          Previous
+        </button>
+
+        {currentIdx < totalQuestions - 1 ? (
           <button
-            onClick={handleNext}
-            className="py-2 px-4 sm:py-2.5 sm:px-5 bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition flex items-center gap-1.5"
+            onClick={() => setCurrentIdx(prev => prev + 1)}
+            className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5"
           >
-            {currentIdx === totalQuestions - 1 ? 'Finish Assessment' : 'Next Question'}
-            <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            Next
+            <ArrowRight className="w-3.5 h-3.5" />
           </button>
-        </div>
-      )}
+        ) : (
+          <button
+            onClick={handleSubmitQuiz}
+            disabled={Object.keys(selectedAnswers).length < totalQuestions}
+            className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:hover:bg-emerald-600 text-white text-xs font-bold rounded-xl shadow-md transition flex items-center gap-1.5"
+            title={Object.keys(selectedAnswers).length < totalQuestions ? "Please answer all questions before submitting." : "Submit your quiz answers"}
+          >
+            Submit Quiz
+            <Send className="w-3.5 h-3.5" />
+          </button>
+        )}
+      </div>
     </div>
   );
 };
