@@ -8,7 +8,7 @@ import { SlideViewer } from '@/components/SlideViewer';
 import { NavigationControls } from '@/components/NavigationControls';
 import { ThumbnailDrawer } from '@/components/ThumbnailDrawer';
 import { KeyboardHelpModal } from '@/components/KeyboardHelpModal';
-import { Film, ArrowLeft, Lock } from 'lucide-react';
+import { Film, ArrowLeft, Lock, BookOpen } from 'lucide-react';
 
 interface Lesson {
   id: string;
@@ -220,7 +220,7 @@ function SlidePageContent() {
       <header className="w-full max-w-6xl mx-auto px-4 mb-2 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-xl bg-gradient-to-br from-sky-500 to-blue-500 text-white shadow-md">
-            <Film className="w-5 h-5" />
+            <BookOpen className="w-5 h-5" />
           </div>
           <div>
             <h1 className="font-lexend text-base md:text-lg font-bold text-slate-800 flex items-center gap-2">
@@ -229,7 +229,6 @@ function SlidePageContent() {
                 Week {lesson.week}
               </span>
             </h1>
-            <p className="text-xs text-slate-500 font-medium">Lesson Library Slideshow</p>
           </div>
         </div>
 

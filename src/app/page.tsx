@@ -80,7 +80,7 @@ export default function Home() {
       <header className="w-full max-w-6xl mx-auto mb-8 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between border-b border-slate-200 pb-6">
         <div className="flex items-center gap-3">
           <div className="p-2.5 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-600 text-white shadow-lg">
-            <Film className="w-6 h-6" />
+            <BookOpen className="w-6 h-6 animate-pulse" />
           </div>
           <div>
             <h1 className="font-lexend text-xl md:text-2xl font-black text-slate-900 flex items-center gap-2">
@@ -89,7 +89,6 @@ export default function Home() {
                 Portal
               </span>
             </h1>
-            <p className="text-xs sm:text-sm text-slate-500 font-semibold mt-0.5">Interactive Learning Portal for Students</p>
           </div>
         </div>
       </header>
