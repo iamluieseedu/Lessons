@@ -173,6 +173,7 @@ export const QuizView: React.FC<QuizViewProps> = ({ questions, title }) => {
     setScore(finalScore);
 
     const newScoreRecord = {
+      quizTitle: title || 'Week 1: Video Editing Basics',
       name: studentName,
       email: studentEmail,
       section: studentSection,
