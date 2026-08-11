@@ -78,18 +78,11 @@ export default function Home() {
 
       {/* Header Panel */}
       <header className="w-full max-w-6xl mx-auto mb-8 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between border-b border-slate-200 pb-6">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-600 text-white shadow-lg">
-            <BookOpen className="w-6 h-6 animate-pulse" />
-          </div>
-          <div>
-            <h1 className="font-lexend text-xl md:text-2xl font-black text-slate-900 flex items-center gap-2">
-              Lesson Library
-              <span className="text-[10px] px-2 py-0.5 rounded bg-sky-500/10 text-sky-700 font-bold border border-sky-500/20 uppercase tracking-wider">
-                Portal
-              </span>
-            </h1>
-          </div>
+        <div className="flex items-center gap-2.5">
+          <BookOpen className="w-6 h-6 text-slate-900" />
+          <h1 className="font-lexend text-xl md:text-2xl font-bold tracking-tight text-slate-900">
+            Lesson Library
+          </h1>
         </div>
       </header>
 

@@ -125,18 +125,11 @@ function QuizPageContent() {
     <main className="min-h-screen bg-slate-50 text-slate-900 flex flex-col justify-between py-4">
       {/* Top Application Header */}
       <header className="w-full max-w-6xl mx-auto px-4 mb-2 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-gradient-to-br from-sky-500 to-blue-500 text-white shadow-md">
-            <BookOpen className="w-5 h-5" />
-          </div>
-          <div>
-            <h1 className="font-lexend text-base md:text-lg font-bold text-slate-800 flex items-center gap-2">
-              {lesson.title}
-              <span className="text-xs px-2 py-0.5 rounded bg-sky-500/10 text-sky-700 font-semibold border border-sky-500/20">
-                Quiz
-              </span>
-            </h1>
-          </div>
+        <div className="flex items-center gap-2.5">
+          <BookOpen className="w-5 h-5 text-slate-900" />
+          <h1 className="font-lexend text-base md:text-lg font-semibold text-slate-800">
+            {lesson.title} • Quiz Assessment
+          </h1>
         </div>
 
         <Link
