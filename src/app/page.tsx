@@ -11,7 +11,8 @@ import {
   Check, 
   ExternalLink, 
   Lock, 
-  GraduationCap 
+  GraduationCap,
+  Search
 } from 'lucide-react';
 
 interface Lesson {
@@ -44,6 +45,8 @@ export default function Home() {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [toast, setToast] = useState<string | null>(null);
   const [baseUrl, setBaseUrl] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState<'week-asc' | 'week-desc' | 'title-asc' | 'difficulty'>('week-asc');
 
   // Hydrate state from localStorage
   useEffect(() => {
@@ -93,11 +96,63 @@ export default function Home() {
             <GraduationCap className="w-5 h-5 text-sky-600" />
             Curriculum Catalog
           </h2>
-          <p className="text-xs text-slate-500 font-medium">Select a week below to begin learning or test your knowledge.</p>
         </div>
 
+        {/* Search & Sort Controls */}
+        <div className="flex flex-col sm:flex-row gap-3 items-center justify-between mb-8">
+          <div className="relative w-full sm:max-w-md">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+            <input
+              type="text"
+              placeholder="Search lessons..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-sm text-slate-850 placeholder-slate-400 focus:outline-none focus:border-slate-400 transition"
+            />
+          </div>
+
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <span className="text-xs text-slate-500 font-semibold shrink-0">Sort by:</span>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as any)}
+              className="w-full sm:w-auto bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 font-medium focus:outline-none focus:border-slate-400 cursor-pointer"
+            >
+              <option value="week-asc">Week (Ascending)</option>
+              <option value="week-desc">Week (Descending)</option>
+              <option value="title-asc">Title (A-Z)</option>
+              <option value="difficulty">Difficulty</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Dynamic Catalog Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-          {lessons.map((lesson: Lesson) => {
+          {lessons
+            .filter((lesson) => {
+              const query = searchQuery.toLowerCase();
+              return (
+                lesson.title.toLowerCase().includes(query) ||
+                lesson.description.toLowerCase().includes(query)
+              );
+            })
+            .sort((a, b) => {
+              if (sortBy === 'week-asc') {
+                return a.week - b.week;
+              }
+              if (sortBy === 'week-desc') {
+                return b.week - a.week;
+              }
+              if (sortBy === 'title-asc') {
+                return a.title.localeCompare(b.title);
+              }
+              if (sortBy === 'difficulty') {
+                const diffWeight = { Beginner: 1, Intermediate: 2, Advanced: 3 };
+                return diffWeight[a.difficulty] - diffWeight[b.difficulty];
+              }
+              return 0;
+            })
+            .map((lesson: Lesson) => {
             const isWeekActive = lesson.isActive;
             const diffColor = 
               lesson.difficulty === 'Beginner' ? 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20' : 
