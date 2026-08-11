@@ -12,6 +12,8 @@ import {
   User, 
   Hash, 
   CheckCircle2,
+  Mail,
+  Layers,
   FileText,
   Copy,
   Check,
@@ -32,7 +34,8 @@ interface QuizViewProps {
 
 export const QuizView: React.FC<QuizViewProps> = ({ questions, title }) => {
   const [studentName, setStudentName] = useState('');
-  const [studentId, setStudentId] = useState('');
+  const [studentEmail, setStudentEmail] = useState('');
+  const [studentSection, setStudentSection] = useState('');
   const [isRegistered, setIsRegistered] = useState(false);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [selectedOpt, setSelectedOpt] = useState<number | null>(null);
@@ -59,12 +62,16 @@ export const QuizView: React.FC<QuizViewProps> = ({ questions, title }) => {
     if (quizFinished) {
       const newScoreRecord = {
         name: studentName,
-        studentId: studentId || 'N/A',
+        email: studentEmail,
+        section: studentSection,
         score,
         total: totalQuestions,
-        percent: Math.round((score / totalQuestions) * 100),
+        percent: Math.round((score / totalQuestions) * 105), // wait, standard 100% cap
         date: new Date().toLocaleDateString()
       };
+      // let's cap percent at 100
+      newScoreRecord.percent = Math.min(newScoreRecord.percent, 100);
+      newScoreRecord.percent = Math.round((score / totalQuestions) * 100);
       
       if (typeof window !== 'undefined') {
         const existingScores = JSON.parse(localStorage.getItem('vid_student_scores') || '[]');
@@ -98,7 +105,7 @@ export const QuizView: React.FC<QuizViewProps> = ({ questions, title }) => {
         autoSubmit();
       }
     }
-  }, [quizFinished, studentName, studentId, score, totalQuestions, webhookUrl]);
+  }, [quizFinished, studentName, studentEmail, studentSection, score, totalQuestions, webhookUrl]);
 
   const handleRegisterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -144,7 +151,7 @@ export const QuizView: React.FC<QuizViewProps> = ({ questions, title }) => {
     window.print();
   };
 
-  const scoreTextSummary = `STUDENT QUIZ REPORT\nName: ${studentName}\nStudent ID: ${studentId || 'N/A'}\nQuiz: ${title || 'Week 1 Video Editing'}\nScore: ${score} / ${totalQuestions} (${Math.round((score / totalQuestions) * 100)}%)\nDate: ${new Date().toLocaleDateString()}`;
+  const scoreTextSummary = `STUDENT QUIZ REPORT\nName: ${studentName}\nEmail: ${studentEmail}\nSection: ${studentSection}\nQuiz: ${title || 'Week 1 Video Editing'}\nScore: ${score} / ${totalQuestions} (${Math.round((score / totalQuestions) * 100)}%)\nDate: ${new Date().toLocaleDateString()}`;
 
   const handleCopySummary = () => {
     navigator.clipboard.writeText(scoreTextSummary);
@@ -160,13 +167,14 @@ export const QuizView: React.FC<QuizViewProps> = ({ questions, title }) => {
     setIsSubmitting(true);
     setSubmitStatus(null);
     try {
-      const response = await fetch(webhookUrl, {
+      await fetch(webhookUrl, {
         method: 'POST',
         mode: 'no-cors', // standard for simple app script redirects
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           studentName,
-          studentId,
+          email: studentEmail,
+          section: studentSection,
           score,
           total: totalQuestions,
           date: new Date().toLocaleDateString()
@@ -202,21 +210,37 @@ export const QuizView: React.FC<QuizViewProps> = ({ questions, title }) => {
               value={studentName}
               onChange={(e) => setStudentName(e.target.value)}
               placeholder="e.g. Jane Doe"
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-455 focus:outline-none focus:border-sky-500"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-sky-500"
             />
           </div>
 
           <div className="flex flex-col gap-1">
             <label className="text-xs font-bold text-slate-650 uppercase tracking-wider flex items-center gap-1.5">
-              <Hash className="w-3.5 h-3.5 text-sky-600" />
-              Student ID / Number (Optional)
+              <Mail className="w-3.5 h-3.5 text-sky-600" />
+              Email Address
+            </label>
+            <input
+              type="email"
+              required
+              value={studentEmail}
+              onChange={(e) => setStudentEmail(e.target.value)}
+              placeholder="e.g. jane@example.com"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-sky-500"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-bold text-slate-650 uppercase tracking-wider flex items-center gap-1.5">
+              <Layers className="w-3.5 h-3.5 text-sky-600" />
+              Class Section
             </label>
             <input
               type="text"
-              value={studentId}
-              onChange={(e) => setStudentId(e.target.value)}
-              placeholder="e.g. 2026-10492"
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-455 focus:outline-none focus:border-sky-500"
+              required
+              value={studentSection}
+              onChange={(e) => setStudentSection(e.target.value)}
+              placeholder="e.g. Grade 12 - Diamond"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-sky-500"
             />
           </div>
 
@@ -251,7 +275,7 @@ export const QuizView: React.FC<QuizViewProps> = ({ questions, title }) => {
             {studentName}
           </h3>
           
-          {studentId && <p className="text-[11px] sm:text-xs text-slate-450 -mt-2 mb-3">Student ID: {studentId}</p>}
+          {studentSection && <p className="text-[11px] sm:text-xs text-slate-450 -mt-2 mb-3">Class Section: {studentSection}</p>}
           
           <p className="text-[11px] sm:text-xs text-slate-655 max-w-md mx-auto leading-relaxed">
             Has successfully finished the multiple-choice assessment covering video timelines, A-Roll/B-Roll layering, frame speeds, aspect ratios, and editor quadrants.

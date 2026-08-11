@@ -201,8 +201,8 @@ export default function AdminPage() {
     
     // Header
     const csvContent = [
-      ['Student Name', 'Student ID', 'Score', 'Total Questions', 'Percentage', 'Date Completed'],
-      ...studentScores.map(s => [s.name, s.studentId, s.score, s.total, `${s.percent}%`, s.date])
+      ['Student Name', 'Email Address', 'Class Section', 'Score', 'Total Questions', 'Percentage', 'Date Completed'],
+      ...studentScores.map(s => [s.name, s.email || 'N/A', s.section || 'N/A', s.score, s.total, `${s.percent}%`, s.date])
     ]
       .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
       .join('\n');
@@ -603,7 +603,8 @@ export default function AdminPage() {
                   <thead>
                     <tr className="border-b border-slate-200 text-slate-400 font-bold uppercase tracking-wider text-[10px]">
                       <th className="py-2.5 px-3">Student Name</th>
-                      <th className="py-2.5 px-3">Student ID</th>
+                      <th className="py-2.5 px-3">Email Address</th>
+                      <th className="py-2.5 px-3">Class Section</th>
                       <th className="py-2.5 px-3">Completion Date</th>
                       <th className="py-2.5 px-3 text-center">Score Ratio</th>
                       <th className="py-2.5 px-3 text-right">Percentage</th>
@@ -616,8 +617,9 @@ export default function AdminPage() {
                       return (
                         <tr key={index} className="hover:bg-slate-50/50">
                           <td className="py-2 px-3 text-slate-900 font-semibold">{scoreRecord.name}</td>
-                          <td className="py-2 px-3 text-slate-505">{scoreRecord.studentId || 'N/A'}</td>
-                          <td className="py-2 px-3 text-slate-505">{scoreRecord.date}</td>
+                          <td className="py-2 px-3 text-slate-500">{scoreRecord.email || 'N/A'}</td>
+                          <td className="py-2 px-3 text-slate-500">{scoreRecord.section || 'N/A'}</td>
+                          <td className="py-2 px-3 text-slate-500">{scoreRecord.date}</td>
                           <td className="py-2 px-3 text-center text-slate-800">{scoreRecord.score} / {scoreRecord.total}</td>
                           <td className="py-2 px-3 text-right text-slate-900 font-bold">{scoreRecord.percent}%</td>
                           <td className="py-2 px-3 text-center">
