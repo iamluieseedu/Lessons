@@ -154,10 +154,6 @@ export default function Home() {
                   {/* Metadata Row */}
                   <div className="flex items-center gap-4 text-xs font-semibold text-slate-500 border-t border-slate-100 pt-4 mb-4">
                     <div className="flex items-center gap-1.5">
-                      <Clock className="w-4 h-4 text-sky-500" />
-                      <span>{lesson.duration}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
                       <BookOpen className="w-4 h-4 text-sky-500" />
                       <span>{lesson.slidesCount} Slides</span>
                     </div>
