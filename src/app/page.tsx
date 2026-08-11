@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { lessonsData, Lesson } from '@/data/lessonsData';
 import { 
   Film, 
   Clock, 
@@ -12,18 +11,51 @@ import {
   Check, 
   ExternalLink, 
   Lock, 
-  GraduationCap, 
-  Settings 
+  GraduationCap 
 } from 'lucide-react';
 
+interface Lesson {
+  id: string;
+  week: number;
+  title: string;
+  description: string;
+  duration: string;
+  slidesCount: number;
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
+  thumbnail: string;
+  isActive: boolean;
+}
+
+const DEFAULT_LESSONS: Lesson[] = [
+  {
+    id: 'week1',
+    week: 1,
+    title: 'Introduction to Video Editing',
+    description: 'Learn the fundamentals of video editing, timeline cuts, A-Roll/B-Roll layering, and Walter Murch\'s rules of rendering.',
+    duration: '25 mins',
+    slidesCount: 51,
+    difficulty: 'Beginner',
+    thumbnail: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=800&q=80',
+    isActive: true,
+  }
+];
+
 export default function Home() {
+  const [lessons, setLessons] = useState<Lesson[]>([]);
   const [toast, setToast] = useState<string | null>(null);
   const [baseUrl, setBaseUrl] = useState('');
 
-  // Get baseUrl dynamically on the client side
+  // Hydrate state from localStorage
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setBaseUrl(window.location.origin);
+      const stored = localStorage.getItem('vid_lessons');
+      if (stored) {
+        setLessons(JSON.parse(stored));
+      } else {
+        localStorage.setItem('vid_lessons', JSON.stringify(DEFAULT_LESSONS));
+        setLessons(DEFAULT_LESSONS);
+      }
     }
   }, []);
 
@@ -48,26 +80,18 @@ export default function Home() {
       <header className="w-full max-w-6xl mx-auto mb-8 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between border-b border-slate-200 pb-6">
         <div className="flex items-center gap-3">
           <div className="p-2.5 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-600 text-white shadow-lg">
-            <Film className="w-6 h-6 animate-pulse" />
+            <Film className="w-6 h-6" />
           </div>
           <div>
             <h1 className="font-lexend text-xl md:text-2xl font-black text-slate-900 flex items-center gap-2">
-              VIDEODIT
+              Lesson Library
               <span className="text-[10px] px-2 py-0.5 rounded bg-sky-500/10 text-sky-700 font-bold border border-sky-500/20 uppercase tracking-wider">
-                Lesson Library
+                Portal
               </span>
             </h1>
-            <p className="text-xs sm:text-sm text-slate-500 font-semibold mt-0.5">Video Editing Masterclass & Assessment Portal</p>
+            <p className="text-xs sm:text-sm text-slate-500 font-semibold mt-0.5">Interactive Learning Portal for Students</p>
           </div>
         </div>
-
-        <Link
-          href="/admin"
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-700 hover:text-sky-700 border border-slate-200 text-xs font-bold shadow-sm transition"
-        >
-          <Settings className="w-4 h-4 text-sky-500" />
-          Teacher Dashboard
-        </Link>
       </header>
 
       {/* Main Grid View */}
@@ -75,13 +99,13 @@ export default function Home() {
         <div className="mb-6">
           <h2 className="font-lexend text-lg font-bold text-slate-800 flex items-center gap-2">
             <GraduationCap className="w-5 h-5 text-sky-600" />
-            Course Curriculum
+            Curriculum Catalog
           </h2>
           <p className="text-xs text-slate-500 font-medium">Select a week below to begin learning or test your knowledge.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-          {lessonsData.map((lesson: Lesson) => {
+          {lessons.map((lesson: Lesson) => {
             const isWeekActive = lesson.isActive;
             const diffColor = 
               lesson.difficulty === 'Beginner' ? 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20' : 
@@ -100,7 +124,7 @@ export default function Home() {
                 {/* Lesson Thumbnail */}
                 <div className="h-44 sm:h-48 w-full relative bg-slate-100 overflow-hidden">
                   <img
-                    src={lesson.thumbnail}
+                    src={lesson.thumbnail || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80'}
                     alt={lesson.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
@@ -209,7 +233,7 @@ export default function Home() {
 
       {/* Bottom Footer signature */}
       <footer className="w-full max-w-6xl mx-auto text-center text-xs text-slate-400 font-semibold tracking-wide border-t border-slate-200 pt-6">
-        Developed by Luiese Amstrong • VIDEODIT Course Series © 2026
+        Developed by Luiese Amstrong • Lesson Library © 2026
       </footer>
     </main>
   );

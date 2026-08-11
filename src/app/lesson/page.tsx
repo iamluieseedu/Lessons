@@ -10,17 +10,112 @@ import { ThumbnailDrawer } from '@/components/ThumbnailDrawer';
 import { KeyboardHelpModal } from '@/components/KeyboardHelpModal';
 import { Film, ArrowLeft, Lock } from 'lucide-react';
 
+interface Lesson {
+  id: string;
+  week: number;
+  title: string;
+  description: string;
+  duration: string;
+  slidesCount: number;
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
+  thumbnail: string;
+  isActive: boolean;
+}
+
 function SlidePageContent() {
   const searchParams = useSearchParams();
   const lessonId = searchParams.get('id');
 
+  const [lesson, setLesson] = useState<Lesson | null>(null);
+  const [slides, setSlides] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const totalSlides = slidesData.length;
-  const currentSlide = slidesData[currentIndex];
+  // Load lesson and slides dynamically
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('vid_lessons');
+      const lessonsList: Lesson[] = stored ? JSON.parse(stored) : [];
+      const found = lessonsList.find((l) => l.id === lessonId);
+      
+      setLesson(found || null);
+
+      if (found) {
+        if (found.id === 'week1') {
+          setSlides(slidesData);
+        } else {
+          // Dynamic slide deck for custom uploaded lessons
+          setSlides([
+            {
+              id: 'slide1',
+              slideNum: 1,
+              totalSlides: 4,
+              type: 'cover',
+              moduleTag: `Week ${found.week} Slide Outline`,
+              title: found.title,
+              subtitle: found.description,
+              metadata: [
+                { label: 'Duration', val: found.duration },
+                { label: 'Difficulty', val: found.difficulty },
+                { label: 'Slide Deck', val: '4 Slides' },
+                { label: 'Assessment', val: 'Includes Quiz' }
+              ]
+            },
+            {
+              id: 'slide2',
+              slideNum: 2,
+              totalSlides: 4,
+              type: 'single_topic',
+              moduleTag: 'Core Concepts',
+              title: 'Weekly Learning Objectives',
+              topicTitle: 'Key Objectives & Goals',
+              bullets: [
+                'Understand and conceptualize the foundational models discussed in this lesson.',
+                'Examine standard workflows, techniques, and common pitfalls.',
+                'Validate your baseline capabilities using the interactive self-assessment quiz.'
+              ],
+              layman: {
+                title: 'Simple Analogy:',
+                text: `Learning ${found.title} is just like constructing a skyscraper. We must secure a solid foundation of core concepts before building complex details.`
+              }
+            },
+            {
+              id: 'slide3',
+              slideNum: 3,
+              totalSlides: 4,
+              type: 'single_topic',
+              moduleTag: 'Summary Topic',
+              title: found.title,
+              topicTitle: 'Core Material Synthesis',
+              bullets: [
+                found.description,
+                'Follow along with syllabus exercises and checklists provided by your teacher.',
+                'When ready, navigate back to the main homepage library and launch the quiz.'
+              ],
+              keyInsight: {
+                title: 'Crucial Takeaway',
+                text: 'Repetition reinforces understanding. Read through these slides twice to master terms and prepare for the quiz certificate!'
+              }
+            },
+            {
+              id: 'slide4',
+              slideNum: 4,
+              totalSlides: 4,
+              type: 'section_break',
+              sectionNum: 'Quiz Prep',
+              title: 'Outline Finished!',
+              description: `You have completed the slide outline for ${found.title}. Return to the Lesson Library and select 'Take Quiz' to verify your score!`
+            }
+          ]);
+        }
+      }
+    }
+  }, [lessonId]);
+
+  const totalSlides = slides.length;
+  const currentSlide = slides[currentIndex];
 
   const handleNext = useCallback(() => {
     setCurrentIndex((prev) => (prev < totalSlides - 1 ? prev + 1 : prev));
@@ -49,7 +144,7 @@ function SlidePageContent() {
 
   // Keyboard navigation
   useEffect(() => {
-    if (lessonId !== 'week1') return;
+    if (!lesson) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (isDrawerOpen || isHelpOpen) {
@@ -74,11 +169,11 @@ function SlidePageContent() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [lessonId, handleNext, handlePrev, toggleFullscreen, isDrawerOpen, isHelpOpen]);
+  }, [lesson, handleNext, handlePrev, toggleFullscreen, isDrawerOpen, isHelpOpen]);
 
   // Auto-play timer
   useEffect(() => {
-    if (lessonId !== 'week1') return;
+    if (!lesson) return;
 
     let interval: NodeJS.Timeout;
     if (isPlaying) {
@@ -93,22 +188,23 @@ function SlidePageContent() {
       }, 5000);
     }
     return () => clearInterval(interval);
-  }, [isPlaying, totalSlides, lessonId]);
+  }, [isPlaying, totalSlides, lesson]);
 
-  if (lessonId !== 'week1') {
+  // If lesson is not found or not active
+  if (!lesson || !lesson.isActive) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-6 text-center">
         <div className="w-full max-w-md bg-white border border-slate-200 rounded-3xl p-8 shadow-xl">
           <div className="p-3.5 rounded-full bg-amber-500/10 text-amber-600 w-fit mx-auto mb-4 border border-amber-500/20">
             <Lock className="w-6 h-6" />
           </div>
-          <h2 className="font-lexend text-xl font-bold text-slate-900 mb-2">Lesson Coming Soon</h2>
+          <h2 className="font-lexend text-xl font-bold text-slate-900 mb-2">Lesson Unavailable</h2>
           <p className="text-xs sm:text-sm text-slate-500 mb-6 leading-relaxed">
-            This week's lesson unit is currently locked or under development by your teacher. Click below to return to the curriculum library.
+            This lesson is locked or under construction. Check back later or ask your teacher for access.
           </p>
           <Link
             href="/"
-            className="w-full py-2.5 bg-sky-655 hover:bg-sky-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center justify-center gap-1.5"
+            className="w-full py-2.5 bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center justify-center gap-1.5"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Library
@@ -128,12 +224,12 @@ function SlidePageContent() {
           </div>
           <div>
             <h1 className="font-lexend text-base md:text-lg font-bold text-slate-800 flex items-center gap-2">
-              Video Editing Course
+              {lesson.title}
               <span className="text-xs px-2 py-0.5 rounded bg-sky-500/10 text-sky-700 font-semibold border border-sky-500/20">
-                VIDEODIT
+                Week {lesson.week}
               </span>
             </h1>
-            <p className="text-xs text-slate-500 font-medium">Week 1: Introduction to Video Editing</p>
+            <p className="text-xs text-slate-500 font-medium">Lesson Library Slideshow</p>
           </div>
         </div>
 
@@ -148,7 +244,7 @@ function SlidePageContent() {
 
       {/* Main Slide Viewer Frame */}
       <div className="flex-grow flex items-center justify-center py-2">
-        <SlideViewer slide={currentSlide} />
+        {currentSlide && <SlideViewer slide={currentSlide} />}
       </div>
 
       {/* Control Bar & Progress */}
@@ -168,7 +264,7 @@ function SlidePageContent() {
       {/* Slide Selection Drawer */}
       <ThumbnailDrawer
         isOpen={isDrawerOpen}
-        slides={slidesData}
+        slides={slides}
         currentIndex={currentIndex}
         onSelectSlide={(idx) => setCurrentIndex(idx)}
         onClose={() => setIsDrawerOpen(false)}
@@ -181,8 +277,8 @@ function SlidePageContent() {
       />
 
       {/* Bottom Footer signature */}
-      <footer className="w-full max-w-6xl mx-auto px-4 mt-4 text-center text-xs text-slate-500 font-semibold tracking-wide">
-        Developed by Luiese Amstrong
+      <footer className="w-full max-w-6xl mx-auto px-4 mt-4 text-center text-xs text-slate-400 font-semibold tracking-wide">
+        Developed by Luiese Amstrong • Lesson Library © 2026
       </footer>
     </main>
   );

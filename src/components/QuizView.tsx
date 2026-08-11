@@ -18,7 +18,19 @@ import {
   Send
 } from 'lucide-react';
 
-export const QuizView: React.FC = () => {
+interface Question {
+  question: string;
+  options: string[];
+  answer: number;
+  explanation: string;
+}
+
+interface QuizViewProps {
+  questions?: Question[];
+  title?: string;
+}
+
+export const QuizView: React.FC<QuizViewProps> = ({ questions, title }) => {
   const [studentName, setStudentName] = useState('');
   const [studentId, setStudentId] = useState('');
   const [isRegistered, setIsRegistered] = useState(false);
@@ -38,8 +50,9 @@ export const QuizView: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<string | null>(null);
 
-  const totalQuestions = quizQuestions.length;
-  const currentQuestion = quizQuestions[currentIdx];
+  const activeQuestions = questions && questions.length > 0 ? questions : quizQuestions;
+  const totalQuestions = activeQuestions.length;
+  const currentQuestion = activeQuestions[currentIdx];
 
   // Auto-save and auto-submit on quiz finished
   useEffect(() => {
@@ -131,7 +144,7 @@ export const QuizView: React.FC = () => {
     window.print();
   };
 
-  const scoreTextSummary = `STUDENT QUIZ REPORT\nName: ${studentName}\nStudent ID: ${studentId || 'N/A'}\nQuiz: Week 1 Video Editing\nScore: ${score} / ${totalQuestions} (${Math.round((score / totalQuestions) * 100)}%)\nDate: ${new Date().toLocaleDateString()}`;
+  const scoreTextSummary = `STUDENT QUIZ REPORT\nName: ${studentName}\nStudent ID: ${studentId || 'N/A'}\nQuiz: ${title || 'Week 1 Video Editing'}\nScore: ${score} / ${totalQuestions} (${Math.round((score / totalQuestions) * 100)}%)\nDate: ${new Date().toLocaleDateString()}`;
 
   const handleCopySummary = () => {
     navigator.clipboard.writeText(scoreTextSummary);
@@ -174,7 +187,7 @@ export const QuizView: React.FC = () => {
         <div className="text-center mb-5 sm:mb-6">
           <Award className="w-10 h-10 sm:w-12 sm:h-12 text-sky-600 mx-auto mb-2 sm:mb-3" />
           <h2 className="font-lexend text-xl sm:text-2xl font-extrabold text-slate-900">Interactive Quiz</h2>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">Please enter your details below to start the Week 1 quiz assessment.</p>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">Please enter your details below to start the {title || 'Week 1'} quiz assessment.</p>
         </div>
 
         <form onSubmit={handleRegisterSubmit} className="space-y-4">
@@ -231,7 +244,7 @@ export const QuizView: React.FC = () => {
           <Award className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 text-sky-600 mx-auto mb-3 sm:mb-4" />
           <span className="font-lexend text-[9px] sm:text-[10px] tracking-widest text-slate-400 font-bold uppercase">Certificate of Completion</span>
           
-          <h2 className="font-lexend text-lg sm:text-2xl md:text-3xl font-extrabold text-slate-900 mt-2">Week 1: Video Editing Basics</h2>
+          <h2 className="font-lexend text-lg sm:text-2xl md:text-3xl font-extrabold text-slate-900 mt-2">{title || 'Week 1: Video Editing Basics'}</h2>
           <p className="text-xs text-slate-500 mt-1">This document certifies that</p>
           
           <h3 className="font-lexend text-lg sm:text-xl md:text-2xl font-bold text-sky-700 underline decoration-sky-400/40 my-3 sm:my-4">

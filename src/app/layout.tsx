@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Week 1: Introduction to Video Editing",
-  description: "Interactive Next.js presentation for VIDEODIT Lecture Series.",
+  title: "Lesson Library",
+  description: "Interactive Learning Portal for Students & Educators.",
 };
 
 export default function RootLayout({
