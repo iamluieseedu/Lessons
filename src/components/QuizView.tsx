@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { quizQuestions } from '@/data/quizData';
 import { 
   CheckCircle, 
@@ -29,12 +29,63 @@ export const QuizView: React.FC = () => {
   const [quizFinished, setQuizFinished] = useState(false);
   const [answersLog, setAnswersLog] = useState<{ qIdx: number; selected: number; correct: boolean }[]>([]);
   const [copied, setCopied] = useState(false);
-  const [webhookUrl, setWebhookUrl] = useState(''); // Allow teacher to set a Google Sheet Webhook URL
+  const [webhookUrl, setWebhookUrl] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('vid_webhook_url') || '';
+    }
+    return '';
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<string | null>(null);
 
   const totalQuestions = quizQuestions.length;
   const currentQuestion = quizQuestions[currentIdx];
+
+  // Auto-save and auto-submit on quiz finished
+  useEffect(() => {
+    if (quizFinished) {
+      const newScoreRecord = {
+        name: studentName,
+        studentId: studentId || 'N/A',
+        score,
+        total: totalQuestions,
+        percent: Math.round((score / totalQuestions) * 100),
+        date: new Date().toLocaleDateString()
+      };
+      
+      if (typeof window !== 'undefined') {
+        const existingScores = JSON.parse(localStorage.getItem('vid_student_scores') || '[]');
+        const alreadyLogged = existingScores.some((s: any) => 
+          s.name === studentName && s.score === score && s.date === newScoreRecord.date
+        );
+        if (!alreadyLogged) {
+          existingScores.push(newScoreRecord);
+          localStorage.setItem('vid_student_scores', JSON.stringify(existingScores));
+        }
+      }
+
+      if (webhookUrl.trim()) {
+        const autoSubmit = async () => {
+          setIsSubmitting(true);
+          try {
+            await fetch(webhookUrl, {
+              method: 'POST',
+              mode: 'no-cors',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(newScoreRecord)
+            });
+            setSubmitStatus("Success! Your score has been submitted to your teacher's Google Sheet.");
+          } catch (err) {
+            console.error(err);
+            setSubmitStatus("Submission attempted. (Verify webhook configurations if issues arise.)");
+          } finally {
+            setIsSubmitting(false);
+          }
+        };
+        autoSubmit();
+      }
+    }
+  }, [quizFinished, studentName, studentId, score, totalQuestions, webhookUrl]);
 
   const handleRegisterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -250,32 +301,34 @@ export const QuizView: React.FC = () => {
               </button>
             </div>
 
-            {/* Direct Google Sheets Script Webhook Input */}
-            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
-              <div className="flex flex-col gap-1">
-                <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wide">
-                  Teacher Google Sheets Webhook URL
-                </label>
-                <input
-                  type="text"
-                  placeholder="Paste teacher's App Script Deployment URL..."
-                  value={webhookUrl}
-                  onChange={(e) => setWebhookUrl(e.target.value)}
-                  className="w-full bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-700 placeholder-slate-400 focus:outline-none focus:border-sky-500"
-                />
+            {/* Webhook Auto-Submit Status Panel */}
+            {webhookUrl ? (
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2 text-center">
+                <div className="flex items-center justify-center gap-2 text-[11px] font-bold text-slate-600 uppercase tracking-wide">
+                  {isSubmitting ? (
+                    <span className="animate-pulse text-sky-650">Submitting score to spreadsheet...</span>
+                  ) : submitStatus ? (
+                    <span className="text-emerald-650 flex items-center justify-center gap-1.5">
+                      <Check className="w-4 h-4 text-emerald-600" /> Score Auto-Submitted
+                    </span>
+                  ) : (
+                    <span className="text-slate-500">Auto-submitting score...</span>
+                  )}
+                </div>
+                {submitStatus && (
+                  <p className="text-[11px] font-medium text-slate-500 mt-1">{submitStatus}</p>
+                )}
               </div>
-              <button
-                onClick={handleSubmitScore}
-                disabled={isSubmitting}
-                className="w-full py-2 bg-sky-600 hover:bg-sky-700 disabled:bg-slate-300 text-white font-bold text-xs rounded-lg transition flex items-center justify-center gap-1.5"
-              >
-                <Send className="w-3.5 h-3.5" />
-                {isSubmitting ? 'Submitting...' : 'Submit Directly to Spreadsheet'}
-              </button>
-              {submitStatus && (
-                <p className="text-[11px] font-semibold text-sky-700 text-center">{submitStatus}</p>
-              )}
-            </div>
+            ) : (
+              <div className="p-4 rounded-xl bg-amber-500/[0.04] border border-amber-200 text-center">
+                <p className="text-[11px] font-semibold text-amber-700">
+                  Global Webhook URL not configured.
+                </p>
+                <p className="text-[10px] text-slate-505 mt-0.5">
+                  Copy the score above and send it to your teacher, or ask them to configure the Webhook URL in the Admin Portal.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
