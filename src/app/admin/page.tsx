@@ -47,6 +47,18 @@ const DEFAULT_LESSONS: Lesson[] = [
     thumbnail: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=800&q=80',
     isActive: true,
     quizEnabled: true,
+  },
+  {
+    id: 'laravel11',
+    week: 1,
+    title: 'Laravel 11 Fundamentals',
+    description: 'Learn the core concepts of Laravel 11, including server setup, directory structure, routing, Blade templates, and passing data.',
+    duration: '15 mins',
+    slidesCount: 50,
+    difficulty: 'Beginner',
+    thumbnail: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=800&q=80',
+    isActive: true,
+    quizEnabled: true,
   }
 ];
 
@@ -214,8 +226,8 @@ export default function AdminPage() {
   };
 
   const handleDeleteLesson = (id: string, title: string) => {
-    if (id === 'week1') {
-      alert('The core lesson "Week 1: Introduction to Video Editing" is protected and cannot be deleted.');
+    if (id === 'week1' || id === 'laravel11') {
+      alert(`The core lesson "${title}" is protected and cannot be deleted.`);
       return;
     }
 
@@ -586,8 +598,8 @@ export default function AdminPage() {
                         className={`p-1.5 rounded-lg border hover:bg-rose-50 border-slate-200 hover:border-rose-200 text-slate-400 hover:text-rose-600 transition ${
                           lesson.id === 'week1' ? 'opacity-30 cursor-not-allowed' : ''
                         }`}
-                        title={lesson.id === 'week1' ? 'Protected Unit' : 'Delete Lesson'}
-                        disabled={lesson.id === 'week1'}
+                        title={(lesson.id === 'week1' || lesson.id === 'laravel11') ? 'Protected Unit' : 'Delete Lesson'}
+                        disabled={lesson.id === 'week1' || lesson.id === 'laravel11'}
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
