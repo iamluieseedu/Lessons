@@ -30,6 +30,18 @@ interface Lesson {
 
 const DEFAULT_LESSONS: Lesson[] = [
   {
+    id: 'laravel11',
+    week: 1,
+    title: 'Laravel 11 Fundamentals',
+    description: 'Learn the core concepts of Laravel 11, including server setup, directory structure, routing, Blade templates, and passing data.',
+    duration: '15 mins',
+    slidesCount: 50,
+    difficulty: 'Beginner',
+    thumbnail: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=800&q=80',
+    isActive: true,
+    quizEnabled: false,
+  },
+  {
     id: 'week1',
     week: 1,
     title: 'Introduction to Video Editing',
@@ -56,7 +68,22 @@ export default function Home() {
       setBaseUrl(window.location.origin);
       const stored = localStorage.getItem('vid_lessons');
       if (stored) {
-        setLessons(JSON.parse(stored));
+        const parsed: Lesson[] = JSON.parse(stored);
+        // Merge missing default lessons into local storage
+        let updated = [...parsed];
+        let hasChanges = false;
+        DEFAULT_LESSONS.forEach((defLesson) => {
+          if (!parsed.some((l) => l.id === defLesson.id)) {
+            updated.push(defLesson);
+            hasChanges = true;
+          }
+        });
+        
+        if (hasChanges) {
+          updated.sort((a, b) => a.week - b.week);
+          localStorage.setItem('vid_lessons', JSON.stringify(updated));
+        }
+        setLessons(updated);
       } else {
         localStorage.setItem('vid_lessons', JSON.stringify(DEFAULT_LESSONS));
         setLessons(DEFAULT_LESSONS);

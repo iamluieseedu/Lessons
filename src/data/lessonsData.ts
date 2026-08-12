@@ -8,9 +8,22 @@ export interface Lesson {
   difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
   thumbnail: string;
   isActive: boolean;
+  quizEnabled?: boolean;
 }
 
 export const lessonsData: Lesson[] = [
+  {
+    id: 'laravel11',
+    week: 1,
+    title: 'Laravel 11 Fundamentals',
+    description: 'Learn the core concepts of Laravel 11, including server setup, directory structure, routing, Blade templates, and passing data.',
+    duration: '15 mins',
+    slidesCount: 50,
+    difficulty: 'Beginner',
+    thumbnail: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=800&q=80',
+    isActive: true,
+    quizEnabled: false,
+  },
   {
     id: 'week1',
     week: 1,

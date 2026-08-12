@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { slidesData } from '@/data/slidesData';
+import { laravelSlidesData } from '@/data/laravelSlidesData';
 import { SlideViewer } from '@/components/SlideViewer';
 import { NavigationControls } from '@/components/NavigationControls';
 import { ThumbnailDrawer } from '@/components/ThumbnailDrawer';
@@ -46,6 +47,8 @@ function SlidePageContent() {
       if (found) {
         if (found.id === 'week1') {
           setSlides(slidesData);
+        } else if (found.id === 'laravel11') {
+          setSlides(laravelSlidesData);
         } else {
           // Dynamic slide deck for custom uploaded lessons
           setSlides([

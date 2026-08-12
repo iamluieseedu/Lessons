@@ -1,0 +1,2397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 1: Laravel 11 Fundamentals (Interactive Developer Edition)</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        :root {
+            --laravel-red: #EF4444;
+            --laravel-red-glow: rgba(239, 68, 68, 0.15);
+            --laravel-red-border: rgba(239, 68, 68, 0.3);
+            --bg-canvas: #090d16;
+            --bg-card: #0f172a;
+            --bg-card-overlay: rgba(15, 23, 42, 0.85);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-accent: #f87171;
+            --code-bg: #030712;
+            --hover-bg: rgba(255, 255, 255, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #020617;
+            color: var(--text-primary);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Scalable Slide Container */
+        .slide-viewport {
+            width: 1280px;
+            height: 720px;
+            background: linear-gradient(145deg, #0f172a 0%, #020617 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            transform-origin: center center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        /* Slide Transition Animations */
+        .slide {
+            display: none;
+            flex-grow: 1;
+            padding: 30px 45px;
+            height: calc(100% - 110px);
+            opacity: 0;
+            transform: scale(0.985);
+            transition: opacity 0.35s ease, transform 0.35s ease;
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Slide Header */
+        .slide-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 14px;
+            height: 40px;
+            flex-shrink: 0;
+        }
+
+        .slide-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .slide-title i {
+            color: var(--laravel-red);
+        }
+
+        .module-tag {
+            background: var(--laravel-red-glow);
+            color: var(--text-accent);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 12px;
+            border: 1px solid var(--laravel-red-border);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Content Areas */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 24px;
+            flex-grow: 1;
+            min-height: 0; /* allows grid children to shrink */
+            margin-bottom: 8px;
+        }
+
+        .text-card {
+            background: var(--bg-card-overlay);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow-y: auto;
+        }
+
+        .text-card h3 {
+            font-size: 19px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+            border-left: 4px solid var(--laravel-red);
+            padding-left: 10px;
+        }
+
+        .text-card p, .text-card li {
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .text-card ul {
+            padding-left: 20px;
+            list-style-type: none;
+        }
+
+        .text-card li {
+            position: relative;
+            margin-bottom: 6px;
+        }
+
+        .text-card li::before {
+            content: "→";
+            color: var(--laravel-red);
+            position: absolute;
+            left: -20px;
+            font-weight: bold;
+        }
+
+        /* Callouts */
+        .insight-box {
+            background: var(--laravel-red-glow);
+            border-left: 4px solid var(--laravel-red);
+            padding: 10px 14px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 8px;
+        }
+
+        .insight-box strong {
+            color: var(--text-accent);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .insight-box p {
+            margin: 0;
+            font-size: 13px;
+            color: var(--text-primary);
+            line-height: 1.4;
+        }
+
+        /* Code Editor Window */
+        .code-window {
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .code-titlebar {
+            background: #0b0f19;
+            padding: 8px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+
+        .code-controls {
+            display: flex;
+            gap: 6px;
+        }
+
+        .code-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4b5563;
+        }
+
+        .code-dot.red { background: #ef4444; }
+        .code-dot.yellow { background: #f59e0b; }
+        .code-dot.green { background: #10b981; }
+
+        .code-filepath {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-family: 'Fira Code', monospace;
+            font-weight: 500;
+        }
+
+        .code-content {
+            padding: 16px;
+            flex-grow: 1;
+            font-family: 'Fira Code', monospace;
+            font-size: 12.5px;
+            line-height: 1.5;
+            color: #cbd5e1;
+            overflow-y: auto;
+            white-space: pre;
+        }
+
+        /* Syntax Highlighting */
+        .keyword { color: #f43f5e; font-weight: 600; }
+        .class { color: #38bdf8; }
+        .string { color: #10b981; }
+        .comment { color: #64748b; font-style: italic; }
+        .variable { color: #fb923c; }
+        .function { color: #fb7185; }
+        .tag { color: #f43f5e; }
+        .attr { color: #a7f3d0; }
+
+        /* Cover Page Layout */
+        .cover-layout {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100%;
+        }
+
+        .cover-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--laravel-red-glow);
+            color: var(--laravel-red);
+            border: 1px solid var(--laravel-red-border);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .cover-title-main {
+            font-size: 52px;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 16px;
+            letter-spacing: -1px;
+        }
+
+        .cover-title-main span {
+            color: var(--laravel-red);
+            text-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+        }
+
+        .cover-subtitle {
+            font-size: 18px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            max-width: 850px;
+            margin-bottom: 35px;
+        }
+
+        .cover-meta {
+            display: flex;
+            gap: 40px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 24px;
+            width: 100%;
+        }
+
+        .meta-box {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .meta-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
+
+        .meta-val {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Folder Structure List */
+        .folder-tree {
+            font-family: 'Fira Code', monospace;
+            font-size: 12.5px;
+            line-height: 1.6;
+            color: #cbd5e1;
+        }
+
+        .tree-node {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 3px 6px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+
+        .tree-node:hover {
+            background: var(--hover-bg);
+        }
+
+        .tree-node.highlight {
+            background: var(--laravel-red-glow);
+            border-left: 3px solid var(--laravel-red);
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .tree-indent {
+            margin-left: 16px;
+            border-left: 1px dashed rgba(255, 255, 255, 0.12);
+            padding-left: 10px;
+        }
+
+        /* Interactive Tabs for code views */
+        .tab-bar {
+            display: flex;
+            background: #0b0f19;
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--text-secondary);
+            padding: 10px 14px;
+            font-size: 12px;
+            cursor: pointer;
+            font-family: 'Fira Code', monospace;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            background: var(--hover-bg);
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active {
+            color: var(--laravel-red);
+            border-bottom-color: var(--laravel-red);
+            background: var(--code-bg);
+            font-weight: 600;
+        }
+
+        /* Live Preview browser container */
+        .browser-preview-frame {
+            border-top: 1px solid var(--border-color);
+            background: #f8fafc;
+            color: #0f172a;
+            padding: 14px;
+            font-size: 13px;
+            height: 140px;
+            overflow-y: auto;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .browser-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #e2e8f0;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            color: #475569;
+            margin-bottom: 6px;
+            font-family: sans-serif;
+            flex-shrink: 0;
+        }
+
+        .browser-url-input {
+            background: #ffffff;
+            border-radius: 4px;
+            padding: 2px 8px;
+            flex-grow: 1;
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+            border: 1px solid #cbd5e1;
+        }
+
+        .browser-body {
+            font-family: system-ui, sans-serif;
+            flex-grow: 1;
+        }
+
+        /* Interactive Terminal Simulator */
+        .terminal-actions {
+            display: flex;
+            gap: 10px;
+            padding: 10px 16px;
+            background: #111827;
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+
+        .terminal-btn {
+            background: #1e293b;
+            color: #f8fafc;
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .terminal-btn:hover:not(:disabled) {
+            background: var(--laravel-red);
+            border-color: var(--laravel-red);
+        }
+
+        .terminal-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Comparison Box Grid */
+        .versus-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 10px;
+        }
+
+        .versus-box {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 14px;
+        }
+
+        .versus-box.highlight {
+            background: var(--laravel-red-glow);
+            border-color: var(--laravel-red-border);
+        }
+
+        .versus-box h4 {
+            font-size: 15px;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+        }
+
+        .versus-box h4 i {
+            color: var(--laravel-red);
+        }
+
+        .versus-box ul {
+            padding-left: 16px;
+            list-style-type: disc;
+        }
+
+        .versus-box li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 4px;
+        }
+
+        /* Bottom Control Bar */
+        .control-bar {
+            height: 64px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 45px;
+            background: #030712;
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn {
+            background: #1e293b;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13.5px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: var(--laravel-red);
+            border-color: var(--laravel-red);
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            font-size: 14.5px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .selector-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .selector-container label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        select {
+            background: #0f172a;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 6px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            outline: none;
+        }
+
+        select:focus {
+            border-color: var(--laravel-red);
+        }
+
+        /* Top Progress Bar indicator */
+        .progress-bar-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            z-index: 20;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--laravel-red) 0%, #fb7185 100%);
+            transition: width 0.3s ease;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+        }
+
+        /* Dependency mapping lines helper */
+        .dependency-map-container {
+            margin-top: 10px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+        }
+        .dependency-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-accent);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .dependency-flow {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+        }
+        .flow-node {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            padding: 4px 8px;
+            border-radius: 4px;
+            color: var(--text-secondary);
+        }
+        .flow-node.highlight {
+            background: var(--laravel-red-glow);
+            border-color: var(--laravel-red-border);
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        .flow-arrow {
+            color: var(--laravel-red);
+            font-weight: 900;
+        }
+
+        /* Interactive Blade Variables customizer styles */
+        .blade-playground-vars {
+            display: flex;
+            gap: 12px;
+            padding: 10px 16px;
+            background: #111827;
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+        .playground-checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+        .playground-select {
+            background: #1e293b;
+            color: #f8fafc;
+            border: 1px solid var(--border-color);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* HTTP ROUTE TESTER STYLES */
+        .tester-inputs {
+            display: flex;
+            gap: 8px;
+            padding: 10px 16px;
+            background: #111827;
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+            align-items: center;
+        }
+        .tester-select {
+            background: #1e293b;
+            color: #10b981;
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            outline: none;
+        }
+        .tester-select:focus {
+            border-color: var(--laravel-red);
+        }
+        .tester-url-input {
+            background: var(--code-bg);
+            color: #f8fafc;
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12.5px;
+            font-family: 'Fira Code', monospace;
+            flex-grow: 1;
+            outline: none;
+        }
+        .tester-url-input:focus {
+            border-color: var(--laravel-red);
+        }
+        .tester-send-btn {
+            background: var(--laravel-red);
+            border: none;
+            color: #fff;
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .tester-send-btn:hover {
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+            filter: brightness(1.1);
+        }
+        .tester-results {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+        .tester-headers-pane {
+            background: #090d16;
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 16px;
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+        }
+        .tester-response-pane {
+            padding: 16px;
+            flex-grow: 1;
+            overflow-y: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 12.5px;
+            color: #cbd5e1;
+            background: var(--code-bg);
+            white-space: pre-wrap;
+        }
+
+        /* Flow graph diagram step indicators */
+        .flow-steps-bar {
+            display: flex;
+            gap: 10px;
+            padding: 8px 16px;
+            background: #0b0f19;
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+        .flow-step-btn {
+            background: #1e293b;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .flow-step-btn.active {
+            background: var(--laravel-red);
+            color: #fff;
+            border-color: var(--laravel-red);
+        }
+    </style>
+</head>
+<body>
+
+<div class="slide-viewport">
+    <!-- Top Progress Bar -->
+    <div class="progress-bar-container">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+    <!-- Generated Slides Container -->
+    <div id="slides-wrapper" style="height: calc(100% - 64px); display: flex; flex-direction: column; justify-content: space-between;">
+        <!-- Slides are dynamically loaded here -->
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <div class="control-bar">
+        <div class="nav-buttons">
+            <button class="btn" id="prev-btn"><i class="fa-solid fa-chevron-left"></i> Previous</button>
+            <button class="btn" id="next-btn">Next <i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+        
+        <span class="slide-counter" id="slide-counter-val">1 / 50</span>
+        
+        <div class="selector-container">
+            <label for="slide-selector">Jump to:</label>
+            <select id="slide-selector">
+                <!-- Dropdown options populated dynamically -->
+            </select>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Include the complete 50 slides dataset
+    const slidesData = [
+        // SECTION 1: AGENDA (1-2)
+        {
+            id: 'laravel-slide1',
+            type: 'cover',
+            title: 'Laravel 11 Fundamentals'
+        },
+        {
+            id: 'laravel-slide2',
+            type: 'bullets',
+            moduleTag: 'Agenda',
+            title: 'Course Agenda',
+            topicTitle: 'What We Will Cover Today',
+            bullets: [
+                'Why Web Frameworks Exist (Slides 3-7): Discover the advantages of frameworks, including security features, file organization, and package installations.',
+                'MVC Architecture (Slides 8-14): Understand how Model (data), View (HTML layout), and Controller (logic) components connect to run apps.',
+                'Environment Setup (Slides 15-20): Install prerequisites, configure local servers using php artisan, and edit settings in the .env file.',
+                'Routing & Parameters (Slides 21-27): Declare static routes, dynamic URL variables, regular expression filters, and name route references.',
+                'Request Cycles & Blade Views (Slides 28-37): Capture request parameters, serialize JSON returns, extend master templates, and sanitize values.',
+                'Blade Directives & Controllers (Slides 38-50): Loop collections via @foreach, loop loop metrics, map controller classes, and build CRUD stubs.'
+            ],
+            insight: 'This curriculum is structured to establish a clear production-level understanding of Laravel 11 operations, replacing layman concepts with complete source examples.'
+        },
+
+        // SECTION 2: WHY FRAMEWORK (3-7)
+        {
+            id: 'laravel-slide3',
+            type: 'bullets',
+            moduleTag: 'Frameworks',
+            title: 'What is a Web Framework?',
+            topicTitle: 'The Pre-Built Toolbox',
+            bullets: [
+                'Pre-built components: A framework is a software library that provides pre-built modules for common development tasks.',
+                'Core tools: It handles cookie sessions, user login checks, SQL database connectors, URL routing tables, and mail helpers.',
+                'Code Standard: Standardizes how files are placed, ensuring that other developers can quickly read and maintain your project.',
+                'Language wrapping: Instead of writing raw PHP code from scratch, you write structured declarations using the framework\'s classes.'
+            ],
+            insight: 'A framework functions like a pre-assembled toolkit. It saves you from writing repetitive code for database connections, URL routing, and security validations.'
+        },
+        {
+            id: 'laravel-slide4',
+            type: 'bullets',
+            moduleTag: 'Frameworks',
+            title: 'Security Out-of-the-Box',
+            topicTitle: 'Protecting Web Applications',
+            bullets: [
+                'XSS Prevention: Auto-escapes user variables in views to prevent malicious scripts from executing in visitors\' browsers.',
+                'SQL Injection Protection: Uses parameter binding in SQL queries, keeping users from injecting code into database checks.',
+                'CSRF Protection: Attaches unique tokens to POST requests, verifying that form submissions originate from real users.',
+                'Password Encryption: Uses secure hashing algorithms (like bcrypt) to encrypt database passwords automatically.'
+            ],
+            insight: 'Writing custom security filters in raw PHP is difficult and error-prone. Laravel activates these protections by default.'
+        },
+        {
+            id: 'laravel-slide5',
+            type: 'bullets',
+            moduleTag: 'Frameworks',
+            title: 'Automated Tooling',
+            topicTitle: 'Boosting Developer Productivity',
+            bullets: [
+                'Artisan CLI: The command-line utility that creates files, runs migrations, and handles background processes.',
+                'Database Migrations: Define database tables directly in PHP code, allowing team members to synchronize schemas instantly.',
+                'Composer packages: Install third-party libraries (like PDF generators or social logins) with simple commands.',
+                'Task Schedulers: Schedule console commands to run at specific times (like daily database backups) in a single configuration file.'
+            ],
+            insight: 'Laravel\'s CLI tools automate repetitive tasks, allowing you to build features instead of writing boilerplate setup code.'
+        },
+        {
+            id: 'laravel-slide6',
+            type: 'bullets',
+            moduleTag: 'Frameworks',
+            title: 'Composer Dependency Manager',
+            topicTitle: 'Managing PHP Packages',
+            bullets: [
+                'What is Composer? The standard package dependency manager for the PHP ecosystem.',
+                'File listings: Declares external packages, libraries, and code requirements in composer.json.',
+                'Autoloading: Manages PHP namespace imports automatically, allowing you to load files without manually writing require() statements.',
+                'Updating: Updates third-party libraries and verifies dependency compatibility with single commands.'
+            ],
+            insight: 'Composer functions like npm for Node.js. It manages and updates all the external libraries your application relies on.'
+        },
+        {
+            id: 'laravel-slide7',
+            type: 'framework-comparison',
+            moduleTag: 'Frameworks',
+            title: 'Why Use a Framework Simulation',
+            topicTitle: 'Raw PHP vs Laravel Framework Code',
+            bullets: [
+                'Observe code layouts on the right to compare raw PHP with Laravel frameworks.',
+                'Raw PHP requires manual PDO database bindings, htmlspecialchars() escaping, and CSRF session checks.',
+                'Laravel handles database maps, validation rules, security checks, and HTML view renders in small, clear statements.'
+            ],
+            insight: 'Frameworks abstract repetitive backend tasks so you can focus on building core application features instead of writing security setups.'
+        },
+
+        // SECTION 3: MVC IN-DEPTH (8-14)
+        {
+            id: 'laravel-slide8',
+            type: 'versus',
+            moduleTag: 'MVC',
+            title: 'MVC Architecture Overview',
+            topicTitle: 'The Model-View-Controller Cycle',
+            versusLeft: {
+                title: 'Model & View',
+                bullets: [
+                    'Model (Data): Represents your tables and data rules. Executes query commands on databases.',
+                    'View (Interface): The front-end template rendering HTML markup, CSS styling, and user-facing layouts.'
+                ]
+            },
+            versusRight: {
+                title: 'Controller (Logic)',
+                bullets: [
+                    'Controller: Receives browser inputs, requests records from the Model, and passes values to the View.',
+                    'Isolates backend business computations from layout files.'
+                ]
+            },
+            insight: 'Separating components ensures frontend engineers can update page markup files without affecting database connections or routes.'
+        },
+        {
+            id: 'laravel-slide9',
+            type: 'code',
+            moduleTag: 'MVC',
+            title: 'M - The Model (Database ORM)',
+            topicTitle: 'Eloquent ORM Database Mapper',
+            code: `<?php\n\nnamespace App\\Models;\n\nuse Illuminate\\Database\\Eloquent\\Model;\n\nclass User extends Model\n{\n    // Maps to the "users" database table automatically\n}`,
+            bullets: [
+                'Model definition: Represents a database table. In Laravel, this class is an Eloquent Model.',
+                'No SQL queries needed: Models allow you to fetch, update, and delete database rows using PHP methods instead of writing SQL queries.',
+                'Naming convention: Model names are singular (e.g. User), mapping to plural database tables (e.g. users) automatically.'
+            ],
+            insight: 'Instead of writing "SELECT * FROM users", you call "User::all()". Laravel translates this PHP method into a SQL query automatically.'
+        },
+        {
+            id: 'laravel-slide10',
+            type: 'model-playground',
+            moduleTag: 'MVC',
+            title: 'Model ORM SQL Playground',
+            topicTitle: 'Simulating Eloquent ORM to SQL translations',
+            bullets: [
+                'Click ORM query buttons to execute Eloquent PHP codes.',
+                'Observe compiled raw SQL queries sent to database engines.',
+                'Examine generated database returns mapped inside controller variables.'
+            ],
+            insight: 'Laravel Eloquent translates PHP database queries to correct SQL commands dynamically, parsing values into parameterized variables to prevent SQL injection.'
+        },
+        {
+            id: 'laravel-slide11',
+            type: 'code',
+            moduleTag: 'MVC',
+            title: 'V - The View (Blade Layout)',
+            topicTitle: 'Client HTML view templates',
+            code: `<!-- resources/views/welcome.blade.php -->\n<!DOCTYPE html>\n<html>\n<body>\n    <h1>Welcome, {{ $name }}</h1>\n    <p>Logged in: {{ date('Y-m-d') }}</p>\n</body>\n</html>`,
+            bullets: [
+                'The presentation layer: Views contain the HTML markup rendered to visitors.',
+                'Blade templates: Files use the extension .blade.php and compile dynamic variables inside double curly braces: {{ $variable }}.',
+                'Location: View templates are stored inside resources/views/ directory.'
+            ],
+            insight: 'Views should not contain database queries or controller logic. Keep templates limited to displaying layout tags.'
+        },
+        {
+            id: 'laravel-slide12',
+            type: 'code',
+            moduleTag: 'MVC',
+            title: 'Blade Directives & File Paths',
+            topicTitle: 'Clean Template Rendering Loops',
+            code: `@extends('layouts.app')\n\n@section('content')\n    <h3>Active Tasks</h3>\n    @foreach($tasks as $task)\n        <p>{{ $task }}</p>\n    @endforeach\n@endsection`,
+            bullets: [
+                'Folder layout dot-syntax: Dot-notation resolves folders without slashes: view(\'admin.profile\') resolves resources/views/admin/profile.blade.php.',
+                'Template inheritance: Use @extends(\'layouts.app\') to load layout styles and inject custom views.',
+                'Output caching: Templates compile to pure PHP on the server, ensuring fast page load speeds.'
+            ],
+            insight: 'Dot notation keeps paths clean. Dots behave like directory separating slashes across all host operating systems.'
+        },
+        {
+            id: 'laravel-slide13',
+            type: 'code',
+            moduleTag: 'MVC',
+            title: 'C - The Controller (Logical Broker)',
+            topicTitle: 'Brokering Requests & Model parameters',
+            code: `<?php\n\nnamespace App\\Http\\Controllers;\n\nuse App\\Models\\User;\n\nclass UserController extends Controller\n{\n    public function show($id)\n    {\n        $user = User::findOrFail($id);\n        return view('profile', compact('user'));\n    }\n}`,
+            bullets: [
+                'Logical mediator: The controller contains the code rules handling incoming browser requests.',
+                'Model queries: Calls Eloquent models to fetch appropriate database records.',
+                'View binding: Feeds retrieved records to view templates and returns the compiled HTML to the visitor.'
+            ],
+            insight: 'Keep controllers simple. Move database definitions into models, and layout details into views.'
+        },
+        {
+            id: 'laravel-slide14',
+            type: 'controller-flow',
+            moduleTag: 'MVC',
+            title: 'Controller Flow Simulator',
+            topicTitle: 'Visualizing MVC request cycles',
+            bullets: [
+                'Select step tabs on the right side to animate the request path lifecycle.',
+                'Request interception captures parameters (e.g. user ID 5 from dynamic URLs).',
+                'Logical broker commands User Model to execute database select search query.',
+                'View compiler parses profile template views, outputting final sanitised HTML files.'
+            ],
+            insight: 'The Controller coordinates everything, connecting the incoming web request, the data lookup, and the final HTML output.'
+        },
+
+        // SECTION 4: LOCAL SETUP (15-20)
+        {
+            id: 'laravel-slide15',
+            type: 'bullets',
+            moduleTag: 'Setup',
+            title: 'Prerequisites & Bootstrapping',
+            topicTitle: 'System Requirements for Laravel 11',
+            bullets: [
+                'PHP Runtime: Requires PHP 8.2 or higher installed on your computer.',
+                'Dependency Manager: Composer CLI is needed to install the framework and third-party PHP packages.',
+                'Database Engine: MySQL, PostgreSQL, or a simple SQLite file resolver is required to store application data.',
+                'Creation command: Run composer create-project laravel/laravel:^11.0 project-name in your terminal.'
+            ],
+            insight: 'Verify your installations by running "php -v" and "composer -v" inside your terminal before running installation commands.'
+        },
+        {
+            id: 'laravel-slide16',
+            type: 'code',
+            moduleTag: 'Setup',
+            title: 'CLI Commands & Serve Startup',
+            topicTitle: 'Booting Local Servers',
+            code: `// Start local server in project folder:\nphp artisan serve\n\n// Mapped response:\n// INFO Server running on [http://127.0.0.1:8000]`,
+            bullets: [
+                'Artisan CLI: The command-line utility included in the root folder of your project.',
+                'Serve command: Run "php artisan serve" inside your project directory to boot the built-in development server.',
+                'Network Address: Access your application by navigating to http://127.0.0.1:8000 in your browser.'
+            ],
+            insight: 'You do not need to install complex web servers (like Nginx or Apache) locally. Artisan serve maps PHP\'s built-in web server automatically.'
+        },
+        {
+            id: 'laravel-slide17',
+            type: 'bullets',
+            moduleTag: 'Setup',
+            title: 'Interactive Artisan Console',
+            topicTitle: 'Simulating Local Serve Logs',
+            bullets: [
+                'Try the terminal: Click "Boot Artisan Server" on Slide 17 to start the simulated local server.',
+                'Network log output: Once active, simulate clicking "Send Request" to pipe live URL access logs.',
+                'Log variables: Each entry displays status codes (e.g. 200 OK) and mapped paths.'
+            ],
+            insight: 'The terminal prints request logs, showing you when pages load successfully or fail with error codes.'
+        },
+        {
+            id: 'laravel-slide18',
+            type: 'bullets',
+            moduleTag: 'Setup',
+            title: 'Port Bindings & Network configurations',
+            topicTitle: 'Managing Port Configurations',
+            bullets: [
+                'Default port: The server binds by default to network port 8000.',
+                'Port Override: If port 8000 is occupied, you can run: php artisan serve --port=8080.',
+                'Host mapping: Share the site over your local network by running: php artisan serve --host=0.0.0.0.',
+                'Terminal exit: Press Ctrl+C inside the terminal to stop the local serving thread.'
+            ],
+            insight: 'Binding to host 0.0.0.0 allows you to test the local application on external devices (like mobile phones) on the same Wi-Fi connection.'
+        },
+        {
+            id: 'laravel-slide19',
+            type: 'code',
+            moduleTag: 'Setup',
+            title: 'Environment Variables (.env)',
+            topicTitle: 'Managing Setting Parameters',
+            code: `APP_NAME=Laravel\nAPP_ENV=local\nAPP_DEBUG=true\nAPP_URL=http://127.0.0.1:8000\n\nDB_CONNECTION=mysql\nDB_HOST=127.0.0.1\nDB_PORT=3306`,
+            bullets: [
+                'The .env file: Located in your project\'s root directory, this file stores configurations unique to your local machine (e.g. database credentials).',
+                'APP_ENV: Tells the application whether it is running in "local" development or "production" mode.',
+                'APP_DEBUG: Set to true in development to display detailed error reports when code fails.'
+            ],
+            insight: 'Set APP_DEBUG=false on production web servers to prevent visitors from seeing database credentials and code errors when problems occur.'
+        },
+        {
+            id: 'laravel-slide20',
+            type: 'bullets',
+            moduleTag: 'Setup',
+            title: 'APP_KEY Cryptography Variables',
+            topicTitle: 'Securing Session and Cookie Encryptions',
+            bullets: [
+                'What is APP_KEY? A random 32-character string used to encrypt session data, user cookies, and passwords.',
+                'Generation command: Generated automatically during install, or created by running: php artisan key:generate.',
+                'Storage: Saved inside APP_KEY variable in your .env file.',
+                'Version Control: Never commit your .env file to public Git repositories (like GitHub).'
+            ],
+            insight: 'If you lose or change the APP_KEY in production, existing encrypted data (such as user cookies) will become unreadable.'
+        },
+
+        // SECTION 5: ROUTING (21-27)
+        {
+            id: 'laravel-slide21',
+            type: 'bullets',
+            moduleTag: 'Routing',
+            title: 'Routing Tables',
+            topicTitle: 'Web request entry points',
+            bullets: [
+                'URL mappings: The router defines the paths and endpoints accessible in your application.',
+                'File location: Declared in routes/web.php.',
+                'Routing flow: When a user visits a page, the routing engine scans web.php for a matching URL path.',
+                'Fallback: If no match is found, Laravel automatically displays a 404 Page Not Found error.'
+            ],
+            insight: 'Think of the routing table as the directory directory of your web application, linking URLs to code actions.'
+        },
+        {
+            id: 'laravel-slide22',
+            type: 'code',
+            moduleTag: 'Routing',
+            title: 'HTTP Action Verbs',
+            topicTitle: 'Matching Request Methods',
+            code: `Route::get('/items', [ItemController::class, 'index']);\nRoute::post('/items', [ItemController::class, 'store']);\nRoute::put('/items/{id}', [ItemController::class, 'update']);\nRoute::delete('/items/{id}', [ItemController::class, 'destroy']);`,
+            bullets: [
+                'Request verbs: Matches standard HTTP actions (GET, POST, PUT, DELETE).',
+                'Route::get(): Used to load pages and fetch resource lists.',
+                'Route::post(): Used to send form data and create new database records.'
+            ],
+            insight: 'Using explicit HTTP verbs ensures pages only respond to correct actions, preventing browser refresh loops from resubmitting form data.'
+        },
+        {
+            id: 'laravel-slide23',
+            type: 'code',
+            moduleTag: 'Routing',
+            title: 'Closures vs Controllers',
+            topicTitle: 'Organizing Route Code',
+            code: `// Route Closure callback (Good for quick stubs):\nRoute::get('/hello', function () {\n    return 'Hello, Laravel!';\n});\n\n// Controller Class mapping (Standard for real-world apps):\nRoute::get('/user/{id}', [UserController::class, 'show']);`,
+            bullets: [
+                'Route Closures: Anonymous functions defined inline. Useful for quick testing or small static pages.',
+                'Controllers: Class methods defined in separate files. Standard practice for organizing real-world applications.',
+                'Clean Code: Moving logic to controllers keeps routes/web.php readable.'
+            ],
+            insight: 'Use closures for quick stubs. Move complex logic to controller classes to keep your code organized.'
+        },
+        {
+            id: 'laravel-slide24',
+            type: 'code',
+            moduleTag: 'Routing',
+            title: 'Dynamic Route Parameters',
+            topicTitle: 'Extracting URL Segment values',
+            code: `// routes/web.php\nRoute::get('/user/{id}', function ($id) {\n    return "User Account ID: " . $id;\n});`,
+            bullets: [
+                'URL variables: Capture dynamic segments in URLs by wrapping them in curly braces: {parameter}.',
+                'Argument mapping: The routing engine passes these values as parameters to the closure or controller method.',
+                'Database keys: Dynamic parameters frequently represent table ID columns.'
+            ],
+            insight: 'If a user visits "/user/15", the $id variable compiles to 15, allowing your controller to query user 15.'
+        },
+        {
+            id: 'laravel-slide25',
+            type: 'code',
+            moduleTag: 'Routing',
+            title: 'Optional Route Parameters',
+            topicTitle: 'Handling Missing URL segments',
+            code: `Route::get('/user/{name?}', function ($name = 'Guest') {\n    return "Welcome back, " . $name;\n});`,
+            bullets: [
+                'Optional segments: Mark a parameter as optional by appending a question mark: {parameter?}.',
+                'PHP defaults: Declare a default value in your callback parameter signature to handle cases where the URL segment is missing.',
+                'Flexible paths: Helps manage search filters or user dashboards with a single route.'
+            ],
+            insight: 'If a parameter is marked optional, you must specify a default value in your PHP parameter declaration to avoid errors.'
+        },
+        {
+            id: 'laravel-slide26',
+            type: 'code',
+            moduleTag: 'Routing',
+            title: 'Regular Expression Constraints',
+            topicTitle: 'Validating URL Parameter Formats',
+            code: `Route::get('/user/{id}', function ($id) {\n    return 'User ID: ' . $id;\n})->where('id', '[0-9]+');\n\nRoute::get('/user/{name}', ...)->whereAlpha('name');`,
+            bullets: [
+                'Input validation: Chain the where() method to restrict parameter formats.',
+                'Constraint helpers: Helper methods like whereNumber(\'id\') or whereAlpha(\'name\') simplify format checks.',
+                'Security boundaries: If input characters do not match the format, Laravel throws a 404 error.'
+            ],
+            insight: 'Applying route constraints prevents database queries from running with invalid or malicious parameters.'
+        },
+        {
+            id: 'laravel-slide27',
+            type: 'code',
+            moduleTag: 'Routing',
+            title: 'Route Naming Attributes',
+            topicTitle: 'Decoupling links from URL paths',
+            code: `Route::get('/user/profile', function () {\n    return 'Profile Settings';\n})->name('profile');\n\n// Generate the link dynamically in HTML views:\n<a href="{{ route('profile') }}">My Settings</a>`,
+            bullets: [
+                'Named routes: Chain the name() method to route declarations to assign identifier aliases.',
+                'Dynamic URLs: Use the route(\'alias\') helper to render links in Blade views automatically.',
+                'Flexibility: Allows you to change URL paths in routes/web.php without breaking links across your templates.'
+            ],
+            insight: 'Named routes isolate your views from changes to URL paths. Modifying "/user/profile" to "/my-profile" won\'t break links if you use route().'
+        },
+
+        // SECTION 6: LIFECYCLE (28-31)
+        {
+            id: 'laravel-slide28',
+            type: 'bullets',
+            moduleTag: 'Lifecycle',
+            title: 'The HTTP Request-Response Cycle',
+            topicTitle: 'Mapping Application Request Pipelines',
+            bullets: [
+                'Entry point: Browser requests enter the entry file: public/index.php.',
+                'Bootstrapping: The kernel registers configurations and starts service providers.',
+                'Middleware filtering: The request passes through global middleware layers (verifying sessions and cookies).',
+                'Routing dispatcher: Matches path patterns, executes middleware stacks, and routes calls to controller methods.'
+            ],
+            insight: 'Browser Request → index.php → HTTP Kernel → Global Middlewares → Routing Dispatcher → Controller actions → Response rendering.'
+        },
+        {
+            id: 'laravel-slide29',
+            type: 'code',
+            moduleTag: 'Lifecycle',
+            title: 'Intercepting Request Inputs',
+            topicTitle: 'Extracting User Parameters',
+            code: `use Illuminate\\Http\\Request;\n\nRoute::get('/search', function (Request $request) {\n    $term = $request->query('term');\n    $email = $request->input('email');\n    \n    return 'Search term: ' . $term;\n});`,
+            bullets: [
+                'Request object: Inject Illuminate\\Http\\Request into closures or controller methods.',
+                'Query inputs: Access URL query parameters: $request->query(\'term\') or request(\'term\').',
+                'Form inputs: Access POST variables: $request->input(\'email\').',
+                'All inputs: Call $request->all() to retrieve the entire input payload.'
+            ],
+            insight: 'You can also access the request instance using the global helper function: request(\'email\').'
+        },
+        {
+            id: 'laravel-slide30',
+            type: 'tester',
+            moduleTag: 'Lifecycle',
+            title: 'The Interactive HTTP Route Tester',
+            topicTitle: 'Simulate Live Requests & Parameter Routing',
+            bullets: [
+                'Try the tester: Select HTTP methods and input path segments in the Postman simulator to test routing behaviors.',
+                'Extract Query variables: Access query parameters using $request->query(\'term\') or request(\'term\').',
+                'Extract POST parameters: Retrieve request variables: $request->input(\'email\').',
+                'JSON structures: Laravel automatically formats array returns into JSON headers.'
+            ],
+            insight: 'This tester simulates Laravel\'s router logic, resolving paths, extracting parameters, and returning HTTP responses.'
+        },
+        {
+            id: 'laravel-slide31',
+            type: 'code',
+            moduleTag: 'Lifecycle',
+            title: 'JSON API Responses',
+            topicTitle: 'Building REST API Endpoints',
+            code: `use Illuminate\\Http\\Request;\n\nRoute::get('/search', function (Request $request) {\n    $term = $request->query('term');\n    \n    // Returning arrays auto-sets application/json headers\n    return [\n        'search_term' => $term,\n        'status' => 'success'\n    ];\n});`,
+            bullets: [
+                'JSON Formatting: Returning PHP arrays or collections automatically formats the HTTP output as JSON.',
+                'Header setting: Laravel sets the HTTP header "Content-Type: application/json" automatically.',
+                'Database API: Speeds up development, enabling quick integration with SPA frameworks (like React/Vue/Next.js).'
+            ],
+            insight: 'Returning arrays is the quickest way to create API stubs for frontend consumption (e.g. React/Next.js integrations).'
+        },
+
+        // SECTION 7: BLADE RENDERING (32-37)
+        {
+            id: 'laravel-slide32',
+            type: 'bullets',
+            moduleTag: 'Views',
+            title: 'Rendering Blade HTML Views',
+            topicTitle: 'Decoupled Front-End Layout Composition',
+            bullets: [
+                'Blade Engine: Laravel\'s built-in template compiler. Blends HTML with custom Blade statements.',
+                'View paths: File templates are saved in resources/views/ using the .blade.php extension.',
+                'The view() helper: Loads templates: return view(\'home\'); looks for resources/views/home.blade.php.',
+                'Compilation loops: Server compiles layouts to optimize CPU cycles during execution.'
+            ],
+            insight: 'Laravel caches compiled views in storage/framework/views/. Compiled PHP files run directly, skipping compilation loops unless changes are detected.'
+        },
+        {
+            id: 'laravel-slide33',
+            type: 'code',
+            moduleTag: 'Views',
+            title: 'Dot notation folder resolution',
+            topicTitle: 'Organizing Nested View Folders',
+            code: `// routes/web.php\nRoute::get('/admin', function () {\n    // Resolves to: resources/views/admin/dashboard.blade.php\n    return view('admin.dashboard');\n});`,
+            bullets: [
+                'Folder navigation: Dot-syntax resolves subfolders without manual directory slash characters.',
+                'Organization patterns: Keep views modular by grouping directories by model namespace (e.g. resources/views/users/index.blade.php).',
+                'Asset checks: Use View::exists(\'admin.dashboard\') to dynamically verify template existence.'
+            ],
+            insight: 'Using dot notation maps file references safely across Windows, Linux, and macOS platforms.'
+        },
+        {
+            id: 'laravel-slide34',
+            type: 'code',
+            moduleTag: 'Views',
+            title: 'Shorthand Dynamic Curly Output',
+            topicTitle: 'Printing PHP variables',
+            code: `<!-- resources/views/welcome.blade.php -->\n<h3>Hello, {{ $username }}</h3>\n<p>Active status: {{ $status }}</p>\n<p>Calculation check: {{ 5 * 10 }}</p>`,
+            bullets: [
+                'Variable output: Print variable values using double curly braces: {{ $variable }}.',
+                'PHP translation: Compiles directly to: <?php echo e($variable); ?>.',
+                'Shorthand rendering: Replaces verbose PHP echo tags.'
+            ],
+            insight: 'Double curly braces can print any PHP execution results, such as function returns or calculations.'
+        },
+        {
+            id: 'laravel-slide35',
+            type: 'bullets',
+            moduleTag: 'Views',
+            title: 'XSS Security & HTML Escaping',
+            topicTitle: 'Mitigating Script Injection Vectors',
+            bullets: [
+                'Cross-site scripting: Double curly braces {{ $variable }} automatically parse variable values using PHP\'s htmlspecialchars() function.',
+                'Entity conversion: Special chars (like <, >, &) convert safely into HTML entity codes (e.g. &lt;, &gt;).',
+                'Browser safety: Prevents users from injecting malicious script commands into layouts.',
+                'Default security: Enforces auto-escaping on all dynamic values.'
+            ],
+            insight: 'Always use double curly braces when printing user inputs. This prevents malicious scripts from running in browser sessions.'
+        },
+        {
+            id: 'laravel-slide36',
+            type: 'code',
+            moduleTag: 'Views',
+            title: 'Printing Unescaped Raw HTML',
+            topicTitle: 'Bypassing output sanitizers',
+            code: `// resources/views/article.blade.php\n// rawHtml = "<strong>Alice</strong>"\n<p>Author: {!! $rawHtml !!}</p>`,
+            bullets: [
+                'Unescaped output: To print raw unescaped values, wrap them in: {!! $variable !!}.',
+                'PHP mapping: Compiles directly to: <?php echo $variable; ?>.',
+                'Use cases: Printing rich markdown descriptions or formatted text.',
+                'Risk vector: Unsanitized input prints execute scripts instantly, opening XSS vulnerabilities.'
+            ],
+            insight: 'Only print unescaped raw outputs if the source dataset is fully trusted and sanitized beforehand.'
+        },
+        {
+            id: 'laravel-slide37',
+            type: 'bullets',
+            moduleTag: 'Views',
+            title: 'Blade Directives Overview',
+            topicTitle: 'Directive Shorthand macros',
+            bullets: [
+                'Compiler shortcuts: Blade directives begin with the "@" character.',
+                'Looping and conditionals: Clean syntax replaces verbose PHP opening and closing brackets.',
+                'Compile-time caching: Directives compile into PHP code blocks on the server.',
+                'Standard directives: Common structures include @if, @foreach, @auth, @guest, @csrf.'
+            ],
+            insight: 'At runtime, Laravel parses Blade tokens using regular expressions, caching the final PHP script.'
+        },
+
+        // SECTION 8: BLADE DIRECTIVES & PLAYGROUND (38-42)
+        {
+            id: 'laravel-slide38',
+            type: 'code',
+            moduleTag: 'Views',
+            title: 'Blade Conditionals',
+            topicTitle: 'Conditional Layout rendering',
+            code: `@if($role === 'admin')\n    <p>Admin panel active</p>\n@elseif($role === 'editor')\n    <p>Editor panel active</p>\n@else\n    <p>User view</p>\n@endif`,
+            bullets: [
+                'Control flow: Render HTML blocks using: @if, @elseif, @else, and @endif.',
+                'Logical evaluations: Directive parameters process normal PHP logic evaluations.',
+                'Auth helpers: Output layouts based on authorization: @auth displays blocks for logged-in sessions only.'
+            ],
+            insight: 'Avoid checking Auth::check() inside if blocks. Use the clean @auth and @guest directives.'
+        },
+        {
+            id: 'laravel-slide39',
+            type: 'code',
+            moduleTag: 'Views',
+            title: 'Blade Loops: @foreach',
+            topicTitle: 'Iterating through data arrays',
+            code: `<!-- resources/views/users.blade.php -->\n<ul>\n    @foreach($users as $user)\n        <li>User: {{ $user }}</li>\n    @endforeach\n</ul>`,
+            bullets: [
+                'Array loops: Loop over array structures using: @foreach($items as $item) and @endforeach.',
+                'Markup interpolation: Outputs HTML elements dynamically (e.g. lists, select option tags).',
+                'Backend mapping: Translates directly into native PHP foreach loop structures.'
+            ],
+            insight: 'Always make sure variables passed to @foreach loops are arrays or iterable collections, otherwise PHP compiles with error logs.'
+        },
+        {
+            id: 'laravel-slide40',
+            type: 'code',
+            moduleTag: 'Views',
+            title: 'The scoped $loop variable',
+            topicTitle: 'Tracking Loop Metadata',
+            code: `@foreach($users as $user)\n    @if($loop->first)\n        <li class="active">{{ $user }}</li>\n    @else\n        <li>{{ $user }}</li>\n    @endif\n@endforeach`,
+            bullets: [
+                'Iteration details: Access loop metadata using the special $loop variable inside @foreach loops.',
+                'Index variables: $loop->index starts at 0; $loop->iteration starts at 1.',
+                'Boundary checks: $loop->first and $loop->last return boolean states.'
+            ],
+            insight: 'Apply specific CSS styles based on loop metadata (e.g., class="border-b" on all but the last item using $loop->last).'
+        },
+        {
+            id: 'laravel-slide41',
+            type: 'code',
+            moduleTag: 'Views',
+            title: 'Blade Loops: @forelse & @empty',
+            topicTitle: 'Handling Empty Arrays Cleanly',
+            code: `@forelse($users as $user)\n    <li>User: {{ $user }}</li>\n@empty\n    <p>No records found.</p>\n@endforelse`,
+            bullets: [
+                'Shorthand loops: @forelse combines loop execution and empty array checks.',
+                'Fallback handler: The @empty directive renders fallback HTML if the dataset contains no records.',
+                'Closing directive: Ends with: @endforelse.'
+            ],
+            insight: 'Using @forelse replaces the need to wrap loops in nested @if(count($items) > 0) conditionals, keeping template code clean.'
+        },
+        {
+            id: 'laravel-slide42',
+            type: 'playground',
+            moduleTag: 'Views',
+            title: 'The Interactive Blade Playground',
+            topicTitle: 'Blade Conditionals & Loops Customizer',
+            bullets: [
+                'Blade Conditionals: Evaluate values using @if(expr), @elseif, @else, and @endif.',
+                'Toggles test: Use the checkboxes in the simulator to toggle session states and parameters.',
+                'Auth helpers: Output layouts based on authorization: @auth displays blocks for logged-in sessions only.',
+                'Loops iteration: Loop over dynamic arrays and lists using: @foreach ($items as $item).'
+            ],
+            insight: 'This playground compiles variable configurations in real-time, displaying the processed HTML outputs.'
+        },
+
+        // SECTION 9: DATA BINDINGS & CONTROLLER MAPPINGS (43-50)
+        {
+            id: 'laravel-slide43',
+            type: 'bullets',
+            moduleTag: 'Data Flow',
+            title: 'Data Binding Flows',
+            topicTitle: 'Passing Parameters to Views',
+            bullets: [
+                'Parameter values: Pass variables from routes or controllers into views.',
+                'Variables extraction: Array values map to local variable scopes in templates.',
+                'Isolation: Views are isolated from global variables, preventing state contamination.',
+                'Scope bounds: Templates access variables defined during the view compilation process.'
+            ],
+            insight: 'Controller Action (Extracts database data) → package parameter variables → view() helper → Blade Compiler (binds variables) → rendered HTML output.'
+        },
+        {
+            id: 'laravel-slide44',
+            type: 'code',
+            moduleTag: 'Data Flow',
+            title: 'Data Binding via Arrays',
+            topicTitle: 'Associative Array parameters',
+            code: `Route::get('/user', function () {\n    return view('profile', [\n        'name' => 'Alice',\n        'email' => 'alice@example.com'\n    ]);\n});`,
+            bullets: [
+                'Parameters syntax: Feed associative arrays as the second argument: view(\'home\', [\'name\' => $name]).',
+                'Key mappings: The array key name becomes the template variable name: key \'name\' maps to variable $name.',
+                'Dynamic arrays: Pass database collections or inputs directly to view scopes.'
+            ],
+            insight: 'Laravel utilizes extract() under the hood to assign variables within the views local scope, preventing state contamination.'
+        },
+        {
+            id: 'laravel-slide45',
+            type: 'code',
+            moduleTag: 'Data Flow',
+            title: 'Data Binding via compact()',
+            topicTitle: 'Wrapping Local Variables Cleanly',
+            code: `Route::get('/user', function () {\n    $name = 'Alice';\n    $email = 'alice@example.com';\n    \n    // Shorthand syntax mapping variable values\n    return view('profile', compact('name', 'email'));\n});`,
+            bullets: [
+                'PHP helper: compact() creates associative arrays from local variable scopes.',
+                'Parameters mapping: Pass string names matching variable names: compact(\'name\', \'email\').',
+                'Shorthand view calls: return view(\'profile\', compact(\'user\'));.'
+            ],
+            insight: 'Ensure the string names passed to compact() match your variable names exactly, otherwise PHP will throw a warning.'
+        },
+        {
+            id: 'laravel-slide46',
+            type: 'bullets',
+            moduleTag: 'Controllers',
+            title: 'Controller namespace stubs',
+            topicTitle: 'Decoupling Application Logic',
+            bullets: [
+                'Controllers folder: Store controller classes inside app/Http/Controllers/.',
+                'The Controller pattern: Move callback logic from routes/web.php into controller classes.',
+                'Action methods: Declare public class methods (like show, index) to process requests.',
+                'Class parameters: Controllers capture parameters resolved by the router dispatcher.'
+            ],
+            insight: 'Keep route files readable by delegating request processing tasks directly to controller classes.'
+        },
+        {
+            id: 'laravel-slide47',
+            type: 'bullets',
+            moduleTag: 'Controllers',
+            title: 'make:controller Artisan scaffolding',
+            topicTitle: 'Scaffolding Controller Classes',
+            bullets: [
+                'Artisan commands: Scaffold controller stubs using: php artisan make:controller UserController.',
+                'Code generation: Creates UserController.php template inside app/Http/Controllers/ directory.',
+                'Automatic namespaces: Artisan automatically applies matching namespaces and imports.',
+                'Provider checks: Artisan ensures class templates comply with base controller structures.'
+            ],
+            insight: 'Always use Artisan commands to create controllers. This avoids manual class creation errors and ensures correct namespaces.'
+        },
+        {
+            id: 'laravel-slide48',
+            type: 'code',
+            moduleTag: 'Controllers',
+            title: 'Controller class-string routing',
+            topicTitle: 'Mapping Route Actions to Controller Classes',
+            code: `// routes/web.php\nuse App\\Http\\Controllers\\UserController;\n\n// Pass array containing Controller name and method string\nRoute::get('/user/{id}', [UserController::class, 'show']);`,
+            bullets: [
+                'Routing mappings: Pass an array as the second argument: Route::get(\'/user/{id}\', [UserController::class, \'show\']).',
+                'Imports requirement: Import the controller class namespace at the top of routes/web.php.',
+                'Method string: The second array element maps to the target public action method name.'
+            ],
+            insight: 'Using class-string syntax (e.g. UserController::class) ensures IDE autocomplete and refactoring tools track controller dependencies accurately.'
+        },
+        {
+            id: 'laravel-slide49',
+            type: 'code',
+            moduleTag: 'Controllers',
+            title: 'Resource CRUD controllers',
+            topicTitle: 'Standard CRUD Route Automation',
+            code: `// routes/web.php\nRoute::resource('users', UserController::class);\n\n// Generates routes for: index, create, store, show, edit, update, destroy`,
+            bullets: [
+                'Resource controllers: Scaffold CRUD methods automatically: php artisan make:controller UserController --resource.',
+                'Automated routing: Route::resource(\'users\', UserController::class) registers all CRUD routes in one line.',
+                'Standardized paths: Follows RESTful URL schemas.'
+            ],
+            insight: 'Resource controllers standardize endpoints, ensuring API integrations scale consistently.'
+        },
+        {
+            id: 'laravel-slide50',
+            type: 'bullets',
+            moduleTag: 'Wrap-up',
+            title: 'Course Checklist & Week 2 Teaser',
+            topicTitle: 'Verify Your Learning Milestones',
+            bullets: [
+                'Boot Dev Server: Can you run "php artisan serve" and access your local host?',
+                'Routing Tables: Can you create custom URL routes that capture parameters dynamically?',
+                'Blade Templates: Can you render Blade views and output sanitized variables?',
+                'Logic separation: Can you generate controllers and map routes to controller class methods?',
+                'Next Week: Section 2 - Database Migrations & Eloquent ORM.'
+            ],
+            insight: 'Review PHP database connections to prepare for database migrations next week.'
+        }
+    ];
+
+    let currentSlide = 0;
+    const totalSlides = slidesData.length;
+    const container = document.getElementById('slides-wrapper');
+    const slideSelector = document.getElementById('slide-selector');
+
+    // Populate Selector options
+    slidesData.forEach((slide, idx) => {
+        const opt = document.createElement('option');
+        opt.value = idx;
+        opt.textContent = `Slide ${idx + 1}: ${slide.title}`;
+        slideSelector.appendChild(opt);
+    });
+
+    // Render exact layout for each slide
+    function renderSlide(index) {
+        const slide = slidesData[index];
+        
+        let contentHtml = '';
+        if (slide.type === 'cover') {
+            contentHtml = `
+                <div class="slide" id="active-slide-element" style="display:flex;">
+                    <div class="cover-layout">
+                        ${slide.moduleTag ? `
+                        <div class="cover-badge">
+                            <i class="fa-solid fa-graduation-cap"></i> ${slide.moduleTag}
+                        </div>` : ''}
+                        <h1 class="cover-title-main">Week 1: <span>${slide.title}</span></h1>
+                        ${slide.subtitle ? `<p class="cover-subtitle">${slide.subtitle}</p>` : ''}
+                        ${slide.metadata && slide.metadata.length > 0 ? `
+                        <div class="cover-meta">
+                            ${slide.metadata.map(item => `
+                                <div class="meta-box"><span class="meta-label">${item.label}</span><span class="meta-val">${item.val}</span></div>
+                            `).join('')}
+                        </div>` : ''}
+                    </div>
+                </div>
+            `;
+        } else if (slide.type === 'framework-comparison') {
+            contentHtml = `
+                <div class="slide" id="active-slide-element" style="display:flex;">
+                    <div class="slide-header">
+                        <h2 class="slide-title"><i class="fa-solid fa-scale-balanced"></i> ${slide.title}</h2>
+                        <span class="module-tag">${slide.moduleTag}</span>
+                    </div>
+                    <div class="content-grid">
+                        <div class="text-card">
+                            <div>
+                                <h3>${slide.topicTitle}</h3>
+                                <ul>
+                                    ${slide.bullets.map(b => `<li>${b}</li>`).join('')}
+                                </ul>
+                            </div>
+                            <div class="insight-box">
+                                <strong><i class="fa-solid fa-lightbulb"></i> Coding Insight</strong>
+                                <p>${slide.insight}</p>
+                            </div>
+                        </div>
+                        <div class="code-window">
+                            <div class="tab-bar">
+                                <button class="tab-btn active" onclick="switchCompareTab(0)">Raw PHP Spaghetti</button>
+                                <button class="tab-btn" onclick="switchCompareTab(1)">Laravel Framework</button>
+                            </div>
+                            <div class="code-titlebar">
+                                <span class="code-filepath" id="compare-filename">raw_profile.php</span>
+                            </div>
+                            <div class="code-content" id="compare-code-pane" style="font-size:11.5px;"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else if (slide.type === 'model-playground') {
+            contentHtml = `
+                <div class="slide" id="active-slide-element" style="display:flex;">
+                    <div class="slide-header">
+                        <h2 class="slide-title"><i class="fa-solid fa-database"></i> ${slide.title}</h2>
+                        <span class="module-tag">${slide.moduleTag}</span>
+                    </div>
+                    <div class="content-grid">
+                        <div class="text-card">
+                            <div>
+                                <h3>${slide.topicTitle}</h3>
+                                <p>Select an Eloquent ORM method to trigger mapping queries:</p>
+                                <div style="display:flex; flex-direction:column; gap:10px; margin: 15px 0;">
+                                    <button class="terminal-btn" onclick="runModelQuery('all')"><i class="fa-solid fa-list"></i> User::all()</button>
+                                    <button class="terminal-btn" onclick="runModelQuery('where')"><i class="fa-solid fa-filter"></i> User::where('active', 1)->get()</button>
+                                    <button class="terminal-btn" onclick="runModelQuery('find')"><i class="fa-solid fa-magnifying-glass"></i> User::find(5)</button>
+                                </div>
+                                <ul>
+                                    ${slide.bullets.map(b => `<li>${b}</li>`).join('')}
+                                </ul>
+                            </div>
+                            <div class="insight-box">
+                                <strong><i class="fa-solid fa-shield-halved"></i> SQL Injection Protection</strong>
+                                <p>${slide.insight}</p>
+                            </div>
+                        </div>
+                        <div class="code-window" style="display: grid; grid-template-rows: auto 1fr; height: 100%;">
+                            <div class="code-titlebar">
+                                <span class="code-filepath">SQL Compiler Translation Pane</span>
+                            </div>
+                            <div style="display: grid; grid-template-rows: 110px 1fr; height:100%; overflow:hidden;">
+                                <div style="border-bottom: 1px solid var(--border-color); padding: 12px; font-family:'Fira Code', monospace; font-size:12.5px; background:#090d16;" id="model-sql-query-view">
+                                    SELECT * FROM users;
+                                </div>
+                                <div class="code-content" id="model-sql-output-view" style="color: #cbd5e1; font-size:12px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else if (slide.type === 'controller-flow') {
+            contentHtml = `
+                <div class="slide" id="active-slide-element" style="display:flex;">
+                    <div class="slide-header">
+                        <h2 class="slide-title"><i class="fa-solid fa-route"></i> ${slide.title}</h2>
+                        <span class="module-tag">${slide.moduleTag}</span>
+                    </div>
+                    <div class="content-grid">
+                        <div class="text-card">
+                            <div>
+                                <h3>${slide.topicTitle}</h3>
+                                <ul>
+                                    ${slide.bullets.map(b => `<li>${b}</li>`).join('')}
+                                </ul>
+                            </div>
+                            <div class="insight-box">
+                                <strong><i class="fa-solid fa-gears"></i> Logical Broker Cycle</strong>
+                                <p>${slide.insight}</p>
+                            </div>
+                        </div>
+                        <div class="code-window">
+                            <div class="flow-steps-bar">
+                                <button class="flow-step-btn active" id="flow-btn-1" onclick="switchFlowStep(1)">1. URL Capture</button>
+                                <button class="flow-step-btn" id="flow-btn-2" onclick="switchFlowStep(2)">2. Model Lookup</button>
+                                <button class="flow-step-btn" id="flow-btn-3" onclick="switchFlowStep(3)">3. view() Render</button>
+                            </div>
+                            <div class="code-titlebar">
+                                <span class="code-filepath" id="flow-step-filepath">routes/web.php</span>
+                            </div>
+                            <div class="code-content" id="flow-step-code-pane" style="height:210px; overflow-y:auto;"></div>
+                            <div class="browser-preview-frame">
+                                <div class="browser-header">
+                                    <i class="fa-solid fa-circle text-slate-400"></i>
+                                    <span class="browser-url-input" id="flow-step-url">http://127.0.0.1:8000/user/5</span>
+                                </div>
+                                <div class="browser-body" id="flow-step-browser-body" style="font-size:12px; font-family:sans-serif;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else if (slide.type === 'versus') {
+            contentHtml = `
+                <div class="slide" id="active-slide-element" style="display:flex;">
+                    <div class="slide-header">
+                        <h2 class="slide-title"><i class="fa-solid fa-code-fork"></i> ${slide.title}</h2>
+                        <span class="module-tag">${slide.moduleTag}</span>
+                    </div>
+                    <div class="content-grid">
+                        <div class="text-card">
+                            <div>
+                                <h3>${slide.topicTitle}</h3>
+                                <div class="versus-grid">
+                                    <div class="versus-box highlight">
+                                        <h4><i class="fa-solid fa-server"></i> ${slide.versusLeft.title}</h4>
+                                        <ul>
+                                            ${slide.versusLeft.bullets.map(b => `<li>${b}</li>`).join('')}
+                                        </ul>
+                                    </div>
+                                    <div class="versus-box">
+                                        <h4><i class="fa-solid fa-gears"></i> ${slide.versusRight.title}</h4>
+                                        <ul>
+                                            ${slide.versusRight.bullets.map(b => `<li>${b}</li>`).join('')}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="insight-box">
+                                <strong><i class="fa-solid fa-circle-info"></i> Architectural Detail</strong>
+                                <p>${slide.insight}</p>
+                            </div>
+                        </div>
+                        <div class="code-window">
+                            <div class="code-titlebar">
+                                <div class="code-controls">
+                                    <div class="code-dot red"></div>
+                                    <div class="code-dot yellow"></div>
+                                    <div class="code-dot green"></div>
+                                </div>
+                                <span class="code-filepath">MVC Pattern Diagram</span>
+                            </div>
+                            <div class="code-content" style="display:flex; flex-direction:column; justify-content:center; align-items:center; gap:20px; padding:30px;">
+                                <div style="border:1px solid #EF4444; padding:8px 20px; border-radius:8px; background:rgba(239,68,68,0.1); width:180px; text-align:center;">
+                                    <strong style="color:#f8fafc; font-size:12px;">Client Browser</strong>
+                                </div>
+                                <div style="color:#EF4444;"><i class="fa-solid fa-arrow-down-long fa-xl"></i></div>
+                                <div style="border:1px solid #38bdf8; padding:8px 20px; border-radius:8px; background:rgba(56,189,248,0.1); width:180px; text-align:center;">
+                                    <strong style="color:#f8fafc; font-size:12px;">Route &amp; Controller</strong>
+                                </div>
+                                <div style="display:flex; gap:30px; color:#64748b;">
+                                    <div style="display:flex; flex-direction:column; align-items:center;">
+                                        <div style="color:#EF4444;"><i class="fa-solid fa-arrow-left-long fa-lg"></i></div>
+                                        <div style="border:1px solid #10b981; padding:6px 12px; border-radius:8px; background:rgba(16,185,129,0.1); text-align:center; margin-top:8px; font-size:11px;">Model</div>
+                                    </div>
+                                    <div style="display:flex; flex-direction:column; align-items:center;">
+                                        <div style="color:#EF4444;"><i class="fa-solid fa-arrow-right-long fa-lg"></i></div>
+                                        <div style="border:1px solid #f59e0b; padding:6px 12px; border-radius:8px; background:rgba(245,158,11,0.1); text-align:center; margin-top:8px; font-size:11px;">View</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else if (slide.type === 'explorer') {
+            contentHtml = `
+                <div class="slide" id="active-slide-element" style="display:flex;">
+                    <div class="slide-header">
+                        <h2 class="slide-title"><i class="fa-solid fa-folder-tree"></i> ${slide.title}</h2>
+                        <span class="module-tag">${slide.moduleTag}</span>
+                    </div>
+                    <div class="content-grid">
+                        <div class="text-card">
+                            <div>
+                                <h3>${slide.topicTitle}</h3>
+                                <p>Click files in the browser sidebar to preview their contents and dynamically trace code relationships.</p>
+                                <ul>
+                                    ${slide.bullets.map(b => `<li>${b}</li>`).join('')}
+                                </ul>
+                            </div>
+                            <!-- Dependency mapper visual widget -->
+                            <div class="dependency-map-container">
+                                <span class="dependency-title"><i class="fa-solid fa-network-wired"></i> Dependency Mapping Flow</span>
+                                <div class="dependency-flow">
+                                    <span class="flow-node highlight" id="dep-route">web.php</span>
+                                    <span class="flow-arrow">→</span>
+                                    <span class="flow-node" id="dep-controller">UserController.php</span>
+                                    <span class="flow-arrow">→</span>
+                                    <span class="flow-node" id="dep-view">home.blade.php</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="code-window" style="display: grid; grid-template-rows: auto 1fr; height: 100%;">
+                            <div class="code-titlebar">
+                                <span class="code-filepath" id="explorer-filename">routes/web.php</span>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 190px 1fr; height: 100%; overflow: hidden;">
+                                <div style="border-right: 1px solid var(--border-color); padding: 12px; overflow-y: auto;" class="folder-tree">
+                                    <div class="tree-node" onclick="toggleFolder('app-sub')"><i class="fa-regular fa-folder text-amber-500"></i> app/</div>
+                                    <div class="tree-indent" id="app-sub" style="display:none;">
+                                        <div class="tree-node" onclick="toggleFolder('ctrl-sub')"><i class="fa-regular fa-folder text-amber-500"></i> Http/</div>
+                                        <div class="tree-indent" id="ctrl-sub" style="display:none;">
+                                            <div class="tree-node" id="file-user-ctrl" onclick="loadExplorerCode('UserController')"><i class="fa-regular fa-file-code text-sky-400"></i> UserController.php</div>
+                                        </div>
+                                    </div>
+                                    <div class="tree-node" onclick="toggleFolder('res-sub')"><i class="fa-regular fa-folder text-amber-500"></i> resources/</div>
+                                    <div class="tree-indent" id="res-sub" style="display:none;">
+                                        <div class="tree-node" onclick="toggleFolder('view-sub')"><i class="fa-regular fa-folder text-amber-500"></i> views/</div>
+                                        <div class="tree-indent" id="view-sub" style="display:none;">
+                                            <div class="tree-node" id="file-home-blade" onclick="loadExplorerCode('homeView')"><i class="fa-regular fa-file text-sky-400"></i> home.blade.php</div>
+                                        </div>
+                                    </div>
+                                    <div class="tree-node" onclick="toggleFolder('routes-sub')"><i class="fa-regular fa-folder-open text-amber-500"></i> routes/</div>
+                                    <div class="tree-indent" id="routes-sub">
+                                        <div class="tree-node highlight" id="file-web-route" onclick="loadExplorerCode('webRoute')"><i class="fa-regular fa-file-code text-sky-400"></i> web.php</div>
+                                    </div>
+                                </div>
+                                <div class="code-content" id="explorer-code-pane" style="padding: 14px; font-size:12px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else if (slide.type === 'tester') {
+            contentHtml = `
+                <div class="slide" id="active-slide-element" style="display:flex;">
+                    <div class="slide-header">
+                        <h2 class="slide-title"><i class="fa-solid fa-paper-plane"></i> ${slide.title}</h2>
+                        <span class="module-tag">${slide.moduleTag}</span>
+                    </div>
+                    <div class="content-grid">
+                        <div class="text-card">
+                            <div>
+                                <h3>${slide.topicTitle}</h3>
+                                <p>Write paths and trigger requests to analyze route mapping variables.</p>
+                                <ul>
+                                    <li>Try typing <code>/hello</code> and hit send.</li>
+                                    <li>Try typing <code>/user/10</code> and hit send.</li>
+                                    <li>Try typing <code>/search?term=laravel</code> and hit send.</li>
+                                </ul>
+                            </div>
+                            <div class="insight-box">
+                                <strong><i class="fa-solid fa-server"></i> Route Engine</strong>
+                                <p>Laravel's routing engine resolves the requested URL, checks regular expression constraints, and returns outputs.</p>
+                            </div>
+                        </div>
+                        <div class="code-window">
+                            <!-- Tester Action Inputs -->
+                            <div class="tester-inputs">
+                                <select class="tester-select" id="route-tester-method">
+                                    <option value="GET">GET</option>
+                                    <option value="POST">POST</option>
+                                </select>
+                                <input type="text" class="tester-url-input" id="route-tester-url" value="/hello">
+                                <button class="tester-send-btn" onclick="sendRouteTest()"><i class="fa-solid fa-play"></i> Send</button>
+                            </div>
+                            <div class="code-titlebar">
+                                <span class="code-filepath">Simulated HTTP Client Output</span>
+                            </div>
+                            <div class="tester-results">
+                                <div class="tester-headers-pane" id="route-tester-headers">
+                                    Status: --<br>Content-Type: --
+                                </div>
+                                <div class="tester-response-pane" id="route-tester-response">
+                                    Click Send to trigger HTTP Request...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else if (slide.type === 'playground') {
+            contentHtml = `
+                <div class="slide" id="active-slide-element" style="display:flex;">
+                    <div class="slide-header">
+                        <h2 class="slide-title"><i class="fa-solid fa-gamepad"></i> ${slide.title}</h2>
+                        <span class="module-tag">${slide.moduleTag}</span>
+                    </div>
+                    <div class="content-grid">
+                        <div class="text-card">
+                            <div>
+                                <h3>${slide.topicTitle}</h3>
+                                <p>Toggle configurations to compile directives in the editor panel.</p>
+                                <ul>
+                                    ${slide.bullets.map(b => `<li>${b}</li>`).join('')}
+                                </ul>
+                            </div>
+                            <div class="insight-box">
+                                <strong><i class="fa-solid fa-code"></i> Directives compile</strong>
+                                <p>Toggling active variables alters compiled layouts instantly, demonstrating how parameters govern HTML rendering outputs on server-sides.</p>
+                            </div>
+                        </div>
+                        <div class="code-window">
+                            <!-- Toggle Variable checkboxes -->
+                            <div class="blade-playground-vars">
+                                <label class="playground-checkbox-label">
+                                    <input type="checkbox" id="play-logged-in" checked onchange="runBladePlayground()"> isLoggedIn
+                                </label>
+                                <span style="color:var(--text-secondary);">|</span>
+                                <label class="playground-checkbox-label">
+                                    Role:
+                                    <select class="playground-select" id="play-role" onchange="runBladePlayground()">
+                                        <option value="user">User</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
+                                </label>
+                            </div>
+                            <div class="code-titlebar">
+                                <span class="code-filepath">Blade Template Compilation Preview</span>
+                            </div>
+                            <div class="code-content" style="font-size:12.5px; height:180px; overflow-y:auto;" id="blade-playground-code"></div>
+                            <div class="browser-preview-frame">
+                                <div class="browser-header">
+                                    <i class="fa-solid fa-circle text-slate-400"></i>
+                                    <span class="browser-url-input">http://127.0.0.1:8000/profile</span>
+                                </div>
+                                <div class="browser-body" id="blade-playground-browser-body"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else if (slide.type === 'code') {
+            contentHtml = `
+                <div class="slide" id="active-slide-element" style="display:flex;">
+                    <div class="slide-header">
+                        <h2 class="slide-title"><i class="fa-solid fa-code"></i> ${slide.title}</h2>
+                        <span class="module-tag">${slide.moduleTag}</span>
+                    </div>
+                    <div class="content-grid">
+                        <div class="text-card">
+                            <div>
+                                <h3>${slide.topicTitle}</h3>
+                                <ul>
+                                    ${slide.bullets.map(b => `<li>${b}</li>`).join('')}
+                                </ul>
+                            </div>
+                            <div class="insight-box">
+                                <strong><i class="fa-solid fa-terminal"></i> Technical Detail</strong>
+                                <p>${slide.keyInsight ? slide.keyInsight.text : (slide.insight || '')}</p>
+                            </div>
+                        </div>
+                        <div class="code-window">
+                            <div class="code-titlebar">
+                                <div class="code-controls">
+                                    <div class="code-dot red"></div>
+                                    <div class="code-dot yellow"></div>
+                                    <div class="code-dot green"></div>
+                                </div>
+                                <span class="code-filepath">Code Implementation</span>
+                            </div>
+                            <div class="code-content">${escapeHtml(slide.code)}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else {
+            contentHtml = `
+                <div class="slide" id="active-slide-element" style="display:flex;">
+                    <div class="slide-header">
+                        <h2 class="slide-title"><i class="fa-solid fa-circle-question"></i> ${slide.title}</h2>
+                        <span class="module-tag">${slide.moduleTag}</span>
+                    </div>
+                    <div class="content-grid">
+                        <div class="text-card">
+                            <div>
+                                <h3>${slide.topicTitle}</h3>
+                                <ul>
+                                    ${slide.bullets.map(b => `<li>${b}</li>`).join('')}
+                                </ul>
+                            </div>
+                            <div class="insight-box">
+                                <strong><i class="fa-solid fa-circle-info"></i> Developer insight</strong>
+                                <p>${slide.keyInsight ? slide.keyInsight.text : (slide.insight || '')}</p>
+                            </div>
+                        </div>
+                        <div class="code-window">
+                            <div class="code-titlebar">
+                                <div class="code-controls">
+                                    <div class="code-dot red"></div>
+                                    <div class="code-dot yellow"></div>
+                                    <div class="code-dot green"></div>
+                                </div>
+                                <span class="code-filepath">Illustration View</span>
+                            </div>
+                            <div class="code-content" style="display:flex; justify-content:center; align-items:center; background:#090d16;">
+                                <img src="${slide.image.url}" alt="${slide.image.caption}" style="max-width:90%; max-height:90%; object-fit:cover; border-radius:8px; border:1px solid rgba(255,255,255,0.1);" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        container.innerHTML = contentHtml;
+        
+        // Trigger page transitions
+        const actSlide = document.getElementById('active-slide-element');
+        setTimeout(() => {
+            if (actSlide) {
+                actSlide.style.opacity = '1';
+                actSlide.style.transform = 'scale(1)';
+            }
+        }, 30);
+
+        // Run slide-specific component initializes
+        if (slide.type === 'explorer') {
+            loadExplorerCode('webRoute');
+        }
+        if (slide.type === 'playground') {
+            runBladePlayground();
+        }
+        if (slide.type === 'framework-comparison') {
+            switchCompareTab(0);
+        }
+        if (slide.type === 'model-playground') {
+            runModelQuery('all');
+        }
+        if (slide.type === 'controller-flow') {
+            switchFlowStep(1);
+        }
+        if (index === 16) {
+            // Re-render server terminal logs (Slide 17)
+            resetArtisanTerminal();
+        }
+    }
+
+    function toggleFolder(folderId) {
+        const sub = document.getElementById(folderId);
+        sub.style.display = sub.style.display === 'none' ? 'block' : 'none';
+    }
+
+    const fileContentsMap = {
+        webRoute: {
+            filepath: 'routes/web.php',
+            code: `<?php\n\nuse Illuminate\\Support\\Facades\\Route;\nuse App\\Http\\Controllers\\UserController;\n\n// Match entry routes\nRoute::get('/user/{id}', [UserController::class, 'show']);\n\nRoute::get('/welcome', function () {\n    return view('home');\n});`,
+            nodes: ['dep-route']
+        },
+        UserController: {
+            filepath: 'app/Http/Controllers/UserController.php',
+            code: `<?php\n\nnamespace App\\Http\\Controllers;\n\nuse App\\Http\\Controllers\\Controller;\nuse App\\Models\\User;\n\nclass UserController extends Controller\n{\n    public function show($id)\n    {\n        $user = User::findOrFail($id);\n        return view('profile', compact('user'));\n    }\n}`,
+            nodes: ['dep-route', 'dep-controller', 'dep-view']
+        },
+        homeView: {
+            filepath: 'resources/views/home.blade.php',
+            code: `<!-- resources/views/home.blade.php -->\n<!DOCTYPE html>\n<html>\n<body>\n    <h1>Laravel 11 App Booted Successfully!</h1>\n</body>\n</html>`,
+            nodes: ['dep-view']
+        }
+    };
+
+    function loadExplorerCode(key) {
+        const mapping = fileContentsMap[key];
+        
+        // Set highlighted class tree
+        document.querySelectorAll('.tree-node').forEach(node => node.classList.remove('highlight'));
+        if (key === 'webRoute') document.getElementById('file-web-route').classList.add('highlight');
+        if (key === 'UserController') document.getElementById('file-user-ctrl').classList.add('highlight');
+        if (key === 'homeView') document.getElementById('file-home-blade').classList.add('highlight');
+
+        document.getElementById('explorer-filename').textContent = mapping.filepath;
+        document.getElementById('explorer-code-pane').innerHTML = escapeHtml(mapping.code);
+
+        // Map highlights dependency line
+        document.querySelectorAll('.flow-node').forEach(node => node.classList.remove('highlight'));
+        mapping.nodes.forEach(nodeId => {
+            document.getElementById(nodeId).classList.add('highlight');
+        });
+    }
+
+    // ==========================================
+    // INTERACTIVE FEATURE: COMPARE TAB (SLIDE 7)
+    // ==========================================
+    const compareCodes = [
+        {
+            filename: 'raw_profile.php',
+            code: `<?php\n// raw_profile.php\n// 1. Manual PDO connection mapping\n$db = new PDO('mysql:host=localhost;dbname=test', 'root', 'secret');\n\n// 2. Fetch parameter ID from URL query strings\n$userId = isset($_GET['id']) ? intval($_GET['id']) : 0;\n\n// 3. Prevent SQL injection via parameter binding\n$stmt = $db->prepare('SELECT * FROM users WHERE id = :id');\n$stmt->execute(['id' => $userId]);\n$user = $stmt->fetch();\n\n// 4. CSRF protection verification\nif ($_SERVER['REQUEST_METHOD'] === 'POST') {\n    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf']) {\n        header('HTTP/1.1 403 Forbidden');\n        die('CSRF token validation failed.');\n    }\n}\n\n// 5. Escape values with htmlspecialchars() to prevent XSS script tags\nfunction escape($text) {\n    return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');\n}\n?>\n\n<!-- 6. Raw spaghetti PHP and HTML markup -->\n<div class="user-profile">\n    <h3>User Name: <?php echo escape($user['name']); ?></h3>\n    <p>Email: <?php echo escape($user['email']); ?></p>\n</div>`
+        },
+        {
+            filename: 'UserController.php',
+            code: `<?php\n// routes/web.php\nRoute::get('/user/{id}', [UserController::class, 'show']);\n\n// app/Http/Controllers/UserController.php\nclass UserController extends Controller {\n    public function show($id) {\n        // 1. Eloquent ORM queries automatically protect against SQL Injections\n        // 2. Dynamic routing maps $id parameter automatically\n        $user = User::findOrFail($id);\n        \n        // 3. Return rendering View template, binding data cleanly\n        return view('profile', compact('user'));\n    }\n}\n\n// resources/views/profile.blade.php\n<div class="user-profile">\n    <!-- 4. Double curly syntax automatically escapes XSS script payloads -->\n    <h3>User Name: {{ $user->name }}</h3>\n    <p>Email: {{ $user->email }}</p>\n</div>`
+        }
+    ];
+
+    function switchCompareTab(idx) {
+        const tabs = document.querySelectorAll('#active-slide-element .tab-btn');
+        tabs.forEach((tab, i) => {
+            if (i === idx) tab.classList.add('active');
+            else tab.classList.remove('active');
+        });
+        document.getElementById('compare-filename').textContent = compareCodes[idx].filename;
+        document.getElementById('compare-code-pane').innerHTML = escapeHtml(compareCodes[idx].code);
+    }
+
+    // ==========================================
+    // INTERACTIVE FEATURE: MODEL SQL PLAYGROUND (SLIDE 10)
+    // ==========================================
+    const modelQueriesMap = {
+        all: {
+            sql: 'SELECT * FROM users;',
+            result: `[\n  { "id": 1, "name": "Alice", "email": "alice@example.com", "active": 1 },\n  { "id": 2, "name": "Bob", "email": "bob@example.com", "active": 0 },\n  { "id": 5, "name": "Charlie", "email": "charlie@example.com", "active": 1 }\n]`
+        },
+        where: {
+            sql: 'SELECT * FROM users WHERE active = 1;',
+            result: `[\n  { "id": 1, "name": "Alice", "email": "alice@example.com", "active": 1 },\n  { "id": 5, "name": "Charlie", "email": "charlie@example.com", "active": 1 }\n]`
+        },
+        find: {
+            sql: 'SELECT * FROM users WHERE id = 5 LIMIT 1;',
+            result: `{\n  "id": 5,\n  "name": "Charlie",\n  "email": "charlie@example.com",\n  "active": 1\n}`
+        }
+    };
+
+    function runModelQuery(key) {
+        const item = modelQueriesMap[key];
+        document.getElementById('model-sql-query-view').innerHTML = `<span class="keyword">SQL Command sent to Database:</span>\n<span class="string">${item.sql}</span>`;
+        document.getElementById('model-sql-output-view').textContent = `Returned PHP Array payload:\n` + item.result;
+    }
+
+    // ==========================================
+    // INTERACTIVE FEATURE: CONTROLLER FLOW SIMULATOR (SLIDE 14)
+    // ==========================================
+    const controllerFlowSteps = {
+        1: {
+            filename: 'routes/web.php',
+            code: `<?php\nuse App\\Http\\Controllers\\UserController;\n\n// 1. Router captures dynamic ID segment from URL\nRoute::get('/user/{id}', [UserController::class, 'show']);`,
+            url: 'http://127.0.0.1:8000/user/5',
+            browser: `<div style="padding: 10px; color:#475569;">\n  <strong>Terminal logs:</strong>\n  <span style="color:#10b981;">[12:05:00] Router matched path "/user/5". Invoking UserController@show with parameter id=5.</span>\n</div>`
+        },
+        2: {
+            filename: 'app/Http/Controllers/UserController.php',
+            code: `<?php\npublic function show($id) {\n    // 2. Controller triggers Eloquent database lookup mapping\n    $user = User::findOrFail($id);\n    \n    return view('profile', compact('user'));\n}`,
+            url: 'http://127.0.0.1:8000/user/5',
+            browser: `<div style="padding: 10px; color:#475569;">\n  <strong>Database ORM Trace:</strong>\n  <span style="color:#38bdf8;">Running SQL: SELECT * FROM users WHERE id = 5 LIMIT 1;</span><br>\n  <span style="color:#10b981;">Database returned record: { "id": 5, "name": "Charlie", "email": "charlie@example.com" }</span>\n</div>`
+        },
+        3: {
+            filename: 'resources/views/profile.blade.php',
+            code: `<!-- resources/views/profile.blade.php -->\n<div style="border:1px solid #cbd5e1; border-radius:8px; padding:12px; background:#fff; color:#0f172a;">\n    <h3>User Profile</h3>\n    <p>Welcome back, {{ $user->name }}!</p>\n</div>`,
+            url: 'http://127.0.0.1:8000/user/5',
+            browser: `<div style="border:1px solid #cbd5e1; border-radius:8px; padding:12px; background:#fff; color:#0f172a;">\n  <h4 style="font-weight:700; margin-bottom:4px;">User Profile</h4>\n  <p>Welcome back, Charlie!</p>\n</div>`
+        }
+    };
+
+    function switchFlowStep(step) {
+        const stepData = controllerFlowSteps[step];
+        
+        // Toggle steps buttons
+        for (let i = 1; i <= 3; i++) {
+            const btn = document.getElementById(`flow-btn-${i}`);
+            if (btn) {
+                if (i === step) btn.classList.add('active');
+                else btn.classList.remove('active');
+            }
+        }
+
+        document.getElementById('flow-step-filepath').textContent = stepData.filename;
+        document.getElementById('flow-step-code-pane').innerHTML = escapeHtml(stepData.code);
+        document.getElementById('flow-step-url').textContent = stepData.url;
+        document.getElementById('flow-step-browser-body').innerHTML = stepData.browser;
+    }
+
+    // ==========================================
+    // INTERACTIVE BLADE PLAYGROUND (SLIDE 42)
+    // ==========================================
+    function runBladePlayground() {
+        const isLoggedIn = document.getElementById('play-logged-in').checked;
+        const role = document.getElementById('play-role').value;
+        const codePane = document.getElementById('blade-playground-code');
+        const browserBody = document.getElementById('blade-playground-browser-body');
+
+        // Compile logic code display
+        const codeLines = [
+            `@if($isLoggedIn)`,
+            `    &lt;h3&gt;Welcome back, Alice!&lt;/h3&gt;`,
+            `    @if($role === 'admin')`,
+            `        &lt;span class="badge"&gt;Admin Console Active&lt;/span&gt;`,
+            `    @endif`,
+            `@else`,
+            `    &lt;h3&gt;Welcome, Guest! Please log in.&lt;/h3&gt;`,
+            `@endif`
+        ];
+
+        let formattedHtml = '';
+        codeLines.forEach(line => {
+            let compiled = line;
+            if (line.includes('@if($isLoggedIn)')) {
+                compiled = `<span class="keyword">@if</span>(<span class="variable">$isLoggedIn</span>) <span class="comment">// evaluated to ${isLoggedIn}</span>`;
+            } else if (line.includes('@if($role === \'admin\')')) {
+                compiled = `    <span class="keyword">@if</span>(<span class="variable">$role</span> === <span class="string">'admin'</span>) <span class="comment">// evaluated to ${role === 'admin'}</span>`;
+            } else if (line.includes('@else')) {
+                compiled = `<span class="keyword">@else</span>`;
+            } else if (line.includes('@endif')) {
+                compiled = `<span class="keyword">@endif</span>`;
+            }
+            formattedHtml += compiled + '\n';
+        });
+
+        codePane.innerHTML = formattedHtml;
+
+        // Render mock browser view
+        let previewHtml = '';
+        if (isLoggedIn) {
+            previewHtml = `
+                <div style="border:1px solid #cbd5e1; border-radius:8px; padding:12px; background:#fff; color:#0f172a;">
+                    <h4 style="font-weight:700; margin-bottom:4px; color:#0f172a;">User Profile</h4>
+                    <p style="margin:0; font-size:13px; color:#475569;">Welcome back, Alice!</p>
+                    ${role === 'admin' ? '<span style="display:inline-block; margin-top:8px; font-size:11px; font-weight:700; background:#EF4444; color:#fff; padding:2px 6px; border-radius:4px;">Admin Console Active</span>' : ''}
+                </div>
+            `;
+        } else {
+            previewHtml = `
+                <div style="border:1px solid #cbd5e1; border-radius:8px; padding:12px; background:#fff; color:#0f172a;">
+                    <h4 style="font-weight:700; margin-bottom:4px; color:#0f172a;">Session Logged Out</h4>
+                    <p style="margin:0; font-size:13px; color:#475569;">Welcome, Guest! Please log in to your account.</p>
+                </div>
+            `;
+        }
+
+        browserBody.innerHTML = previewHtml;
+    }
+
+    // ==========================================
+    // INTERACTIVE ROUTE TESTER (SLIDE 30)
+    // ==========================================
+    function sendRouteTest() {
+        const method = document.getElementById('route-tester-method').value;
+        const rawUrl = document.getElementById('route-tester-url').value.trim();
+        const headersPane = document.getElementById('route-tester-headers');
+        const responsePane = document.getElementById('route-tester-response');
+
+        // Parse query params helper
+        const urlParts = rawUrl.split('?');
+        const path = urlParts[0];
+        const queryString = urlParts[1] || '';
+
+        // Router matcher simulation
+        if (method === 'GET' && path === '/hello') {
+            headersPane.innerHTML = `Status: <span style="color:#10b981;">200 OK</span><br>Content-Type: text/plain; charset=UTF-8`;
+            responsePane.innerHTML = `Hello, Laravel!`;
+        } else if (method === 'GET' && path.startsWith('/user/')) {
+            const idSegment = path.substring(6);
+            const isNumeric = /^[0-9]+$/.test(idSegment);
+            
+            if (isNumeric) {
+                headersPane.innerHTML = `Status: <span style="color:#10b981;">200 OK</span><br>Content-Type: text/html; charset=UTF-8<br>Matched Route: /user/{id}`;
+                responsePane.innerHTML = `<div style="border:1px solid #cbd5e1; border-radius:8px; padding:12px; background:#fff; color:#0f172a;">\n  <h4 style="font-weight:700;">Profile View</h4>\n  <p>User Account ID: ${idSegment}</p>\n</div>`;
+            } else {
+                // regex match error triggers 404
+                headersPane.innerHTML = `Status: <span style="color:#ef4444;">404 Not Found</span><br>Content-Type: text/html; charset=UTF-8`;
+                responsePane.innerHTML = `Sorry, the route parameter pattern did not pass the regex constraint ->where('id', '[0-9]+').`;
+            }
+        } else if (method === 'GET' && path === '/search') {
+            // query parameters
+            let term = 'empty';
+            if (queryString.includes('term=')) {
+                term = queryString.split('term=')[1].split('&')[0];
+            }
+            headersPane.innerHTML = `Status: <span style="color:#10b981;">200 OK</span><br>Content-Type: application/json; charset=UTF-8`;
+            responsePane.innerHTML = JSON.stringify({
+                search_term: decodeURIComponent(term),
+                status: 'success',
+                timestamp: Math.floor(Date.now() / 1000)
+            }, null, 2);
+        } else {
+            headersPane.innerHTML = `Status: <span style="color:#ef4444;">404 Not Found</span><br>Content-Type: text/html; charset=UTF-8`;
+            responsePane.innerHTML = `Route [${method} ${rawUrl}] not registered in routes/web.php.`;
+        }
+    }
+
+
+    // ==========================================
+    // INTERACTIVE ARTISAN CONSOLE (SLIDE 17)
+    // ==========================================
+    let isTermActive = false;
+    function resetArtisanTerminal() {
+        const bootBtn = document.getElementById('artisan-boot-btn');
+        const reqBtn = document.getElementById('artisan-req-btn');
+        const screen = document.getElementById('terminal-screen');
+        if (!bootBtn || !screen) return;
+
+        isTermActive = false;
+        bootBtn.innerHTML = '<i class="fa-solid fa-play"></i> Boot Artisan Server';
+        bootBtn.disabled = false;
+        reqBtn.disabled = true;
+        screen.innerHTML = '$ _';
+
+        bootBtn.onclick = () => {
+            bootBtn.disabled = true;
+            screen.innerHTML = '$ php artisan serve\n';
+            setTimeout(() => {
+                screen.innerHTML += `<span style="color:#38bdf8;">  INFO  Server running on [http://127.0.0.1:8000].  </span>\n\n  Press Ctrl+C to stop the server\n\n`;
+                isTermActive = true;
+                bootBtn.innerHTML = '<i class="fa-solid fa-circle-check" style="color:#10b981"></i> Server Active';
+                reqBtn.disabled = false;
+            }, 800);
+        };
+
+        reqBtn.onclick = () => {
+            if (isTermActive) {
+                const time = new Date().toLocaleTimeString();
+                screen.innerHTML += `<span style="color:#64748b;">[${time}]</span> 127.0.0.1:49213 [200]: GET /hello\n`;
+                screen.scrollTop = screen.scrollHeight;
+            }
+        };
+    }
+
+    // Helper functions
+    function escapeHtml(text) {
+        return text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;")
+            .replace(/&lt;\?php/g, '<span class="keyword">&lt;?php</span>')
+            .replace(/class /g, '<span class="keyword">class </span>')
+            .replace(/function/g, '<span class="keyword">function</span>')
+            .replace(/return /g, '<span class="keyword">return </span>')
+            .replace(/namespace/g, '<span class="keyword">namespace</span>')
+            .replace(/use /g, '<span class="keyword">use </span>');
+    }
+
+    // Viewport Rescaling logic
+    function resizeSlides() {
+        const viewport = document.querySelector('.slide-viewport');
+        if (!viewport) return;
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+        
+        const buffer = 40;
+        const scaleX = (windowWidth - buffer) / 1280;
+        const scaleY = (windowHeight - buffer) / 720;
+        
+        const scale = Math.min(scaleX, scaleY, 1);
+        viewport.style.transform = `scale(${scale})`;
+    }
+
+    window.addEventListener('resize', resizeSlides);
+    window.addEventListener('load', resizeSlides);
+
+    // Slide Swapper controller
+    function showSlide(index) {
+        if (index < 0 || index >= totalSlides) return;
+        currentSlide = index;
+        renderSlide(index);
+        
+        // Update control labels
+        document.getElementById('slide-counter-val').textContent = (currentSlide + 1) + ' / ' + totalSlides;
+        const progressPercent = ((currentSlide + 1) / totalSlides) * 100;
+        document.getElementById('progress-bar').style.width = progressPercent + '%';
+        document.getElementById('slide-selector').value = currentSlide;
+        
+        document.getElementById('prev-btn').disabled = (currentSlide === 0);
+        document.getElementById('next-btn').disabled = (currentSlide === totalSlides - 1);
+    }
+
+    // Bind navigation buttons
+    document.getElementById('prev-btn').addEventListener('click', () => {
+        if (currentSlide > 0) showSlide(currentSlide - 1);
+    });
+
+    document.getElementById('next-btn').addEventListener('click', () => {
+        if (currentSlide < totalSlides - 1) showSlide(currentSlide + 1);
+    });
+
+    document.getElementById('slide-selector').addEventListener('change', (e) => {
+        showSlide(parseInt(e.target.value));
+    });
+
+    // Keyboard bindings
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+            e.preventDefault();
+            if (currentSlide < totalSlides - 1) showSlide(currentSlide + 1);
+        } else if (e.key === 'ArrowLeft' || e.key === 'Backspace') {
+            e.preventDefault();
+            if (currentSlide > 0) showSlide(currentSlide - 1);
+        }
+    });
+
+    // Initialize presentation
+    showSlide(0);
+    resizeSlides();
+</script>
+
+</body>
+</html>

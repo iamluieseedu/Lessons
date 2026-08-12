@@ -3,7 +3,15 @@ export type SlideType =
   | 'section_break' 
   | 'single_topic' 
   | 'comparison' 
-  | 'timeline';
+  | 'timeline'
+  | 'code'
+  | 'versus'
+  | 'bullets'
+  | 'framework-comparison'
+  | 'model-playground'
+  | 'controller-flow'
+  | 'tester'
+  | 'playground';
 
 export interface CalloutBox {
   title?: string;
@@ -43,6 +51,7 @@ export interface SlideData {
   visualTrick?: CalloutBox;
   keyInsight?: CalloutBox;
   image?: ImageSpec;
+  code?: string;
   versusLeft?: { title: string; bullets: string[] };
   versusRight?: { title: string; bullets: string[] };
   timelineItems?: TimelineItem[];
