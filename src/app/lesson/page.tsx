@@ -24,6 +24,33 @@ interface Lesson {
   quizEnabled?: boolean;
 }
 
+const DEFAULT_LESSONS: Lesson[] = [
+  {
+    id: 'laravel11',
+    week: 1,
+    title: 'Laravel 11 Fundamentals',
+    description: 'Learn the core concepts of Laravel 11, including server setup, directory structure, routing, Blade templates, and passing data.',
+    duration: '15 mins',
+    slidesCount: 50,
+    difficulty: 'Beginner',
+    thumbnail: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=800&q=80',
+    isActive: true,
+    quizEnabled: true,
+  },
+  {
+    id: 'week1',
+    week: 1,
+    title: 'Introduction to Video Editing',
+    description: 'Learn the fundamentals of video editing, timeline cuts, A-Roll/B-Roll layering, and Walter Murch\'s rules of rendering.',
+    duration: '25 mins',
+    slidesCount: 51,
+    difficulty: 'Beginner',
+    thumbnail: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=800&q=80',
+    isActive: true,
+    quizEnabled: true,
+  }
+];
+
 function SlidePageContent() {
   const searchParams = useSearchParams();
   const lessonId = searchParams.get('id');
@@ -39,8 +66,12 @@ function SlidePageContent() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem('vid_lessons');
-      const lessonsList: Lesson[] = stored ? JSON.parse(stored) : [];
-      const found = lessonsList.find((l) => l.id === lessonId);
+      const lessonsList: Lesson[] = stored ? JSON.parse(stored) : DEFAULT_LESSONS;
+      let found = lessonsList.find((l) => l.id === lessonId);
+      
+      if (!found) {
+        found = DEFAULT_LESSONS.find((l) => l.id === lessonId);
+      }
       
       setLesson(found || null);
 
