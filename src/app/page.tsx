@@ -65,7 +65,9 @@ export default function Home() {
   // Hydrate state from localStorage
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      setBaseUrl(window.location.origin);
+      const origin = window.location.origin;
+      const hasLessonsPath = window.location.pathname.startsWith('/Lessons');
+      setBaseUrl(hasLessonsPath ? `${origin}/Lessons` : origin);
       const stored = localStorage.getItem('vid_lessons');
       if (stored) {
         const parsed: Lesson[] = JSON.parse(stored);
