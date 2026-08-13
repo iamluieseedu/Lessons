@@ -61,12 +61,14 @@ const ImageFrame: React.FC<{ url: string; caption: string; isLaravel?: boolean }
   const [hasError, setHasError] = useState(false);
   const iconColor = isLaravel ? 'text-rose-500' : 'text-sky-500';
 
+  const resolvedUrl = url.startsWith('/') ? `/Lessons${url}` : url;
+
   return (
     <div className="md:col-span-5 w-full min-h-[200px] md:h-full md:min-h-[220px] max-h-[300px] md:max-h-[360px] flex flex-col mt-4 md:mt-0">
       <div className="relative flex-grow rounded-t-lg overflow-hidden border border-slate-200 bg-slate-100 shadow-sm min-h-[160px] md:min-h-[180px] flex items-center justify-center">
         {!hasError ? (
           <img
-            src={url}
+            src={resolvedUrl}
             alt={caption}
             onError={() => setHasError(true)}
             className="w-full h-full object-cover absolute inset-0"
