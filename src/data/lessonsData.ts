@@ -13,6 +13,18 @@ export interface Lesson {
 
 export const lessonsData: Lesson[] = [
   {
+    id: 'mediadsn1',
+    week: 1,
+    title: 'Introduction to Interactive Media Design',
+    description: 'Learn the basics, history, and key components of interactive media design, emphasizing user-centered digital experiences.',
+    duration: '20 mins',
+    slidesCount: 36,
+    difficulty: 'Beginner',
+    thumbnail: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=800&q=80',
+    isActive: true,
+    quizEnabled: true,
+  },
+  {
     id: 'laravel11',
     week: 1,
     title: 'Laravel 11 Fundamentals',
@@ -22,7 +34,7 @@ export const lessonsData: Lesson[] = [
     difficulty: 'Beginner',
     thumbnail: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=800&q=80',
     isActive: true,
-    quizEnabled: false,
+    quizEnabled: true,
   },
   {
     id: 'week1',

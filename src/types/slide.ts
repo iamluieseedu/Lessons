@@ -11,7 +11,21 @@ export type SlideType =
   | 'model-playground'
   | 'controller-flow'
   | 'tester'
-  | 'playground';
+  | 'playground'
+  | 'interactive_objectives'
+  | 'user_input_simulator'
+  | 'static_vs_interactive'
+  | 'interaction_loop'
+  | 'components_diagram'
+  | 'cli_vs_gui'
+  | 'button_simulator'
+  | 'interaction_slider'
+  | 'campus_kiosk'
+  | 'recap_ordering'
+  | 'knowledge_check'
+  | 'essay_prompt'
+  | 'exit_reflection'
+  | 'history_timeline';
 
 export interface CalloutBox {
   title?: string;

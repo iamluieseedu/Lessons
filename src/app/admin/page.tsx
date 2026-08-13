@@ -37,6 +37,18 @@ const ADMIN_HASH = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c7
 
 const DEFAULT_LESSONS: Lesson[] = [
   {
+    id: 'mediadsn1',
+    week: 1,
+    title: 'Introduction to Interactive Media Design',
+    description: 'Learn the basics, history, and key components of interactive media design, emphasizing user-centered digital experiences.',
+    duration: '20 mins',
+    slidesCount: 36,
+    difficulty: 'Beginner',
+    thumbnail: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=800&q=80',
+    isActive: true,
+    quizEnabled: true,
+  },
+  {
     id: 'week1',
     week: 1,
     title: 'Introduction to Video Editing',
@@ -89,7 +101,12 @@ export default function AdminPage() {
   // Hydrate client-side state
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const storedScores = JSON.parse(localStorage.getItem('vid_student_scores') || '[]');
+      let storedScores = [];
+      try {
+        storedScores = JSON.parse(localStorage.getItem('vid_student_scores') || '[]');
+      } catch (err) {
+        console.error("Failed to parse student scores:", err);
+      }
       setStudentScores(storedScores);
       
       const storedWebhook = localStorage.getItem('vid_webhook_url') || CONFIG.webhookUrl;
@@ -101,7 +118,39 @@ export default function AdminPage() {
 
       const storedLessons = localStorage.getItem('vid_lessons');
       if (storedLessons) {
-        setLessons(JSON.parse(storedLessons));
+        try {
+          const parsed = JSON.parse(storedLessons);
+          if (!Array.isArray(parsed)) {
+            throw new Error("Stored lessons is not an array");
+          }
+          let updated = parsed.map((l: any) => {
+            const def = DEFAULT_LESSONS.find(d => d.id === l.id);
+            if (def) {
+              if (l.quizEnabled !== def.quizEnabled || l.isActive !== def.isActive) {
+                return { ...l, quizEnabled: def.quizEnabled, isActive: def.isActive };
+              }
+            }
+            return l;
+          });
+
+          let hasChanges = JSON.stringify(parsed) !== JSON.stringify(updated);
+          DEFAULT_LESSONS.forEach((defLesson) => {
+            if (!updated.some((l: any) => l.id === defLesson.id)) {
+              updated.push(defLesson);
+              hasChanges = true;
+            }
+          });
+
+          if (hasChanges) {
+            updated.sort((a: any, b: any) => a.week - b.week);
+            localStorage.setItem('vid_lessons', JSON.stringify(updated));
+          }
+          setLessons(updated);
+        } catch (err) {
+          console.error("Failed to parse vid_lessons in admin:", err);
+          localStorage.setItem('vid_lessons', JSON.stringify(DEFAULT_LESSONS));
+          setLessons(DEFAULT_LESSONS);
+        }
       } else {
         localStorage.setItem('vid_lessons', JSON.stringify(DEFAULT_LESSONS));
         setLessons(DEFAULT_LESSONS);
@@ -129,7 +178,12 @@ export default function AdminPage() {
           }
         } catch (err) {
           console.error("Error loading online grades from Google Sheets:", err);
-          const storedScores = JSON.parse(localStorage.getItem('vid_student_scores') || '[]');
+          let storedScores = [];
+          try {
+            storedScores = JSON.parse(localStorage.getItem('vid_student_scores') || '[]');
+          } catch (e) {
+            console.error("Failed parsing student scores in catch:", e);
+          }
           setStudentScores(storedScores);
         } finally {
           setIsLoadingScores(false);

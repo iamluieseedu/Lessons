@@ -185,7 +185,12 @@ export const QuizView: React.FC<QuizViewProps> = ({ questions, title }) => {
 
     // Save locally
     if (typeof window !== 'undefined') {
-      const existingScores = JSON.parse(localStorage.getItem('vid_student_scores') || '[]');
+      let existingScores = [];
+      try {
+        existingScores = JSON.parse(localStorage.getItem('vid_student_scores') || '[]');
+      } catch (err) {
+        console.error("Failed to parse student scores in QuizView:", err);
+      }
       const alreadyLogged = existingScores.some((s: any) => 
         s.name === studentName && s.score === finalScore && s.date === newScoreRecord.date
       );

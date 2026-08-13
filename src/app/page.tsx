@@ -30,6 +30,18 @@ interface Lesson {
 
 const DEFAULT_LESSONS: Lesson[] = [
   {
+    id: 'mediadsn1',
+    week: 1,
+    title: 'Introduction to Interactive Media Design',
+    description: 'Learn the basics, history, and key components of interactive media design, emphasizing user-centered digital experiences.',
+    duration: '20 mins',
+    slidesCount: 36,
+    difficulty: 'Beginner',
+    thumbnail: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=800&q=80',
+    isActive: true,
+    quizEnabled: true,
+  },
+  {
     id: 'laravel11',
     week: 1,
     title: 'Laravel 11 Fundamentals',
@@ -39,7 +51,7 @@ const DEFAULT_LESSONS: Lesson[] = [
     difficulty: 'Beginner',
     thumbnail: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=800&q=80',
     isActive: true,
-    quizEnabled: false,
+    quizEnabled: true,
   },
   {
     id: 'week1',
@@ -70,22 +82,39 @@ export default function Home() {
       setBaseUrl(hasLessonsPath ? `${origin}/Lessons` : origin);
       const stored = localStorage.getItem('vid_lessons');
       if (stored) {
-        const parsed: Lesson[] = JSON.parse(stored);
-        // Merge missing default lessons into local storage
-        let updated = [...parsed];
-        let hasChanges = false;
-        DEFAULT_LESSONS.forEach((defLesson) => {
-          if (!parsed.some((l) => l.id === defLesson.id)) {
-            updated.push(defLesson);
-            hasChanges = true;
+        try {
+          const parsed = JSON.parse(stored);
+          if (!Array.isArray(parsed)) {
+            throw new Error("Stored lessons is not an array");
           }
-        });
-        
-        if (hasChanges) {
-          updated.sort((a, b) => a.week - b.week);
-          localStorage.setItem('vid_lessons', JSON.stringify(updated));
+          let updated = parsed.map(l => {
+            const def = DEFAULT_LESSONS.find(d => d.id === l.id);
+            if (def) {
+              if (l.quizEnabled !== def.quizEnabled || l.isActive !== def.isActive) {
+                return { ...l, quizEnabled: def.quizEnabled, isActive: def.isActive };
+              }
+            }
+            return l;
+          });
+
+          let hasChanges = JSON.stringify(parsed) !== JSON.stringify(updated);
+          DEFAULT_LESSONS.forEach((defLesson) => {
+            if (!updated.some((l) => l.id === defLesson.id)) {
+              updated.push(defLesson);
+              hasChanges = true;
+            }
+          });
+          
+          if (hasChanges) {
+            updated.sort((a, b) => a.week - b.week);
+            localStorage.setItem('vid_lessons', JSON.stringify(updated));
+          }
+          setLessons(updated);
+        } catch (err) {
+          console.error("Failed to parse vid_lessons:", err);
+          localStorage.setItem('vid_lessons', JSON.stringify(DEFAULT_LESSONS));
+          setLessons(DEFAULT_LESSONS);
         }
-        setLessons(updated);
       } else {
         localStorage.setItem('vid_lessons', JSON.stringify(DEFAULT_LESSONS));
         setLessons(DEFAULT_LESSONS);

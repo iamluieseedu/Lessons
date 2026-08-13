@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { slidesData } from '@/data/slidesData';
 import { laravelSlidesData } from '@/data/laravelSlidesData';
+import { mediaDsnSlidesData } from '@/data/mediaDsnSlidesData';
 import { SlideViewer } from '@/components/SlideViewer';
 import { NavigationControls } from '@/components/NavigationControls';
 import { ThumbnailDrawer } from '@/components/ThumbnailDrawer';
@@ -25,6 +26,18 @@ interface Lesson {
 }
 
 const DEFAULT_LESSONS: Lesson[] = [
+  {
+    id: 'mediadsn1',
+    week: 1,
+    title: 'Introduction to Interactive Media Design',
+    description: 'Learn the basics, history, and key components of interactive media design, emphasizing user-centered digital experiences.',
+    duration: '20 mins',
+    slidesCount: 36,
+    difficulty: 'Beginner',
+    thumbnail: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=800&q=80',
+    isActive: true,
+    quizEnabled: true,
+  },
   {
     id: 'laravel11',
     week: 1,
@@ -65,8 +78,18 @@ function SlidePageContent() {
   // Load lesson and slides dynamically
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('vid_lessons');
-      const lessonsList: Lesson[] = stored ? JSON.parse(stored) : DEFAULT_LESSONS;
+      let lessonsList: Lesson[] = DEFAULT_LESSONS;
+      try {
+        const stored = localStorage.getItem('vid_lessons');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) {
+            lessonsList = parsed;
+          }
+        }
+      } catch (err) {
+        console.error("Failed to parse vid_lessons:", err);
+      }
       let found = lessonsList.find((l) => l.id === lessonId);
       
       if (!found) {
@@ -80,6 +103,8 @@ function SlidePageContent() {
           setSlides(slidesData);
         } else if (found.id === 'laravel11') {
           setSlides(laravelSlidesData);
+        } else if (found.id === 'mediadsn1') {
+          setSlides(mediaDsnSlidesData);
         } else {
           // Dynamic slide deck for custom uploaded lessons
           setSlides([

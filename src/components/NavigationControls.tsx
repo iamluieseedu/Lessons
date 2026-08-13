@@ -84,7 +84,7 @@ export const NavigationControls: React.FC<NavigationControlsProps> = ({
             className={`p-1.5 sm:p-2 rounded-lg transition border ${
               isPlaying 
                 ? 'bg-amber-500/10 text-amber-600 border-amber-500/30 hover:bg-amber-500/20' 
-                : 'bg-sky-500/10 text-sky-650 border-sky-500/20 hover:bg-sky-500/20'
+                : 'bg-sky-500/10 text-sky-600 border-sky-500/20 hover:bg-sky-500/20'
             }`}
             title={isPlaying ? 'Pause Auto-Play' : 'Start Auto-Play'}
           >
