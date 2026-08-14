@@ -17,7 +17,6 @@ import {
 import { AdSidebar } from '@/components/AdSidebar';
 import { CONFIG } from '@/config';
 import { HeaderAd } from '@/components/HeaderAd';
-import { AdsterraAd } from '@/components/AdsterraAd';
 
 interface Lesson {
   id: string;
@@ -160,16 +159,9 @@ export default function Home() {
       </header>
 
       {/* Main Content Area: Catalog + Sidebar */}
-      <div className="w-full max-w-7xl mx-auto flex-grow mb-12 flex flex-col lg:flex-row gap-6 items-start">
-        {/* Left Sidebar (Adsterra Ads) */}
-        {showAds && (
-          <div className="w-full lg:w-[18%] shrink-0 lg:sticky lg:top-6 hidden lg:block">
-            <AdsterraAd />
-          </div>
-        )}
-
+      <div className="w-full max-w-6xl mx-auto flex-grow mb-12 flex flex-col lg:flex-row gap-8 items-start">
         {/* Main Grid View */}
-        <section className={`flex-grow w-full ${showAds ? 'lg:max-w-[50%]' : 'lg:max-w-full'}`}>
+        <section className={`flex-grow w-full ${showAds ? 'lg:max-w-[70%]' : 'lg:max-w-full'}`}>
           <div className="mb-6">
             <h2 className="font-lexend text-lg font-bold text-slate-800 flex items-center gap-2">
               <GraduationCap className="w-5 h-5 text-sky-600" />
