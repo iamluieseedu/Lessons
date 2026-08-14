@@ -89,23 +89,21 @@ const DEFAULT_LESSONS: Lesson[] = [
 
 const LogoIcon = () => (
   <div className="relative flex items-center justify-center">
-    <svg className="w-9 h-9" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Left page (Sky Blue gradient) */}
-      <path d="M50 78C35 74 20 78 20 78V26C20 26 35 22 50 26" stroke="url(#logo-sky)" strokeWidth="6.5" strokeLinecap="round" strokeLinejoin="round" />
-      {/* Right page (Indigo gradient) */}
-      <path d="M50 78C65 74 80 78 80 78V26C80 26 65 22 50 26" stroke="url(#logo-indigo)" strokeWidth="6.5" strokeLinecap="round" strokeLinejoin="round" />
-      {/* Middle spine with a glowing diamond star on top representing intelligence and achievements */}
-      <path d="M50 26V78" stroke="#818cf8" strokeWidth="5.5" strokeLinecap="round" />
-      <path d="M50 11L53.5 16.5L59 19L53.5 21.5L50 27L46.5 21.5L41 19L46.5 16.5L50 11Z" fill="#3b82f6" />
+    <svg className="w-8 h-8" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Abstract Isometric Cube Pages */}
+      <path d="M50 15L85 35V65L50 85L15 65V35L50 15Z" fill="url(#logo-prism-bg)" />
+      {/* Interlocking internal line ribbons */}
+      <path d="M50 15V85" stroke="white" strokeWidth="2.5" strokeOpacity="0.3" />
+      <path d="M15 35L50 50L85 35" stroke="white" strokeWidth="2.5" strokeOpacity="0.3" />
+      {/* Glowing orbital academic core nodes */}
+      <circle cx="50" cy="50" r="7" fill="#ffffff" stroke="#818cf8" strokeWidth="2" />
+      <path d="M50 30L70 40V60L50 70L30 60V40L50 30Z" stroke="#ffffff" strokeWidth="2.5" strokeOpacity="0.8" strokeLinecap="round" strokeLinejoin="round" />
       
       <defs>
-        <linearGradient id="logo-sky" x1="20" y1="26" x2="50" y2="78" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#38bdf8" />
-          <stop offset="100%" stopColor="#0284c7" />
-        </linearGradient>
-        <linearGradient id="logo-indigo" x1="80" y1="26" x2="50" y2="78" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#818cf8" />
-          <stop offset="100%" stopColor="#4f46e5" />
+        <linearGradient id="logo-prism-bg" x1="15" y1="15" x2="85" y2="85" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#4f46e5" />
+          <stop offset="50%" stopColor="#3b82f6" />
+          <stop offset="100%" stopColor="#06b6d4" />
         </linearGradient>
       </defs>
     </svg>
@@ -290,10 +288,10 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-tr from-[#f8fafc] via-[#f1f5f9] to-[#ecf2ff] text-slate-800 flex flex-col justify-between py-8 px-4 relative overflow-hidden font-sans">
-      {/* Decorative Glows */}
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-sky-200/25 rounded-full blur-[100px] pointer-events-none select-none" />
-      <div className="absolute top-1/3 right-1/4 w-[600px] h-[600px] bg-indigo-200/25 rounded-full blur-[120px] pointer-events-none select-none" />
+    <main className="min-h-screen bg-[#F8FAFC] text-slate-800 flex flex-col justify-between relative overflow-hidden font-sans">
+      {/* Subtle Background Radial Overlays */}
+      <div className="absolute top-0 left-10 w-[400px] h-[400px] bg-indigo-100/30 rounded-full blur-[100px] pointer-events-none select-none" />
+      <div className="absolute bottom-20 right-10 w-[500px] h-[500px] bg-sky-100/20 rounded-full blur-[120px] pointer-events-none select-none" />
 
       {/* Toast Notification */}
       {toast && (
@@ -303,90 +301,98 @@ export default function Home() {
         </div>
       )}
 
-      {/* Header Panel */}
-      <header className="w-full max-w-6xl mx-auto mb-8 bg-white/60 border border-white/80 backdrop-blur-md px-6 py-4.5 rounded-3xl flex items-center justify-between shadow-sm relative z-30">
+      {/* Modern SaaS Header Navbar */}
+      <header className="w-full bg-white/80 border-b border-slate-200/80 sticky top-0 z-40 backdrop-blur-md px-6 py-3.5 flex items-center justify-between shadow-[0_1px_3px_rgba(0,0,0,0.01)]">
         <div className="flex items-center gap-3">
           <LogoIcon />
-          <h1 className="font-lexend text-lg md:text-xl font-black tracking-tight text-slate-900">
+          <h1 className="font-lexend text-base md:text-lg font-black tracking-tight text-slate-900 select-none">
             Lesson Library
           </h1>
         </div>
 
-        {/* User Auth Section */}
+        {/* User Authentication Control (CSS hidden/flex toggle resolves double-render) */}
         <div className="relative">
-          {user ? (
-            <div className="relative">
+          {/* 1. Logged-in Dropdown (shown only when user is set) */}
+          <div className={user ? "relative block animate-fade-in" : "hidden"}>
+            {user && (
               <button
                 onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                className="flex items-center gap-2 bg-white/85 border border-slate-200 hover:border-slate-300 px-3 py-1.5 rounded-2xl shadow-sm transition cursor-pointer select-none"
+                className="flex items-center gap-2 bg-slate-50 border border-slate-200 hover:border-slate-350 hover:bg-slate-100/60 px-3 py-1.5 rounded-xl transition cursor-pointer select-none"
               >
                 {user.avatar ? (
                   <img
                     src={user.avatar}
                     alt={user.name}
-                    className="w-6 h-6 rounded-full object-cover border border-slate-100"
+                    className="w-5 h-5 rounded-full object-cover border border-slate-200"
                   />
                 ) : (
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-sky-500 to-indigo-500 text-white font-bold flex items-center justify-center text-[10px] uppercase font-lexend">
+                  <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-indigo-500 to-sky-500 text-white font-bold flex items-center justify-center text-[9px] uppercase font-lexend">
                     {user.name.charAt(0)}
                   </div>
                 )}
                 <span className="hidden sm:inline text-xs font-bold text-slate-700">{user.name}</span>
                 <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
               </button>
+            )}
 
-              {userDropdownOpen && (
-                <div className="absolute right-0 top-full mt-2 w-52 bg-white/95 border border-slate-200/90 backdrop-blur-md shadow-xl rounded-2xl p-2 z-50 text-left animate-fade-in">
-                  <div className="px-3 py-2 border-b border-slate-100 mb-1.5">
-                    <p className="text-[9px] text-slate-400 font-extrabold uppercase tracking-wide">Logged in as</p>
-                    <p className="text-xs font-bold text-slate-800 truncate">{user.name}</p>
-                    <p className="text-[9px] text-slate-505 font-mono truncate mt-0.5">{user.email}</p>
-                  </div>
-                  <button
-                    onClick={handleLogout}
-                    className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-left text-rose-600 hover:bg-rose-50 text-xs font-bold transition"
-                  >
-                    <LogOut className="w-3.5 h-3.5" />
-                    Sign Out
-                  </button>
+            {userDropdownOpen && user && (
+              <div className="absolute right-0 top-full mt-2 w-52 bg-white border border-slate-200 shadow-xl rounded-xl p-2 z-50 text-left animate-fade-in">
+                <div className="px-3 py-2 border-b border-slate-100 mb-1.5">
+                  <p className="text-[9px] text-slate-400 font-extrabold uppercase tracking-wide">Logged in as</p>
+                  <p className="text-xs font-bold text-slate-800 truncate">{user.name}</p>
+                  <p className="text-[9px] text-slate-500 font-mono truncate mt-0.5">{user.email}</p>
                 </div>
-              )}
-            </div>
-          ) : (
-            <div id="google-signin-btn-container" className="h-9 min-w-[200px] flex items-center justify-end"></div>
-          )}
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left text-rose-600 hover:bg-rose-50 text-xs font-bold transition"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  Sign Out
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* 2. Google OAuth Button Container (shown only when user is null) */}
+          <div 
+            id="google-signin-btn-container" 
+            className={user ? "hidden" : "h-9 min-w-[200px] flex items-center justify-end"}
+          ></div>
         </div>
       </header>
 
-      {/* Main Content Area: Catalog + Sidebar */}
-      <div className="w-full max-w-6xl mx-auto flex-grow mb-12 flex flex-col lg:flex-row gap-8 items-start">
-        {/* Main Grid View */}
-        <section className={`flex-grow w-full ${showAds ? 'lg:max-w-[72%]' : 'lg:max-w-full'}`}>
-          <div className="mb-6">
-            <h2 className="font-lexend text-base font-extrabold text-slate-800 uppercase tracking-wider">
-              Curriculum Catalog
+      {/* Main Content Viewport */}
+      <div className="w-full max-w-6xl mx-auto px-4 py-8 flex-grow mb-12">
+        <section className="w-full">
+          {/* Minimalist academic title block */}
+          <div className="mb-8 text-left border-b border-slate-200 pb-5">
+            <h2 className="font-lexend text-2xl font-black text-slate-900 tracking-tight uppercase">
+              Syllabus Track
             </h2>
+            <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mt-1">
+              Curriculum Catalog • Academic Year 2026
+            </p>
           </div>
 
-          {/* Search & Sort Controls */}
+          {/* SaaS Clean Search and Sort bar */}
           <div className="flex flex-col sm:flex-row gap-3 items-center justify-between mb-8">
             <div className="relative w-full sm:max-w-md">
-              <Search className="w-4 h-4 text-slate-405 absolute left-3.5 top-3.5" />
+              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
               <input
                 type="text"
-                placeholder="Search lessons..."
+                placeholder="Search catalog lessons..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white/70 border border-slate-200 focus:border-sky-500 rounded-2xl pl-10 pr-4 py-2.5 text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-sky-500/10 transition"
+                className="w-full bg-white border border-slate-200 focus:border-indigo-500 rounded-xl pl-10 pr-4 py-2.5 text-xs font-bold text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-indigo-500/[0.03] transition"
               />
             </div>
 
             <div className="flex items-center gap-2 w-full sm:w-auto">
-              <span className="text-xs text-slate-400 font-semibold shrink-0">Sort by:</span>
+              <span className="text-xs text-slate-400 font-semibold shrink-0">Sort:</span>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
-                className="w-full sm:w-auto bg-white/70 border border-slate-200 focus:border-sky-500 rounded-2xl px-3.5 py-2.5 text-xs text-slate-655 font-semibold focus:outline-none focus:ring-4 focus:ring-sky-500/10 transition cursor-pointer"
+                className="w-full sm:w-auto bg-white border border-slate-200 focus:border-indigo-500 rounded-xl px-3.5 py-2.5 text-xs text-slate-650 font-bold focus:outline-none focus:ring-4 focus:ring-indigo-500/[0.03] transition cursor-pointer"
               >
                 <option value="week-asc">Week (Ascending)</option>
                 <option value="week-desc">Week (Descending)</option>
@@ -396,8 +402,9 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Dynamic Catalog Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+          {/* Bento Grid layout */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+            {/* Main feature Large Bento Card (Week 1 / Web Dev) */}
             {lessons
               .filter((lesson) => {
                 const query = searchQuery.toLowerCase();
@@ -407,186 +414,217 @@ export default function Home() {
                 );
               })
               .sort((a, b) => {
-                if (sortBy === 'week-asc') {
-                  return a.week - b.week;
-                }
-                if (sortBy === 'week-desc') {
-                  return b.week - a.week;
-                }
-                if (sortBy === 'title-asc') {
-                  return a.title.localeCompare(b.title);
-                }
+                if (sortBy === 'week-asc') return a.week - b.week;
+                if (sortBy === 'week-desc') return b.week - a.week;
+                if (sortBy === 'title-asc') return a.title.localeCompare(b.title);
                 if (sortBy === 'difficulty') {
-                  const diffWeight = { Beginner: 1, Intermediate: 2, Advanced: 3 };
-                  return diffWeight[a.difficulty] - diffWeight[b.difficulty];
+                  const w = { Beginner: 1, Intermediate: 2, Advanced: 3 };
+                  return w[a.difficulty] - w[b.difficulty];
                 }
                 return 0;
               })
-              .map((lesson: Lesson) => {
+              .map((lesson: Lesson, index: number) => {
                 const isWeekActive = lesson.isActive;
                 const diffColor = 
-                  lesson.difficulty === 'Beginner' ? 'bg-emerald-500/10 text-emerald-605 border-emerald-500/20' : 
-                  lesson.difficulty === 'Intermediate' ? 'bg-amber-500/10 text-amber-605 border-amber-500/20' : 
-                  'bg-rose-500/10 text-rose-605 border-rose-505/20';
+                  lesson.difficulty === 'Beginner' ? 'bg-emerald-50 text-emerald-700 border-emerald-100 bg-emerald-500/5' : 
+                  lesson.difficulty === 'Intermediate' ? 'bg-amber-50 text-amber-700 border-amber-100 bg-amber-500/5' : 
+                  'bg-rose-50 text-rose-700 border-rose-100 bg-rose-500/5';
 
-                return (
-                  <div 
-                    key={lesson.id}
-                    className={`relative group bg-white/65 border border-white/85 backdrop-blur-sm rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden flex flex-col justify-between transition-all duration-300 ${
-                      isWeekActive 
-                        ? 'hover:border-sky-500/35 hover:shadow-[0_20px_40px_rgba(8,_112,_184,_0.08)] hover:-translate-y-0.5' 
-                        : 'opacity-65 hover:opacity-85'
-                    }`}
-                  >
-                    {/* Lesson Thumbnail */}
-                    <div className="h-44 sm:h-48 w-full relative bg-slate-100 overflow-hidden">
-                      <img
-                        src={lesson.thumbnail || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80'}
-                        alt={lesson.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent" />
-                      
-                      {/* Badges Overlay */}
-                      <div className="absolute top-4 left-4 flex gap-2">
-                        <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded bg-white/90 text-slate-800 border border-slate-200/50 backdrop-blur-sm shadow-sm">
+                {/* Bento Grid Span Configuration */}
+                const isLargeBento = index === 0;
+
+                const cardContent = (
+                  <div className="flex flex-col justify-between h-full gap-4">
+                    <div>
+                      <div className="flex gap-2 mb-3">
+                        <span className="text-[9px] uppercase font-black tracking-wider px-2 py-0.5 rounded-md bg-slate-100 text-slate-650 border border-slate-200/60 shadow-sm">
                           Week {lesson.week}
                         </span>
-                        <span className={`text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded border backdrop-blur-sm ${diffColor}`}>
+                        <span className={`text-[9px] uppercase font-black tracking-wider px-2 py-0.5 rounded-md border ${diffColor}`}>
                           {lesson.difficulty}
                         </span>
                       </div>
 
-                      {!isWeekActive && (
-                        <div className="absolute inset-0 bg-slate-900/10 backdrop-blur-[2px] flex items-center justify-center gap-2 text-white font-bold text-xs">
-                          <Lock className="w-4 h-4 text-amber-450 animate-pulse" />
-                          <span>COMING SOON</span>
-                        </div>
-                      )}
+                      <h3 className="font-lexend text-base font-extrabold text-slate-900 group-hover:text-indigo-600 transition duration-300 leading-snug">
+                        {lesson.title}
+                      </h3>
+                      
+                      <p className="text-xs text-slate-500 leading-relaxed mt-2 font-medium">
+                        {lesson.description}
+                      </p>
                     </div>
 
-                    {/* Lesson Info */}
-                    <div className="p-5 flex-grow flex flex-col justify-between bg-white/[0.2]">
-                      <div>
-                        <h3 className="font-lexend text-base sm:text-lg font-bold text-slate-900 mb-2 group-hover:text-sky-600 transition duration-300">
-                          {lesson.title}
-                        </h3>
-                        <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4 font-semibold">
-                          {lesson.description}
-                        </p>
+                    {/* Footer Row: Metadata and Actions */}
+                    <div className="border-t border-slate-100 pt-3">
+                      <div className="flex items-center justify-between text-[11px] font-bold text-slate-400 mb-3 select-none">
+                        <span>{lesson.slidesCount} Slides</span>
+                        <span>{lesson.quizEnabled !== false ? '• Quiz Active' : '• Reading Only'}</span>
                       </div>
 
-                      {/* Metadata Row */}
-                      <div className="flex items-center gap-4 text-xs font-semibold text-slate-500 border-t border-slate-100/80 pt-4 mb-4 select-none">
-                        <div className="flex items-center gap-1.5">
-                          <BookOpen className="w-4 h-4 text-sky-500" />
-                          <span>{lesson.slidesCount} Slides</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <Award className="w-4 h-4 text-indigo-500" />
-                          <span>{lesson.quizEnabled !== false ? 'Includes Quiz' : 'No Quiz Active'}</span>
-                        </div>
-                      </div>
-
-                      {/* Action Buttons */}
                       {isWeekActive ? (
-                        <div className="space-y-2.5">
-                          {lesson.quizEnabled !== false ? (
-                            <div className="grid grid-cols-2 gap-3">
-                              <Link
-                                href={`/lesson?id=${lesson.id}`}
-                                className="py-2.5 px-4 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-md shadow-sky-500/10 active:scale-95 transition flex items-center justify-center gap-1.5 font-lexend"
-                              >
-                                Start Lesson
-                                <ExternalLink className="w-3.5 h-3.5" />
-                              </Link>
+                        <div className="flex flex-col gap-2">
+                          <div className="grid grid-cols-2 gap-2">
+                            <Link
+                              href={`/lesson?id=${lesson.id}`}
+                              className="py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold shadow-md shadow-indigo-600/10 active:scale-[0.98] transition flex items-center justify-center gap-1 font-lexend"
+                            >
+                              Start Slides
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </Link>
+
+                            {lesson.quizEnabled !== false ? (
                               <Link
                                 href={`/quiz?id=${lesson.id}`}
-                                className="py-2.5 px-4 rounded-xl border border-sky-200 bg-sky-500/5 hover:bg-sky-500/10 text-sky-700 text-xs font-bold transition flex items-center justify-center gap-1.5 font-lexend"
+                                className="py-2.5 px-3 rounded-xl border border-indigo-100 bg-indigo-50/15 hover:bg-indigo-50 text-indigo-700 text-[11px] font-bold active:scale-[0.98] transition flex items-center justify-center gap-1 font-lexend"
                               >
                                 Take Quiz
                                 <Award className="w-3.5 h-3.5" />
                               </Link>
-                            </div>
-                          ) : (
-                            <div className="w-full">
-                              <Link
-                                href={`/lesson?id=${lesson.id}`}
-                                className="w-full py-2.5 px-4 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-md shadow-sky-500/10 active:scale-95 transition flex items-center justify-center gap-1.5 font-lexend"
-                              >
-                                Start Lesson
-                                <ExternalLink className="w-3.5 h-3.5" />
-                              </Link>
-                            </div>
-                          )}
+                            ) : (
+                              <div className="py-2.5 rounded-xl border border-dashed border-slate-200 text-slate-400 text-[10px] font-bold flex items-center justify-center select-none">
+                                No Quiz
+                              </div>
+                            )}
+                          </div>
 
-                          {/* Share links buttons row */}
-                          {lesson.quizEnabled !== false ? (
-                            <div className="grid grid-cols-2 gap-3 border-t border-slate-100/80 pt-2.5">
-                              <button
-                                onClick={() => copyToClipboard(`/lesson?id=${lesson.id}`, 'Lesson')}
-                                className="py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-55 text-slate-500 hover:text-slate-700 text-[10px] font-bold transition flex items-center justify-center gap-1"
-                                title="Copy direct link for students"
-                              >
-                                <Copy className="w-3 h-3" />
-                                Copy Lesson
-                              </button>
+                          {/* Action links */}
+                          <div className="flex justify-between items-center gap-2 mt-1">
+                            <button
+                              onClick={() => copyToClipboard(`/lesson?id=${lesson.id}`, 'Lesson')}
+                              className="text-[10px] font-bold text-slate-400 hover:text-indigo-600 transition flex items-center gap-1"
+                            >
+                              <Copy className="w-3 h-3" />
+                              Copy Lesson Link
+                            </button>
+                            {lesson.quizEnabled !== false && (
                               <button
                                 onClick={() => copyToClipboard(`/quiz?id=${lesson.id}`, 'Quiz')}
-                                className="py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-55 text-slate-500 hover:text-slate-700 text-[10px] font-bold transition flex items-center justify-center gap-1"
-                                title="Copy direct quiz link"
+                                className="text-[10px] font-bold text-slate-400 hover:text-indigo-600 transition flex items-center gap-1"
                               >
                                 <Copy className="w-3 h-3" />
-                                Copy Quiz
+                                Copy Quiz Link
                               </button>
-                            </div>
-                          ) : (
-                            <div className="w-full border-t border-slate-100/80 pt-2.5">
-                              <button
-                                onClick={() => copyToClipboard(`/lesson?id=${lesson.id}`, 'Lesson')}
-                                className="w-full py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-55 text-slate-500 hover:text-slate-700 text-[10px] font-bold transition flex items-center justify-center gap-1"
-                                title="Copy direct link for students"
-                              >
-                                <Copy className="w-3 h-3" />
-                                Copy Lesson Link
-                              </button>
-                            </div>
-                          )}
+                            )}
+                          </div>
                         </div>
                       ) : (
                         <button
                           disabled
-                          className="w-full py-2.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-400 text-xs font-bold transition flex items-center justify-center gap-1"
+                          className="w-full py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-400 text-xs font-bold transition flex items-center justify-center gap-1 cursor-not-allowed select-none"
                         >
-                          <Lock className="w-3.5 h-3.5" />
-                          Locked Unit
+                          <Lock className="w-3.5 h-3.5 text-amber-500" />
+                          Unit Locked
                         </button>
                       )}
                     </div>
                   </div>
                 );
+
+                if (isLargeBento) {
+                  return (
+                    <div 
+                      key={lesson.id}
+                      className="col-span-1 md:col-span-2 bg-white border border-slate-200/80 rounded-2xl p-6 flex flex-col md:flex-row gap-6 justify-between shadow-[0_4px_20px_rgba(0,0,0,0.01)] hover:border-indigo-500/25 hover:shadow-[0_15px_35px_rgba(79,70,229,0.04)] transition duration-300 relative group"
+                    >
+                      {/* Left contents */}
+                      <div className="flex-1">
+                        {cardContent}
+                      </div>
+
+                      {/* Right large image thumbnail */}
+                      <div className="w-full md:w-[38%] shrink-0 h-48 md:h-auto relative overflow-hidden rounded-xl bg-slate-50 border border-slate-100">
+                        <img
+                          src={lesson.thumbnail || 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=800&q=80'}
+                          alt={lesson.title}
+                          className="w-full h-full object-cover group-hover:scale-[1.02] transition duration-500"
+                        />
+                        {!isWeekActive && (
+                          <div className="absolute inset-0 bg-slate-900/10 backdrop-blur-[1px] flex items-center justify-center gap-2 text-white font-bold text-xs">
+                            <Lock className="w-4 h-4 text-amber-400" />
+                            <span>LOCKED</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                }
+
+                {/* Standard grid bento cells */}
+                return (
+                  <div 
+                    key={lesson.id}
+                    className="col-span-1 bg-white border border-slate-200/80 rounded-2xl p-5 flex flex-col justify-between shadow-[0_4px_20px_rgba(0,0,0,0.01)] hover:border-sky-500/25 hover:shadow-[0_15px_35px_rgba(56,189,248,0.04)] transition duration-300 group"
+                  >
+                    {/* Compact Thumbnail */}
+                    <div className="w-full h-32 relative overflow-hidden rounded-xl bg-slate-50 mb-4 border border-slate-100">
+                      <img
+                        src={lesson.thumbnail}
+                        alt={lesson.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                      />
+                    </div>
+                    <div className="flex-grow">
+                      {cardContent}
+                    </div>
+                  </div>
+                );
               })}
+
+            {/* Academic EdTech Metrics Bento Box (Injected to balance columns) */}
+            <div className="col-span-1 bg-gradient-to-br from-indigo-600 to-indigo-700 text-white rounded-2xl p-6 flex flex-col justify-between shadow-lg shadow-indigo-600/10 hover:shadow-indigo-600/15 hover:scale-[1.005] transition duration-300 relative overflow-hidden">
+              {/* Decorative prism lines */}
+              <div className="absolute -top-10 -right-10 w-36 h-36 rounded-full bg-white/5 blur-2xl pointer-events-none" />
+              
+              <div>
+                <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center mb-4 border border-white/10">
+                  <GraduationCap className="w-5 h-5 text-sky-300" />
+                </div>
+
+                <h3 className="font-lexend text-base font-extrabold text-white leading-snug">
+                  Learning metrics
+                </h3>
+                <p className="text-[11px] text-indigo-200 mt-1 font-medium leading-relaxed">
+                  Overview of your active syllabus track. Start slides to submit logs.
+                </p>
+
+                {/* Progress bar */}
+                <div className="mt-5">
+                  <div className="flex justify-between text-[10px] font-bold text-indigo-150 mb-1.5 uppercase tracking-wide">
+                    <span>Syllabus track</span>
+                    <span>25% Complete</span>
+                  </div>
+                  <div className="w-full bg-indigo-800/60 h-1.5 rounded-full overflow-hidden border border-indigo-900/20">
+                    <div className="bg-sky-400 h-full rounded-full w-1/4 animate-pulse" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Dynamic state values */}
+              <div className="border-t border-white/10 pt-4 mt-6 space-y-2 text-[10px] font-bold text-indigo-100 uppercase tracking-wider">
+                <div className="flex justify-between">
+                  <span>Registered Student:</span>
+                  <span className="text-white truncate max-w-[120px]">{user ? user.name : 'Not Logged In'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Units Active:</span>
+                  <span className="text-white">4 Syllabus Units</span>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
-
-        {showAds && (
-          /* Right Sidebar for Ads */
-          <div className="w-full lg:w-[28%] shrink-0 lg:sticky lg:top-6 bg-white/65 border border-white/85 backdrop-blur-sm p-4 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
-            <AdSidebar slotName="Homepage Sidebar Ad" />
-          </div>
-        )}
       </div>
 
       {showAds && (
-        <div className="w-full max-w-6xl mx-auto mt-4 border-t border-slate-200/80 pt-2">
+        <div className="w-full max-w-6xl mx-auto mt-4 border-t border-slate-200/80 pt-4 px-4">
           <HeaderAd />
         </div>
       )}
 
       {/* Bottom Footer signature */}
-      <footer className="w-full max-w-6xl mx-auto text-center text-xs text-slate-500 font-semibold tracking-wide border-t border-slate-200/80 pt-6 mt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+      <footer className="w-full max-w-6xl mx-auto text-center text-xs text-slate-400 font-semibold tracking-wide border-t border-slate-200/80 py-6 px-4 flex flex-col sm:flex-row justify-between items-center gap-4">
         <span>Developed by Luiese Amstrong • Lesson Library © 2026</span>
-        <Link href="/privacy" className="hover:text-sky-600 transition underline">
+        <Link href="/privacy" className="hover:text-indigo-600 transition underline">
           Privacy Policy
         </Link>
       </footer>
