@@ -65,6 +65,18 @@ const DEFAULT_LESSONS: Lesson[] = [
     thumbnail: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=800&q=80',
     isActive: true,
     quizEnabled: true,
+  },
+  {
+    id: 'webdev1',
+    week: 1,
+    title: 'Introduction to Web Development',
+    description: 'Learn the core building blocks of the web: HTML5 structure, CSS3 presentation, file extensions, and basic browser rendering loops.',
+    duration: '15 mins',
+    slidesCount: 18,
+    difficulty: 'Beginner',
+    thumbnail: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=800&q=80',
+    isActive: true,
+    quizEnabled: true,
   }
 ];
 
