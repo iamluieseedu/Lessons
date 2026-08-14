@@ -11,7 +11,7 @@ export const CONFIG = {
   allowedDomain: '',
 
   // Paste your Google AdSense Publisher/Client ID here (e.g. 'ca-pub-1234567890123456'):
-  adsenseClientId: '',
+  adsenseClientId: 'ca-pub-2240658622468632',
 
   // Paste your Google AdSense Slot ID here (e.g. '1234567890'):
   adsenseSlotId: '',
