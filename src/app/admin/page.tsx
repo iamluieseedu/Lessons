@@ -81,6 +81,8 @@ export default function AdminPage() {
   const [webhookUrl, setWebhookUrl] = useState('');
   const [googleClientId, setGoogleClientId] = useState('');
   const [allowedDomain, setAllowedDomain] = useState('');
+  const [adsenseClientId, setAdsenseClientId] = useState('');
+  const [adsenseSlotId, setAdsenseSlotId] = useState('');
   const [studentScores, setStudentScores] = useState<any[]>([]);
   const [saveStatus, setSaveStatus] = useState<string | null>(null);
   const [isLoadingScores, setIsLoadingScores] = useState(false);
@@ -115,6 +117,10 @@ export default function AdminPage() {
       setGoogleClientId(storedGoogleClientId);
       const storedAllowedDomain = localStorage.getItem('vid_google_allowed_domain') || CONFIG.allowedDomain;
       setAllowedDomain(storedAllowedDomain);
+      const storedAdsenseClientId = localStorage.getItem('vid_adsense_client_id') || CONFIG.adsenseClientId || '';
+      setAdsenseClientId(storedAdsenseClientId);
+      const storedAdsenseSlotId = localStorage.getItem('vid_adsense_slot_id') || CONFIG.adsenseSlotId || '';
+      setAdsenseSlotId(storedAdsenseSlotId);
 
       const storedLessons = localStorage.getItem('vid_lessons');
       if (storedLessons) {
@@ -231,6 +237,8 @@ export default function AdminPage() {
       localStorage.setItem('vid_webhook_url', webhookUrl.trim());
       localStorage.setItem('vid_google_client_id', googleClientId.trim());
       localStorage.setItem('vid_google_allowed_domain', allowedDomain.trim());
+      localStorage.setItem('vid_adsense_client_id', adsenseClientId.trim());
+      localStorage.setItem('vid_adsense_slot_id', adsenseSlotId.trim());
       setSaveStatus('Configuration Saved Successfully!');
       setTimeout(() => setSaveStatus(null), 2500);
     }
@@ -712,6 +720,32 @@ export default function AdminPage() {
                   value={allowedDomain}
                   onChange={(e) => setAllowedDomain(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-sky-500"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1 border-t border-slate-100 pt-3 mt-3">
+                <label className="text-[10px] font-bold text-sky-600 uppercase tracking-wider font-bold">
+                  Google AdSense Publisher/Client ID
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. ca-pub-1234567890123456"
+                  value={adsenseClientId}
+                  onChange={(e) => setAdsenseClientId(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-sky-500 font-mono"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-bold text-sky-600 uppercase tracking-wider font-bold">
+                  Google AdSense Ad Slot ID
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. 1234567890"
+                  value={adsenseSlotId}
+                  onChange={(e) => setAdsenseSlotId(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-sky-500 font-mono"
                 />
               </div>
 
