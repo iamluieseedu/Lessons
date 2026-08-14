@@ -9,4 +9,10 @@ export const CONFIG = {
   
   // Paste your allowed domain here (e.g. '@school.edu.ph'):
   allowedDomain: '',
+
+  // Paste your Google AdSense Publisher/Client ID here (e.g. 'ca-pub-1234567890123456'):
+  adsenseClientId: '',
+
+  // Paste your Google AdSense Slot ID here (e.g. '1234567890'):
+  adsenseSlotId: '',
 };

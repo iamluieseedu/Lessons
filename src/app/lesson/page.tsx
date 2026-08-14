@@ -11,6 +11,7 @@ import { NavigationControls } from '@/components/NavigationControls';
 import { ThumbnailDrawer } from '@/components/ThumbnailDrawer';
 import { KeyboardHelpModal } from '@/components/KeyboardHelpModal';
 import { Film, ArrowLeft, Lock, BookOpen } from 'lucide-react';
+import { AdSidebar } from '@/components/AdSidebar';
 
 interface Lesson {
   id: string;
@@ -274,43 +275,54 @@ function SlidePageContent() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900 flex flex-col justify-between py-4">
-      {/* Top Application Header */}
-      <header className="w-full max-w-6xl mx-auto px-4 mb-2 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <BookOpen className="w-5 h-5 text-slate-900" />
-          <h1 className="font-lexend text-base md:text-lg font-semibold text-slate-800">
-            {lesson.title} • Week {lesson.week}
-          </h1>
+    <main className="min-h-screen bg-slate-50 text-slate-900 flex flex-col justify-between py-4 px-4">
+      <div className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row gap-6 items-start flex-grow">
+        
+        {/* Left main area (Slide Presentation) */}
+        <div className="flex-grow w-full lg:max-w-[72%] flex flex-col h-full justify-between min-h-[85vh]">
+          {/* Top Application Header */}
+          <header className="w-full mb-4 flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <BookOpen className="w-5 h-5 text-slate-900" />
+              <h1 className="font-lexend text-base md:text-lg font-semibold text-slate-800">
+                {lesson.title} • Week {lesson.week}
+              </h1>
+            </div>
+
+            <Link
+              href="/"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 hover:text-sky-700 text-xs font-bold shadow-sm transition"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              Back to Library
+            </Link>
+          </header>
+
+          {/* Main Slide Viewer Frame */}
+          <div className="flex-grow flex items-center justify-center py-2 min-h-[50vh]">
+            {currentSlide && <SlideViewer slide={currentSlide} />}
+          </div>
+
+          {/* Control Bar & Progress */}
+          <NavigationControls
+            currentIndex={currentIndex}
+            totalSlides={totalSlides}
+            onPrev={handlePrev}
+            onNext={handleNext}
+            onReset={handleReset}
+            onToggleDrawer={() => setIsDrawerOpen(true)}
+            onToggleFullscreen={toggleFullscreen}
+            isPlaying={isPlaying}
+            onTogglePlay={() => setIsPlaying(!isPlaying)}
+            onOpenHelp={() => setIsHelpOpen(true)}
+          />
         </div>
 
-        <Link
-          href="/"
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 hover:text-sky-700 text-xs font-bold shadow-sm transition"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          Back to Library
-        </Link>
-      </header>
-
-      {/* Main Slide Viewer Frame */}
-      <div className="flex-grow flex items-center justify-center py-2">
-        {currentSlide && <SlideViewer slide={currentSlide} />}
+        {/* Right Sidebar Ad (sticky) */}
+        <div className="w-full lg:w-[28%] shrink-0 lg:sticky lg:top-4 lg:mt-16">
+          <AdSidebar slotName="Lesson Page Sidebar Ad" />
+        </div>
       </div>
-
-      {/* Control Bar & Progress */}
-      <NavigationControls
-        currentIndex={currentIndex}
-        totalSlides={totalSlides}
-        onPrev={handlePrev}
-        onNext={handleNext}
-        onReset={handleReset}
-        onToggleDrawer={() => setIsDrawerOpen(true)}
-        onToggleFullscreen={toggleFullscreen}
-        isPlaying={isPlaying}
-        onTogglePlay={() => setIsPlaying(!isPlaying)}
-        onOpenHelp={() => setIsHelpOpen(true)}
-      />
 
       {/* Slide Selection Drawer */}
       <ThumbnailDrawer
@@ -328,7 +340,7 @@ function SlidePageContent() {
       />
 
       {/* Bottom Footer signature */}
-      <footer className="w-full max-w-6xl mx-auto px-4 mt-4 text-center text-xs text-slate-400 font-semibold tracking-wide">
+      <footer className="w-full max-w-7xl mx-auto mt-6 text-center text-xs text-slate-400 font-semibold tracking-wide border-t border-slate-200 pt-4">
         Developed by Luiese Amstrong • Lesson Library © 2026
       </footer>
     </main>
