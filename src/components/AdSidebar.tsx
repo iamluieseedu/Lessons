@@ -62,7 +62,7 @@ export const AdSidebar: React.FC<AdSidebarProps> = ({ className = '', slotName =
         </div>
       </div>
 
-      <div className="w-full min-h-[250px] flex items-center justify-center">
+      <div className="w-full flex items-center justify-center min-h-[600px]">
         {/* AdSense Script Injection */}
         <Script
           src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${clientId}`}
@@ -72,10 +72,10 @@ export const AdSidebar: React.FC<AdSidebarProps> = ({ className = '', slotName =
 
         <ins
           className="adsbygoogle"
-          style={{ display: 'block', width: '100%', minHeight: '250px' }}
+          style={{ display: 'block', width: '100%', minHeight: '600px', maxWidth: '300px' }}
           data-ad-client={clientId}
           data-ad-slot={slotId}
-          data-ad-format="auto"
+          data-ad-format="vertical"
           data-full-width-responsive="true"
         />
         
