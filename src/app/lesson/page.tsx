@@ -91,6 +91,13 @@ function SlidePageContent() {
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [showAds, setShowAds] = useState(false);
+  const [hasLoggedCompletion, setHasLoggedCompletion] = useState(false);
+
+  // Reset logs and indexes on lesson change
+  useEffect(() => {
+    setHasLoggedCompletion(false);
+    setCurrentIndex(0);
+  }, [lessonId]);
 
   // Load lesson and slides dynamically
   useEffect(() => {
@@ -271,6 +278,42 @@ function SlidePageContent() {
     }
     return () => clearInterval(interval);
   }, [isPlaying, totalSlides, lesson]);
+
+  // Trigger reading completion webhook
+  useEffect(() => {
+    if (lesson && totalSlides > 0 && currentIndex === totalSlides - 1 && !hasLoggedCompletion && typeof window !== 'undefined') {
+      setHasLoggedCompletion(true);
+      const storedUser = localStorage.getItem('vid_user');
+      const webhookUrl = localStorage.getItem('vid_webhook_url') || CONFIG.webhookUrl;
+      
+      if (storedUser && webhookUrl) {
+        try {
+          const parsed = JSON.parse(storedUser);
+          if (parsed && parsed.name && parsed.email) {
+            const readLog = {
+              quizTitle: `${lesson.title} (Slides Read Completed)`,
+              name: parsed.name,
+              email: parsed.email,
+              section: "Self-Study / Slide Reader",
+              score: totalSlides,
+              total: totalSlides,
+              percent: 100,
+              date: new Date().toLocaleDateString()
+            };
+
+            fetch(webhookUrl, {
+              method: 'POST',
+              mode: 'no-cors',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(readLog)
+            }).catch(err => console.error("Failed to post reading webhook:", err));
+          }
+        } catch (e) {
+          console.error("Failed to parse stored user for reading completion:", e);
+        }
+      }
+    }
+  }, [currentIndex, totalSlides, lesson, hasLoggedCompletion]);
 
   // If lesson is not found or not active
   if (!lesson || !lesson.isActive) {
