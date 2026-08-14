@@ -167,6 +167,75 @@ function QuizPageContent() {
               explanation: "Output is the visual display returned by the system (the maps drawing), closing the communication loop."
             }
           ]);
+        } else if (found.id === 'webdev1') {
+          setCustomQuestions([
+            {
+              question: "What is the primary purpose of HTML in a webpage?",
+              options: [
+                "To establish structure and document meaning",
+                "To apply color layout and visual styles",
+                "To compute mathematical algorithms and logic loop state",
+                "To store files on the backend server database"
+              ],
+              answer: 0,
+              explanation: "HTML (HyperText Markup Language) is a markup language used to structure page contents, defining headings, paragraph blocks, and lists."
+            },
+            {
+              question: "Which of the following describes the difference between HTML and CSS?",
+              options: [
+                "HTML runs calculations; CSS links pages.",
+                "HTML defines presentation; CSS defines structural hierarchy.",
+                "HTML provides document structure; CSS provides presentation styles.",
+                "There is no difference; they are the same language."
+              ],
+              answer: 2,
+              explanation: "HTML is for document structure, whereas CSS is the styling sheet used to apply visual decorations and layout grids."
+            },
+            {
+              question: "What is the role of index.html in web server configurations?",
+              options: [
+                "It is a required format for storing raw photo graphics files.",
+                "It serves conventionally as the default entry point file when loading directories.",
+                "It runs styling layouts to resize monitor text sizes.",
+                "It blocks users from logging in on administrative pages."
+              ],
+              answer: 1,
+              explanation: "Conventionally, web servers look for `index.html` as the default document to render when a directory is requested."
+            },
+            {
+              question: "What happens when a browser encounters a missing closing HTML tag (e.g. <h1>Hello)?",
+              options: [
+                "The browser completely crashes and stops rendering.",
+                "The browser attempts to auto-repair it, which might cause layout/style leakage.",
+                "The server automatically deletes the file from the database.",
+                "Nothing; closing tags are completely optional in HTML5 specs."
+              ],
+              answer: 1,
+              explanation: "Browsers have robust error recovery for malformed markup, but missing closing tags can cause styles to leak to subsequent text elements."
+            },
+            {
+              question: "Why is HTML not considered a standard programming language?",
+              options: [
+                "It cannot be read by browser engines.",
+                "It lacks logic conditionals, loops, variables, and calculations.",
+                "It is too complex for basic computer processors.",
+                "It does not support text character markup."
+              ],
+              answer: 1,
+              explanation: "HTML is a declarative markup language that describes structure. It does not perform computational loops or store variables."
+            },
+            {
+              question: "What represents the correct order of simplified rendering steps inside browser engines?",
+              options: [
+                "Paint screen → Parse CSS → Measure layout → Parse HTML",
+                "Parse HTML (DOM) → Parse CSS (CSSOM) → Calculate Layout → Paint Screen",
+                "Measure layout → Paint screen → Parse HTML → Parse CSS",
+                "Parse CSS → Measure layout → Paint screen → Parse HTML"
+              ],
+              answer: 1,
+              explanation: "The browser parses HTML characters into DOM, compiles CSSOM rules, calculates positions (Layout), and draws pixels on the screen (Paint)."
+            }
+          ]);
         } else if (found.id !== 'week1') {
           // Generate general questions for custom uploaded quizzes
           setCustomQuestions([

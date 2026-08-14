@@ -776,6 +776,681 @@ const Slide36Illustration: React.FC = () => {
   );
 };
 
+// -------------------------------------------------------------
+// WEBDEV INTERACTIVE COMPONENTS
+// -------------------------------------------------------------
+
+// 1. WebdevTimeline
+const WebdevTimeline: React.FC = () => {
+  const [activeStep, setActiveStep] = useState(0);
+  const timeline = [
+    { year: '1989', title: 'World Wide Web proposed', desc: 'Tim Berners-Lee proposes global hypertext documents at CERN. Concept: linking documents globally via client-server model.', source: 'W3C History' },
+    { year: '1991', title: 'HTML first spec released', desc: 'HTML 1.0 contains only 18 basic tag elements for describing semantic documents (headings, lists, paragraphs).', source: 'WHATWG specifications' },
+    { year: '1993', title: 'Mosaic graphical browser', desc: 'First browser to render inline images along with text instead of loading them in separate windows. Propels the web to public adoption.', source: 'NCSA Archives' },
+    { year: '1996', title: 'CSS 1 introduced', desc: 'W3C publishes Cascading Style Sheets level 1. Separates layout, color, and design rules away from HTML structure.', source: 'W3C CSS Working Group' },
+    { year: '1997', title: 'JavaScript standards (ECMAScript)', desc: 'Client-side scripting is standardized, giving browsers the capacity to change page states, execute logic, and handle interactivity.', source: 'ECMA International' },
+    { year: 'Modern', title: 'HTML5 & CSS3 Web platform', desc: 'HTML5 introduces semantically rich tags (<video>, <canvas>, <section>) and CSS3 brings keyframe animations, grid layouts, and gradients.', source: 'W3C/WHATWG Living Standards' }
+  ];
+
+  return (
+    <div className="flex-grow flex flex-col justify-center gap-3">
+      <div className="flex justify-between items-center bg-slate-950 p-3 rounded-xl border border-slate-800 text-[10px] leading-relaxed font-sans min-h-[70px]">
+        <p className="text-slate-350">
+          <strong className="text-sky-400 font-lexend block uppercase mb-0.5">Year {timeline[activeStep].year}: {timeline[activeStep].title}</strong>
+          {timeline[activeStep].desc}
+          <span className="text-[9px] text-slate-500 font-bold block mt-1.5 font-mono">Source Reference: {timeline[activeStep].source}</span>
+        </p>
+      </div>
+      
+      <div className="flex justify-center gap-1 sm:gap-1.5">
+        {timeline.map((item, idx) => (
+          <button
+            key={item.year}
+            onClick={() => setActiveStep(idx)}
+            className={`px-2.5 py-1.5 rounded-lg border text-[10px] font-black font-lexend flex flex-col items-center justify-center transition-all duration-300 ${
+              activeStep === idx 
+                ? 'bg-sky-600 border-sky-500 text-white scale-110 shadow-md ring-4 ring-sky-500/20' 
+                : 'bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-650'
+            }`}
+          >
+            <span>{item.year}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// 2. HtmlNoCssToggle
+const HtmlNoCssToggle: React.FC = () => {
+  const [cssDisabled, setCssDisabled] = useState(false);
+  return (
+    <div className="flex-grow flex flex-col justify-center gap-3">
+      <div className="flex justify-between items-center bg-slate-950 p-2 rounded-lg border border-slate-800">
+        <span className="text-[9px] uppercase font-bold tracking-wider text-slate-450">CSS Presentation Switcher</span>
+        <button
+          onClick={() => setCssDisabled(!cssDisabled)}
+          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition font-lexend ${
+            cssDisabled ? 'bg-rose-600 hover:bg-rose-700 text-white' : 'bg-slate-800 hover:bg-slate-700 text-slate-200'
+          }`}
+        >
+          {cssDisabled ? '🔌 Restore CSS' : '🚫 Disable CSS'}
+        </button>
+      </div>
+
+      <div className="border border-slate-700 rounded-xl overflow-hidden bg-slate-900 shadow-inner flex flex-col min-h-[180px]">
+        {/* Mock Browser Frame */}
+        <div className="flex items-center gap-1.5 px-3 py-2 bg-slate-800 border-b border-slate-750">
+          <div className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />
+          <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
+          <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
+          <span className="text-[9px] font-mono text-slate-500 ml-4">https://iamlesson.space/preview</span>
+        </div>
+
+        {/* Browser Page Rendering viewport */}
+        <div className={`p-4 flex-grow font-sans ${cssDisabled ? 'bg-white text-black p-4 text-left leading-normal' : 'bg-gradient-to-br from-indigo-950 to-slate-900 text-white text-center flex flex-col justify-center items-center'}`}>
+          {cssDisabled ? (
+            <div className="space-y-4">
+              <h1 className="text-3xl font-bold border-b border-gray-300 pb-2">Web Development 1</h1>
+              <p className="text-base text-gray-800">Welcome to your first webpage. HTML establishes the raw structural outlines of elements.</p>
+              <ul className="list-disc list-inside space-y-1 pl-2">
+                <li>HTML provides document structure.</li>
+                <li>CSS provides layout presentation.</li>
+              </ul>
+              <a href="#" className="text-blue-600 underline">Read MDN documentation</a>
+            </div>
+          ) : (
+            <div className="max-w-md space-y-3.5 p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm shadow-xl">
+              <h1 className="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-sky-400 to-indigo-400 bg-clip-text text-transparent">Web Development 1</h1>
+              <p className="text-xs text-slate-300 leading-relaxed font-semibold">Welcome to your first webpage. HTML establishes the raw structural outlines of elements.</p>
+              <div className="flex justify-center gap-2">
+                <span className="px-2 py-1 rounded bg-sky-500/20 text-sky-300 border border-sky-500/30 text-[9px] font-mono font-bold">Structure</span>
+                <span className="px-2 py-1 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-[9px] font-mono font-bold">Presentation</span>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// 3. HtmlAnatomy
+const HtmlAnatomy: React.FC = () => {
+  const [selectedNode, setSelectedNode] = useState<string | null>(null);
+
+  const explanations: Record<string, { label: string; text: string }> = {
+    openTag: { label: 'Opening Tag (<p ... >)', text: 'Tells the browser where the element starts. Tag names designate the browser default box properties.' },
+    attrName: { label: 'Attribute Name (class)', text: 'Specifies the metadata variable parameter we want to change or configure.' },
+    attrVal: { label: 'Attribute Value ("alert")', text: 'Sets the specific value parameters inside quotes. Used by CSS rules for custom targeting.' },
+    content: { label: 'Element Content (Hello)', text: 'The actual nested content, images, or child nodes printed inside the structural tags.' },
+    closeTag: { label: 'Closing Tag (</p>)', text: 'Uses a slash (/) to signal the browser that the element boundaries end here.' }
+  };
+
+  return (
+    <div className="flex-grow flex flex-col justify-center gap-2">
+      <div className="w-full bg-slate-950 p-4 rounded-xl border border-slate-800 flex items-center justify-center min-h-[60px]">
+        {/* Interactive Element Line */}
+        <pre className="font-mono text-xs text-slate-400 select-none whitespace-pre-wrap leading-relaxed text-center">
+          <span 
+            onClick={() => setSelectedNode('openTag')}
+            className={`cursor-pointer px-1 rounded transition ${selectedNode === 'openTag' ? 'bg-sky-500/30 text-sky-300 font-bold underline' : 'hover:bg-slate-800'}`}
+          >
+            &lt;p
+          </span>{' '}
+          <span 
+            onClick={() => setSelectedNode('attrName')}
+            className={`cursor-pointer px-0.5 rounded transition ${selectedNode === 'attrName' ? 'bg-indigo-500/30 text-indigo-300 font-bold underline' : 'hover:bg-slate-800 text-yellow-300'}`}
+          >
+            class
+          </span>
+          <span className="text-slate-500">=</span>
+          <span 
+            onClick={() => setSelectedNode('attrVal')}
+            className={`cursor-pointer px-0.5 rounded transition ${selectedNode === 'attrVal' ? 'bg-indigo-500/30 text-indigo-300 font-bold underline' : 'hover:bg-slate-800 text-rose-300'}`}
+          >
+            "alert"
+          </span>
+          <span 
+            onClick={() => setSelectedNode('openTag')}
+            className={`cursor-pointer px-0.5 rounded transition ${selectedNode === 'openTag' ? 'bg-sky-500/30 text-sky-300 font-bold underline' : 'hover:bg-slate-800'}`}
+          >
+            &gt;
+          </span>
+          <span 
+            onClick={() => setSelectedNode('content')}
+            className={`cursor-pointer px-1 rounded transition ${selectedNode === 'content' ? 'bg-emerald-500/30 text-emerald-300 font-bold underline' : 'hover:bg-slate-800 text-white'}`}
+          >
+            Hello
+          </span>
+          <span 
+            onClick={() => setSelectedNode('closeTag')}
+            className={`cursor-pointer px-1 rounded transition ${selectedNode === 'closeTag' ? 'bg-sky-500/30 text-sky-300 font-bold underline' : 'hover:bg-slate-800'}`}
+          >
+            &lt;/p&gt;
+          </span>
+        </pre>
+      </div>
+
+      <div className="bg-slate-950 border border-slate-850 rounded-lg p-2.5 text-[10px] leading-relaxed font-sans min-h-[70px]">
+        {selectedNode && explanations[selectedNode] ? (
+          <p className="text-slate-300">
+            <strong className="text-sky-400 font-lexend block uppercase mb-0.5">{explanations[selectedNode].label}</strong>
+            {explanations[selectedNode].text}
+          </p>
+        ) : (
+          <p className="text-slate-500 italic text-center py-2 font-medium">
+            Click any part of the HTML code tag line above to deconstruct its syntax structure
+          </p>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// 4. HtmlCodeSelector
+const HtmlCodeSelector: React.FC = () => {
+  const [hoveredNode, setHoveredNode] = useState<'h1' | 'p' | null>(null);
+  return (
+    <div className="flex-grow flex flex-col justify-center gap-3">
+      {/* Code Editor Preview */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 flex flex-col justify-between font-mono text-[10px] min-h-[110px]">
+          <div>
+            <span className="text-slate-550 block border-b border-slate-800 pb-1 mb-1.5">source_code.html</span>
+            <div 
+              onMouseEnter={() => setHoveredNode('h1')}
+              onMouseLeave={() => setHoveredNode(null)}
+              className={`p-1 rounded cursor-pointer transition ${hoveredNode === 'h1' ? 'bg-sky-500/20 text-sky-300' : 'text-slate-400'}`}
+            >
+              &lt;h1&gt;Welcome to Web Dev&lt;/h1&gt;
+            </div>
+            <div 
+              onMouseEnter={() => setHoveredNode('p')}
+              onMouseLeave={() => setHoveredNode(null)}
+              className={`p-1 rounded cursor-pointer transition ${hoveredNode === 'p' ? 'bg-indigo-500/20 text-indigo-300' : 'text-slate-400'}`}
+            >
+              &lt;p&gt;We are learning HTML5.&lt;/p&gt;
+            </div>
+          </div>
+          <span className="text-[8px] text-slate-500 mt-2 font-sans font-bold select-none">Hover code lines above to map rendering</span>
+        </div>
+
+        {/* Live Browser Output */}
+        <div className="bg-white border border-slate-200 rounded-xl p-3 shadow-inner flex flex-col justify-between text-left font-sans text-black min-h-[110px]">
+          <span className="text-[8px] uppercase tracking-wider font-extrabold text-slate-400 border-b border-slate-100 pb-1 select-none">Browser Preview</span>
+          <div className="flex-grow flex flex-col justify-center gap-1.5 py-1">
+            <h1 className={`text-sm font-extrabold tracking-tight transition ${hoveredNode === 'h1' ? 'bg-sky-100 text-sky-700 ring-2 ring-sky-300 p-0.5 rounded' : 'text-slate-900'}`}>
+              Welcome to Web Dev
+            </h1>
+            <p className={`text-xs leading-normal transition ${hoveredNode === 'p' ? 'bg-indigo-100 text-indigo-700 ring-2 ring-indigo-300 p-0.5 rounded' : 'text-slate-650'}`}>
+              We are learning HTML5.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// 5. TryItYourselfEditor
+const TryItYourselfEditor: React.FC = () => {
+  const [code, setCode] = useState(
+`<h1>Try It Yourself</h1>
+<p>This is a live W3Schools style browser simulator.</p>
+<button style="background-color:#0284c7; color:#fff; border:none; padding:8px 12px; border-radius:6px; cursor:pointer;">
+  Click Button
+</button>`
+  );
+
+  return (
+    <div className="flex-grow flex flex-col justify-center gap-2 font-sans text-xs">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-stretch">
+        {/* Editor Box */}
+        <div className="flex flex-col border border-slate-700 rounded-xl overflow-hidden bg-slate-950">
+          <div className="bg-slate-900 border-b border-slate-800 px-3 py-1.5 flex justify-between items-center text-[10px] text-slate-400 select-none">
+            <span className="font-mono">source_editor.html</span>
+            <span className="px-1.5 py-0.2 rounded bg-sky-500/10 text-sky-400 border border-sky-550/20 font-bold uppercase tracking-wider text-[8px]">Editable</span>
+          </div>
+          <textarea
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            className="w-full min-h-[140px] p-2.5 bg-slate-950 text-slate-200 font-mono text-[10px] leading-relaxed focus:outline-none resize-none"
+            placeholder="Type HTML markup here..."
+          />
+        </div>
+
+        {/* Browser Iframe Simulator */}
+        <div className="flex flex-col border border-slate-200 rounded-xl overflow-hidden bg-white text-black shadow-inner">
+          <div className="bg-slate-100 border-b border-slate-200 px-3 py-1.5 flex justify-between items-center text-[9px] text-slate-500 select-none">
+            <span className="font-semibold">Live Sandbox Viewport</span>
+            <div className="flex gap-1">
+              <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+              <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+            </div>
+          </div>
+          <div 
+            className="w-full min-h-[140px] p-3 text-left overflow-y-auto"
+            dangerouslySetInnerHTML={{ __html: code }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// 6. MythHtmlProgramming
+const MythHtmlProgramming: React.FC = () => {
+  const [selectedOption, setSelectedOption] = useState<'myth' | 'fact' | null>(null);
+  return (
+    <div className="flex-grow flex flex-col justify-center gap-3">
+      <div className="flex flex-col items-center gap-3">
+        <h4 className="text-center font-lexend text-xs font-black text-slate-300 bg-slate-900 border border-slate-800 px-4 py-2 rounded-xl">
+          💡 STATEMENT: "HTML is a programming language."
+        </h4>
+        
+        <div className="flex gap-3 w-full max-w-[280px]">
+          <button
+            onClick={() => setSelectedOption('myth')}
+            className={`flex-1 py-2 rounded-xl border text-xs font-black font-lexend transition ${
+              selectedOption === 'myth'
+                ? 'bg-emerald-600 border-emerald-500 text-white shadow-md animate-bounce'
+                : 'bg-slate-800 border-slate-700 text-slate-300 hover:border-slate-650'
+            }`}
+          >
+            ✓ MYTH
+          </button>
+          <button
+            onClick={() => setSelectedOption('fact')}
+            className={`flex-1 py-2 rounded-xl border text-xs font-black font-lexend transition ${
+              selectedOption === 'fact'
+                ? 'bg-rose-600 border-rose-500 text-white shadow-md'
+                : 'bg-slate-800 border-slate-700 text-slate-300 hover:border-slate-650'
+            }`}
+          >
+            ✗ FACT
+          </button>
+        </div>
+      </div>
+
+      <div className="w-full bg-slate-950 p-3 border border-slate-850 rounded-xl text-[10px] leading-relaxed font-sans min-h-[90px]">
+        {selectedOption === 'myth' && (
+          <p className="text-emerald-300 font-medium">
+            <strong className="text-emerald-400 font-lexend block uppercase mb-0.5">Correct! (It is a Myth)</strong>
+            HTML is a <strong>markup language</strong> used to structure content. It defines layouts, headers, and document structures. It does not calculate numbers, execute loops, or store state variables like a programming language (e.g. JavaScript, PHP).
+          </p>
+        )}
+        {selectedOption === 'fact' && (
+          <p className="text-rose-300 font-medium">
+            <strong className="text-rose-450 font-lexend block uppercase mb-0.5">Incorrect. (It is a Myth)</strong>
+            HTML is not a programming language. Program languages write active calculations, logic conditional branches, and query instructions. HTML simply organizes text elements visually for browsers to read.
+          </p>
+        )}
+        {!selectedOption && (
+          <p className="text-slate-400 italic text-center py-2 font-medium">
+            Select Myth or Fact to reveal the detailed MDN documentation breakdown
+          </p>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// 7. BreakTheCodeTags
+const BreakTheCodeTags: React.FC = () => {
+  const [codeBroken, setCodeBroken] = useState(false);
+  return (
+    <div className="flex-grow flex flex-col justify-center gap-3">
+      <div className="flex gap-2">
+        <button
+          onClick={() => setCodeBroken(true)}
+          className={`flex-1 py-2 border text-xs font-black font-lexend rounded-xl transition ${
+            codeBroken ? 'bg-rose-905/40 border-rose-800 text-rose-300' : 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-slate-300'
+          }`}
+        >
+          🚫 Remove Closing Tag
+        </button>
+        <button
+          onClick={() => setCodeBroken(false)}
+          className={`flex-1 py-2 border text-xs font-black font-lexend rounded-xl transition ${
+            !codeBroken ? 'bg-emerald-905/40 border-emerald-800 text-emerald-300' : 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-slate-300'
+          }`}
+        >
+          🔑 Fix the Code
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-stretch">
+        <div className="bg-slate-955 p-3 rounded-xl border border-slate-800 font-mono text-[9.5px] leading-relaxed text-left min-h-[90px]">
+          <span className="text-slate-500 block border-b border-slate-800 pb-1 mb-1">source.html</span>
+          {codeBroken ? (
+            <div className="text-rose-300">
+              <p>&lt;h1&gt;Big Title (Broken</p>
+              <p className="text-slate-400">&lt;p&gt;Sub paragraph text here.&lt;/p&gt;</p>
+            </div>
+          ) : (
+            <div className="text-emerald-300">
+              <p>&lt;h1&gt;Big Title (Broken&lt;/h1&gt;</p>
+              <p className="text-slate-400">&lt;p&gt;Sub paragraph text here.&lt;/p&gt;</p>
+            </div>
+          )}
+        </div>
+
+        <div className="bg-white text-black p-3 rounded-xl border border-slate-200 text-left min-h-[90px] font-sans flex flex-col justify-center">
+          {codeBroken ? (
+            <div className="border border-red-200 bg-red-50/20 p-1.5 rounded">
+              <span className="text-[20px] font-bold block leading-tight">Big Title (Broken</span>
+              <span className="text-[20px] font-bold block leading-tight mt-1 text-slate-700">Sub paragraph text here.</span>
+              <p className="text-[8px] text-red-500 font-bold font-lexend mt-2 leading-tight animate-pulse">⚠️ ERROR: Heading layout leaked into the paragraph text block!</p>
+            </div>
+          ) : (
+            <div className="p-1">
+              <h1 className="text-xl font-bold leading-tight">Big Title (Broken</h1>
+              <p className="text-xs text-slate-500 mt-1 leading-normal">Sub paragraph text here.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// 8. WebpageDocumentTree
+const WebpageDocumentTree: React.FC = () => {
+  const [activeNode, setActiveNode] = useState<string | null>(null);
+
+  const nodesInfo: Record<string, { title: string; desc: string }> = {
+    html: { title: 'html (Root Node)', desc: 'The base parent container tag of the entire document tree. All other element tags are nested inside this block.' },
+    head: { title: 'head (Metadata Container)', desc: 'Holds invisible page metadata settings (browser page titles, style link links, script endpoints) parsed before visual layouts draw.' },
+    title: { title: 'title (Browser Tab Header)', desc: 'Set inside <head>. Declares the text displayed on browser tab bars. Invisible on the main canvas.' },
+    body: { title: 'body (Visible Layout Area)', desc: 'Contains all visual markup contents: headers, grid slide cards, text paragraph elements, and catalog items.' },
+    h1: { title: 'h1 (Major Structural Header)', desc: 'First heading element tag nested in the body. Sets dominant font sizes and structural outlines.' },
+    p: { title: 'p (Paragraph Tag)', desc: 'Declares paragraph text groups, organizing reader text elements with clean margins.' }
+  };
+
+  return (
+    <div className="flex-grow flex flex-col justify-center gap-2">
+      {/* Node Tree diagram grid */}
+      <div className="w-full bg-slate-950 p-3 rounded-xl border border-slate-800 flex flex-col items-center gap-1.5 select-none font-mono text-[9px]">
+        <button onClick={() => setActiveNode('html')} className={`px-4 py-1 border rounded-lg uppercase transition-all duration-300 font-black ${activeNode === 'html' ? 'bg-sky-600 border-sky-500 text-white scale-105' : 'bg-slate-850 border-slate-750 text-slate-400'}`}>
+          html
+        </button>
+        <span className="text-slate-700 leading-none">│</span>
+        
+        <div className="flex gap-4 items-start">
+          <div className="flex flex-col items-center gap-1">
+            <button onClick={() => setActiveNode('head')} className={`px-3 py-1 border rounded-lg uppercase transition-all duration-300 ${activeNode === 'head' ? 'bg-sky-600 border-sky-505 text-white scale-105' : 'bg-slate-850 border-slate-750 text-slate-400'}`}>
+              head
+            </button>
+            <span className="text-slate-700 leading-none">│</span>
+            <button onClick={() => setActiveNode('title')} className={`px-2 py-0.5 border rounded-lg uppercase transition-all duration-300 ${activeNode === 'title' ? 'bg-sky-600 border-sky-505 text-white scale-105' : 'bg-slate-900 border-slate-800 text-slate-500'}`}>
+              title
+            </button>
+          </div>
+          
+          <div className="flex flex-col items-center gap-1">
+            <button onClick={() => setActiveNode('body')} className={`px-3 py-1 border rounded-lg uppercase transition-all duration-300 ${activeNode === 'body' ? 'bg-sky-600 border-sky-505 text-white scale-105' : 'bg-slate-850 border-slate-750 text-slate-400'}`}>
+              body
+            </button>
+            <span className="text-slate-700 leading-none">├──</span>
+            <div className="flex gap-2">
+              <button onClick={() => setActiveNode('h1')} className={`px-2 py-0.5 border rounded-lg uppercase transition-all duration-300 ${activeNode === 'h1' ? 'bg-sky-600 border-sky-505 text-white scale-105' : 'bg-slate-900 border-slate-800 text-slate-500'}`}>
+                h1
+              </button>
+              <button onClick={() => setActiveNode('p')} className={`px-2 py-0.5 border rounded-lg uppercase transition-all duration-300 ${activeNode === 'p' ? 'bg-sky-600 border-sky-505 text-white scale-105' : 'bg-slate-900 border-slate-800 text-slate-500'}`}>
+                p
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-slate-950 border border-slate-850 rounded-lg p-2.5 text-[10px] leading-relaxed font-sans min-h-[60px]">
+        {activeNode && nodesInfo[activeNode] ? (
+          <p className="text-slate-350">
+            <strong className="text-sky-400 font-lexend block uppercase mb-0.5">{nodesInfo[activeNode].title}</strong>
+            {nodesInfo[activeNode].desc}
+          </p>
+        ) : (
+          <p className="text-slate-500 italic text-center py-2.5 font-medium">
+            Click any node in the Document DOM Tree above to inspect nested elements
+          </p>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// 9. IndexHtmlDiscovery
+const IndexHtmlDiscovery: React.FC = () => {
+  const [selectedFile, setSelectedFile] = useState<string | null>(null);
+  return (
+    <div className="flex-grow flex flex-col justify-center gap-2">
+      <div className="w-full bg-slate-955 p-3 rounded-xl border border-slate-800 flex flex-col items-center gap-2">
+        <h4 className="text-center font-lexend text-[10.5px] font-bold text-slate-300">
+          Q: Which file name will a web server load by default for a folder homepage?
+        </h4>
+        
+        <div className="grid grid-cols-3 gap-2 w-full font-mono text-[9.5px]">
+          <button
+            onClick={() => setSelectedFile('index')}
+            className={`py-2 border rounded-xl font-bold transition ${
+              selectedFile === 'index' ? 'bg-emerald-600 border-emerald-500 text-white shadow-md' : 'bg-slate-800 border-slate-700 text-slate-400'
+            }`}
+          >
+            index.html
+          </button>
+          <button
+            onClick={() => setSelectedFile('style')}
+            className={`py-2 border rounded-xl font-bold transition ${
+              selectedFile === 'style' ? 'bg-rose-600 border-rose-500 text-white shadow-md' : 'bg-slate-800 border-slate-700 text-slate-400'
+            }`}
+          >
+            style.css
+          </button>
+          <button
+            onClick={() => setSelectedFile('images')}
+            className={`py-2 border rounded-xl font-bold transition ${
+              selectedFile === 'images' ? 'bg-rose-600 border-rose-500 text-white shadow-md' : 'bg-slate-800 border-slate-700 text-slate-400'
+            }`}
+          >
+            images/
+          </button>
+        </div>
+      </div>
+
+      <div className="w-full bg-slate-950 p-2.5 border border-slate-850 rounded-lg text-[10px] leading-relaxed font-sans min-h-[60px]">
+        {selectedFile === 'index' && (
+          <p className="text-emerald-300 font-medium">
+            <strong className="text-emerald-450 font-lexend block uppercase mb-0.5">Correct! (index.html)</strong>
+            By default convention, web servers look for `index.html` to display when visitors request folders. It acts as the default index landing file.
+          </p>
+        )}
+        {(selectedFile === 'style' || selectedFile === 'images') && (
+          <p className="text-rose-300 font-medium">
+            <strong className="text-rose-450 font-lexend block uppercase mb-0.5">Incorrect option</strong>
+            Servers look for a default index page. `style.css` is a stylesheet link and `images/` is a media directory folder asset.
+          </p>
+        )}
+        {!selectedFile && (
+          <p className="text-slate-500 italic text-center py-2 font-medium">
+            Select the default file name target above to inspect server directory responses
+          </p>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// 10. FileExtensionRenamer
+const FileExtensionRenamer: React.FC = () => {
+  const [extension, setExtension] = useState('txt');
+  return (
+    <div className="flex-grow flex flex-col justify-center gap-3">
+      <div className="w-full bg-slate-955 p-3 rounded-xl border border-slate-800 flex flex-col items-center gap-2">
+        <h4 className="text-center font-lexend text-[10px] font-bold text-slate-350 mb-1">
+          Rename extension to see how the browser interprets it:
+        </h4>
+        
+        <div className="flex items-center gap-1.5 font-mono text-xs">
+          <span className="text-slate-300 bg-slate-850 px-3 py-1.5 rounded-lg border border-slate-750 font-semibold">mywebpage</span>
+          <span className="text-slate-500 font-bold">.</span>
+          <select
+            value={extension}
+            onChange={(e) => setExtension(e.target.value)}
+            className="bg-slate-800 border-2 border-sky-500 text-white rounded-lg px-2 py-1.5 focus:outline-none font-bold"
+          >
+            <option value="txt">txt</option>
+            <option value="html">html</option>
+            <option value="jpg">jpg</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="w-full bg-slate-950 p-2.5 border border-slate-850 rounded-lg text-[10px] leading-relaxed font-sans min-h-[70px]">
+        {extension === 'txt' && (
+          <p className="text-slate-350">
+            <strong className="text-amber-400 font-lexend block uppercase mb-0.5">TXT extension (Plain Text)</strong>
+            Browsers render this as a simple, unformatted stream of letters. They ignore markup elements and display code tags literal.
+          </p>
+        )}
+        {extension === 'html' && (
+          <p className="text-emerald-300 font-medium">
+            <strong className="text-emerald-450 font-lexend block uppercase mb-0.5">HTML extension (Web Document)</strong>
+            Success! The browser recognizes this file, parses heading variables, links assets, and draws interactive styled screens!
+          </p>
+        )}
+        {extension === 'jpg' && (
+          <p className="text-rose-350">
+            <strong className="text-rose-450 font-lexend block uppercase mb-0.5">JPG extension (Image File)</strong>
+            Error. The browser expects binary image pixel layers. It cannot render this, resulting in a broken image file box.
+          </p>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// 11. HtmlCssTuner
+const HtmlCssTuner: React.FC = () => {
+  const [textSize, setTextSize] = useState(18);
+  const [padding, setPadding] = useState(10);
+  const [color, setColor] = useState('#0284c7');
+
+  return (
+    <div className="flex-grow flex flex-col justify-center gap-2 font-sans text-xs">
+      {/* Visual Tuner Sliders */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-stretch">
+        <div className="bg-slate-955 p-3 rounded-xl border border-slate-800 flex flex-col justify-center gap-2.5">
+          <div className="space-y-1">
+            <div className="flex justify-between font-semibold text-slate-400">
+              <span>Text Size: {textSize}px</span>
+            </div>
+            <input 
+              type="range" 
+              min="12" 
+              max="36" 
+              value={textSize} 
+              onChange={(e) => setTextSize(Number(e.target.value))} 
+              className="w-full accent-sky-500 h-0.5 bg-slate-800 cursor-pointer" 
+            />
+          </div>
+
+          <div className="space-y-1">
+            <div className="flex justify-between font-semibold text-slate-400">
+              <span>Padding: {padding}px</span>
+            </div>
+            <input 
+              type="range" 
+              min="0" 
+              max="24" 
+              value={padding} 
+              onChange={(e) => setPadding(Number(e.target.value))} 
+              className="w-full accent-sky-500 h-0.5 bg-slate-800 cursor-pointer" 
+            />
+          </div>
+
+          <div className="flex items-center justify-between font-semibold text-slate-400 gap-2">
+            <span>Text Color:</span>
+            <input 
+              type="color" 
+              value={color} 
+              onChange={(e) => setColor(e.target.value)} 
+              className="w-8 h-8 rounded border border-slate-700 bg-transparent cursor-pointer" 
+            />
+          </div>
+        </div>
+
+        {/* Live CSS Rules code block */}
+        <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 font-mono text-[9px] text-left leading-relaxed flex flex-col justify-between min-h-[110px]">
+          <div>
+            <span className="text-slate-500 block border-b border-slate-800 pb-1 mb-1 select-none">style.css (Generated CSS)</span>
+            <pre className="text-yellow-300">
+{`h1 {
+  font-size: `}<span className="text-white font-bold">{textSize}px</span>{`;
+  padding: `}<span className="text-white font-bold">{padding}px</span>{`;
+  color: `}<span className="text-white font-bold">{color}</span>{`;
+}`}
+            </pre>
+          </div>
+        </div>
+      </div>
+
+      {/* Render Output preview box */}
+      <div className="w-full bg-white text-black border border-slate-200 rounded-xl p-3 shadow-inner text-center font-sans mt-1">
+        <h1 
+          className="font-bold border border-dashed border-slate-300 rounded transition-all duration-100"
+          style={{ 
+            fontSize: `${textSize}px`, 
+            padding: `${padding}px`, 
+            color: color 
+          }}
+        >
+          Dynamic Preview Box
+        </h1>
+      </div>
+    </div>
+  );
+};
+
+// 12. BrowserParseFlow
+const BrowserParseFlow: React.FC = () => {
+  const [activeStep, setActiveStep] = useState(0);
+  const steps = [
+    { title: '1. Read HTML', desc: 'Browser receives raw HTML characters, parsing tags hierarchically into the Document Object Model (DOM) Tree.', code: 'DOM TREE' },
+    { title: '2. Parse Styles', desc: 'Browser reads external and inline CSS styling rules, mapping design specs to active DOM nodes (CSSOM).', code: 'CSSOM ENGINE' },
+    { title: '3. Calculate Layout', desc: 'The layout model measures exact coordinate positions and pixel widths/heights of visual blocks.', code: 'BOX METRICS' },
+    { title: '4. Paint Screen', desc: 'The painting pipeline draws colors, margins, text characters, and graphics elements onto visual monitor pixels.', code: 'SCREEN PAINT' }
+  ];
+
+  return (
+    <div className="flex-grow flex flex-col justify-center gap-3">
+      <div className="flex justify-between items-center bg-slate-955 p-2.5 rounded-xl border border-slate-800 text-[10px] leading-relaxed font-sans min-h-[60px]">
+        <p className="text-slate-350">
+          <strong className="text-sky-400 font-lexend block uppercase mb-0.5 font-bold">{steps[activeStep].title}</strong>
+          {steps[activeStep].desc}
+        </p>
+      </div>
+
+      <div className="grid grid-cols-4 gap-1 sm:gap-2">
+        {steps.map((st, idx) => (
+          <button
+            key={idx}
+            onClick={() => setActiveStep(idx)}
+            className={`py-2 border rounded-lg text-[9px] font-black font-lexend uppercase text-center transition-all duration-300 ${
+              activeStep === idx 
+                ? 'bg-sky-600 border-sky-505 text-white scale-105 shadow-md ring-4 ring-sky-500/20 animate-pulse' 
+                : 'bg-slate-850 border-slate-750 text-slate-500 hover:text-slate-400'
+            }`}
+          >
+            {st.code}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 // ROUTER THAT RENDER PRE-SEPARATED ILLUSTRATIONS WITHOUT CONFLICTING HOOK ORDERS
 const ConceptIllustration: React.FC<{ slideId: string }> = ({ slideId }) => {
   if (slideId === 'media-slide2') return <Slide2Illustration />;
@@ -791,11 +1466,25 @@ const ConceptIllustration: React.FC<{ slideId: string }> = ({ slideId }) => {
   if (slideId === 'media-slide30') return <Slide30Illustration />;
   if (slideId === 'media-slide36') return <Slide36Illustration />;
 
+  // WebDev Lesson Custom Illustrations
+  if (slideId === 'webdev-slide3') return <WebdevTimeline />;
+  if (slideId === 'webdev-slide4') return <HtmlNoCssToggle />;
+  if (slideId === 'webdev-slide5') return <HtmlAnatomy />;
+  if (slideId === 'webdev-slide6') return <HtmlCodeSelector />;
+  if (slideId === 'webdev-slide7') return <TryItYourselfEditor />;
+  if (slideId === 'webdev-slide9') return <MythHtmlProgramming />;
+  if (slideId === 'webdev-slide10') return <BreakTheCodeTags />;
+  if (slideId === 'webdev-slide11') return <WebpageDocumentTree />;
+  if (slideId === 'webdev-slide13') return <IndexHtmlDiscovery />;
+  if (slideId === 'webdev-slide14') return <FileExtensionRenamer />;
+  if (slideId === 'webdev-slide16') return <HtmlCssTuner />;
+  if (slideId === 'webdev-slide17') return <BrowserParseFlow />;
+
   // Default fallback illustration representing general interactive design
   return (
     <div className="flex-grow flex flex-col justify-center items-center gap-2 font-lexend text-center">
       <div className="relative w-16 h-16 rounded-full border-2 border-dashed border-sky-400 flex items-center justify-center animate-spin-slow animate-pulse">
-        <Settings className="w-8 h-8 text-sky-450" />
+        <Settings className="w-8 h-8 text-sky-455" />
       </div>
       <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-2">MEDIADSN Digital sandbox</span>
     </div>

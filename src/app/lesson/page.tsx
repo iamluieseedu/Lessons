@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { slidesData } from '@/data/slidesData';
 import { laravelSlidesData } from '@/data/laravelSlidesData';
 import { mediaDsnSlidesData } from '@/data/mediaDsnSlidesData';
+import { webdevSlidesData } from '@/data/webdevSlidesData';
 import { SlideViewer } from '@/components/SlideViewer';
 import { NavigationControls } from '@/components/NavigationControls';
 import { ThumbnailDrawer } from '@/components/ThumbnailDrawer';
@@ -113,6 +114,8 @@ function SlidePageContent() {
           setSlides(laravelSlidesData);
         } else if (found.id === 'mediadsn1') {
           setSlides(mediaDsnSlidesData);
+        } else if (found.id === 'webdev1') {
+          setSlides(webdevSlidesData);
         } else {
           // Dynamic slide deck for custom uploaded lessons
           setSlides([
