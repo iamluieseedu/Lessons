@@ -8,6 +8,7 @@ import { Film, ArrowLeft, Lock, BookOpen } from 'lucide-react';
 import { AdSidebar } from '@/components/AdSidebar';
 import { CONFIG } from '@/config';
 import { HeaderAd } from '@/components/HeaderAd';
+import { SkyscraperAd } from '@/components/SkyscraperAd';
 
 interface Lesson {
   id: string;
@@ -259,8 +260,15 @@ function QuizPageContent() {
     <main className="min-h-screen bg-slate-50 text-slate-900 flex flex-col justify-between py-4 px-4">
       <div className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row gap-6 items-start flex-grow">
         
-        {/* Left main area (Quiz view) */}
-        <div className={`flex-grow w-full ${showAds ? 'lg:max-w-[72%]' : 'lg:max-w-full'} flex flex-col h-full justify-between min-h-[85vh]`}>
+        {/* Left Sidebar (Adsterra Skyscraper Ad) */}
+        {showAds && (
+          <div className="w-full lg:w-[178px] shrink-0 lg:sticky lg:top-4 lg:mt-16 hidden lg:block">
+            <SkyscraperAd />
+          </div>
+        )}
+
+        {/* Center main area (Quiz view) */}
+        <div className={`flex-grow w-full ${showAds ? 'lg:max-w-[54%]' : 'lg:max-w-full'} flex flex-col h-full justify-between min-h-[85vh]`}>
           {/* Top Application Header */}
           <header className="w-full mb-4 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
