@@ -324,9 +324,7 @@ export default function Home() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-white border border-slate-200 focus:border-indigo-500 rounded-xl pl-10 pr-4 py-2.5 text-xs font-bold text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-indigo-500/[0.03] transition"
               />
-            </div>
-
-            <div className="flex items-center gap-2 w-full sm:w-auto">
+            </div>            <div className="flex items-center gap-2 w-full sm:w-auto">
               <span className="text-xs text-slate-400 font-semibold shrink-0">Sort:</span>
               <select
                 value={sortBy}
@@ -336,7 +334,6 @@ export default function Home() {
                 <option value="week-asc">Week (Ascending)</option>
                 <option value="week-desc">Week (Descending)</option>
                 <option value="title-asc">Title (A-Z)</option>
-                <option value="difficulty">Difficulty</option>
               </select>
             </div>
           </div>
@@ -355,18 +352,10 @@ export default function Home() {
                 if (sortBy === 'week-asc') return a.week - b.week;
                 if (sortBy === 'week-desc') return b.week - a.week;
                 if (sortBy === 'title-asc') return a.title.localeCompare(b.title);
-                if (sortBy === 'difficulty') {
-                  const w = { Beginner: 1, Intermediate: 2, Advanced: 3 };
-                  return w[a.difficulty] - w[b.difficulty];
-                }
                 return 0;
               })
               .map((lesson: Lesson) => {
                 const isWeekActive = lesson.isActive;
-                const diffColor = 
-                  lesson.difficulty === 'Beginner' ? 'bg-emerald-50 text-emerald-700 border-emerald-100 bg-emerald-500/5' : 
-                  lesson.difficulty === 'Intermediate' ? 'bg-amber-50 text-amber-700 border-amber-100 bg-amber-500/5' : 
-                  'bg-rose-50 text-rose-700 border-rose-100 bg-rose-500/5';
 
                 return (
                   <div 
@@ -391,11 +380,8 @@ export default function Home() {
                     <div className="flex flex-col justify-between flex-grow gap-4">
                       <div>
                         <div className="flex gap-2 mb-2.5">
-                          <span className="text-[9px] uppercase font-black tracking-wider px-2 py-0.5 rounded-md bg-slate-100 text-slate-650 border border-slate-200/60 shadow-sm">
+                          <span className="text-[9px] uppercase font-black tracking-wider px-2 py-0.5 rounded-md bg-slate-100 text-slate-655 border border-slate-200/60 shadow-sm">
                             Week {lesson.week}
-                          </span>
-                          <span className={`text-[9px] uppercase font-black tracking-wider px-2 py-0.5 rounded-md border ${diffColor}`}>
-                            {lesson.difficulty}
                           </span>
                         </div>
 

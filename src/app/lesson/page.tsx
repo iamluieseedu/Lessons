@@ -85,7 +85,6 @@ function SlidePageContent() {
               title: found.title,
               subtitle: found.description,
               metadata: [
-                { label: 'Difficulty', val: found.difficulty },
                 { label: 'Slide Deck', val: '4 Slides' },
                 { label: 'Assessment', val: 'Includes Quiz' }
               ]

@@ -453,29 +453,15 @@ export default function AdminPage() {
             </div>
 
             <form onSubmit={handleAddLesson} className="space-y-3.5">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Week Number</label>
-                  <input
-                    type="number"
-                    min="1"
-                    value={newWeek}
-                    onChange={(e) => setNewWeek(Number(e.target.value))}
-                    className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-sky-500"
-                  />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Difficulty</label>
-                  <select
-                    value={newDifficulty}
-                    onChange={(e) => setNewDifficulty(e.target.value as any)}
-                    className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-sky-500"
-                  >
-                    <option value="Beginner">Beginner</option>
-                    <option value="Intermediate">Intermediate</option>
-                    <option value="Advanced">Advanced</option>
-                  </select>
-                </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Week Number</label>
+                <input
+                  type="number"
+                  min="1"
+                  value={newWeek}
+                  onChange={(e) => setNewWeek(Number(e.target.value))}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-sky-500"
+                />
               </div>
 
               <div className="flex flex-col gap-1">
@@ -587,7 +573,7 @@ export default function AdminPage() {
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-200 text-slate-700">W{lesson.week}</span>
                       <div>
                         <h4 className="font-semibold text-xs text-slate-950">{lesson.title}</h4>
-                        <p className="text-[10px] text-slate-500">{lesson.slidesCount} slides • {lesson.duration} • {lesson.difficulty}</p>
+                        <p className="text-[10px] text-slate-500">{lesson.slidesCount} slides • {lesson.duration}</p>
                       </div>
                     </div>
                     
