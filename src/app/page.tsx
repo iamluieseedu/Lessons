@@ -95,17 +95,9 @@ export default function Home() {
           if (!Array.isArray(parsed)) {
             throw new Error("Stored lessons is not an array");
           }
-          let updated = parsed.map(l => {
-            const def = DEFAULT_LESSONS.find(d => d.id === l.id);
-            if (def) {
-              if (l.quizEnabled !== def.quizEnabled || l.isActive !== def.isActive) {
-                return { ...l, quizEnabled: def.quizEnabled, isActive: def.isActive };
-              }
-            }
-            return l;
-          });
+          let updated = [...parsed];
+          let hasChanges = false;
 
-          let hasChanges = JSON.stringify(parsed) !== JSON.stringify(updated);
           DEFAULT_LESSONS.forEach((defLesson) => {
             if (!updated.some((l) => l.id === defLesson.id)) {
               updated.push(defLesson);
