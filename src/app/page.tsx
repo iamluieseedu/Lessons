@@ -362,8 +362,9 @@ export default function Home() {
       </header>
 
       {/* Main Content Viewport */}
-      <div className="w-full max-w-6xl mx-auto px-4 py-8 flex-grow mb-12">
-        <section className="w-full">
+      <div className="w-full max-w-6xl mx-auto px-4 py-8 flex-grow mb-12 flex flex-col lg:flex-row gap-8 items-start">
+        {/* Left Column: Lessons Grid */}
+        <section className={`flex-grow w-full ${showAds ? 'lg:max-w-[72%]' : 'lg:max-w-full'}`}>
           {/* Minimalist academic title block */}
           <div className="mb-8 text-left border-b border-slate-200 pb-5">
             <h2 className="font-lexend text-2xl font-black text-slate-900 tracking-tight uppercase">
@@ -392,7 +393,7 @@ export default function Home() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
-                className="w-full sm:w-auto bg-white border border-slate-200 focus:border-indigo-500 rounded-xl px-3.5 py-2.5 text-xs text-slate-650 font-bold focus:outline-none focus:ring-4 focus:ring-indigo-500/[0.03] transition cursor-pointer"
+                className="w-full sm:w-auto bg-white border border-slate-200 focus:border-indigo-500 rounded-xl px-3.5 py-2.5 text-xs text-slate-655 font-bold focus:outline-none focus:ring-4 focus:ring-indigo-500/[0.03] transition cursor-pointer"
               >
                 <option value="week-asc">Week (Ascending)</option>
                 <option value="week-desc">Week (Descending)</option>
@@ -402,9 +403,8 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Bento Grid layout */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-            {/* Main feature Large Bento Card (Week 1 / Web Dev) */}
+          {/* Dynamic Grid of Uniform Lessons */}
+          <div className={`grid gap-6 ${showAds ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}>
             {lessons
               .filter((lesson) => {
                 const query = searchQuery.toLowerCase();
@@ -423,196 +423,129 @@ export default function Home() {
                 }
                 return 0;
               })
-              .map((lesson: Lesson, index: number) => {
+              .map((lesson: Lesson) => {
                 const isWeekActive = lesson.isActive;
                 const diffColor = 
                   lesson.difficulty === 'Beginner' ? 'bg-emerald-50 text-emerald-700 border-emerald-100 bg-emerald-500/5' : 
                   lesson.difficulty === 'Intermediate' ? 'bg-amber-50 text-amber-700 border-amber-100 bg-amber-500/5' : 
                   'bg-rose-50 text-rose-700 border-rose-100 bg-rose-500/5';
 
-                {/* Bento Grid Span Configuration */}
-                const isLargeBento = index === 0;
-
-                const cardContent = (
-                  <div className="flex flex-col justify-between h-full gap-4">
-                    <div>
-                      <div className="flex gap-2 mb-3">
-                        <span className="text-[9px] uppercase font-black tracking-wider px-2 py-0.5 rounded-md bg-slate-100 text-slate-650 border border-slate-200/60 shadow-sm">
-                          Week {lesson.week}
-                        </span>
-                        <span className={`text-[9px] uppercase font-black tracking-wider px-2 py-0.5 rounded-md border ${diffColor}`}>
-                          {lesson.difficulty}
-                        </span>
-                      </div>
-
-                      <h3 className="font-lexend text-base font-extrabold text-slate-900 group-hover:text-indigo-600 transition duration-300 leading-snug">
-                        {lesson.title}
-                      </h3>
-                      
-                      <p className="text-xs text-slate-500 leading-relaxed mt-2 font-medium">
-                        {lesson.description}
-                      </p>
-                    </div>
-
-                    {/* Footer Row: Metadata and Actions */}
-                    <div className="border-t border-slate-100 pt-3">
-                      <div className="flex items-center justify-between text-[11px] font-bold text-slate-400 mb-3 select-none">
-                        <span>{lesson.slidesCount} Slides</span>
-                        <span>{lesson.quizEnabled !== false ? '• Quiz Active' : '• Reading Only'}</span>
-                      </div>
-
-                      {isWeekActive ? (
-                        <div className="flex flex-col gap-2">
-                          <div className="grid grid-cols-2 gap-2">
-                            <Link
-                              href={`/lesson?id=${lesson.id}`}
-                              className="py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold shadow-md shadow-indigo-600/10 active:scale-[0.98] transition flex items-center justify-center gap-1 font-lexend"
-                            >
-                              Start Slides
-                              <ExternalLink className="w-3.5 h-3.5" />
-                            </Link>
-
-                            {lesson.quizEnabled !== false ? (
-                              <Link
-                                href={`/quiz?id=${lesson.id}`}
-                                className="py-2.5 px-3 rounded-xl border border-indigo-100 bg-indigo-50/15 hover:bg-indigo-50 text-indigo-700 text-[11px] font-bold active:scale-[0.98] transition flex items-center justify-center gap-1 font-lexend"
-                              >
-                                Take Quiz
-                                <Award className="w-3.5 h-3.5" />
-                              </Link>
-                            ) : (
-                              <div className="py-2.5 rounded-xl border border-dashed border-slate-200 text-slate-400 text-[10px] font-bold flex items-center justify-center select-none">
-                                No Quiz
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Action links */}
-                          <div className="flex justify-between items-center gap-2 mt-1">
-                            <button
-                              onClick={() => copyToClipboard(`/lesson?id=${lesson.id}`, 'Lesson')}
-                              className="text-[10px] font-bold text-slate-400 hover:text-indigo-600 transition flex items-center gap-1"
-                            >
-                              <Copy className="w-3 h-3" />
-                              Copy Lesson Link
-                            </button>
-                            {lesson.quizEnabled !== false && (
-                              <button
-                                onClick={() => copyToClipboard(`/quiz?id=${lesson.id}`, 'Quiz')}
-                                className="text-[10px] font-bold text-slate-400 hover:text-indigo-600 transition flex items-center gap-1"
-                              >
-                                <Copy className="w-3 h-3" />
-                                Copy Quiz Link
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      ) : (
-                        <button
-                          disabled
-                          className="w-full py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-400 text-xs font-bold transition flex items-center justify-center gap-1 cursor-not-allowed select-none"
-                        >
-                          <Lock className="w-3.5 h-3.5 text-amber-500" />
-                          Unit Locked
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                );
-
-                if (isLargeBento) {
-                  return (
-                    <div 
-                      key={lesson.id}
-                      className="col-span-1 md:col-span-2 bg-white border border-slate-200/80 rounded-2xl p-6 flex flex-col md:flex-row gap-6 justify-between shadow-[0_4px_20px_rgba(0,0,0,0.01)] hover:border-indigo-500/25 hover:shadow-[0_15px_35px_rgba(79,70,229,0.04)] transition duration-300 relative group"
-                    >
-                      {/* Left contents */}
-                      <div className="flex-1">
-                        {cardContent}
-                      </div>
-
-                      {/* Right large image thumbnail */}
-                      <div className="w-full md:w-[38%] shrink-0 h-48 md:h-auto relative overflow-hidden rounded-xl bg-slate-50 border border-slate-100">
-                        <img
-                          src={lesson.thumbnail || 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=800&q=80'}
-                          alt={lesson.title}
-                          className="w-full h-full object-cover group-hover:scale-[1.02] transition duration-500"
-                        />
-                        {!isWeekActive && (
-                          <div className="absolute inset-0 bg-slate-900/10 backdrop-blur-[1px] flex items-center justify-center gap-2 text-white font-bold text-xs">
-                            <Lock className="w-4 h-4 text-amber-400" />
-                            <span>LOCKED</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                }
-
-                {/* Standard grid bento cells */}
                 return (
                   <div 
                     key={lesson.id}
-                    className="col-span-1 bg-white border border-slate-200/80 rounded-2xl p-5 flex flex-col justify-between shadow-[0_4px_20px_rgba(0,0,0,0.01)] hover:border-sky-500/25 hover:shadow-[0_15px_35px_rgba(56,189,248,0.04)] transition duration-300 group"
+                    className="bg-white border border-slate-200/80 rounded-2xl p-5 flex flex-col justify-between shadow-[0_4px_20px_rgba(0,0,0,0.01)] hover:border-indigo-500/25 hover:shadow-[0_15px_35px_rgba(79,70,229,0.03)] transition duration-300 group"
                   >
-                    {/* Compact Thumbnail */}
-                    <div className="w-full h-32 relative overflow-hidden rounded-xl bg-slate-50 mb-4 border border-slate-100">
+                    {/* Compact Image Header */}
+                    <div className="w-full h-36 relative overflow-hidden rounded-xl bg-slate-50 mb-4 border border-slate-100">
                       <img
-                        src={lesson.thumbnail}
+                        src={lesson.thumbnail || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80'}
                         alt={lesson.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                       />
+                      {!isWeekActive && (
+                        <div className="absolute inset-0 bg-slate-900/10 backdrop-blur-[1px] flex items-center justify-center gap-2 text-white font-bold text-xs select-none">
+                          <Lock className="w-4 h-4 text-amber-400" />
+                          <span>COMING SOON</span>
+                        </div>
+                      )}
                     </div>
-                    <div className="flex-grow">
-                      {cardContent}
+
+                    <div className="flex flex-col justify-between flex-grow gap-4">
+                      <div>
+                        <div className="flex gap-2 mb-2.5">
+                          <span className="text-[9px] uppercase font-black tracking-wider px-2 py-0.5 rounded-md bg-slate-100 text-slate-650 border border-slate-200/60 shadow-sm">
+                            Week {lesson.week}
+                          </span>
+                          <span className={`text-[9px] uppercase font-black tracking-wider px-2 py-0.5 rounded-md border ${diffColor}`}>
+                            {lesson.difficulty}
+                          </span>
+                        </div>
+
+                        <h3 className="font-lexend text-base font-extrabold text-slate-900 group-hover:text-indigo-600 transition duration-300 leading-snug">
+                          {lesson.title}
+                        </h3>
+                        
+                        <p className="text-xs text-slate-500 leading-relaxed mt-2 font-medium line-clamp-3">
+                          {lesson.description}
+                        </p>
+                      </div>
+
+                      {/* Footer Row: Metadata and Actions */}
+                      <div className="border-t border-slate-100 pt-3">
+                        <div className="flex items-center justify-between text-[11px] font-bold text-slate-400 mb-3 select-none">
+                          <span>{lesson.slidesCount} Slides</span>
+                          <span>{lesson.quizEnabled !== false ? '• Quiz Active' : '• Reading Only'}</span>
+                        </div>
+
+                        {isWeekActive ? (
+                          <div className="flex flex-col gap-2">
+                            <div className="grid grid-cols-2 gap-2">
+                              <Link
+                                href={`/lesson?id=${lesson.id}`}
+                                className="py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-750 text-white text-[11px] font-bold shadow-md shadow-indigo-600/10 active:scale-[0.98] transition flex items-center justify-center gap-1 font-lexend"
+                              >
+                                Start Slides
+                                <ExternalLink className="w-3.5 h-3.5" />
+                              </Link>
+
+                              {lesson.quizEnabled !== false ? (
+                                <Link
+                                  href={`/quiz?id=${lesson.id}`}
+                                  className="py-2.5 px-3 rounded-xl border border-indigo-100 bg-indigo-50/15 hover:bg-indigo-55 text-indigo-700 text-[11px] font-bold active:scale-[0.98] transition flex items-center justify-center gap-1 font-lexend"
+                                >
+                                  Take Quiz
+                                  <Award className="w-3.5 h-3.5" />
+                                </Link>
+                              ) : (
+                                <div className="py-2.5 rounded-xl border border-dashed border-slate-200 text-slate-400 text-[10px] font-bold flex items-center justify-center select-none">
+                                  No Quiz
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Action links */}
+                            <div className="flex justify-between items-center gap-2 mt-1">
+                              <button
+                                onClick={() => copyToClipboard(`/lesson?id=${lesson.id}`, 'Lesson')}
+                                className="text-[10px] font-bold text-slate-400 hover:text-indigo-600 transition flex items-center gap-1"
+                              >
+                                <Copy className="w-3 h-3" />
+                                Copy Lesson
+                              </button>
+                              {lesson.quizEnabled !== false && (
+                                <button
+                                  onClick={() => copyToClipboard(`/quiz?id=${lesson.id}`, 'Quiz')}
+                                  className="text-[10px] font-bold text-slate-400 hover:text-indigo-600 transition flex items-center gap-1"
+                                >
+                                  <Copy className="w-3 h-3" />
+                                  Copy Quiz
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        ) : (
+                          <button
+                            disabled
+                            className="w-full py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-400 text-xs font-bold transition flex items-center justify-center gap-1 cursor-not-allowed select-none"
+                          >
+                            <Lock className="w-3.5 h-3.5 text-amber-500" />
+                            Unit Locked
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 );
               })}
-
-            {/* Academic EdTech Metrics Bento Box (Injected to balance columns) */}
-            <div className="col-span-1 bg-gradient-to-br from-indigo-600 to-indigo-700 text-white rounded-2xl p-6 flex flex-col justify-between shadow-lg shadow-indigo-600/10 hover:shadow-indigo-600/15 hover:scale-[1.005] transition duration-300 relative overflow-hidden">
-              {/* Decorative prism lines */}
-              <div className="absolute -top-10 -right-10 w-36 h-36 rounded-full bg-white/5 blur-2xl pointer-events-none" />
-              
-              <div>
-                <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center mb-4 border border-white/10">
-                  <GraduationCap className="w-5 h-5 text-sky-300" />
-                </div>
-
-                <h3 className="font-lexend text-base font-extrabold text-white leading-snug">
-                  Learning metrics
-                </h3>
-                <p className="text-[11px] text-indigo-200 mt-1 font-medium leading-relaxed">
-                  Overview of your active syllabus track. Start slides to submit logs.
-                </p>
-
-                {/* Progress bar */}
-                <div className="mt-5">
-                  <div className="flex justify-between text-[10px] font-bold text-indigo-150 mb-1.5 uppercase tracking-wide">
-                    <span>Syllabus track</span>
-                    <span>25% Complete</span>
-                  </div>
-                  <div className="w-full bg-indigo-800/60 h-1.5 rounded-full overflow-hidden border border-indigo-900/20">
-                    <div className="bg-sky-400 h-full rounded-full w-1/4 animate-pulse" />
-                  </div>
-                </div>
-              </div>
-
-              {/* Dynamic state values */}
-              <div className="border-t border-white/10 pt-4 mt-6 space-y-2 text-[10px] font-bold text-indigo-100 uppercase tracking-wider">
-                <div className="flex justify-between">
-                  <span>Registered Student:</span>
-                  <span className="text-white truncate max-w-[120px]">{user ? user.name : 'Not Logged In'}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Units Active:</span>
-                  <span className="text-white">4 Syllabus Units</span>
-                </div>
-              </div>
-            </div>
           </div>
         </section>
+
+        {/* Right Column: Google Ads Sidebar (displayed if showAds is true) */}
+        {showAds && (
+          <div className="w-full lg:w-[28%] shrink-0 lg:sticky lg:top-20 bg-white border border-slate-200/80 p-4 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.01)] z-10">
+            <AdSidebar slotName="Homepage Sidebar Ad" />
+          </div>
+        )}
       </div>
 
       {showAds && (
@@ -622,7 +555,7 @@ export default function Home() {
       )}
 
       {/* Bottom Footer signature */}
-      <footer className="w-full max-w-6xl mx-auto text-center text-xs text-slate-400 font-semibold tracking-wide border-t border-slate-200/80 py-6 px-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+      <footer className="w-full max-w-6xl mx-auto text-center text-xs text-slate-405 font-semibold tracking-wide border-t border-slate-200/80 py-6 px-4 flex flex-col sm:flex-row justify-between items-center gap-4">
         <span>Developed by Luiese Amstrong • Lesson Library © 2026</span>
         <Link href="/privacy" className="hover:text-indigo-600 transition underline">
           Privacy Policy
