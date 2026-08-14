@@ -130,11 +130,9 @@ export default function Home() {
   const [showAds, setShowAds] = useState(false);
 
   const [user, setUser] = useState<{ name: string; email: string; avatar?: string } | null>(null);
-  const [showLoginModal, setShowLoginModal] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
-  const [customName, setCustomName] = useState('');
-  const [customEmail, setCustomEmail] = useState('');
-  const [loginLoading, setLoginLoading] = useState(false);
+  const [googleClientId, setGoogleClientId] = useState('');
+  const [sdkLoaded, setSdkLoaded] = useState(false);
 
   // Hydrate state from localStorage
   useEffect(() => {
@@ -203,18 +201,85 @@ export default function Home() {
     setTimeout(() => setToast(null), 2000);
   };
 
-  const handleMockLogin = (name: string, email: string, avatar?: string) => {
-    setLoginLoading(true);
-    setTimeout(() => {
-      const newUser = { name, email, avatar };
-      setUser(newUser);
-      localStorage.setItem('vid_user', JSON.stringify(newUser));
-      setLoginLoading(false);
-      setShowLoginModal(false);
-      setToast(`Logged in as ${name}!`);
-      setTimeout(() => setToast(null), 3000);
-    }, 1200);
-  };
+  // Load Google Identity Services SDK script
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedClientId = localStorage.getItem('vid_google_client_id') || CONFIG.googleClientId;
+      setGoogleClientId(storedClientId);
+
+      if ((window as any).google) {
+        setSdkLoaded(true);
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.async = true;
+      script.defer = true;
+      script.onload = () => setSdkLoaded(true);
+      document.body.appendChild(script);
+
+      return () => {
+        try {
+          document.body.removeChild(script);
+        } catch (e) {}
+      };
+    }
+  }, []);
+
+  // Render official Google Sign-In button
+  useEffect(() => {
+    if (googleClientId && sdkLoaded && !user && typeof window !== 'undefined' && (window as any).google) {
+      const initializeAndRender = () => {
+        try {
+          (window as any).google.accounts.id.initialize({
+            client_id: googleClientId,
+            callback: (response: any) => {
+              try {
+                const token = response.credential;
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(
+                  atob(base64)
+                    .split('')
+                    .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                    .join('')
+                );
+                const payload = JSON.parse(jsonPayload);
+                const loggedUser = {
+                  name: payload.name,
+                  email: payload.email,
+                  avatar: payload.picture
+                };
+                setUser(loggedUser);
+                localStorage.setItem('vid_user', JSON.stringify(loggedUser));
+                setToast(`Logged in as ${payload.name}!`);
+                setTimeout(() => setToast(null), 3000);
+              } catch (err) {
+                console.error("JWT Decode error:", err);
+                setToast("Google auth error, please try again.");
+                setTimeout(() => setToast(null), 2500);
+              }
+            }
+          });
+
+          const btnParent = document.getElementById('google-signin-btn-container');
+          if (btnParent) {
+            btnParent.innerHTML = ''; // Clear previous button instance
+            (window as any).google.accounts.id.renderButton(
+              btnParent,
+              { theme: 'outline', size: 'medium', shape: 'pill', text: 'signin_with', width: 220 }
+            );
+          }
+        } catch (e) {
+          console.error("Error rendering Google button:", e);
+        }
+      };
+
+      const timer = setTimeout(initializeAndRender, 150);
+      return () => clearTimeout(timer);
+    }
+  }, [googleClientId, sdkLoaded, user]);
 
   const handleLogout = () => {
     setUser(null);
@@ -288,13 +353,7 @@ export default function Home() {
               )}
             </div>
           ) : (
-            <button
-              onClick={() => setShowLoginModal(true)}
-              className="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-750 text-xs font-bold px-3.5 py-2 border border-slate-200 rounded-xl shadow-sm transition active:scale-95 cursor-pointer font-lexend"
-            >
-              <GoogleIcon />
-              <span>Sign in with Google</span>
-            </button>
+            <div id="google-signin-btn-container" className="h-9 min-w-[200px] flex items-center justify-end"></div>
           )}
         </div>
       </header>
@@ -531,100 +590,6 @@ export default function Home() {
           Privacy Policy
         </Link>
       </footer>
-
-      {/* Sign in with Google Simulation Modal */}
-      {showLoginModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white border border-slate-200 shadow-2xl rounded-3xl w-full max-w-sm p-6 text-center relative animate-fade-in text-slate-800">
-            <button
-              onClick={() => setShowLoginModal(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition"
-              aria-label="Close modal"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            {/* Google Identity Header */}
-            <div className="flex flex-col items-center mt-2">
-              <GoogleIcon />
-              <h3 className="font-lexend text-base font-extrabold text-slate-900 mt-3">Choose an account</h3>
-              <p className="text-[11px] text-slate-500 mt-0.5">to continue to <strong className="text-slate-750">Lesson Library</strong></p>
-            </div>
-
-            {loginLoading ? (
-              <div className="my-10 py-6 flex flex-col items-center justify-center gap-3">
-                <div className="w-8 h-8 rounded-full border-4 border-dashed border-sky-600 animate-spin" />
-                <span className="text-xs text-slate-500 font-bold font-lexend animate-pulse">Connecting to Google...</span>
-              </div>
-            ) : (
-              <div className="mt-6 flex flex-col gap-2.5">
-                {/* Mock Account Option */}
-                <button
-                  onClick={() => handleMockLogin('Juan Dela Cruz', 'juan.delacruz@gmail.com')}
-                  className="w-full flex items-center gap-3 p-3 rounded-2xl border border-slate-100 hover:bg-slate-50 text-left transition"
-                >
-                  <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-sky-400 to-sky-600 text-white font-bold flex items-center justify-center text-xs uppercase">
-                    JD
-                  </div>
-                  <div className="flex-grow min-w-0">
-                    <p className="text-xs font-bold text-slate-900 truncate">Juan Dela Cruz</p>
-                    <p className="text-[10px] text-slate-500 truncate mt-0.5">juan.delacruz@gmail.com</p>
-                  </div>
-                  <span className="text-[9px] font-bold text-sky-600 bg-sky-50 px-2 py-0.5 rounded-full uppercase">Default</span>
-                </button>
-
-                <div className="relative my-2">
-                  <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-slate-150" /></div>
-                  <div className="relative flex justify-center text-[10px] uppercase font-bold text-slate-455"><span className="bg-white px-2">Or Use Custom Name</span></div>
-                </div>
-
-                {/* Custom Account Option Form */}
-                <div className="flex flex-col gap-2.5 text-left text-xs font-semibold">
-                  <div className="flex flex-col gap-0.5">
-                    <label className="text-[9px] uppercase font-bold text-slate-450">Name:</label>
-                    <input
-                      type="text"
-                      value={customName}
-                      onChange={(e) => setCustomName(e.target.value)}
-                      placeholder="e.g. Maria Clara"
-                      className="bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-3 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none transition w-full"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-0.5">
-                    <label className="text-[9px] uppercase font-bold text-slate-450">Email Address:</label>
-                    <input
-                      type="email"
-                      value={customEmail}
-                      onChange={(e) => setCustomEmail(e.target.value)}
-                      placeholder="e.g. maria@clara.ph"
-                      className="bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-3 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none transition w-full"
-                    />
-                  </div>
-
-                  <button
-                    onClick={() => {
-                      if (!customName.trim() || !customEmail.trim()) {
-                        setToast("Please fill in both fields");
-                        setTimeout(() => setToast(null), 2500);
-                        return;
-                      }
-                      handleMockLogin(customName, customEmail);
-                    }}
-                    className="w-full mt-1 bg-sky-600 hover:bg-sky-750 text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 shadow-sm active:scale-95"
-                  >
-                    <UserPlus className="w-4 h-4" />
-                    Sign In Custom Student
-                  </button>
-                </div>
-              </div>
-            )}
-            
-            <p className="text-[9px] text-slate-400 mt-5 leading-normal">
-              This is a secure academic sign-in portal simulation. Credentials are authenticated client-side and saved securely in your browser's local sandbox storage.
-            </p>
-          </div>
-        </div>
-      )}
     </main>
   );
 }

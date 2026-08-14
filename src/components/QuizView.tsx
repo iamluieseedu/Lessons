@@ -71,6 +71,19 @@ export const QuizView: React.FC<QuizViewProps> = ({ questions, title }) => {
       const storedDomain = localStorage.getItem('vid_google_allowed_domain') || CONFIG.allowedDomain;
       setAllowedDomain(storedDomain);
 
+      const storedUser = localStorage.getItem('vid_user');
+      if (storedUser) {
+        try {
+          const parsed = JSON.parse(storedUser);
+          if (parsed && parsed.name && parsed.email) {
+            setStudentName(parsed.name);
+            setStudentEmail(parsed.email);
+          }
+        } catch (e) {
+          console.error("Failed to parse stored user in quiz:", e);
+        }
+      }
+
       if ((window as any).google) {
         setSdkLoaded(true);
         return;
@@ -278,13 +291,60 @@ export const QuizView: React.FC<QuizViewProps> = ({ questions, title }) => {
           )}
 
           {googleClientId ? (
-            <div className="pt-2 flex flex-col items-center">
-              {studentSection.trim() ? (
-                <div className="flex justify-center my-2" id="google-login-btn"></div>
+            <div className="pt-2 w-full flex flex-col items-center">
+              {studentName && studentEmail ? (
+                <div className="w-full flex flex-col items-center gap-3">
+                  <div className="w-full p-3 rounded-2xl bg-sky-50 border border-sky-100 flex items-center gap-3 text-left">
+                    <div className="w-8 h-8 rounded-full bg-sky-600 text-white font-bold flex items-center justify-center text-xs">
+                      {studentName.charAt(0)}
+                    </div>
+                    <div className="flex-grow min-w-0">
+                      <p className="text-xs font-bold text-slate-800 truncate">{studentName}</p>
+                      <p className="text-[10px] text-slate-500 truncate mt-0.5">{studentEmail}</p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        localStorage.removeItem('vid_user');
+                        setStudentName('');
+                        setStudentEmail('');
+                      }}
+                      className="text-[10px] text-rose-600 hover:underline font-bold"
+                    >
+                      Switch Account
+                    </button>
+                  </div>
+                  {studentSection.trim() ? (
+                    <button
+                      onClick={() => {
+                        if (allowedDomain.trim()) {
+                          const domainFilter = allowedDomain.trim().toLowerCase();
+                          if (!studentEmail.toLowerCase().endsWith(domainFilter)) {
+                            setLoginError(`Access Denied: You must sign in using a Google account ending in ${domainFilter}`);
+                            return;
+                          }
+                        }
+                        setIsRegistered(true);
+                      }}
+                      className="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 rounded-xl transition shadow active:scale-95 text-xs font-lexend"
+                    >
+                      Register & Start Quiz
+                    </button>
+                  ) : (
+                    <p className="w-full text-center py-3 bg-slate-50 border border-slate-200/60 rounded-xl text-xs text-slate-400 font-semibold select-none">
+                      Please enter your Class Section above to start.
+                    </p>
+                  )}
+                </div>
               ) : (
-                <p className="w-full text-center py-3 bg-slate-50 border border-slate-200/60 rounded-xl text-xs text-slate-400 font-semibold select-none">
-                  Please enter your Class Section above to enable Google Sign-In.
-                </p>
+                <div className="w-full">
+                  {studentSection.trim() ? (
+                    <div className="flex justify-center my-2" id="google-login-btn"></div>
+                  ) : (
+                    <p className="w-full text-center py-3 bg-slate-50 border border-slate-200/60 rounded-xl text-xs text-slate-400 font-semibold select-none">
+                      Please enter your Class Section above to enable Google Sign-In.
+                    </p>
+                  )}
+                </div>
               )}
             </div>
           ) : (
