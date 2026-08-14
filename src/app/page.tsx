@@ -191,6 +191,27 @@ export default function Home() {
                 localStorage.setItem('vid_user', JSON.stringify(loggedUser));
                 setToast(`Logged in as ${payload.name}!`);
                 setTimeout(() => setToast(null), 3000);
+
+                // Send Login Log to Google Sheets Webhook
+                const webhookUrl = localStorage.getItem('vid_webhook_url') || CONFIG.webhookUrl;
+                if (webhookUrl) {
+                  const loginLog = {
+                    quizTitle: "Login Sessions Log",
+                    name: payload.name,
+                    email: payload.email,
+                    section: "Library Portal Login",
+                    score: 1,
+                    total: 1,
+                    percent: 100,
+                    date: new Date().toLocaleString()
+                  };
+                  fetch(webhookUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(loginLog)
+                  }).catch(e => console.error("Failed to log user sign in:", e));
+                }
               } catch (err) {
                 console.error("JWT Decode error:", err);
                 setToast("Google auth error, please try again.");
