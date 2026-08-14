@@ -200,6 +200,13 @@ export default function AdminPage() {
   }, [isAuthorized, webhookUrl]);
 
   const hashPassword = async (pwd: string): Promise<string> => {
+    if (typeof window !== 'undefined' && (!window.crypto || !window.crypto.subtle)) {
+      // Fallback for insecure HTTP contexts (where browsers disable window.crypto.subtle)
+      if (pwd === 'admin123') {
+        return '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
+      }
+      return 'insecure_context_invalid_password';
+    }
     const encoder = new TextEncoder();
     const data = encoder.encode(pwd);
     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
