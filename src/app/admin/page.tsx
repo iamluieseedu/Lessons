@@ -22,6 +22,29 @@ import {
 
 import { Lesson, DEFAULT_LESSONS } from '@/data/lessons';
 
+const LogoIcon = () => (
+  <div className="relative flex items-center justify-center select-none">
+    <svg className="w-8 h-8 hover:scale-105 transition duration-300" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Abstract Isometric Cube Pages */}
+      <path d="M50 15L85 35V65L50 85L15 65V35L50 15Z" fill="url(#logo-prism-bg)" />
+      {/* Interlocking internal line ribbons */}
+      <path d="M50 15V85" stroke="white" strokeWidth="2.5" strokeOpacity="0.3" />
+      <path d="M15 35L50 50L85 35" stroke="white" strokeWidth="2.5" strokeOpacity="0.3" />
+      {/* Glowing orbital academic core nodes */}
+      <circle cx="50" cy="50" r="7" fill="#ffffff" stroke="#818cf8" strokeWidth="2" className="animate-pulse" />
+      <path d="M50 30L70 40V60L50 70L30 60V40L50 30Z" stroke="#ffffff" strokeWidth="2.5" strokeOpacity="0.8" strokeLinecap="round" strokeLinejoin="round" />
+      
+      <defs>
+        <linearGradient id="logo-prism-bg" x1="15" y1="15" x2="85" y2="85" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#4f46e5" />
+          <stop offset="50%" stopColor="#3b82f6" />
+          <stop offset="100%" stopColor="#06b6d4" />
+        </linearGradient>
+      </defs>
+    </svg>
+  </div>
+);
+
 const ADMIN_HASH = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9'; // SHA-256 for admin123
 
 export default function AdminPage() {
@@ -317,8 +340,8 @@ export default function AdminPage() {
         <div className="w-full max-w-md bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
           {/* Header */}
           <div className="text-center mb-6">
-            <div className="p-3.5 rounded-full bg-slate-100 border border-slate-200 text-slate-750 w-fit mx-auto mb-3">
-              <Lock className="w-6 h-6 text-slate-800" />
+            <div className="mb-4 flex justify-center">
+              <LogoIcon />
             </div>
             <h2 className="font-lexend text-xl font-extrabold text-slate-900">Teacher Login Portal</h2>
             <p className="text-xs text-slate-500 mt-1 leading-relaxed">
@@ -380,9 +403,7 @@ export default function AdminPage() {
         {/* Dashboard Header */}
         <header className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center border-b border-slate-200 pb-5">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-2xl bg-slate-900 text-white shadow-md">
-              <Settings className="w-5 h-5 animate-spin" />
-            </div>
+            <LogoIcon />
             <div>
               <h1 className="font-lexend text-lg md:text-xl font-bold text-slate-900 flex items-center gap-2">
                 Teacher Administration Portal
