@@ -385,8 +385,11 @@ export default function Home() {
       )}
 
       {/* Bottom Footer signature */}
-      <footer className="w-full max-w-6xl mx-auto text-center text-xs text-slate-400 font-semibold tracking-wide border-t border-slate-200 pt-6 mt-6">
-        Developed by Luiese Amstrong • Lesson Library © 2026
+      <footer className="w-full max-w-6xl mx-auto text-center text-xs text-slate-400 font-semibold tracking-wide border-t border-slate-200 pt-6 mt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <span>Developed by Luiese Amstrong • Lesson Library © 2026</span>
+        <Link href="/privacy" className="hover:text-sky-600 transition underline">
+          Privacy Policy
+        </Link>
       </footer>
     </main>
   );
