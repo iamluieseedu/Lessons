@@ -305,9 +305,6 @@ function SlidePageContent() {
             </Link>
           </header>
 
-          {/* Header Ad Banner */}
-          <HeaderAd />
-
           {/* Main Slide Viewer Frame */}
           <div className="flex-grow flex items-center justify-center py-2 min-h-[50vh]">
             {currentSlide && <SlideViewer slide={currentSlide} />}
@@ -326,6 +323,11 @@ function SlidePageContent() {
             onTogglePlay={() => setIsPlaying(!isPlaying)}
             onOpenHelp={() => setIsHelpOpen(true)}
           />
+
+          {/* Bottom Ad Banner */}
+          <div className="mt-4 border-t border-slate-100 pt-2">
+            <HeaderAd />
+          </div>
         </div>
 
         {showAds && (

@@ -7,6 +7,7 @@ import { QuizView } from '@/components/QuizView';
 import { Film, ArrowLeft, Lock, BookOpen } from 'lucide-react';
 import { AdSidebar } from '@/components/AdSidebar';
 import { CONFIG } from '@/config';
+import { HeaderAd } from '@/components/HeaderAd';
 
 interface Lesson {
   id: string;
@@ -285,6 +286,11 @@ function QuizPageContent() {
             ) : (
               <QuizView questions={customQuestions} title={`${lesson.title} Quiz`} />
             )}
+          </div>
+
+          {/* Bottom Ad Banner */}
+          <div className="mt-4 border-t border-slate-100 pt-2">
+            <HeaderAd />
           </div>
         </div>
 

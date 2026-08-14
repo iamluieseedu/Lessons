@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { AdSidebar } from '@/components/AdSidebar';
 import { CONFIG } from '@/config';
+import { HeaderAd } from '@/components/HeaderAd';
 
 interface Lesson {
   id: string;
@@ -377,8 +378,14 @@ export default function Home() {
         )}
       </div>
 
+      {showAds && (
+        <div className="w-full max-w-6xl mx-auto mt-4 border-t border-slate-200 pt-2">
+          <HeaderAd />
+        </div>
+      )}
+
       {/* Bottom Footer signature */}
-      <footer className="w-full max-w-6xl mx-auto text-center text-xs text-slate-400 font-semibold tracking-wide border-t border-slate-200 pt-6">
+      <footer className="w-full max-w-6xl mx-auto text-center text-xs text-slate-400 font-semibold tracking-wide border-t border-slate-200 pt-6 mt-6">
         Developed by Luiese Amstrong • Lesson Library © 2026
       </footer>
     </main>
