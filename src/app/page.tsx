@@ -15,6 +15,7 @@ import {
   Search
 } from 'lucide-react';
 import { AdSidebar } from '@/components/AdSidebar';
+import { CONFIG } from '@/config';
 
 interface Lesson {
   id: string;
@@ -74,6 +75,7 @@ export default function Home() {
   const [baseUrl, setBaseUrl] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'week-asc' | 'week-desc' | 'title-asc' | 'difficulty'>('week-asc');
+  const [showAds, setShowAds] = useState(false);
 
   // Hydrate state from localStorage
   useEffect(() => {
@@ -81,6 +83,11 @@ export default function Home() {
       const origin = window.location.origin;
       const hasLessonsPath = window.location.pathname.startsWith('/Lessons');
       setBaseUrl(hasLessonsPath ? `${origin}/Lessons` : origin);
+
+      const clientId = localStorage.getItem('vid_adsense_client_id') || CONFIG.adsenseClientId || '';
+      const slotId = localStorage.getItem('vid_adsense_slot_id') || CONFIG.adsenseSlotId || '';
+      setShowAds(clientId.trim() !== '' && slotId.trim() !== '');
+
       const stored = localStorage.getItem('vid_lessons');
       if (stored) {
         try {
@@ -153,7 +160,7 @@ export default function Home() {
       {/* Main Content Area: Catalog + Sidebar */}
       <div className="w-full max-w-6xl mx-auto flex-grow mb-12 flex flex-col lg:flex-row gap-8 items-start">
         {/* Main Grid View */}
-        <section className="flex-grow w-full lg:max-w-[70%]">
+        <section className={`flex-grow w-full ${showAds ? 'lg:max-w-[70%]' : 'lg:max-w-full'}`}>
           <div className="mb-6">
             <h2 className="font-lexend text-lg font-bold text-slate-800 flex items-center gap-2">
               <GraduationCap className="w-5 h-5 text-sky-600" />
@@ -362,10 +369,12 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Right Sidebar for Ads */}
-        <div className="w-full lg:w-[28%] shrink-0 lg:sticky lg:top-6">
-          <AdSidebar slotName="Homepage Sidebar Ad" />
-        </div>
+        {showAds && (
+          /* Right Sidebar for Ads */
+          <div className="w-full lg:w-[28%] shrink-0 lg:sticky lg:top-6">
+            <AdSidebar slotName="Homepage Sidebar Ad" />
+          </div>
+        )}
       </div>
 
       {/* Bottom Footer signature */}

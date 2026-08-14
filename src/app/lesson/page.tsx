@@ -12,6 +12,7 @@ import { ThumbnailDrawer } from '@/components/ThumbnailDrawer';
 import { KeyboardHelpModal } from '@/components/KeyboardHelpModal';
 import { Film, ArrowLeft, Lock, BookOpen } from 'lucide-react';
 import { AdSidebar } from '@/components/AdSidebar';
+import { CONFIG } from '@/config';
 
 interface Lesson {
   id: string;
@@ -75,10 +76,15 @@ function SlidePageContent() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [showAds, setShowAds] = useState(false);
 
   // Load lesson and slides dynamically
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      const clientId = localStorage.getItem('vid_adsense_client_id') || CONFIG.adsenseClientId || '';
+      const slotId = localStorage.getItem('vid_adsense_slot_id') || CONFIG.adsenseSlotId || '';
+      setShowAds(clientId.trim() !== '' && slotId.trim() !== '');
+
       let lessonsList: Lesson[] = DEFAULT_LESSONS;
       try {
         const stored = localStorage.getItem('vid_lessons');
@@ -279,7 +285,7 @@ function SlidePageContent() {
       <div className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row gap-6 items-start flex-grow">
         
         {/* Left main area (Slide Presentation) */}
-        <div className="flex-grow w-full lg:max-w-[72%] flex flex-col h-full justify-between min-h-[85vh]">
+        <div className={`flex-grow w-full ${showAds ? 'lg:max-w-[72%]' : 'lg:max-w-full'} flex flex-col h-full justify-between min-h-[85vh]`}>
           {/* Top Application Header */}
           <header className="w-full mb-4 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
@@ -318,10 +324,12 @@ function SlidePageContent() {
           />
         </div>
 
-        {/* Right Sidebar Ad (sticky) */}
-        <div className="w-full lg:w-[28%] shrink-0 lg:sticky lg:top-4 lg:mt-16">
-          <AdSidebar slotName="Lesson Page Sidebar Ad" />
-        </div>
+        {showAds && (
+          /* Right Sidebar Ad (sticky) */
+          <div className="w-full lg:w-[28%] shrink-0 lg:sticky lg:top-4 lg:mt-16">
+            <AdSidebar slotName="Lesson Page Sidebar Ad" />
+          </div>
+        )}
       </div>
 
       {/* Slide Selection Drawer */}
