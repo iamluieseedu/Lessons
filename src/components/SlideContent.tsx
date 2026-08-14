@@ -1452,6 +1452,491 @@ const BrowserParseFlow: React.FC = () => {
 };
 
 // ROUTER THAT RENDER PRE-SEPARATED ILLUSTRATIONS WITHOUT CONFLICTING HOOK ORDERS
+
+// 13. HtmlHeadingsVisualizer (Headings Tester)
+const HtmlHeadingsVisualizer: React.FC = () => {
+  const [level, setLevel] = useState<number>(1);
+  const [text, setText] = useState('Heading Text');
+  const sizes = [
+    { lvl: 1, size: 'text-3xl (32px)', weight: 'h1 (Main Title / Highest Priority)' },
+    { lvl: 2, size: 'text-2xl (24px)', weight: 'h2 (Major Sections)' },
+    { lvl: 3, size: 'text-xl (20px)', weight: 'h3 (Sub-sections)' },
+    { lvl: 4, size: 'text-lg (18px)', weight: 'h4 (Minor Sub-sections)' },
+    { lvl: 5, size: 'text-base (16px)', weight: 'h5 (Rarely Used)' },
+    { lvl: 6, size: 'text-xs (12px)', weight: 'h6 (Lowest Priority)' }
+  ];
+  const sizeMap: Record<number, string> = {
+    1: 'text-3xl',
+    2: 'text-2xl',
+    3: 'text-xl',
+    4: 'text-lg',
+    5: 'text-base',
+    6: 'text-xs'
+  };
+
+  return (
+    <div className="flex-grow flex flex-col justify-center gap-3 w-full">
+      <div className="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex flex-col gap-2">
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            className="flex-grow bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-sky-500 font-semibold text-white"
+            placeholder="Type heading text..."
+          />
+          <select
+            value={level}
+            onChange={(e) => setLevel(Number(e.target.value))}
+            className="bg-slate-800 border border-slate-750 text-white rounded-lg px-2 py-1 text-xs font-bold focus:outline-none"
+          >
+            {[1, 2, 3, 4, 5, 6].map((l) => (
+              <option key={l} value={l}>h{l}</option>
+            ))}
+          </select>
+        </div>
+        <code className="text-[9px] text-sky-400 font-mono text-left block">
+          {`<h${level}>${text || 'HeadingText'}</h${level}>`}
+        </code>
+      </div>
+
+      <div className="bg-white border border-slate-200 rounded-xl p-3 flex flex-col justify-between text-left text-black min-h-[110px] shadow-inner font-sans">
+        <span className="text-[8px] uppercase tracking-wider font-extrabold text-slate-400 border-b border-slate-100 pb-1 mb-2">Browser Layout Viewport</span>
+        <div className="flex-grow flex items-center">
+          <div className={`${sizeMap[level]} font-bold tracking-tight leading-tight w-full break-all`}>
+            {text || 'Heading'}
+          </div>
+        </div>
+        <div className="border-t border-slate-100 pt-1.5 mt-2 flex justify-between text-[8px] text-slate-450 font-bold font-mono">
+          <span>Size: {sizes[level - 1].size}</span>
+          <span>Role: {sizes[level - 1].weight}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// 14. HtmlParagraphsSpacer (Paragraph spacer sandbox)
+const HtmlParagraphsSpacer: React.FC = () => {
+  const [showMargins, setShowMargins] = useState(false);
+  return (
+    <div className="flex-grow flex flex-col justify-center gap-2 w-full">
+      <div className="bg-slate-950 p-2 rounded-lg border border-slate-800 flex justify-between items-center text-[10px]">
+        <span className="font-semibold text-slate-400">Box Margins View</span>
+        <button
+          onClick={() => setShowMargins(!showMargins)}
+          className={`px-3 py-1 rounded-md text-[9px] font-bold transition font-lexend ${
+            showMargins ? 'bg-sky-600 text-white shadow' : 'bg-slate-800 text-slate-350 hover:bg-slate-700'
+          }`}
+        >
+          {showMargins ? '🟠 Hide Spacing' : '🟠 Highlight Spacing'}
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left font-sans text-black">
+        {/* Paragraph Box */}
+        <div className="bg-white border border-slate-200 rounded-xl p-2.5 flex flex-col justify-between shadow-sm min-h-[105px]">
+          <div>
+            <span className="text-[8px] uppercase tracking-wider font-extrabold text-slate-400 border-b border-slate-100 pb-1 block select-none mb-1">With &lt;p&gt; tags</span>
+            <div className="text-[10px] leading-relaxed">
+              <p className={`transition-all duration-300 rounded px-1 ${showMargins ? 'bg-orange-500/10 border border-orange-500/35 my-2' : ''}`}>Paragraph 1 text</p>
+              <p className={`transition-all duration-300 rounded px-1 ${showMargins ? 'bg-orange-500/10 border border-orange-500/35 my-2' : ''}`}>Paragraph 2 text</p>
+            </div>
+          </div>
+          <span className="text-[8px] text-slate-400 font-semibold block border-t pt-1 font-mono">Elements separated with gaps</span>
+        </div>
+
+        {/* BR Break Box */}
+        <div className="bg-white border border-slate-200 rounded-xl p-2.5 flex flex-col justify-between shadow-sm min-h-[105px]">
+          <div>
+            <span className="text-[8px] uppercase tracking-wider font-extrabold text-slate-400 border-b border-slate-100 pb-1 block select-none mb-1">With &lt;br&gt; breaks</span>
+            <div className="text-[10px] leading-relaxed">
+              <div className={`transition-all duration-300 rounded px-1 ${showMargins ? 'bg-orange-505/5 border border-orange-505/10 my-0.5' : ''}`}>
+                Line 1 content.<br />Line 2 content.
+              </div>
+            </div>
+          </div>
+          <span className="text-[8px] text-slate-400 font-semibold block border-t pt-1 font-mono">Tightly wrapped breaks</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// 15. HtmlLinkNavigator (Links sandbox)
+const HtmlLinkNavigator: React.FC = () => {
+  const [href, setHref] = useState('https://w3schools.com');
+  const [loading, setLoading] = useState(false);
+  const [destPage, setDestPage] = useState<string | null>(null);
+
+  const handleNavigate = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setDestPage(null);
+    setTimeout(() => {
+      setLoading(false);
+      setDestPage(href);
+    }, 1500);
+  };
+
+  return (
+    <div className="flex-grow flex flex-col justify-center gap-3 w-full font-sans">
+      <div className="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex flex-col gap-1 text-xs text-left">
+        <label className="text-[8px] uppercase font-bold text-slate-500">Edit Anchor Tag href:</label>
+        <div className="flex gap-1.5 font-mono text-[9.5px] items-center">
+          <span className="text-slate-500 font-bold">&lt;a href="</span>
+          <input
+            type="text"
+            value={href}
+            onChange={(e) => setHref(e.target.value)}
+            className="bg-slate-900 border border-slate-700 rounded px-1.5 py-0.5 text-[9px] focus:outline-none focus:border-sky-500 font-semibold text-yellow-350 w-28"
+          />
+          <span className="text-slate-500 font-bold">"&gt;</span>
+          <span className="text-white font-bold underline">Click Link</span>
+          <span className="text-slate-500 font-bold">&lt;/a&gt;</span>
+        </div>
+      </div>
+
+      <div className="bg-white border border-slate-200 rounded-xl p-3 flex flex-col justify-between text-left text-black min-h-[110px] shadow-inner relative overflow-hidden">
+        {/* Tabs Bar */}
+        <div className="flex items-center justify-between border-b border-slate-100 pb-1 mb-1.5">
+          <span className="text-[8px] uppercase tracking-wider font-extrabold text-slate-400">URL Viewer Navigation</span>
+          <div className="w-2 h-2 rounded-full bg-slate-300" />
+        </div>
+
+        {loading ? (
+          <div className="flex-grow flex flex-col justify-center items-center gap-1 animate-pulse text-center">
+            <div className="w-4 h-4 rounded-full border-2 border-dashed border-sky-600 animate-spin" />
+            <span className="text-[9px] text-slate-400 font-bold font-lexend">Connecting to {href}...</span>
+          </div>
+        ) : destPage ? (
+          <div className="flex-grow flex flex-col justify-center animate-fade-in text-center sm:text-left">
+            <h4 className="text-[10px] font-bold text-emerald-600 font-lexend uppercase mb-0.5">✓ Target Page Loaded</h4>
+            <p className="text-[9px] text-slate-500 font-semibold leading-relaxed">
+              Navigated target link successfully:
+              <span className="text-sky-600 block font-mono font-bold break-all mt-0.5">{destPage}</span>
+            </p>
+          </div>
+        ) : (
+          <div className="flex-grow flex flex-col justify-center items-center text-center">
+            <a
+              href="#"
+              onClick={handleNavigate}
+              className="text-xs font-bold text-sky-600 hover:text-sky-800 hover:underline border border-dashed border-sky-350 bg-sky-50 px-3 py-1.5 rounded-lg transition"
+            >
+              Click Link
+            </a>
+            <span className="text-[8px] text-slate-400 mt-2 block font-semibold">Tapping executes navigation routing</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// 16. HtmlImageSrcLoader (Images alt/src tester)
+const HtmlImageSrcLoader: React.FC = () => {
+  const [srcType, setSrcType] = useState('coding');
+  const [alt, setAlt] = useState('Workspace setup');
+
+  const images: Record<string, string> = {
+    coding: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=150&q=50',
+    website: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=150&q=50',
+    broken: 'https://images.unsplash.com/photo-broken-link-error.jpg'
+  };
+
+  return (
+    <div className="flex-grow flex flex-col justify-center gap-2.5 w-full font-sans">
+      <div className="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex flex-col gap-2 text-xs text-left">
+        <div className="flex gap-2">
+          <div className="flex-1 flex flex-col gap-0.5">
+            <label className="text-[8px] uppercase font-extrabold text-slate-500 font-lexend">Source Path (src):</label>
+            <select
+              value={srcType}
+              onChange={(e) => setSrcType(e.target.value)}
+              className="bg-slate-900 border border-slate-700 text-white rounded px-1.5 py-1 text-[9.5px] font-mono focus:outline-none"
+            >
+              <option value="coding">"coding-setup.jpg" (Valid)</option>
+              <option value="website">"corporate-site.png" (Valid)</option>
+              <option value="broken">"broken-link-file.jpg" (Broken)</option>
+            </select>
+          </div>
+          
+          <div className="flex-1 flex flex-col gap-0.5">
+            <label className="text-[8px] uppercase font-extrabold text-slate-500 font-lexend">Alt Text (alt):</label>
+            <input
+              type="text"
+              value={alt}
+              onChange={(e) => setAlt(e.target.value)}
+              className="bg-slate-900 border border-slate-700 text-white rounded px-2 py-1 text-[9.5px] focus:outline-none focus:border-sky-500 font-semibold"
+              placeholder="Workspace description"
+            />
+          </div>
+        </div>
+        <code className="text-[9px] text-sky-400 font-mono block border-t border-slate-850 pt-1 mt-1">
+          {`<img src="${srcType}.jpg" alt="${alt || ''}" />`}
+        </code>
+      </div>
+
+      <div className="bg-white border border-slate-200 rounded-xl p-2.5 flex flex-col justify-between text-left text-black min-h-[100px] shadow-inner">
+        <span className="text-[8px] uppercase tracking-wider font-extrabold text-slate-400 border-b border-slate-100 pb-1 mb-1.5 select-none">Browser Graphic Drawing</span>
+        <div className="flex-grow flex items-center justify-center py-1">
+          {srcType === 'broken' ? (
+            <div className="border border-slate-350 bg-slate-50 p-2.5 rounded-lg flex items-center gap-2.5 max-w-[240px]">
+              <div className="w-9 h-9 border border-dashed border-slate-300 rounded flex items-center justify-center text-slate-400 bg-white font-bold select-none text-[10px]">
+                🖼️ Broken
+              </div>
+              <p className="text-[9.5px] text-slate-500 leading-normal font-semibold">
+                <strong className="text-rose-500 font-lexend block uppercase text-[8px]">⚠️ Link Broken! Displaying Alt:</strong>
+                "{alt || 'No alt text provided!'}"
+              </p>
+            </div>
+          ) : (
+            <div className="flex items-center gap-3 border border-slate-200 p-2 rounded-lg bg-slate-50 shadow-sm max-w-[240px]">
+              <img
+                src={images[srcType]}
+                alt={alt}
+                className="w-10 h-10 rounded object-cover border"
+              />
+              <span className="text-[9px] text-slate-550 font-semibold leading-tight">
+                Image rendered. Screen reader reads: <em>"{alt}"</em>.
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// 17. CssSelectorMapper (CSS Selectors mapping)
+const CssSelectorMapper: React.FC = () => {
+  const [selector, setSelector] = useState<'h1' | 'class' | 'id'>('h1');
+  return (
+    <div className="flex-grow flex flex-col justify-center gap-2.5 w-full">
+      <div className="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex flex-col gap-2">
+        <div className="grid grid-cols-3 gap-1 font-mono text-[9px]">
+          <button
+            onClick={() => setSelector('h1')}
+            className={`py-1.5 border rounded-lg font-black transition ${
+              selector === 'h1' ? 'bg-sky-600 border-sky-505 text-white scale-105 shadow-sm' : 'bg-slate-850 border-slate-750 text-slate-400'
+            }`}
+          >
+            h1 (Tag)
+          </button>
+          <button
+            onClick={() => setSelector('class')}
+            className={`py-1.5 border rounded-lg font-black transition ${
+              selector === 'class' ? 'bg-indigo-650 border-indigo-505 text-white scale-105 shadow-sm' : 'bg-slate-850 border-slate-750 text-slate-400'
+            }`}
+          >
+            .alert (Class)
+          </button>
+          <button
+            onClick={() => setSelector('id')}
+            className={`py-1.5 border rounded-lg font-black transition ${
+              selector === 'id' ? 'bg-rose-600 border-rose-500 text-white scale-105 shadow-sm' : 'bg-slate-850 border-slate-750 text-slate-400'
+            }`}
+          >
+            #btn (ID)
+          </button>
+        </div>
+        
+        <pre className="font-mono text-[9px] leading-normal border-t border-slate-850 pt-1.5 text-left pl-2 min-h-[40px]">
+          {selector === 'h1' && (
+            <span className="text-sky-400 font-bold block">
+{`h1 {
+  color: skyblue;
+}`}
+            </span>
+          )}
+          {selector === 'class' && (
+            <span className="text-indigo-400 font-bold block">
+{`.alert {
+  background-color: yellow;
+}`}
+            </span>
+          )}
+          {selector === 'id' && (
+            <span className="text-rose-400 font-bold block">
+{`#btn {
+  border-radius: 8px;
+}`}
+            </span>
+          )}
+        </pre>
+      </div>
+
+      {/* Target HTML simulation markup */}
+      <div className="bg-slate-950 rounded-xl border border-slate-800 p-2.5 text-left font-mono text-[9px] leading-normal min-h-[85px] flex flex-col justify-center pl-4">
+        <span className="text-slate-550 block border-b border-slate-850 pb-1 mb-1 select-none">rendered_markup.html</span>
+        <div className={`p-0.5 rounded transition ${selector === 'h1' ? 'bg-sky-500/20 text-sky-300 font-bold border-l-2 border-sky-500 pl-1' : 'text-slate-400'}`}>
+          &lt;h1&gt;Learning Styles&lt;/h1&gt;
+        </div>
+        <div className={`p-0.5 rounded transition ${selector === 'class' ? 'bg-indigo-500/20 text-indigo-300 font-bold border-l-2 border-indigo-500 pl-1' : 'text-slate-400'}`}>
+          &lt;p class="alert"&gt;Important warning message!&lt;/p&gt;
+        </div>
+        <div className={`p-0.5 rounded transition ${selector === 'id' ? 'bg-rose-500/20 text-rose-300 font-bold border-l-2 border-rose-500 pl-1' : 'text-slate-400'}`}>
+          &lt;button id="btn"&gt;Save Profile&lt;/button&gt;
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// 18. CssColorMixer (RGB color mixer)
+const CssColorMixer: React.FC = () => {
+  const [r, setR] = useState(2);
+  const [g, setG] = useState(132);
+  const [b, setB] = useState(199);
+
+  const hexVal = '#' + [r, g, b].map(x => {
+    const hex = x.toString(16);
+    return hex.length === 1 ? '0' + hex : hex;
+  }).join('');
+
+  return (
+    <div className="flex-grow flex flex-col justify-center gap-2.5 w-full font-sans text-xs">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-stretch">
+        <div className="bg-slate-955 p-3 rounded-xl border border-slate-800 flex flex-col justify-center gap-2">
+          {/* R Slider */}
+          <div className="space-y-0.5">
+            <div className="flex justify-between font-bold text-rose-400 text-[9.5px]">
+              <span>Red (R): {r}</span>
+            </div>
+            <input 
+              type="range" 
+              min="0" 
+              max="255" 
+              value={r} 
+              onChange={(e) => setR(Number(e.target.value))} 
+              className="w-full accent-rose-500 h-0.5 bg-slate-800 cursor-pointer" 
+            />
+          </div>
+
+          {/* G Slider */}
+          <div className="space-y-0.5">
+            <div className="flex justify-between font-bold text-emerald-400 text-[9.5px]">
+              <span>Green (G): {g}</span>
+            </div>
+            <input 
+              type="range" 
+              min="0" 
+              max="255" 
+              value={g} 
+              onChange={(e) => setG(Number(e.target.value))} 
+              className="w-full accent-emerald-500 h-0.5 bg-slate-800 cursor-pointer" 
+            />
+          </div>
+
+          {/* B Slider */}
+          <div className="space-y-0.5">
+            <div className="flex justify-between font-bold text-sky-400 text-[9.5px]">
+              <span>Blue (B): {b}</span>
+            </div>
+            <input 
+              type="range" 
+              min="0" 
+              max="255" 
+              value={b} 
+              onChange={(e) => setB(Number(e.target.value))} 
+              className="w-full accent-sky-500 h-0.5 bg-slate-800 cursor-pointer" 
+            />
+          </div>
+        </div>
+
+        {/* Color Hex outputs */}
+        <div className="bg-slate-950 p-2.5 rounded-xl border border-slate-800 font-mono text-[9px] text-left leading-normal flex flex-col justify-center min-h-[90px] pl-3">
+          <span className="text-slate-550 block border-b border-slate-850 pb-1 mb-1.5 select-none">style.css</span>
+          <pre className="text-yellow-350">
+{`h1 {
+  color: `}<span className="text-white font-bold">{`rgb(${r}, ${g}, ${b})`}</span>{`;
+  background: `}<span className="text-white font-bold">{hexVal}</span>{`;
+}`}
+          </pre>
+        </div>
+      </div>
+
+      {/* Render Box */}
+      <div 
+        className="w-full rounded-xl py-2.5 border border-slate-200 text-center font-sans mt-1 shadow-md font-bold text-xs transition-all duration-100 uppercase"
+        style={{ 
+          backgroundColor: hexVal,
+          color: (r * 0.299 + g * 0.587 + b * 0.114) > 150 ? '#000000' : '#ffffff'
+        }}
+      >
+        <span>Generated: {hexVal}</span>
+      </div>
+    </div>
+  );
+};
+
+// 19. CssBoxModel3D (Box model highlights)
+const CssBoxModel3D: React.FC = () => {
+  const [activeRing, setActiveRing] = useState<'content' | 'padding' | 'border' | 'margin'>('content');
+
+  const ringDetails: Record<string, { title: string; desc: string; color: string }> = {
+    margin: { title: 'Margin (Outside Border)', desc: 'Margin is transparent spacing outside the border. It creates spacing between this box and neighboring elements on the page.', color: 'text-orange-500' },
+    border: { title: 'Border (Outer Outline)', desc: 'The frame boundary surrounding the inner padding. Can be configured with solid color line borders.', color: 'text-indigo-400' },
+    padding: { title: 'Padding (Inside Border)', desc: 'Padding is transparent spacing between the text content and the outer border, expanding the clickable area of elements.', color: 'text-sky-400' },
+    content: { title: 'Content Core', desc: 'The base inner region holding actual text nodes, child element layout nodes, image files, or icons.', color: 'text-yellow-450' }
+  };
+
+  return (
+    <div className="flex-grow flex flex-col justify-center gap-2 w-full font-sans">
+      {/* 3D nested box selector */}
+      <div className="w-full bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex items-center justify-center min-h-[120px] select-none font-mono text-[9px] font-black">
+        <div 
+          onClick={() => setActiveRing('margin')}
+          className={`p-3 rounded-2xl border transition-all duration-300 cursor-pointer ${
+            activeRing === 'margin' ? 'bg-orange-500/10 border-orange-500 text-orange-400 ring-2 ring-orange-500/20' : 'border-slate-800 text-slate-600 hover:border-slate-700'
+          }`}
+        >
+          <span className="block mb-1">MARGIN</span>
+          
+          <div 
+            onClick={(e) => { e.stopPropagation(); setActiveRing('border'); }}
+            className={`p-3 rounded-xl border transition-all duration-300 cursor-pointer ${
+              activeRing === 'border' ? 'bg-indigo-500/10 border-indigo-500 text-indigo-300 ring-2 ring-indigo-500/20' : 'border-slate-850 text-slate-600 hover:border-slate-700'
+            }`}
+          >
+            <span className="block mb-1">BORDER</span>
+            
+            <div 
+              onClick={(e) => { e.stopPropagation(); setActiveRing('padding'); }}
+              className={`p-3 rounded-lg border transition-all duration-300 cursor-pointer ${
+                activeRing === 'padding' ? 'bg-sky-500/10 border-sky-500 text-sky-300 ring-2 ring-sky-500/20' : 'border-slate-850 text-slate-600 hover:border-slate-700'
+              }`}
+            >
+              <span className="block mb-1">PADDING</span>
+              
+              <div 
+                onClick={(e) => { e.stopPropagation(); setActiveRing('content'); }}
+                className={`px-3 py-1 rounded border transition-all duration-300 cursor-pointer text-center ${
+                  activeRing === 'content' ? 'bg-yellow-500/10 border-yellow-500 text-yellow-450' : 'border-slate-900 text-slate-650 hover:border-slate-800'
+                }`}
+              >
+                <span>CONTENT</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Info panel */}
+      <div className="bg-slate-950 border border-slate-850 rounded-lg p-2.5 text-[9px] leading-relaxed font-sans min-h-[55px] text-left">
+        <p className="text-slate-350">
+          <strong className={`${ringDetails[activeRing].color} font-lexend block uppercase mb-0.5`}>
+            {ringDetails[activeRing].title}
+          </strong>
+          {ringDetails[activeRing].desc}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+// ROUTER THAT RENDER PRE-SEPARATED ILLUSTRATIONS WITHOUT CONFLICTING HOOK ORDERS
 const ConceptIllustration: React.FC<{ slideId: string }> = ({ slideId }) => {
   if (slideId === 'media-slide2') return <Slide2Illustration />;
   if (slideId === 'media-slide4') return <Slide4Illustration />;
@@ -1469,16 +1954,19 @@ const ConceptIllustration: React.FC<{ slideId: string }> = ({ slideId }) => {
   // WebDev Lesson Custom Illustrations
   if (slideId === 'webdev-slide3') return <WebdevTimeline />;
   if (slideId === 'webdev-slide4') return <HtmlNoCssToggle />;
-  if (slideId === 'webdev-slide5') return <HtmlAnatomy />;
-  if (slideId === 'webdev-slide6') return <HtmlCodeSelector />;
-  if (slideId === 'webdev-slide7') return <TryItYourselfEditor />;
-  if (slideId === 'webdev-slide9') return <MythHtmlProgramming />;
-  if (slideId === 'webdev-slide10') return <BreakTheCodeTags />;
-  if (slideId === 'webdev-slide11') return <WebpageDocumentTree />;
-  if (slideId === 'webdev-slide13') return <IndexHtmlDiscovery />;
-  if (slideId === 'webdev-slide14') return <FileExtensionRenamer />;
-  if (slideId === 'webdev-slide16') return <HtmlCssTuner />;
-  if (slideId === 'webdev-slide17') return <BrowserParseFlow />;
+  if (slideId === 'webdev-slide5') return <WebpageDocumentTree />;
+  if (slideId === 'webdev-slide7') return <HtmlAnatomy />;
+  if (slideId === 'webdev-slide8') return <HtmlHeadingsVisualizer />;
+  if (slideId === 'webdev-slide9') return <HtmlParagraphsSpacer />;
+  if (slideId === 'webdev-slide10') return <HtmlLinkNavigator />;
+  if (slideId === 'webdev-slide11') return <HtmlImageSrcLoader />;
+  if (slideId === 'webdev-slide13') return <CssSelectorMapper />;
+  if (slideId === 'webdev-slide14') return <CssColorMixer />;
+  if (slideId === 'webdev-slide15') return <CssBoxModel3D />;
+  if (slideId === 'webdev-slide16') return <TryItYourselfEditor />;
+  if (slideId === 'webdev-slide18') return <MythHtmlProgramming />;
+  if (slideId === 'webdev-slide19') return <FileExtensionRenamer />;
+  if (slideId === 'webdev-slide20') return <BrowserParseFlow />;
 
   // Default fallback illustration representing general interactive design
   return (
@@ -3416,7 +3904,7 @@ export const SlideContent: React.FC<SlideContentProps> = ({ slide }) => {
     'media-slide25',
     'media-slide30',
     'media-slide36'
-  ].includes(slide.id);
+  ].includes(slide.id) || slide.id?.startsWith('webdev-slide');
 
   // ROUTE TO STANDALONE COMPONENTS TO MAINTAIN STATIC ORDER OF HOOKS
   if (slide.type === 'interactive_objectives') {
