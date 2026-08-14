@@ -20,71 +20,9 @@ import {
   BookOpen
 } from 'lucide-react';
 
-interface Lesson {
-  id: string;
-  week: number;
-  title: string;
-  description: string;
-  duration: string;
-  slidesCount: number;
-  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
-  thumbnail: string;
-  isActive: boolean;
-  quizEnabled?: boolean;
-}
+import { Lesson, DEFAULT_LESSONS } from '@/data/lessons';
 
 const ADMIN_HASH = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9'; // SHA-256 for admin123
-
-const DEFAULT_LESSONS: Lesson[] = [
-  {
-    id: 'mediadsn1',
-    week: 1,
-    title: 'Introduction to Interactive Media Design',
-    description: 'Learn the basics, history, and key components of interactive media design, emphasizing user-centered digital experiences.',
-    duration: '20 mins',
-    slidesCount: 36,
-    difficulty: 'Beginner',
-    thumbnail: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=800&q=80',
-    isActive: true,
-    quizEnabled: true,
-  },
-  {
-    id: 'week1',
-    week: 1,
-    title: 'Introduction to Video Editing',
-    description: 'Learn the fundamentals of video editing, timeline cuts, A-Roll/B-Roll layering, and Walter Murch\'s rules of rendering.',
-    duration: '25 mins',
-    slidesCount: 51,
-    difficulty: 'Beginner',
-    thumbnail: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=800&q=80',
-    isActive: true,
-    quizEnabled: true,
-  },
-  {
-    id: 'laravel11',
-    week: 1,
-    title: 'Laravel 11 Fundamentals',
-    description: 'Learn the core concepts of Laravel 11, including server setup, directory structure, routing, Blade templates, and passing data.',
-    duration: '15 mins',
-    slidesCount: 50,
-    difficulty: 'Beginner',
-    thumbnail: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=800&q=80',
-    isActive: true,
-    quizEnabled: true,
-  },
-  {
-    id: 'webdev1',
-    week: 1,
-    title: 'Introduction to Web Development',
-    description: 'Learn the core building blocks of the web: HTML5 structure, CSS3 presentation, file extensions, and basic browser rendering loops.',
-    duration: '15 mins',
-    slidesCount: 21,
-    difficulty: 'Beginner',
-    thumbnail: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=800&q=80',
-    isActive: true,
-    quizEnabled: true,
-  }
-];
 
 export default function AdminPage() {
   const [isAuthorized, setIsAuthorized] = useState(false);
@@ -786,6 +724,49 @@ export default function AdminPage() {
             <div className="mt-5 p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-[10px] text-slate-500 leading-relaxed space-y-1">
               <strong className="text-slate-800 block mb-0.5">How it works:</strong>
               <p>Scores are posted dynamically to this web app execution script when a student finishes the quiz. Syncs directly to your linked spreadsheet.</p>
+            </div>
+
+            {/* Deploy Code Block generator */}
+            <div className="mt-5 bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+              <div className="flex items-center gap-2 mb-2 border-b border-slate-100 pb-2">
+                <Database className="w-4 h-4 text-indigo-650" />
+                <h3 className="font-lexend text-xs font-bold text-slate-800">Deploy Changes Globally</h3>
+              </div>
+              <p className="text-[10px] text-slate-500 leading-relaxed mb-3">
+                To save syllabus edits (like toggling quizzes, adding lessons, or locking/unlocking items) permanently for all students:
+              </p>
+              
+              <ol className="list-decimal list-inside text-[9px] text-slate-600 mb-4 space-y-1 leading-normal font-semibold">
+                <li>Make your changes above (e.g. toggle quizzes).</li>
+                <li>Click <strong>Copy Syllabus Code</strong> below.</li>
+                <li>Paste it inside <code className="bg-slate-100 text-indigo-650 px-1 rounded">src/data/lessons.ts</code> to replace everything, then commit/deploy!</li>
+              </ol>
+
+              <button
+                onClick={() => {
+                  const headerText = `export interface Lesson {
+  id: string;
+  week: number;
+  title: string;
+  description: string;
+  duration: string;
+  slidesCount: number;
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
+  thumbnail: string;
+  isActive: boolean;
+  quizEnabled?: boolean;
+}
+
+export const DEFAULT_LESSONS: Lesson[] = `;
+                  const bodyText = JSON.stringify(lessons, null, 2);
+                  navigator.clipboard.writeText(headerText + bodyText + ';\n');
+                  alert("Syllabus Code copied! Now paste it inside src/data/lessons.ts and save.");
+                }}
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-xl text-xs shadow-sm transition flex items-center justify-center gap-1 cursor-pointer"
+              >
+                <Download className="w-3.5 h-3.5" />
+                Copy Syllabus Code
+              </button>
             </div>
           </div>
 
