@@ -12,7 +12,12 @@ import {
   ExternalLink, 
   Lock, 
   GraduationCap,
-  Search
+  Search,
+  User,
+  LogOut,
+  ChevronDown,
+  UserPlus,
+  X
 } from 'lucide-react';
 import { AdSidebar } from '@/components/AdSidebar';
 import { CONFIG } from '@/config';
@@ -107,6 +112,15 @@ const LogoIcon = () => (
   </div>
 );
 
+const GoogleIcon = () => (
+  <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05" />
+    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335" />
+  </svg>
+);
+
 export default function Home() {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [toast, setToast] = useState<string | null>(null);
@@ -114,6 +128,13 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'week-asc' | 'week-desc' | 'title-asc' | 'difficulty'>('week-asc');
   const [showAds, setShowAds] = useState(false);
+
+  const [user, setUser] = useState<{ name: string; email: string; avatar?: string } | null>(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [customName, setCustomName] = useState('');
+  const [customEmail, setCustomEmail] = useState('');
+  const [loginLoading, setLoginLoading] = useState(false);
 
   // Hydrate state from localStorage
   useEffect(() => {
@@ -124,7 +145,14 @@ export default function Home() {
 
       const clientId = localStorage.getItem('vid_adsense_client_id') || CONFIG.adsenseClientId || '';
       const slotId = localStorage.getItem('vid_adsense_slot_id') || CONFIG.adsenseSlotId || '';
-      setShowAds(clientId.trim() !== '' && slotId.trim() !== '');
+      const storedUser = localStorage.getItem('vid_user');
+      if (storedUser) {
+        try {
+          setUser(JSON.parse(storedUser));
+        } catch (e) {
+          console.error("Failed to parse stored user:", e);
+        }
+      }
 
       const stored = localStorage.getItem('vid_lessons');
       if (stored) {
@@ -175,6 +203,27 @@ export default function Home() {
     setTimeout(() => setToast(null), 2000);
   };
 
+  const handleMockLogin = (name: string, email: string, avatar?: string) => {
+    setLoginLoading(true);
+    setTimeout(() => {
+      const newUser = { name, email, avatar };
+      setUser(newUser);
+      localStorage.setItem('vid_user', JSON.stringify(newUser));
+      setLoginLoading(false);
+      setShowLoginModal(false);
+      setToast(`Logged in as ${name}!`);
+      setTimeout(() => setToast(null), 3000);
+    }, 1200);
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    localStorage.removeItem('vid_user');
+    setUserDropdownOpen(false);
+    setToast("Logged out successfully");
+    setTimeout(() => setToast(null), 2000);
+  };
+
   return (
     <main className="min-h-screen bg-gradient-to-tr from-[#f8fafc] via-[#f1f5f9] to-[#ecf2ff] text-slate-800 flex flex-col justify-between py-8 px-4 relative overflow-hidden font-sans">
       {/* Decorative Glows */}
@@ -190,12 +239,63 @@ export default function Home() {
       )}
 
       {/* Header Panel */}
-      <header className="w-full max-w-6xl mx-auto mb-8 bg-white/60 border border-white/80 backdrop-blur-md px-6 py-4.5 rounded-3xl flex items-center justify-between shadow-sm">
+      <header className="w-full max-w-6xl mx-auto mb-8 bg-white/60 border border-white/80 backdrop-blur-md px-6 py-4.5 rounded-3xl flex items-center justify-between shadow-sm relative z-30">
         <div className="flex items-center gap-3">
           <LogoIcon />
           <h1 className="font-lexend text-lg md:text-xl font-black tracking-tight text-slate-900">
             Lesson Library
           </h1>
+        </div>
+
+        {/* User Auth Section */}
+        <div className="relative">
+          {user ? (
+            <div className="relative">
+              <button
+                onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                className="flex items-center gap-2 bg-white/85 border border-slate-200 hover:border-slate-300 px-3 py-1.5 rounded-2xl shadow-sm transition cursor-pointer select-none"
+              >
+                {user.avatar ? (
+                  <img
+                    src={user.avatar}
+                    alt={user.name}
+                    className="w-6 h-6 rounded-full object-cover border border-slate-100"
+                  />
+                ) : (
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-sky-500 to-indigo-500 text-white font-bold flex items-center justify-center text-[10px] uppercase font-lexend">
+                    {user.name.charAt(0)}
+                  </div>
+                )}
+                <span className="hidden sm:inline text-xs font-bold text-slate-700">{user.name}</span>
+                <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+              </button>
+
+              {userDropdownOpen && (
+                <div className="absolute right-0 top-full mt-2 w-52 bg-white/95 border border-slate-200/90 backdrop-blur-md shadow-xl rounded-2xl p-2 z-50 text-left animate-fade-in">
+                  <div className="px-3 py-2 border-b border-slate-100 mb-1.5">
+                    <p className="text-[9px] text-slate-400 font-extrabold uppercase tracking-wide">Logged in as</p>
+                    <p className="text-xs font-bold text-slate-800 truncate">{user.name}</p>
+                    <p className="text-[9px] text-slate-505 font-mono truncate mt-0.5">{user.email}</p>
+                  </div>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-left text-rose-600 hover:bg-rose-50 text-xs font-bold transition"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    Sign Out
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <button
+              onClick={() => setShowLoginModal(true)}
+              className="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-750 text-xs font-bold px-3.5 py-2 border border-slate-200 rounded-xl shadow-sm transition active:scale-95 cursor-pointer font-lexend"
+            >
+              <GoogleIcon />
+              <span>Sign in with Google</span>
+            </button>
+          )}
         </div>
       </header>
 
@@ -431,6 +531,100 @@ export default function Home() {
           Privacy Policy
         </Link>
       </footer>
+
+      {/* Sign in with Google Simulation Modal */}
+      {showLoginModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 shadow-2xl rounded-3xl w-full max-w-sm p-6 text-center relative animate-fade-in text-slate-800">
+            <button
+              onClick={() => setShowLoginModal(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition"
+              aria-label="Close modal"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Google Identity Header */}
+            <div className="flex flex-col items-center mt-2">
+              <GoogleIcon />
+              <h3 className="font-lexend text-base font-extrabold text-slate-900 mt-3">Choose an account</h3>
+              <p className="text-[11px] text-slate-500 mt-0.5">to continue to <strong className="text-slate-750">Lesson Library</strong></p>
+            </div>
+
+            {loginLoading ? (
+              <div className="my-10 py-6 flex flex-col items-center justify-center gap-3">
+                <div className="w-8 h-8 rounded-full border-4 border-dashed border-sky-600 animate-spin" />
+                <span className="text-xs text-slate-500 font-bold font-lexend animate-pulse">Connecting to Google...</span>
+              </div>
+            ) : (
+              <div className="mt-6 flex flex-col gap-2.5">
+                {/* Mock Account Option */}
+                <button
+                  onClick={() => handleMockLogin('Juan Dela Cruz', 'juan.delacruz@gmail.com')}
+                  className="w-full flex items-center gap-3 p-3 rounded-2xl border border-slate-100 hover:bg-slate-50 text-left transition"
+                >
+                  <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-sky-400 to-sky-600 text-white font-bold flex items-center justify-center text-xs uppercase">
+                    JD
+                  </div>
+                  <div className="flex-grow min-w-0">
+                    <p className="text-xs font-bold text-slate-900 truncate">Juan Dela Cruz</p>
+                    <p className="text-[10px] text-slate-500 truncate mt-0.5">juan.delacruz@gmail.com</p>
+                  </div>
+                  <span className="text-[9px] font-bold text-sky-600 bg-sky-50 px-2 py-0.5 rounded-full uppercase">Default</span>
+                </button>
+
+                <div className="relative my-2">
+                  <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-slate-150" /></div>
+                  <div className="relative flex justify-center text-[10px] uppercase font-bold text-slate-455"><span className="bg-white px-2">Or Use Custom Name</span></div>
+                </div>
+
+                {/* Custom Account Option Form */}
+                <div className="flex flex-col gap-2.5 text-left text-xs font-semibold">
+                  <div className="flex flex-col gap-0.5">
+                    <label className="text-[9px] uppercase font-bold text-slate-450">Name:</label>
+                    <input
+                      type="text"
+                      value={customName}
+                      onChange={(e) => setCustomName(e.target.value)}
+                      placeholder="e.g. Maria Clara"
+                      className="bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-3 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none transition w-full"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    <label className="text-[9px] uppercase font-bold text-slate-450">Email Address:</label>
+                    <input
+                      type="email"
+                      value={customEmail}
+                      onChange={(e) => setCustomEmail(e.target.value)}
+                      placeholder="e.g. maria@clara.ph"
+                      className="bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-3 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none transition w-full"
+                    />
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      if (!customName.trim() || !customEmail.trim()) {
+                        setToast("Please fill in both fields");
+                        setTimeout(() => setToast(null), 2500);
+                        return;
+                      }
+                      handleMockLogin(customName, customEmail);
+                    }}
+                    className="w-full mt-1 bg-sky-600 hover:bg-sky-750 text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 shadow-sm active:scale-95"
+                  >
+                    <UserPlus className="w-4 h-4" />
+                    Sign In Custom Student
+                  </button>
+                </div>
+              </div>
+            )}
+            
+            <p className="text-[9px] text-slate-400 mt-5 leading-normal">
+              This is a secure academic sign-in portal simulation. Credentials are authenticated client-side and saved securely in your browser's local sandbox storage.
+            </p>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
