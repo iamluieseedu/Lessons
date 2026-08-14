@@ -13,6 +13,7 @@ import { KeyboardHelpModal } from '@/components/KeyboardHelpModal';
 import { Film, ArrowLeft, Lock, BookOpen } from 'lucide-react';
 import { AdSidebar } from '@/components/AdSidebar';
 import { CONFIG } from '@/config';
+import { HeaderAd } from '@/components/HeaderAd';
 
 interface Lesson {
   id: string;
@@ -303,6 +304,9 @@ function SlidePageContent() {
               Back to Library
             </Link>
           </header>
+
+          {/* Header Ad Banner */}
+          <HeaderAd />
 
           {/* Main Slide Viewer Frame */}
           <div className="flex-grow flex items-center justify-center py-2 min-h-[50vh]">
