@@ -49,6 +49,7 @@ import {
   CreditCard,
   BookOpen
 } from 'lucide-react';
+import { CppCompilerPlayground } from '@/components/CppCompilerPlayground';
 
 interface SlideContentProps {
   slide: SlideData;
@@ -4020,6 +4021,40 @@ export const SlideContent: React.FC<SlideContentProps> = ({ slide }) => {
             </div>
           )}
         </div>
+      </div>
+    );
+  }
+
+  // C / C++ COMPILER & EXERCISE SLIDES
+  if (
+    slide.type === 'cpp_compiler' ||
+    slide.type === 'cpp_exercise' ||
+    slide.type === 'escape_sequence_tester' ||
+    slide.type === 'pointer_visualizer'
+  ) {
+    return (
+      <div className="h-full w-full p-4 md:p-6 overflow-y-auto bg-slate-900 text-slate-100 flex flex-col justify-start">
+        <div className="mb-2 flex items-center justify-between border-b border-slate-800 pb-2">
+          <div className="flex items-center gap-2">
+            <Terminal className="w-5 h-5 text-emerald-400" />
+            <h2 className="font-lexend text-lg md:text-xl font-bold text-white">
+              {slide.title || 'Interactive C/C++ Compiler & Sandbox'}
+            </h2>
+          </div>
+          {slide.moduleTag && (
+            <span className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-semibold rounded-full font-sans">
+              {slide.moduleTag}
+            </span>
+          )}
+        </div>
+        {slide.subtitle && (
+          <p className="text-xs text-slate-400 mb-2 font-sans">{slide.subtitle}</p>
+        )}
+        <CppCompilerPlayground
+          exercise={slide.exercise}
+          initialCode={slide.code}
+          title={slide.title}
+        />
       </div>
     );
   }

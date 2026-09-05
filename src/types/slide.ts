@@ -25,7 +25,11 @@ export type SlideType =
   | 'knowledge_check'
   | 'essay_prompt'
   | 'exit_reflection'
-  | 'history_timeline';
+  | 'history_timeline'
+  | 'cpp_compiler'
+  | 'cpp_exercise'
+  | 'escape_sequence_tester'
+  | 'pointer_visualizer';
 
 export interface CalloutBox {
   title?: string;
@@ -46,6 +50,18 @@ export interface TimelineItem {
 export interface ImageSpec {
   url: string;
   caption: string;
+}
+
+export interface ExerciseSpec {
+  id: string;
+  challengeTitle: string;
+  instructions: string;
+  initialCode: string;
+  language: 'c' | 'cpp';
+  expectedOutputSubstring?: string;
+  expectedPattern?: RegExp;
+  hint: string;
+  solutionCode: string;
 }
 
 export interface SlideData {
@@ -70,4 +86,5 @@ export interface SlideData {
   versusRight?: { title: string; bullets: string[] };
   timelineItems?: TimelineItem[];
   metadata?: SlideMetaData[];
+  exercise?: ExerciseSpec;
 }

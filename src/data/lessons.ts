@@ -59,5 +59,17 @@ export const DEFAULT_LESSONS: Lesson[] = [
     thumbnail: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=800&q=80',
     isActive: true,
     quizEnabled: true,
+  },
+  {
+    id: 'cpp1',
+    week: 1,
+    title: 'Fundamentals of Programming: C & C++ Masterclass',
+    description: 'Master programming from core basics, escape sequences, identifiers, and control flow to pointers, memory management, and OOP classes with live code execution.',
+    duration: '35 mins',
+    slidesCount: 45,
+    difficulty: 'Beginner',
+    thumbnail: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80',
+    isActive: true,
+    quizEnabled: false,
   }
 ];
