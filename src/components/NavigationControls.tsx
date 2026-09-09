@@ -9,7 +9,8 @@ import {
   Play, 
   Pause, 
   HelpCircle, 
-  RotateCcw 
+  RotateCcw,
+  GraduationCap
 } from 'lucide-react';
 
 interface NavigationControlsProps {
@@ -23,6 +24,7 @@ interface NavigationControlsProps {
   isPlaying: boolean;
   onTogglePlay: () => void;
   onOpenHelp: () => void;
+  onToggleTeacherNotes?: () => void;
 }
 
 export const NavigationControls: React.FC<NavigationControlsProps> = ({
@@ -35,12 +37,13 @@ export const NavigationControls: React.FC<NavigationControlsProps> = ({
   onToggleFullscreen,
   isPlaying,
   onTogglePlay,
-  onOpenHelp
+  onOpenHelp,
+  onToggleTeacherNotes
 }) => {
   const progressPercent = Math.round(((currentIndex + 1) / totalSlides) * 100);
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-2 sm:px-4 mt-3 flex flex-col gap-2 relative z-10">
+    <div className="w-full max-w-7xl 2xl:max-w-[1440px] mx-auto px-2 sm:px-4 mt-3 flex flex-col gap-2 relative z-10">
       {/* Progress Bar */}
       <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden border border-slate-350/20">
         <div 

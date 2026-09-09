@@ -12,7 +12,8 @@ import { SlideViewer } from '@/components/SlideViewer';
 import { NavigationControls } from '@/components/NavigationControls';
 import { ThumbnailDrawer } from '@/components/ThumbnailDrawer';
 import { KeyboardHelpModal } from '@/components/KeyboardHelpModal';
-import { Film, ArrowLeft, Lock, BookOpen } from 'lucide-react';
+import { TeacherScriptDrawer } from '@/components/TeacherScriptDrawer';
+import { Film, ArrowLeft, Lock, BookOpen, GraduationCap, ExternalLink } from 'lucide-react';
 import { AdSidebar } from '@/components/AdSidebar';
 import { CONFIG } from '@/config';
 import { HeaderAd } from '@/components/HeaderAd';
@@ -28,6 +29,7 @@ function SlidePageContent() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [isTeacherNotesOpen, setIsTeacherNotesOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [showAds, setShowAds] = useState(false);
   const [hasLoggedCompletion, setHasLoggedCompletion] = useState(false);
@@ -176,10 +178,11 @@ function SlidePageContent() {
     if (!lesson) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (isDrawerOpen || isHelpOpen) {
+      if (isDrawerOpen || isHelpOpen || isTeacherNotesOpen) {
         if (e.key === 'Escape') {
           setIsDrawerOpen(false);
           setIsHelpOpen(false);
+          setIsTeacherNotesOpen(false);
         }
         return;
       }
@@ -193,12 +196,15 @@ function SlidePageContent() {
       } else if (e.key === 'f' || e.key === 'F') {
         e.preventDefault();
         toggleFullscreen();
+      } else if (e.key === 't' || e.key === 'T') {
+        e.preventDefault();
+        setIsTeacherNotesOpen((prev) => !prev);
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [lesson, handleNext, handlePrev, toggleFullscreen, isDrawerOpen, isHelpOpen]);
+  }, [lesson, handleNext, handlePrev, toggleFullscreen, isDrawerOpen, isHelpOpen, isTeacherNotesOpen]);
 
   // Auto-play timer
   useEffect(() => {
@@ -286,7 +292,7 @@ function SlidePageContent() {
         {/* Left main area (Slide Presentation) */}
         <div className={`flex-grow w-full ${showAds ? 'lg:max-w-[72%]' : 'lg:max-w-full'} flex flex-col h-full justify-between min-h-[85vh]`}>
           {/* Top Application Header */}
-          <header className="w-full mb-4 flex items-center justify-between">
+          <header className="w-full mb-4 flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2.5">
               <BookOpen className="w-5 h-5 text-slate-900" />
               <h1 className="font-lexend text-base md:text-lg font-semibold text-slate-800">

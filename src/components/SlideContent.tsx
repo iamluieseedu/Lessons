@@ -46,10 +46,26 @@ import {
   Pause,
   Volume2,
   Maximize2,
-  CreditCard,
-  BookOpen
+  CreditCard, 
+  BookOpen,
+  Copy,
+  FileCode,
+  Users,
+  MessageSquareQuote,
+  Cpu
 } from 'lucide-react';
 import { CppCompilerPlayground } from '@/components/CppCompilerPlayground';
+import {
+  LaravelTerminalSimulator,
+  Laravel11ArchitectureDiff,
+  LaravelRequestPipeline,
+  LaravelEloquentPlayground,
+  LaravelBladeCompiler,
+  LaravelMigrationBuilder,
+  LaravelCsrfValidationSandbox,
+  LaravelTinkerShell,
+  LaravelDirectoryExplorer
+} from './LaravelSimulations';
 
 interface SlideContentProps {
   slide: SlideData;
@@ -84,6 +100,52 @@ const ImageFrame: React.FC<{ url: string; caption: string; isLaravel?: boolean }
       <div className="bg-slate-50 text-slate-600 text-xs py-2.5 px-3 text-center border border-t-0 border-slate-200 flex items-center justify-center gap-1.5 rounded-b-lg flex-shrink-0">
         <ImageIcon className={`w-3.5 h-3.5 ${iconColor} flex-shrink-0`} />
         <span className="truncate">{caption}</span>
+      </div>
+    </div>
+  );
+};
+
+// -------------------------------------------------------------
+// SLIDE CODE VIEWER HELPER (SYNTAX BLOCK WITH COPY BUTTON)
+// -------------------------------------------------------------
+const SlideCodeViewer: React.FC<{ code: string; isLaravel?: boolean }> = ({ code, isLaravel }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1800);
+  };
+
+  const isPhp = code.includes('<?php') || code.includes('Route::') || code.includes('class ') || code.includes('$');
+  const isBlade = code.includes('@') || code.includes('{{') || code.includes('<x-');
+  const langBadge = isBlade ? 'Blade Template' : isPhp ? 'PHP 8.2+' : 'Terminal / Config';
+
+  return (
+    <div className="md:col-span-5 w-full h-full min-h-[260px] max-h-[420px] bg-slate-950 border border-slate-800 rounded-xl overflow-hidden shadow-xl flex flex-col justify-between font-mono text-xs mt-4 md:mt-0">
+      <div className="bg-slate-900/90 px-3 py-2 border-b border-slate-800 flex items-center justify-between font-sans">
+        <div className="flex items-center gap-2">
+          <FileCode className={`w-4 h-4 ${isLaravel ? 'text-rose-500' : 'text-sky-500'}`} />
+          <span className="text-[11px] font-bold text-slate-300">{langBadge}</span>
+        </div>
+        <button
+          onClick={handleCopy}
+          className="text-slate-400 hover:text-white px-2 py-0.5 rounded bg-slate-800 text-[10px] flex items-center gap-1 transition"
+        >
+          {copied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+          {copied ? 'Copied' : 'Copy Code'}
+        </button>
+      </div>
+
+      <div className="p-3.5 flex-grow overflow-y-auto overflow-x-auto bg-black/40 select-text">
+        <pre className="text-slate-200 leading-relaxed text-[11px] whitespace-pre font-mono">
+          {code}
+        </pre>
+      </div>
+
+      <div className="bg-slate-900/60 px-3 py-1 text-[10px] text-slate-500 border-t border-slate-800 flex justify-between items-center font-sans">
+        <span className="text-slate-400">Laravel Syntax</span>
+        <span className={`${isLaravel ? 'text-rose-400' : 'text-sky-400'} font-medium`}>Verified Official Docs</span>
       </div>
     </div>
   );
@@ -1968,6 +2030,17 @@ const ConceptIllustration: React.FC<{ slideId: string }> = ({ slideId }) => {
   if (slideId === 'webdev-slide18') return <MythHtmlProgramming />;
   if (slideId === 'webdev-slide19') return <FileExtensionRenamer />;
   if (slideId === 'webdev-slide20') return <BrowserParseFlow />;
+
+  // Laravel 11 Lesson Custom Interactive Simulations
+  if (slideId === 'laravel-slide6') return <LaravelTerminalSimulator />;
+  if (slideId === 'laravel-slide8') return <Laravel11ArchitectureDiff />;
+  if (slideId === 'laravel-slide15') return <LaravelRequestPipeline />;
+  if (slideId === 'laravel-slide24') return <LaravelEloquentPlayground />;
+  if (slideId === 'laravel-slide32') return <LaravelBladeCompiler />;
+  if (slideId === 'laravel-slide37') return <LaravelMigrationBuilder />;
+  if (slideId === 'laravel-slide42') return <LaravelCsrfValidationSandbox />;
+  if (slideId === 'laravel-slide46') return <LaravelTinkerShell />;
+  if (slideId === 'laravel-slide50') return <LaravelDirectoryExplorer />;
 
   // Default fallback illustration representing general interactive design
   return (
@@ -3904,7 +3977,16 @@ export const SlideContent: React.FC<SlideContentProps> = ({ slide }) => {
     'media-slide21',
     'media-slide25',
     'media-slide30',
-    'media-slide36'
+    'media-slide36',
+    'laravel-slide6',
+    'laravel-slide8',
+    'laravel-slide15',
+    'laravel-slide24',
+    'laravel-slide32',
+    'laravel-slide37',
+    'laravel-slide42',
+    'laravel-slide46',
+    'laravel-slide50'
   ].includes(slide.id) || slide.id?.startsWith('webdev-slide');
 
   // ROUTE TO STANDALONE COMPONENTS TO MAINTAIN STATIC ORDER OF HOOKS
@@ -4011,6 +4093,21 @@ export const SlideContent: React.FC<SlideContentProps> = ({ slide }) => {
             )}
           </div>
 
+          {slide.discussionPrompt && (
+            <div className="mt-4 p-3.5 rounded-xl bg-emerald-500/[0.04] border border-emerald-300 text-xs font-semibold leading-relaxed animate-fade-in font-sans">
+              <strong className="flex items-center gap-1.5 text-emerald-800 font-lexend text-[11px] uppercase tracking-wider">
+                <Users className="w-4 h-4 text-emerald-600" />
+                Class Discussion & Question
+              </strong>
+              <p className="mt-1 font-sans font-semibold text-emerald-950">{slide.discussionPrompt.question}</p>
+              {slide.discussionPrompt.hint && (
+                <p className="mt-1.5 text-[11px] font-sans text-slate-500 italic bg-white/70 p-2 rounded-lg border border-emerald-100">
+                  💡 <strong>Class Discussion Hint:</strong> {slide.discussionPrompt.hint}
+                </p>
+              )}
+            </div>
+          )}
+
           {slide.keyInsight && (
             <div className="mt-4 p-3.5 rounded-xl bg-amber-500/[0.03] border border-amber-205 text-xs font-semibold leading-relaxed animate-fade-in font-sans">
               <strong className="flex items-center gap-1.5 text-amber-800 font-lexend">
@@ -4062,34 +4159,29 @@ export const SlideContent: React.FC<SlideContentProps> = ({ slide }) => {
   // 1. COVER SLIDE
   if (slide.type === 'cover') {
     return (
-      <div className="h-full w-full flex flex-col justify-center items-start p-5 sm:p-8 md:p-14 relative z-10 text-slate-900 overflow-y-auto">
+      <div className="h-full w-full flex flex-col justify-center items-start p-6 sm:p-10 md:p-14 relative z-10 text-slate-900 overflow-y-auto">
         {slide.moduleTag && (
           <div className={`inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full ${theme.bgAccentLight} ${theme.textAccentDark} border ${theme.borderAccentLight} text-xs sm:text-sm font-semibold mb-4 md:mb-6 shadow-sm`}>
             <GraduationCap className={`w-4 h-4 ${theme.iconColorDark}`} />
             {slide.moduleTag}
           </div>
         )}
-        <h1 className="font-lexend text-3xl sm:text-4xl md:text-6xl font-extrabold text-slate-900 tracking-tight leading-tight mb-4 md:mb-6">
-          {slide.title?.includes('Video Editing') ? (
-            <>
-              Introduction to <span className="text-sky-605 drop-shadow-sm">Video Editing</span>
-            </>
-          ) : slide.title?.includes('Laravel') ? (
-            <>
-              Laravel 11 <span className="text-rose-600 drop-shadow-sm">Fundamentals</span>
-            </>
-          ) : slide.title?.includes('Interactive Media') ? (
-            <>
-              Introduction to <span className="text-sky-600 drop-shadow-sm">Interactive Media Design</span>
-            </>
-          ) : (
-            slide.title
-          )}
+        <h1 className="font-lexend text-3xl sm:text-5xl md:text-6xl font-extrabold text-slate-900 mb-4 md:mb-6 tracking-tight leading-tight">
+          {slide.title}
         </h1>
-        {slide.subtitle && (
-          <p className="text-base sm:text-lg md:text-xl text-slate-500 max-w-3xl leading-relaxed mb-6 md:mb-10 animate-fade-in font-sans font-semibold">
-            {slide.subtitle}
-          </p>
+        <p className="text-base sm:text-xl text-slate-600 max-w-3xl leading-relaxed mb-6 md:mb-8 font-sans">
+          {slide.subtitle}
+        </p>
+
+        {slide.metadata && (
+          <div className="flex flex-wrap gap-4 pt-4 border-t border-slate-200 w-full font-sans">
+            {slide.metadata.map((meta, idx) => (
+              <div key={idx} className="bg-slate-100/80 px-3.5 py-1.5 rounded-xl border border-slate-200/80 text-xs font-medium">
+                <span className="text-slate-400 mr-1.5">{meta.label}:</span>
+                <span className="text-slate-700 font-bold">{meta.val}</span>
+              </div>
+            ))}
+          </div>
         )}
       </div>
     );
@@ -4098,9 +4190,9 @@ export const SlideContent: React.FC<SlideContentProps> = ({ slide }) => {
   // 2. SECTION BREAK SLIDE
   if (slide.type === 'section_break') {
     return (
-      <div className="h-full w-full flex flex-col justify-center items-center text-center p-5 sm:p-8 md:p-12 relative z-10 text-slate-900 overflow-y-auto">
+      <div className="h-full w-full flex flex-col justify-center items-center text-center p-6 sm:p-12 md:p-16 relative z-10 text-slate-900 overflow-y-auto">
         {slide.sectionNum && (
-          <div className="font-lexend text-xs sm:text-sm md:text-base font-bold text-rose-600 tracking-widest uppercase mb-3 md:mb-4 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-rose-500/10 border border-rose-505">
+          <div className={`font-lexend text-sm sm:text-base font-bold ${theme.textAccent} uppercase tracking-widest mb-3 md:mb-4 px-3.5 py-1 rounded-full ${theme.bgAccentLight} border ${theme.borderAccentLight}`}>
             {slide.sectionNum}
           </div>
         )}
@@ -4115,9 +4207,10 @@ export const SlideContent: React.FC<SlideContentProps> = ({ slide }) => {
   }
 
   // 3. TIMELINE / DEFAULT SLIDE
-  const hasRightContent = !!slide.image || hasIllustration;
+  const hasCode = !!slide.code;
+  const hasRightContent = !!slide.image || hasIllustration || hasCode;
   return (
-    <div className="h-full w-full flex flex-col justify-between p-4 sm:p-6 md:p-10 relative z-10 text-slate-900 overflow-y-auto">
+    <div className="h-full w-full flex flex-col justify-between p-4 sm:p-6 md:p-8 lg:p-10 relative z-10 text-slate-900 overflow-y-auto">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-slate-200 pb-2 md:pb-3 mb-3 md:mb-4 font-sans font-bold">
         <h2 className={`font-lexend text-lg md:text-2xl font-bold ${theme.textAccentDark} flex items-center gap-1.5 md:gap-2`}>
@@ -4131,12 +4224,36 @@ export const SlideContent: React.FC<SlideContentProps> = ({ slide }) => {
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 items-center flex-grow font-sans">
-        <div className={hasRightContent ? "md:col-span-7 flex flex-col justify-between h-full py-1 md:py-2" : "md:col-span-12 flex flex-col justify-between h-full py-1 md:py-2"}>
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 xl:gap-6 items-stretch flex-grow font-sans">
+        <div className={hasRightContent ? "xl:col-span-6 flex flex-col justify-between h-full py-1 md:py-2" : "xl:col-span-12 flex flex-col justify-between h-full py-1 md:py-2"}>
           <div>
-            <h3 className="font-lexend text-base md:text-xl font-bold text-slate-805 mb-3 md:mb-4">
+            <h3 className="font-lexend text-base md:text-xl font-bold text-slate-800 mb-3 md:mb-3.5">
               {slide.topicTitle}
             </h3>
+
+            {/* What It Does (The Goal) */}
+            {slide.whatItDoes && (
+              <div className="mb-3 p-3 rounded-xl bg-rose-500/[0.04] border border-rose-200 text-xs font-semibold leading-relaxed animate-fade-in font-sans">
+                <strong className="flex items-center gap-1.5 text-rose-800 font-lexend text-[11px] uppercase tracking-wider">
+                  <Target className="w-3.5 h-3.5 text-rose-600" />
+                  What It Does
+                </strong>
+                <p className="mt-1 font-sans font-medium text-slate-700">{slide.whatItDoes}</p>
+              </div>
+            )}
+
+            {/* What Is Going On (Under the Hood) */}
+            {slide.whatIsGoingOn && (
+              <div className="mb-3 p-3 rounded-xl bg-indigo-500/[0.04] border border-indigo-200 text-xs font-semibold leading-relaxed animate-fade-in font-sans">
+                <strong className="flex items-center gap-1.5 text-indigo-800 font-lexend text-[11px] uppercase tracking-wider">
+                  <Cpu className="w-3.5 h-3.5 text-indigo-600" />
+                  What Is Going On Under The Hood
+                </strong>
+                <p className="mt-1 font-sans font-medium text-slate-700">{slide.whatIsGoingOn}</p>
+              </div>
+            )}
+
+            {/* Bullets */}
             <div className="space-y-2.5 md:space-y-3 font-semibold text-slate-600">
               {slide.bullets?.map((bullet, idx) => (
                 <div key={idx} className="flex items-start gap-2 animate-fade-in leading-relaxed font-sans font-medium">
@@ -4145,8 +4262,10 @@ export const SlideContent: React.FC<SlideContentProps> = ({ slide }) => {
                 </div>
               ))}
             </div>
+
+            {/* Layman Analogy */}
             {slide.layman && (
-              <div className={`mt-4 p-3.5 rounded-xl border ${theme.borderAccent} ${theme.bgAccentOverlay} text-xs font-semibold leading-relaxed animate-fade-in font-sans`}>
+              <div className={`mt-3.5 p-3.5 rounded-xl border ${theme.borderAccent} ${theme.bgAccentOverlay} text-xs font-semibold leading-relaxed animate-fade-in font-sans`}>
                 <strong className={`flex items-center gap-1.5 ${theme.textAccentMuted} font-lexend`}>
                   <Lightbulb className="w-4 h-4 text-amber-500" />
                   {slide.layman.title}
@@ -4154,8 +4273,26 @@ export const SlideContent: React.FC<SlideContentProps> = ({ slide }) => {
                 <p className="mt-1 font-sans font-medium text-slate-600">{slide.layman.text}</p>
               </div>
             )}
+
+            {/* Student Discussion Prompt */}
+            {slide.discussionPrompt && (
+              <div className="mt-3.5 p-3.5 rounded-xl bg-emerald-500/[0.04] border border-emerald-300 text-xs font-semibold leading-relaxed animate-fade-in font-sans">
+                <strong className="flex items-center gap-1.5 text-emerald-800 font-lexend text-[11px] uppercase tracking-wider">
+                  <Users className="w-4 h-4 text-emerald-600" />
+                  Class Discussion & Question
+                </strong>
+                <p className="mt-1 font-sans font-semibold text-emerald-950">{slide.discussionPrompt.question}</p>
+                {slide.discussionPrompt.hint && (
+                  <p className="mt-1.5 text-[11px] font-sans text-slate-500 italic bg-white/70 p-2 rounded-lg border border-emerald-100">
+                    💡 <strong>Class Discussion Hint:</strong> {slide.discussionPrompt.hint}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Key Insight */}
             {slide.keyInsight && (
-              <div className="mt-4 p-3.5 rounded-xl bg-amber-500/[0.03] border border-amber-205 text-xs font-semibold leading-relaxed animate-fade-in font-sans">
+              <div className="mt-3.5 p-3.5 rounded-xl bg-amber-500/[0.03] border border-amber-205 text-xs font-semibold leading-relaxed animate-fade-in font-sans">
                 <strong className="flex items-center gap-1.5 text-amber-800 font-lexend">
                   <Sparkles className="w-4 h-4 text-amber-500 animate-pulse" />
                   {slide.keyInsight.title}
@@ -4168,12 +4305,20 @@ export const SlideContent: React.FC<SlideContentProps> = ({ slide }) => {
 
         {slide.image && <ImageFrame url={slide.image.url} caption={slide.image.caption} isLaravel={isLaravel} />}
         {!slide.image && hasIllustration && (
-          <div className="md:col-span-5 w-full min-h-[240px] bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col justify-between shadow-lg text-slate-200">
+          <div className="xl:col-span-6 w-full min-h-[380px] lg:min-h-[460px] bg-slate-900 border border-slate-800 rounded-2xl p-3 sm:p-4 flex flex-col justify-between shadow-xl text-slate-200 mt-4 xl:mt-0">
             <div className="flex justify-between items-center border-b border-slate-800 pb-2 mb-2 font-sans">
-              <span className="text-[10px] font-bold text-sky-400 font-lexend uppercase tracking-wider">Concept Illustration</span>
-              <Brain className="w-3.5 h-3.5 text-sky-400 animate-pulse" />
+              <span className={`text-[11px] font-bold ${isLaravel ? 'text-rose-400' : 'text-sky-400'} font-lexend uppercase tracking-wider flex items-center gap-1.5`}>
+                <span className={`w-2 h-2 rounded-full ${isLaravel ? 'bg-rose-500' : 'bg-sky-500'} animate-pulse`} />
+                {isLaravel ? 'Interactive Laravel Studio' : 'Concept Illustration'}
+              </span>
+              <Brain className={`w-4 h-4 ${isLaravel ? 'text-rose-400' : 'text-sky-400'}`} />
             </div>
             <ConceptIllustration slideId={slide.id} />
+          </div>
+        )}
+        {!slide.image && !hasIllustration && hasCode && (
+          <div className="xl:col-span-6 w-full h-full flex flex-col mt-4 xl:mt-0">
+            <SlideCodeViewer code={slide.code!} isLaravel={isLaravel} />
           </div>
         )}
       </div>

@@ -74,7 +74,8 @@ export default function Home() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const origin = window.location.origin;
-      const hasLessonsPath = window.location.pathname.startsWith('/Lessons');
+      const isLocalhost = origin.includes('localhost') || origin.includes('127.0.0.1');
+      const hasLessonsPath = !isLocalhost && window.location.pathname.startsWith('/Lessons');
       setBaseUrl(hasLessonsPath ? `${origin}/Lessons` : origin);
 
       const clientId = localStorage.getItem('vid_adsense_client_id') || CONFIG.adsenseClientId || '';
@@ -418,7 +419,7 @@ export default function Home() {
                           <div className="flex flex-col gap-2">
                             <div className="grid grid-cols-2 gap-2">
                               <Link
-                                href={`/lesson?id=${lesson.id}`}
+                                href={`/lesson/?id=${lesson.id}`}
                                 className="py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-750 text-white text-[11px] font-bold shadow-md shadow-indigo-600/10 active:scale-[0.98] transition flex items-center justify-center gap-1 font-lexend"
                               >
                                 Start Slides
@@ -427,7 +428,7 @@ export default function Home() {
 
                               {lesson.quizEnabled !== false ? (
                                 <Link
-                                  href={`/quiz?id=${lesson.id}`}
+                                  href={`/quiz/?id=${lesson.id}`}
                                   className="py-2.5 px-3 rounded-xl border border-indigo-100 bg-indigo-50/15 hover:bg-indigo-55 text-indigo-700 text-[11px] font-bold active:scale-[0.98] transition flex items-center justify-center gap-1 font-lexend"
                                 >
                                   Take Quiz
@@ -443,7 +444,7 @@ export default function Home() {
                             {/* Action links */}
                             <div className="flex justify-between items-center gap-2 mt-1">
                               <button
-                                onClick={() => copyToClipboard(`/lesson?id=${lesson.id}`, 'Lesson')}
+                                onClick={() => copyToClipboard(`/lesson/?id=${lesson.id}`, 'Lesson')}
                                 className="text-[10px] font-bold text-slate-400 hover:text-indigo-600 transition flex items-center gap-1"
                               >
                                 <Copy className="w-3 h-3" />
@@ -451,7 +452,7 @@ export default function Home() {
                               </button>
                               {lesson.quizEnabled !== false && (
                                 <button
-                                  onClick={() => copyToClipboard(`/quiz?id=${lesson.id}`, 'Quiz')}
+                                  onClick={() => copyToClipboard(`/quiz/?id=${lesson.id}`, 'Quiz')}
                                   className="text-[10px] font-bold text-slate-400 hover:text-indigo-600 transition flex items-center gap-1"
                                 >
                                   <Copy className="w-3 h-3" />

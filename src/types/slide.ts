@@ -64,6 +64,12 @@ export interface ExerciseSpec {
   solutionCode: string;
 }
 
+export interface DiscussionPrompt {
+  question: string;
+  hint?: string;
+  talkingPoints?: string[];
+}
+
 export interface SlideData {
   id: string;
   slideNum?: number;
@@ -77,6 +83,9 @@ export interface SlideData {
   topicTitle?: string;
   pioneerBadge?: string;
   bullets?: string[];
+  whatItDoes?: string;
+  whatIsGoingOn?: string;
+  discussionPrompt?: DiscussionPrompt;
   layman?: CalloutBox;
   visualTrick?: CalloutBox;
   keyInsight?: CalloutBox;

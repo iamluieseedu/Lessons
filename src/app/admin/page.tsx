@@ -17,7 +17,9 @@ import {
   Database,
   Users,
   Plus,
-  BookOpen
+  BookOpen,
+  GraduationCap,
+  ExternalLink
 } from 'lucide-react';
 
 import { Lesson, DEFAULT_LESSONS } from '@/data/lessons';
@@ -456,6 +458,50 @@ export default function AdminPage() {
           </div>
         </section>
 
+        {/* Confidential Teacher Materials & Lecture Scripts */}
+        <section className="bg-gradient-to-r from-slate-950 via-slate-900 to-rose-950 text-white rounded-3xl p-5 sm:p-6 shadow-xl border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-rose-500/20 border border-rose-500/30 flex items-center justify-center text-rose-400 shrink-0">
+              <GraduationCap className="w-7 h-7" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-mono text-rose-400 uppercase tracking-widest font-bold">
+                  Confidential Instructor Portal
+                </span>
+                <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded-full text-slate-300 font-medium">
+                  Hidden from Students
+                </span>
+              </div>
+              <h3 className="font-lexend text-base sm:text-lg font-bold text-white mt-0.5">
+                Teacher Lecture Scripts & Discussion Patterns
+              </h3>
+              <p className="text-xs text-slate-300 mt-0.5 max-w-xl">
+                Access private slide-by-slide lecture guides, talking points, technical deep-dives, and student discussion questions.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 shrink-0 w-full md:w-auto">
+            <Link
+              href="/teacher/?id=laravel11"
+              target="_blank"
+              className="flex-1 md:flex-none px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-md transition"
+            >
+              <span>Laravel Script</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </Link>
+            <Link
+              href="/teacher/?id=week1"
+              target="_blank"
+              className="flex-1 md:flex-none px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center justify-center gap-1.5 border border-white/20 transition"
+            >
+              <span>Week 1 Script</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </section>
+
         {/* Lesson Upload & Management Section */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* Add Lesson Form */}
@@ -590,7 +636,17 @@ export default function AdminPage() {
                       </div>
                     </div>
                     
-                    <div className="flex items-center gap-2.5">
+                    <div className="flex items-center gap-2">
+                      <Link
+                        href={`/teacher/?id=${lesson.id}`}
+                        target="_blank"
+                        className="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-[10px] font-bold flex items-center gap-1 transition shadow-xs"
+                        title="Open Teacher Lecture Script & Discussion Guide"
+                      >
+                        <GraduationCap className="w-3 h-3 text-rose-600" />
+                        <span>Teacher Script</span>
+                      </Link>
+
                       {/* Quiz toggle status */}
                       <button
                         onClick={() => handleToggleQuiz(lesson.id)}

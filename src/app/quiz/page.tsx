@@ -236,6 +236,119 @@ function QuizPageContent() {
               explanation: "The browser parses HTML characters into DOM, compiles CSSOM rules, calculates positions (Layout), and draws pixels on the screen (Paint)."
             }
           ]);
+        } else if (found.id === 'laravel11') {
+          setCustomQuestions([
+            {
+              question: "What is the minimum PHP version required to run a Laravel 11 application?",
+              options: [
+                "PHP 7.4",
+                "PHP 8.0",
+                "PHP 8.1",
+                "PHP 8.2"
+              ],
+              answer: 3,
+              explanation: "Laravel 11 requires a minimum of PHP 8.2 (supporting PHP 8.3+), taking full advantage of modern PHP features such as typed constants, readonly classes, and improved type systems."
+            },
+            {
+              question: "In Laravel 11, where are application routing, middleware, and exception handling now centrally configured?",
+              options: [
+                "app/Http/Kernel.php",
+                "bootstrap/app.php",
+                "config/app.php",
+                "app/Providers/RouteServiceProvider.php"
+              ],
+              answer: 1,
+              explanation: "Laravel 11 unified application configuration into bootstrap/app.php using a fluent Application::configure() builder, eliminating Http/Kernel.php, Console/Kernel.php, and RouteServiceProvider."
+            },
+            {
+              question: "What is the default database connection configured out-of-the-box in a brand-new Laravel 11 application?",
+              options: [
+                "MySQL",
+                "PostgreSQL",
+                "SQLite",
+                "In-Memory Redis"
+              ],
+              answer: 2,
+              explanation: "Laravel 11 sets DB_CONNECTION=sqlite as the default database connection, creating database/database.sqlite automatically so you can start developing immediately without running a database server."
+            },
+            {
+              question: "What HTTP status error does Laravel return if a POST form submission is missing a valid @csrf token?",
+              options: [
+                "400 Bad Request",
+                "403 Forbidden",
+                "419 Page Expired",
+                "500 Internal Server Error"
+              ],
+              answer: 2,
+              explanation: "When Laravel's VerifyCsrfToken middleware detects a missing or invalid token, it halts execution and returns an HTTP 419 Page Expired response to defend against Cross-Site Request Forgery attacks."
+            },
+            {
+              question: "How does Laravel 11 recommend declaring attribute casts on an Eloquent Model?",
+              options: [
+                "Defining a protected $casts property array",
+                "Defining a protected function casts(): array method",
+                "Writing custom SQL string mutators in database migrations",
+                "Overriding the __get() magic method"
+              ],
+              answer: 1,
+              explanation: "Laravel 11 introduced method-based casts via 'protected function casts(): array', which allows calling static methods directly on cast classes and configuring cast parameters cleanly."
+            },
+            {
+              question: "Which single Artisan command generates an Eloquent Model, a database migration, and a Resource Controller simultaneously?",
+              options: [
+                "php artisan make:all Post",
+                "php artisan make:model Post -mcr",
+                "php artisan create:crud Post",
+                "php artisan generate:resource Post --full"
+              ],
+              answer: 1,
+              explanation: "The flags -m (migration), -c (controller), and -r (resource actions: index, create, store, show, edit, update, destroy) generate the full CRUD scaffolding in one command."
+            },
+            {
+              question: "In Laravel 11, how do you install and configure the routes/api.php file and API authentication?",
+              options: [
+                "Create routes/api.php manually and register it in config/app.php",
+                "Run php artisan install:api",
+                "Run composer require laravel/api-pack",
+                "Toggle API_ENABLED=true in .env"
+              ],
+              answer: 1,
+              explanation: "Laravel 11 keeps fresh applications lean by omitting API scaffolding by default. Running 'php artisan install:api' automatically creates routes/api.php, installs Laravel Sanctum, and registers the route in bootstrap/app.php."
+            },
+            {
+              question: "What is the recommended modern Blade syntax for rendering a custom layout component?",
+              options: [
+                "@include('layout')",
+                "@extends('components.layout')",
+                "<x-layout> ... </x-layout>",
+                "<blade:component name='layout'>"
+              ],
+              answer: 2,
+              explanation: "Modern Laravel applications use tag-based Blade components prefixed with x- (e.g. <x-layout>, <x-card>), which support default slots ($slot), named slots (<x-slot:heading>), and props."
+            },
+            {
+              question: "Which Artisan command launches the interactive PsySH REPL environment to test queries and execute PHP code live?",
+              options: [
+                "php artisan repl",
+                "php artisan tinker",
+                "php artisan console:run",
+                "php artisan debug"
+              ],
+              answer: 1,
+              explanation: "The 'php artisan tinker' command starts PsySH, enabling developers to interactively query Eloquent models, create test records, dispatch jobs, and test PHP functions live."
+            },
+            {
+              question: "In an Eloquent model, what is the primary purpose of defining the protected $fillable property?",
+              options: [
+                "To specify which columns are required to be non-null in the database",
+                "To whitelist attributes permitted to be set via mass-assignment methods like create() and update()",
+                "To define database foreign key relationships",
+                "To list attributes that should be encrypted before storage"
+              ],
+              answer: 1,
+              explanation: "The $fillable array guards against Mass Assignment Vulnerabilities, ensuring attackers cannot maliciously modify sensitive attributes (such as is_admin = true) via $request->all()."
+            }
+          ]);
         } else if (found.id !== 'week1') {
           // Generate general questions for custom uploaded quizzes
           setCustomQuestions([

@@ -15,7 +15,8 @@ export const KeyboardHelpModal: React.FC<KeyboardHelpModalProps> = ({ isOpen, on
     { key: '→ / Space', desc: 'Go to Next Slide' },
     { key: '← / Backspace', desc: 'Go to Previous Slide' },
     { key: 'F', desc: 'Toggle Fullscreen Presentation Mode' },
-    { key: 'Esc', desc: 'Close Thumbnail Drawer / Modals' },
+    { key: 'T', desc: 'Toggle Teacher Lecture Notes & Discussion Script' },
+    { key: 'Esc', desc: 'Close Drawers / Modals' },
   ];
 
   return (

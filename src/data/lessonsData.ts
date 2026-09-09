@@ -27,9 +27,9 @@ export const lessonsData: Lesson[] = [
   {
     id: 'laravel11',
     week: 1,
-    title: 'Laravel 11 Fundamentals',
-    description: 'Learn the core concepts of Laravel 11, including server setup, directory structure, routing, Blade templates, and passing data.',
-    duration: '15 mins',
+    title: 'Laravel Fundamentals',
+    description: 'Learn Laravel based on official documentation: streamlined architecture, zero-config SQLite, RESTful routing, Blade components, migrations, Eloquent ORM, and interactive simulations.',
+    duration: '35 mins',
     slidesCount: 50,
     difficulty: 'Beginner',
     thumbnail: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=800&q=80',

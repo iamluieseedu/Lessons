@@ -10,8 +10,8 @@ interface SlideViewerProps {
 
 export const SlideViewer: React.FC<SlideViewerProps> = ({ slide }) => {
   return (
-    <div className="w-full max-w-6xl mx-auto px-2 sm:px-4 py-2 flex items-center justify-center transition-all duration-300 transform scale-[1.002]">
-      <div className="w-full min-h-[520px] bg-gradient-to-br from-white via-slate-50/50 to-white rounded-3xl shadow-2xl border-2 border-slate-100 overflow-hidden relative group flex flex-col justify-between">
+    <div className="w-full max-w-7xl 2xl:max-w-[1440px] mx-auto px-1 sm:px-4 py-1 sm:py-2 flex items-center justify-center transition-all duration-300">
+      <div className="w-full min-h-[580px] lg:min-h-[640px] xl:min-h-[680px] bg-gradient-to-br from-white via-slate-50/50 to-white rounded-3xl shadow-2xl border-2 border-slate-100 overflow-hidden relative group flex flex-col justify-between">
         {/* Creative Glow Bubbles (Pulsing background) */}
         <div className="absolute -top-20 -right-20 w-80 h-80 bg-sky-400/10 rounded-full blur-3xl pointer-events-none animate-pulse duration-4000" />
         <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-rose-400/5 rounded-full blur-3xl pointer-events-none animate-pulse duration-6000" />
