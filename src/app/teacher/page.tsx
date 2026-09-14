@@ -38,6 +38,7 @@ import { laravelSlidesData } from '@/data/laravelSlidesData';
 import { slidesData } from '@/data/slidesData';
 import { mediaDsnSlidesData } from '@/data/mediaDsnSlidesData';
 import { webdevSlidesData } from '@/data/webdevSlidesData';
+import { databaseSlidesData } from '@/data/databaseSlidesData';
 import { DEFAULT_LESSONS, Lesson } from '@/data/lessons';
 import { SlideData } from '@/types/slide';
 
@@ -930,6 +931,7 @@ function TeacherGuideContent() {
     if (lessonId === 'week1') return slidesData;
     if (lessonId === 'mediadsn1') return mediaDsnSlidesData;
     if (lessonId === 'webdev1') return webdevSlidesData;
+    if (lessonId === 'database1') return databaseSlidesData;
     return laravelSlidesData;
   }, [lessonId]);
 

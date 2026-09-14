@@ -349,6 +349,119 @@ function QuizPageContent() {
               explanation: "The $fillable array guards against Mass Assignment Vulnerabilities, ensuring attackers cannot maliciously modify sensitive attributes (such as is_admin = true) via $request->all()."
             }
           ]);
+        } else if (found.id === 'database1') {
+          setCustomQuestions([
+            {
+              question: "Which of the following statements is strictly TRUE regarding a relational Primary Key?",
+              options: [
+                "It can contain NULL values as long as they are distinct.",
+                "It uniquely identifies each row in a table and cannot contain NULL values.",
+                "A table can have multiple Primary Keys declared independently.",
+                "It must always be an auto-incrementing integer."
+              ],
+              answer: 1,
+              explanation: "Entity Integrity mandates that a Primary Key must be unique across all records and can never be NULL. While surrogate keys are common, primary keys can also be UUIDs or natural candidate keys."
+            },
+            {
+              question: "What happens when an INSERT query attempts to add a child enrollment record with a student_id that does NOT exist in the parent students table?",
+              options: [
+                "The database automatically creates a new blank student record.",
+                "The database rejects the query and throws a Foreign Key constraint violation error (ERROR 1452).",
+                "The database sets the student_id to NULL without warning.",
+                "The database inserts the record as a ghost entity."
+              ],
+              answer: 1,
+              explanation: "Referential Integrity prevents orphan child records. Foreign keys ensure every referenced value must already exist in the referenced parent table."
+            },
+            {
+              question: "In database transactions, which ACID property guarantees that if a system crashes during a bank transfer, either all money transfers succeed or none take effect?",
+              options: [
+                "Atomicity",
+                "Consistency",
+                "Isolation",
+                "Durability"
+              ],
+              answer: 0,
+              explanation: "Atomicity ('All-or-Nothing') ensures that a transaction is treated as a single indivisible unit. If an outage occurs before COMMIT, all partial operations are completely rolled back."
+            },
+            {
+              question: "In standard SQL, why does the condition 'WHERE gpa = NULL' return 0 rows even when records have unassigned GPAs?",
+              options: [
+                "Because NULL cannot be stored in number columns.",
+                "Because SQL uses three-valued logic where NULL comparisons evaluate to UNKNOWN, requiring the 'IS NULL' operator.",
+                "Because NULL is mathematically equivalent to zero.",
+                "Because WHERE clauses ignore columns with decimals."
+              ],
+              answer: 1,
+              explanation: "In SQL, NULL represents missing or unknown data. Since UNKNOWN cannot be proven equal to UNKNOWN, '= NULL' always yields UNKNOWN (falsy in WHERE). You must always write 'IS NULL'."
+            },
+            {
+              question: "What catastrophic outcome occurs if you execute 'UPDATE students SET age = 21;' without specifying a WHERE clause?",
+              options: [
+                "The database will throw a syntax error and abort.",
+                "Every single student record in the entire table will have their age overwritten to 21.",
+                "Only the first student record will be updated.",
+                "Only students currently with age NULL will be updated."
+              ],
+              answer: 1,
+              explanation: "Without a WHERE clause, UPDATE and DELETE target every row in the entire table. Always double-check your WHERE conditions before executing data modifications!"
+            },
+            {
+              question: "What is the primary requirement for a table to achieve First Normal Form (1NF)?",
+              options: [
+                "All non-key columns must depend directly on the primary key.",
+                "All multi-valued attributes and repeating groups must be eliminated so every cell contains a single atomic value.",
+                "All foreign keys must use ON DELETE CASCADE.",
+                "The table must not contain any text columns."
+              ],
+              answer: 1,
+              explanation: "1NF requires that all column values are atomic (indivisible). Storing comma-separated lists (e.g. Courses: 'DB101, WD101') in a single cell violates 1NF."
+            },
+            {
+              question: "What is the fundamental difference between Second Normal Form (2NF) and Third Normal Form (3NF)?",
+              options: [
+                "2NF removes partial key dependencies; 3NF removes transitive dependencies (non-key columns depending on other non-key columns).",
+                "2NF removes transitive dependencies; 3NF removes composite keys.",
+                "2NF requires JSON data; 3NF requires XML data.",
+                "2NF only applies to tables without foreign keys."
+              ],
+              answer: 0,
+              explanation: "2NF eliminates partial dependencies where an attribute depends on only part of a composite key. 3NF goes further by removing transitive dependencies (A -> B -> C), ensuring attributes depend ONLY on the primary key."
+            },
+            {
+              question: "Which SQL JOIN returns ALL records from the Left table, and matched records from the Right table (filling missing matches with NULL)?",
+              options: [
+                "INNER JOIN",
+                "LEFT JOIN (LEFT OUTER JOIN)",
+                "CROSS JOIN",
+                "RIGHT EXCLUSIVE JOIN"
+              ],
+              answer: 1,
+              explanation: "A LEFT JOIN preserves every row from the left table. If there are no matching foreign keys in the right table, right-side columns are filled with NULL values."
+            },
+            {
+              question: "How is a Many-to-Many (M:N) relationship properly implemented in a relational database?",
+              options: [
+                "By storing arrays of IDs directly inside a VARCHAR column.",
+                "By decomposing it into two One-to-Many (1:N) relationships using a junction / associative table with two foreign keys.",
+                "By creating duplicate copies of the primary table for every course.",
+                "Relational databases do not support many-to-many concepts."
+              ],
+              answer: 1,
+              explanation: "Relational models resolve Many-to-Many relationships using an associative table (e.g., ENROLLMENTS), where each row pairs one StudentID (FK) with one CourseID (FK)."
+            },
+            {
+              question: "Why are Parameterized Queries (Prepared Statements) the industry-standard defense against SQL Injection?",
+              options: [
+                "They automatically encrypt the entire database on disk.",
+                "The database compiles query structure and parameters separately, treating all user input as literal data rather than executable SQL code.",
+                "They make web queries run slower to thwart automated bot scrapers.",
+                "They prevent users from typing single quotation marks."
+              ],
+              answer: 1,
+              explanation: "Prepared statements send the SQL query template and the parameter values in separate network packets. Even if an attacker types ' OR 1=1 --, the database engine treats it as a benign string value rather than SQL syntax."
+            }
+          ]);
         } else if (found.id !== 'week1') {
           // Generate general questions for custom uploaded quizzes
           setCustomQuestions([

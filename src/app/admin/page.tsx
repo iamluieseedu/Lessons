@@ -262,7 +262,7 @@ export default function AdminPage() {
   };
 
   const handleDeleteLesson = (id: string, title: string) => {
-    if (id === 'week1' || id === 'laravel11') {
+    if (id === 'week1' || id === 'laravel11' || id === 'database1') {
       alert(`The core lesson "${title}" is protected and cannot be deleted.`);
       return;
     }
@@ -672,8 +672,8 @@ export default function AdminPage() {
                         className={`p-1.5 rounded-lg border hover:bg-rose-50 border-slate-200 hover:border-rose-200 text-slate-400 hover:text-rose-600 transition ${
                           lesson.id === 'week1' ? 'opacity-30 cursor-not-allowed' : ''
                         }`}
-                        title={(lesson.id === 'week1' || lesson.id === 'laravel11') ? 'Protected Unit' : 'Delete Lesson'}
-                        disabled={lesson.id === 'week1' || lesson.id === 'laravel11'}
+                        title={(lesson.id === 'week1' || lesson.id === 'laravel11' || lesson.id === 'database1') ? 'Protected Unit' : 'Delete Lesson'}
+                        disabled={lesson.id === 'week1' || lesson.id === 'laravel11' || lesson.id === 'database1'}
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>

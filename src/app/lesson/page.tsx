@@ -8,6 +8,7 @@ import { laravelSlidesData } from '@/data/laravelSlidesData';
 import { mediaDsnSlidesData } from '@/data/mediaDsnSlidesData';
 import { webdevSlidesData } from '@/data/webdevSlidesData';
 import { cppSlidesData } from '@/data/cppSlidesData';
+import { databaseSlidesData } from '@/data/databaseSlidesData';
 import { SlideViewer } from '@/components/SlideViewer';
 import { NavigationControls } from '@/components/NavigationControls';
 import { ThumbnailDrawer } from '@/components/ThumbnailDrawer';
@@ -23,6 +24,7 @@ import { Lesson, DEFAULT_LESSONS } from '@/data/lessons';
 function SlidePageContent() {
   const searchParams = useSearchParams();
   const lessonId = searchParams.get('id');
+  const slideParam = searchParams.get('slide');
 
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [slides, setSlides] = useState<any[]>([]);
@@ -34,11 +36,64 @@ function SlidePageContent() {
   const [showAds, setShowAds] = useState(false);
   const [hasLoggedCompletion, setHasLoggedCompletion] = useState(false);
 
-  // Reset logs and indexes on lesson change
+  // Reset logs and indexes on lesson change, respecting direct slide parameter or stored progress
   useEffect(() => {
     setHasLoggedCompletion(false);
+    if (slideParam) {
+      const parsed = parseInt(slideParam, 10);
+      if (!isNaN(parsed) && parsed >= 1) {
+        setCurrentIndex(parsed - 1);
+        return;
+      }
+    }
+    if (typeof window !== 'undefined' && lessonId) {
+      const saved = localStorage.getItem(`lesson_slide_${lessonId}`);
+      if (saved) {
+        const parsed = parseInt(saved, 10);
+        if (!isNaN(parsed) && parsed >= 1) {
+          setCurrentIndex(parsed - 1);
+          return;
+        }
+      }
+    }
     setCurrentIndex(0);
   }, [lessonId]);
+
+  // Synchronize initial slide index when slides load
+  useEffect(() => {
+    if (slides.length > 0) {
+      let targetIndex: number | null = null;
+      if (slideParam) {
+        const parsed = parseInt(slideParam, 10);
+        if (!isNaN(parsed) && parsed >= 1 && parsed <= slides.length) {
+          targetIndex = parsed - 1;
+        }
+      } else if (typeof window !== 'undefined' && lessonId) {
+        const saved = localStorage.getItem(`lesson_slide_${lessonId}`);
+        if (saved) {
+          const parsed = parseInt(saved, 10);
+          if (!isNaN(parsed) && parsed >= 1 && parsed <= slides.length) {
+            targetIndex = parsed - 1;
+          }
+        }
+      }
+      if (targetIndex !== null) {
+        setCurrentIndex(targetIndex);
+      }
+    }
+  }, [slideParam, slides.length, lessonId]);
+
+  // Keep URL and localStorage in sync with active slide so copying link preserves the exact slide/page
+  useEffect(() => {
+    if (typeof window !== 'undefined' && lessonId && slides.length > 0) {
+      const slideNum = currentIndex + 1;
+      const url = new URL(window.location.href);
+      url.searchParams.set('id', lessonId);
+      url.searchParams.set('slide', String(slideNum));
+      window.history.replaceState(null, '', url.pathname + url.search);
+      localStorage.setItem(`lesson_slide_${lessonId}`, String(slideNum));
+    }
+  }, [currentIndex, lessonId, slides.length]);
 
   // Load lesson and slides dynamically
   useEffect(() => {
@@ -78,6 +133,8 @@ function SlidePageContent() {
           setSlides(webdevSlidesData);
         } else if (found.id === 'cpp1') {
           setSlides(cppSlidesData);
+        } else if (found.id === 'database1') {
+          setSlides(databaseSlidesData);
         } else {
           // Dynamic slide deck for custom uploaded lessons
           setSlides([
@@ -159,7 +216,13 @@ function SlidePageContent() {
   const handleReset = useCallback(() => {
     setCurrentIndex(0);
     setIsPlaying(false);
-  }, []);
+    if (typeof window !== 'undefined' && lessonId) {
+      localStorage.removeItem(`lesson_slide_${lessonId}`);
+      const url = new URL(window.location.href);
+      url.searchParams.set('slide', '1');
+      window.history.replaceState(null, '', url.pathname + url.search);
+    }
+  }, [lessonId]);
 
   const toggleFullscreen = useCallback(() => {
     if (!document.fullscreenElement) {
@@ -172,6 +235,15 @@ function SlidePageContent() {
       }
     }
   }, []);
+
+  const handleCopySlideLink = useCallback(() => {
+    if (typeof window !== 'undefined' && lessonId) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('id', lessonId);
+      url.searchParams.set('slide', String(currentIndex + 1));
+      navigator.clipboard.writeText(url.toString());
+    }
+  }, [lessonId, currentIndex]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -286,16 +358,16 @@ function SlidePageContent() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900 flex flex-col justify-between py-4 px-4">
-      <div className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row gap-6 items-start flex-grow">
-        
-        {/* Left main area (Slide Presentation) */}
-        <div className={`flex-grow w-full ${showAds ? 'lg:max-w-[72%]' : 'lg:max-w-full'} flex flex-col h-full justify-between min-h-[85vh]`}>
-          {/* Top Application Header */}
-          <header className="w-full mb-4 flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center gap-2.5">
-              <BookOpen className="w-5 h-5 text-slate-900" />
-              <h1 className="font-lexend text-base md:text-lg font-semibold text-slate-800">
+    <main className="min-h-screen bg-slate-50 text-slate-900 flex flex-col justify-between p-2 sm:p-4 lg:p-6 overflow-x-hidden font-sans">
+      <div className="w-full max-w-7xl 2xl:max-w-[1440px] mx-auto flex flex-col lg:flex-row gap-4 items-start justify-center flex-grow">
+        <div className="w-full flex-grow flex flex-col">
+          {/* Top Bar / Header */}
+          <header className="flex items-center justify-between py-2 border-b border-slate-200 mb-2">
+            <div className="flex items-center gap-2">
+              <span className="p-1.5 rounded-lg bg-sky-500/10 text-sky-600 border border-sky-500/20">
+                <BookOpen className="w-4 h-4" />
+              </span>
+              <h1 className="text-xs sm:text-sm font-extrabold text-slate-800 font-lexend tracking-tight">
                 {lesson.title} • Week {lesson.week}
               </h1>
             </div>
@@ -326,6 +398,7 @@ function SlidePageContent() {
             isPlaying={isPlaying}
             onTogglePlay={() => setIsPlaying(!isPlaying)}
             onOpenHelp={() => setIsHelpOpen(true)}
+            onCopyLink={handleCopySlideLink}
           />
 
           {/* Bottom Ad Banner */}

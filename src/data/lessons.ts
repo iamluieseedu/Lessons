@@ -71,5 +71,17 @@ export const DEFAULT_LESSONS: Lesson[] = [
     thumbnail: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80',
     isActive: true,
     quizEnabled: false,
+  },
+  {
+    id: 'database1',
+    week: 1,
+    title: 'Fundamentals of Database',
+    description: 'A modern, structured college-level introductory database course covering relational modeling, SQL CRUD, JOINs, normalization (1NF-3NF), ACID transactions, constraints, and interactive database simulations.',
+    duration: '45 mins',
+    slidesCount: 55,
+    difficulty: 'Beginner',
+    thumbnail: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?auto=format&fit=crop&w=800&q=80',
+    isActive: true,
+    quizEnabled: true,
   }
 ];

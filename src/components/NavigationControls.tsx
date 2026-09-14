@@ -10,7 +10,9 @@ import {
   Pause, 
   HelpCircle, 
   RotateCcw,
-  GraduationCap
+  GraduationCap,
+  Link2,
+  Check
 } from 'lucide-react';
 
 interface NavigationControlsProps {
@@ -25,6 +27,7 @@ interface NavigationControlsProps {
   onTogglePlay: () => void;
   onOpenHelp: () => void;
   onToggleTeacherNotes?: () => void;
+  onCopyLink?: () => void;
 }
 
 export const NavigationControls: React.FC<NavigationControlsProps> = ({
@@ -38,9 +41,23 @@ export const NavigationControls: React.FC<NavigationControlsProps> = ({
   isPlaying,
   onTogglePlay,
   onOpenHelp,
-  onToggleTeacherNotes
+  onToggleTeacherNotes,
+  onCopyLink
 }) => {
+  const [copied, setCopied] = React.useState(false);
   const progressPercent = Math.round(((currentIndex + 1) / totalSlides) * 100);
+
+  const handleCopy = () => {
+    if (onCopyLink) {
+      onCopyLink();
+    } else if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      url.searchParams.set('slide', String(currentIndex + 1));
+      navigator.clipboard.writeText(url.toString());
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2200);
+  };
 
   return (
     <div className="w-full max-w-7xl 2xl:max-w-[1440px] mx-auto px-2 sm:px-4 mt-3 flex flex-col gap-2 relative z-10">
@@ -104,8 +121,30 @@ export const NavigationControls: React.FC<NavigationControlsProps> = ({
           </button>
         </div>
 
-        {/* Right: Fullscreen, Reset, Help */}
+        {/* Right: Copy Link, Fullscreen, Reset, Help */}
         <div className="flex items-center gap-1 sm:gap-2">
+          <button
+            onClick={handleCopy}
+            className={`flex items-center gap-1.5 px-2 py-1.5 sm:px-2.5 rounded-lg border text-xs font-semibold transition ${
+              copied
+                ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/30'
+                : 'bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-sky-600 border-slate-200'
+            }`}
+            title={`Copy direct link to Slide ${currentIndex + 1}`}
+          >
+            {copied ? (
+              <>
+                <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600" />
+                <span className="hidden lg:inline text-emerald-600">Copied!</span>
+              </>
+            ) : (
+              <>
+                <Link2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-sky-500" />
+                <span className="hidden lg:inline">Copy Link</span>
+              </>
+            )}
+          </button>
+
           <button
             onClick={onReset}
             className="p-1.5 sm:p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 transition border border-slate-200"

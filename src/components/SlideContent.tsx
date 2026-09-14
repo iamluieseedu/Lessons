@@ -66,6 +66,15 @@ import {
   LaravelTinkerShell,
   LaravelDirectoryExplorer
 } from './LaravelSimulations';
+import {
+  SqlConsoleSimulator,
+  WhereFilterSandbox,
+  SqlJoinVisualizer,
+  ConstraintViolationSandbox,
+  NormalizationStepThrough,
+  AcidTransactionSimulator,
+  ErdSchemaExplorer
+} from './DatabaseSimulations';
 
 interface SlideContentProps {
   slide: SlideData;
@@ -108,7 +117,7 @@ const ImageFrame: React.FC<{ url: string; caption: string; isLaravel?: boolean }
 // -------------------------------------------------------------
 // SLIDE CODE VIEWER HELPER (SYNTAX BLOCK WITH COPY BUTTON)
 // -------------------------------------------------------------
-const SlideCodeViewer: React.FC<{ code: string; isLaravel?: boolean }> = ({ code, isLaravel }) => {
+const SlideCodeViewer: React.FC<{ code: string; isLaravel?: boolean; isDatabase?: boolean }> = ({ code, isLaravel, isDatabase }) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
@@ -117,15 +126,17 @@ const SlideCodeViewer: React.FC<{ code: string; isLaravel?: boolean }> = ({ code
     setTimeout(() => setCopied(false), 1800);
   };
 
+  const isSql = isDatabase || code.includes('SELECT') || code.includes('CREATE TABLE') || code.includes('INSERT INTO') || code.includes('UPDATE ') || code.includes('CREATE DATABASE');
   const isPhp = code.includes('<?php') || code.includes('Route::') || code.includes('class ') || code.includes('$');
   const isBlade = code.includes('@') || code.includes('{{') || code.includes('<x-');
-  const langBadge = isBlade ? 'Blade Template' : isPhp ? 'PHP 8.2+' : 'Terminal / Config';
+  const langBadge = isSql ? 'SQL (Relational / ANSI)' : isBlade ? 'Blade Template' : isPhp ? 'PHP 8.2+' : 'Terminal / Config';
+  const iconColor = isLaravel ? 'text-rose-500' : isDatabase || isSql ? 'text-indigo-400' : 'text-sky-500';
 
   return (
     <div className="md:col-span-5 w-full h-full min-h-[260px] max-h-[420px] bg-slate-950 border border-slate-800 rounded-xl overflow-hidden shadow-xl flex flex-col justify-between font-mono text-xs mt-4 md:mt-0">
       <div className="bg-slate-900/90 px-3 py-2 border-b border-slate-800 flex items-center justify-between font-sans">
         <div className="flex items-center gap-2">
-          <FileCode className={`w-4 h-4 ${isLaravel ? 'text-rose-500' : 'text-sky-500'}`} />
+          <FileCode className={`w-4 h-4 ${iconColor}`} />
           <span className="text-[11px] font-bold text-slate-300">{langBadge}</span>
         </div>
         <button
@@ -2042,6 +2053,15 @@ const ConceptIllustration: React.FC<{ slideId: string }> = ({ slideId }) => {
   if (slideId === 'laravel-slide46') return <LaravelTinkerShell />;
   if (slideId === 'laravel-slide50') return <LaravelDirectoryExplorer />;
 
+  // Database Fundamentals Lesson Custom Interactive Simulations
+  if (slideId === 'db-slide9' || slideId === 'db-slide29' || slideId === 'db-slide50') return <ConstraintViolationSandbox />;
+  if (slideId === 'db-slide16' || slideId === 'db-slide53') return <ErdSchemaExplorer />;
+  if (slideId === 'db-slide27' || slideId === 'db-slide51') return <NormalizationStepThrough />;
+  if (slideId === 'db-slide35' || slideId === 'db-slide48') return <WhereFilterSandbox />;
+  if (slideId === 'db-slide39' || slideId === 'db-slide49') return <SqlJoinVisualizer />;
+  if (slideId === 'db-slide42' || slideId === 'db-slide52') return <AcidTransactionSimulator />;
+  if (slideId === 'db-slide47') return <SqlConsoleSimulator />;
+
   // Default fallback illustration representing general interactive design
   return (
     <div className="flex-grow flex flex-col justify-center items-center gap-2 font-lexend text-center">
@@ -3949,20 +3969,21 @@ const ExitReflection: React.FC<SlideContentProps> = ({ slide }) => {
 // -------------------------------------------------------------
 export const SlideContent: React.FC<SlideContentProps> = ({ slide }) => {
   const isLaravel = slide.id?.includes('laravel');
+  const isDatabase = slide.id?.includes('db');
 
   const theme = {
-    textAccent: isLaravel ? 'text-rose-600' : 'text-sky-600',
-    textAccentDark: isLaravel ? 'text-rose-700' : 'text-sky-700',
-    textAccentLight: isLaravel ? 'text-rose-500' : 'text-sky-500',
-    textAccentMuted: isLaravel ? 'text-rose-800' : 'text-sky-800',
-    bgAccentLight: isLaravel ? 'bg-rose-500/10' : 'bg-sky-500/10',
-    borderAccentLight: isLaravel ? 'border-rose-500/20' : 'border-sky-500/20',
-    borderAccent: isLaravel ? 'border-rose-200' : 'border-sky-200',
-    borderLeftAccent: isLaravel ? 'border-rose-500' : 'border-sky-505',
-    bgAccentOverlay: isLaravel ? 'bg-rose-500/[0.03]' : 'bg-sky-500/[0.03]',
-    bgAccentOverlay2: isLaravel ? 'bg-rose-500/[0.04]' : 'bg-sky-500/[0.04]',
-    iconColor: isLaravel ? 'text-rose-500' : 'text-sky-500',
-    iconColorDark: isLaravel ? 'text-rose-600' : 'text-sky-600'
+    textAccent: isLaravel ? 'text-rose-600' : isDatabase ? 'text-indigo-600' : 'text-sky-600',
+    textAccentDark: isLaravel ? 'text-rose-700' : isDatabase ? 'text-indigo-700' : 'text-sky-700',
+    textAccentLight: isLaravel ? 'text-rose-500' : isDatabase ? 'text-indigo-500' : 'text-sky-500',
+    textAccentMuted: isLaravel ? 'text-rose-800' : isDatabase ? 'text-indigo-800' : 'text-sky-800',
+    bgAccentLight: isLaravel ? 'bg-rose-500/10' : isDatabase ? 'bg-indigo-500/10' : 'bg-sky-500/10',
+    borderAccentLight: isLaravel ? 'border-rose-500/20' : isDatabase ? 'border-indigo-500/20' : 'border-sky-500/20',
+    borderAccent: isLaravel ? 'border-rose-200' : isDatabase ? 'border-indigo-200' : 'border-sky-200',
+    borderLeftAccent: isLaravel ? 'border-rose-500' : isDatabase ? 'border-indigo-500' : 'border-sky-505',
+    bgAccentOverlay: isLaravel ? 'bg-rose-500/[0.03]' : isDatabase ? 'bg-indigo-500/[0.03]' : 'bg-sky-500/[0.03]',
+    bgAccentOverlay2: isLaravel ? 'bg-rose-500/[0.04]' : isDatabase ? 'bg-indigo-500/[0.04]' : 'bg-sky-500/[0.04]',
+    iconColor: isLaravel ? 'text-rose-500' : isDatabase ? 'text-indigo-500' : 'text-sky-500',
+    iconColorDark: isLaravel ? 'text-rose-600' : isDatabase ? 'text-indigo-600' : 'text-sky-600'
   };
 
   const hasIllustration = [
@@ -3986,7 +4007,21 @@ export const SlideContent: React.FC<SlideContentProps> = ({ slide }) => {
     'laravel-slide37',
     'laravel-slide42',
     'laravel-slide46',
-    'laravel-slide50'
+    'laravel-slide50',
+    'db-slide9',
+    'db-slide16',
+    'db-slide27',
+    'db-slide29',
+    'db-slide35',
+    'db-slide39',
+    'db-slide42',
+    'db-slide47',
+    'db-slide48',
+    'db-slide49',
+    'db-slide50',
+    'db-slide51',
+    'db-slide52',
+    'db-slide53'
   ].includes(slide.id) || slide.id?.startsWith('webdev-slide');
 
   // ROUTE TO STANDALONE COMPONENTS TO MAINTAIN STATIC ORDER OF HOOKS
@@ -4307,18 +4342,18 @@ export const SlideContent: React.FC<SlideContentProps> = ({ slide }) => {
         {!slide.image && hasIllustration && (
           <div className="xl:col-span-6 w-full min-h-[380px] lg:min-h-[460px] bg-slate-900 border border-slate-800 rounded-2xl p-3 sm:p-4 flex flex-col justify-between shadow-xl text-slate-200 mt-4 xl:mt-0">
             <div className="flex justify-between items-center border-b border-slate-800 pb-2 mb-2 font-sans">
-              <span className={`text-[11px] font-bold ${isLaravel ? 'text-rose-400' : 'text-sky-400'} font-lexend uppercase tracking-wider flex items-center gap-1.5`}>
-                <span className={`w-2 h-2 rounded-full ${isLaravel ? 'bg-rose-500' : 'bg-sky-500'} animate-pulse`} />
-                {isLaravel ? 'Interactive Laravel Studio' : 'Concept Illustration'}
+              <span className={`text-[11px] font-bold ${isLaravel ? 'text-rose-400' : isDatabase ? 'text-indigo-400' : 'text-sky-400'} font-lexend uppercase tracking-wider flex items-center gap-1.5`}>
+                <span className={`w-2 h-2 rounded-full ${isLaravel ? 'bg-rose-500' : isDatabase ? 'bg-indigo-500' : 'bg-sky-500'} animate-pulse`} />
+                {isLaravel ? 'Interactive Laravel Studio' : isDatabase ? 'Interactive Database Studio' : 'Concept Illustration'}
               </span>
-              <Brain className={`w-4 h-4 ${isLaravel ? 'text-rose-400' : 'text-sky-400'}`} />
+              <Brain className={`w-4 h-4 ${isLaravel ? 'text-rose-400' : isDatabase ? 'text-indigo-400' : 'text-sky-400'}`} />
             </div>
             <ConceptIllustration slideId={slide.id} />
           </div>
         )}
         {!slide.image && !hasIllustration && hasCode && (
           <div className="xl:col-span-6 w-full h-full flex flex-col mt-4 xl:mt-0">
-            <SlideCodeViewer code={slide.code!} isLaravel={isLaravel} />
+            <SlideCodeViewer code={slide.code!} isLaravel={isLaravel} isDatabase={isDatabase} />
           </div>
         )}
       </div>
