@@ -78,8 +78,8 @@ export const NavigationControls: React.FC<NavigationControlsProps> = ({
             className="flex items-center gap-2 px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-sky-600 border border-slate-200 text-xs font-semibold transition"
             title="Slide Index Drawer"
           >
-            <Grid className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-sky-500" />
-            <span className="hidden sm:inline">Thumbnails</span>
+            <Grid className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-500" />
+            <span className="hidden sm:inline">Deck Outline</span>
           </button>
 
           <span className="text-[11px] sm:text-xs font-medium text-slate-500">

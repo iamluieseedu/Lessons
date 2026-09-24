@@ -1,7 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import Script from 'next/script';
+import React, { useEffect, useRef, useState } from 'react';
 import { CONFIG } from '@/config';
 import { Sparkles, HelpCircle } from 'lucide-react';
 
@@ -14,6 +13,7 @@ export const AdSidebar: React.FC<AdSidebarProps> = ({ className = '', slotName =
   const [isLoaded, setIsLoaded] = useState(false);
   const [clientId, setClientId] = useState('');
   const [slotId, setSlotId] = useState('');
+  const insRef = useRef<HTMLModElement | null>(null);
 
   // Hydrate configurations
   useEffect(() => {
@@ -28,14 +28,23 @@ export const AdSidebar: React.FC<AdSidebarProps> = ({ className = '', slotName =
   const hasCredentials = clientId.trim() !== '' && slotId.trim() !== '';
 
   useEffect(() => {
-    if (hasCredentials && typeof window !== 'undefined') {
-      try {
-        // Try pushing the ad once the component is mounted
-        ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
-        setIsLoaded(true);
-      } catch (err) {
-        console.warn('AdSense push error:', err);
-      }
+    if (!hasCredentials || typeof window === 'undefined' || !insRef.current) return;
+
+    const ins = insRef.current;
+    // Guard against pushing if element already has an ad or is marked done
+    const alreadyFilled =
+      ins.getAttribute('data-adsbygoogle-status') ||
+      ins.childElementCount > 0 ||
+      ins.dataset.pushed === 'true';
+
+    if (alreadyFilled) return;
+
+    try {
+      ins.dataset.pushed = 'true';
+      ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
+      setIsLoaded(true);
+    } catch (err) {
+      console.warn('AdSense sidebar push handled:', err);
     }
   }, [hasCredentials, clientId, slotId]);
 
@@ -63,14 +72,8 @@ export const AdSidebar: React.FC<AdSidebarProps> = ({ className = '', slotName =
       </div>
 
       <div className="w-full flex items-center justify-center min-h-[600px]">
-        {/* AdSense Script Injection */}
-        <Script
-          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${clientId}`}
-          strategy="afterInteractive"
-          crossOrigin="anonymous"
-        />
-
         <ins
+          ref={insRef}
           className="adsbygoogle"
           style={{ display: 'block', width: '100%', minHeight: '600px', maxWidth: '300px' }}
           data-ad-client={clientId}
@@ -86,3 +89,4 @@ export const AdSidebar: React.FC<AdSidebarProps> = ({ className = '', slotName =
     </aside>
   );
 };
+

@@ -194,7 +194,7 @@ export default function AdminPage() {
         setLoginError('Invalid Administrator Password. Access Denied.');
       }
     } catch (err) {
-      console.error(err);
+      console.warn('Cryptography warning during verification:', err instanceof Error ? err.message : String(err));
       setLoginError('Cryptography error during verification.');
     }
   };

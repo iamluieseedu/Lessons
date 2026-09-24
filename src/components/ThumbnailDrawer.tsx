@@ -40,8 +40,8 @@ export const ThumbnailDrawer: React.FC<ThumbnailDrawerProps> = ({
         {/* Drawer Header */}
         <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-slate-200">
           <div className="flex items-center gap-2">
-            <Layers className="w-5 h-5 text-sky-600" />
-            <h3 className="font-lexend text-lg font-bold text-slate-800">Slide Overview ({slides.length} Slides)</h3>
+            <Layers className="w-5 h-5 text-indigo-600" />
+            <h3 className="font-lexend text-lg font-bold text-slate-800">Compiled Deck Outline ({slides.length} Slides)</h3>
           </div>
           <button
             onClick={onClose}

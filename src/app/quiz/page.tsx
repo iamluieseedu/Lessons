@@ -9,18 +9,8 @@ import { AdSidebar } from '@/components/AdSidebar';
 import { CONFIG } from '@/config';
 import { HeaderAd } from '@/components/HeaderAd';
 
-interface Lesson {
-  id: string;
-  week: number;
-  title: string;
-  description: string;
-  duration: string;
-  slidesCount: number;
-  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
-  thumbnail: string;
-  isActive: boolean;
-  quizEnabled?: boolean;
-}
+import { DEFAULT_LESSONS, Lesson } from '@/data/lessons';
+import { getWebDev3QuizQuestions } from '@/data/webdev3QuizData';
 
 function QuizPageContent() {
   const searchParams = useSearchParams();
@@ -49,12 +39,18 @@ function QuizPageContent() {
       } catch (err) {
         console.error("Failed to parse vid_lessons in quiz:", err);
       }
-      const found = lessonsList.find((l) => l.id === lessonId);
+      let found = lessonsList.find((l) => l.id === lessonId);
+      if (!found) {
+        found = DEFAULT_LESSONS.find((l) => l.id === lessonId);
+      }
       
       setLesson(found || null);
 
       if (found) {
-        if (found.id === 'mediadsn1') {
+        const webdev3Questions = getWebDev3QuizQuestions(found.id);
+        if (webdev3Questions) {
+          setCustomQuestions(webdev3Questions);
+        } else if (found.id === 'mediadsn1') {
           setCustomQuestions([
             {
               question: "What is the primary factor that distinguishes interactive media from traditional static media?",
@@ -165,6 +161,119 @@ function QuizPageContent() {
               ],
               answer: 2,
               explanation: "Output is the visual display returned by the system (the maps drawing), closing the communication loop."
+            }
+          ]);
+        } else if (found.id === 'mediadsn2') {
+          setCustomQuestions([
+            {
+              question: "According to Donald Norman in 'The Design of Everyday Things', what distinguishes an 'Affordance' from a 'Signifier'?",
+              options: [
+                "An affordance is what a physical or digital object can actually do, whereas a signifier is the perceptible clue indicating where that action should take place.",
+                "An affordance applies only to physical objects (like chairs), while signifiers apply only to mobile digital apps.",
+                "An affordance defines the color contrast ratio, while a signifier defines the font size.",
+                "Affordance and signifier are identical concepts with no operational distinction."
+              ],
+              answer: 0,
+              explanation: "Affordances represent possible interactions; signifiers are signals (shadows, labels, button borders) communicating that possibility to human perception."
+            },
+            {
+              question: "Which of the following is an example of 'Natural Mapping' in user interface design?",
+              options: [
+                "A vertical column of stove knobs arranged in random order relative to a 2x2 grid of burners.",
+                "A stove control panel where four knobs are spatially laid out in the exact same 2x2 geometry as the four heating burners.",
+                "A scrollbar where dragging down causes the page to jump to the very top.",
+                "A volume slider where moving right decreases the audio loudness."
+              ],
+              answer: 1,
+              explanation: "Natural mapping relies on spatial and cultural analogies where control placement matches the real-world geometry of the controlled elements."
+            },
+            {
+              question: "How does interactivity primarily enhance user cognitive engagement and information retention compared to passive media?",
+              options: [
+                "By speeding up the CPU compilation clock rate.",
+                "By inducing the 'Flow State' through active constructivist decision-making and instant feedback loops.",
+                "By increasing screen brightness and video frame rates.",
+                "By removing the need for user decision-making."
+              ],
+              answer: 1,
+              explanation: "Active interactivity promotes constructivist learning: testing hypotheses, making decisions, and receiving immediate feedback dramatically boosts retention (up to 75%+)."
+            },
+            {
+              question: "In UI layout design, what is the primary structural reason for utilizing the 8-Point Grid System?",
+              options: [
+                "It restricts all typography to exactly 8 words per line.",
+                "Most modern screen resolutions are divisible by 8, preventing fractional sub-pixel rendering blur across @1x, @2x, and @3x displays.",
+                "It was mandated by the original HTML 1.0 specification in 1993.",
+                "It limits websites to a maximum of 8 colors."
+              ],
+              answer: 1,
+              explanation: "Multiples of 8 scale cleanly across different retina pixel densities, preventing blurry fractional sub-pixel anti-aliasing artifacts."
+            },
+            {
+              question: "According to the 60-30-10 color rule in UI design, what should the 10% accent color be strictly reserved for?",
+              options: [
+                "The entire full-screen page background.",
+                "All body text paragraphs.",
+                "High-impact Call-to-Action (CTA) buttons, active state indicators, and critical focal points.",
+                "Decorative background borders and card containers."
+              ],
+              answer: 2,
+              explanation: "The 10% accent color provides visual punch and directional hierarchy; overusing it dilutes its power to guide user attention."
+            },
+            {
+              question: "Under the Web Content Accessibility Guidelines (WCAG 2.1 Level AA), what is the minimum required contrast ratio for standard body text?",
+              options: [
+                "2.0 : 1",
+                "3.0 : 1",
+                "4.5 : 1",
+                "10.0 : 1"
+              ],
+              answer: 2,
+              explanation: "WCAG Level AA requires at least 4.5:1 contrast for normal body text and 3:1 for large text (18pt+ or 14pt bold)."
+            },
+            {
+              question: "What is the key conceptual difference between User Interface (UI) design and User Experience (UX) design?",
+              options: [
+                "UI is the sensory surface (visuals, colors, typography, buttons), while UX is the holistic journey, psychology, task efficiency, and problem-solving.",
+                "UI is designed by engineers, while UX is written in JavaScript.",
+                "UI only applies to websites, while UX only applies to physical machinery.",
+                "There is no difference; UI and UX are marketing synonyms."
+              ],
+              answer: 0,
+              explanation: "UI is the tangible presentation layer (the visible tip of the iceberg), whereas UX encompasses user research, information architecture, and emotional friction reduction."
+            },
+            {
+              question: "Which Jakob Nielsen Usability Heuristic is best demonstrated by an interface providing an 'Undo' button after deleting a file?",
+              options: [
+                "Aesthetic and Minimalist Design",
+                "User Control and Freedom (The Emergency Exit)",
+                "Match between System and the Real World",
+                "Flexibility and Efficiency of Use"
+              ],
+              answer: 1,
+              explanation: "Users frequently make mistakes; providing an effortless 'emergency exit' (Undo/Cancel) without penalty ensures user freedom and control."
+            },
+            {
+              question: "What is the primary difference between Qualitative and Quantitative user research?",
+              options: [
+                "Quantitative research tells you WHAT is happening at scale (analytics, drop-offs); Qualitative research tells you WHY it happens (user interviews, observational testing).",
+                "Quantitative research is done in Figma, while qualitative research is done in Photoshop.",
+                "Quantitative research only tests colors, while qualitative research only tests fonts.",
+                "Qualitative research always involves at least 10,000 survey respondents."
+              ],
+              answer: 0,
+              explanation: "Quantitative metrics measure frequency and scale, while qualitative research uncovers deep human motivations, hesitations, and root causes."
+            },
+            {
+              question: "In User Journey Mapping, what is the 'Valley of Despair'?",
+              options: [
+                "The point where the design software crashes.",
+                "The chronological dip in the emotional satisfaction curve where user friction and cognitive load are highest (often during checkout or onboarding).",
+                "The bottom footer section of a webpage.",
+                "The time spent waiting for a domain name to propagate."
+              ],
+              answer: 1,
+              explanation: "The Valley of Despair represents the moment of peak friction along the customer journey where abandonment is most likely unless UX interventions are applied."
             }
           ]);
         } else if (found.id === 'webdev1') {

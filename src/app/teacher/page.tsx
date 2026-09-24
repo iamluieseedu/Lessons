@@ -37,8 +37,10 @@ import {
 import { laravelSlidesData } from '@/data/laravelSlidesData';
 import { slidesData } from '@/data/slidesData';
 import { mediaDsnSlidesData } from '@/data/mediaDsnSlidesData';
+import { mediaDsnWeek2SlidesData } from '@/data/mediaDsnWeek2SlidesData';
 import { webdevSlidesData } from '@/data/webdevSlidesData';
 import { databaseSlidesData } from '@/data/databaseSlidesData';
+import { getWebDev3Slides } from '@/data/webdev3SlidesData';
 import { DEFAULT_LESSONS, Lesson } from '@/data/lessons';
 import { SlideData } from '@/types/slide';
 
@@ -927,9 +929,12 @@ function TeacherGuideContent() {
 
   // Slides resolution
   const slides: SlideData[] = useMemo(() => {
+    const webdev3Slides = getWebDev3Slides(lessonId);
+    if (webdev3Slides) return webdev3Slides;
     if (lessonId === 'laravel11') return laravelSlidesData;
     if (lessonId === 'week1') return slidesData;
     if (lessonId === 'mediadsn1') return mediaDsnSlidesData;
+    if (lessonId === 'mediadsn2') return mediaDsnWeek2SlidesData;
     if (lessonId === 'webdev1') return webdevSlidesData;
     if (lessonId === 'database1') return databaseSlidesData;
     return laravelSlidesData;

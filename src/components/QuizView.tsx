@@ -84,8 +84,19 @@ export const QuizView: React.FC<QuizViewProps> = ({ questions, title }) => {
         }
       }
 
-      if ((window as any).google) {
+      if ((window as any).google?.accounts?.id) {
         setSdkLoaded(true);
+        return;
+      }
+
+      // Check if script is already present in DOM
+      const existingScript = document.querySelector('script[src="https://accounts.google.com/gsi/client"]');
+      if (existingScript) {
+        if ((window as any).google?.accounts?.id) {
+          setSdkLoaded(true);
+        } else {
+          existingScript.addEventListener('load', () => setSdkLoaded(true));
+        }
         return;
       }
 
@@ -94,14 +105,11 @@ export const QuizView: React.FC<QuizViewProps> = ({ questions, title }) => {
       script.async = true;
       script.defer = true;
       script.onload = () => setSdkLoaded(true);
-      document.body.appendChild(script);
-
-      return () => {
-        // clean up script on unmount if needed
-        try {
-          document.body.removeChild(script);
-        } catch (e) {}
+      script.onerror = () => {
+        // Silently catch network or adblock errors
       };
+      document.body.appendChild(script);
+      // Retain script in DOM to prevent React StrictMode unmount from aborting in-flight request
     }
   }, []);
 
@@ -161,7 +169,7 @@ export const QuizView: React.FC<QuizViewProps> = ({ questions, title }) => {
       setLoginError('');
       setIsRegistered(true);
     } catch (err) {
-      console.error(err);
+      console.warn('Authentication parsing warning:', err instanceof Error ? err.message : String(err));
       setLoginError('Authentication parsing error. Please try again.');
     }
   };
@@ -225,7 +233,7 @@ export const QuizView: React.FC<QuizViewProps> = ({ questions, title }) => {
         });
         setSubmitStatus("Success! Your score has been submitted to your teacher's Google Sheet.");
       } catch (err) {
-        console.error(err);
+        console.warn('Webhook submit warning:', err instanceof Error ? err.message : String(err));
         setSubmitStatus("Submission attempted. (Verify webhook configurations if issues arise.)");
       } finally {
         setIsSubmitting(false);

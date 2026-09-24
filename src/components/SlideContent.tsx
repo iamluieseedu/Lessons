@@ -52,7 +52,10 @@ import {
   FileCode,
   Users,
   MessageSquareQuote,
-  Cpu
+  Cpu,
+  Code2,
+  Globe,
+  Database
 } from 'lucide-react';
 import { CppCompilerPlayground } from '@/components/CppCompilerPlayground';
 import {
@@ -75,6 +78,17 @@ import {
   AcidTransactionSimulator,
   ErdSchemaExplorer
 } from './DatabaseSimulations';
+import { InteractiveLaravelStudio } from './InteractiveLaravelStudio';
+import {
+  InteractivityPrinciplesSandbox,
+  InteractiveMediaTypesExplorer,
+  UiLayoutHierarchyLab,
+  ColorTheoryWcagStudio,
+  TypographyScalePlayground,
+  UxPersonaEmpathyStudio,
+  UserJourneyMapSimulator,
+  UxHeuristicsAudit
+} from './InteractiveMediaDsnWeek2Simulations';
 
 interface SlideContentProps {
   slide: SlideData;
@@ -115,9 +129,10 @@ const ImageFrame: React.FC<{ url: string; caption: string; isLaravel?: boolean }
 };
 
 // -------------------------------------------------------------
-// SLIDE CODE VIEWER HELPER (SYNTAX BLOCK WITH COPY BUTTON)
+// SLIDE CODE VIEWER HELPER (INTERACTIVE TABBED CODE & OUTPUT PREVIEW)
 // -------------------------------------------------------------
 const SlideCodeViewer: React.FC<{ code: string; isLaravel?: boolean; isDatabase?: boolean }> = ({ code, isLaravel, isDatabase }) => {
+  const [activeTab, setActiveTab] = useState<'code' | 'output'>('code');
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
@@ -132,31 +147,190 @@ const SlideCodeViewer: React.FC<{ code: string; isLaravel?: boolean; isDatabase?
   const langBadge = isSql ? 'SQL (Relational / ANSI)' : isBlade ? 'Blade Template' : isPhp ? 'PHP 8.2+' : 'Terminal / Config';
   const iconColor = isLaravel ? 'text-rose-500' : isDatabase || isSql ? 'text-indigo-400' : 'text-sky-500';
 
+  // Render simulated execution output
+  const renderOutput = () => {
+    if (code.includes('Route::get') || code.includes('Route::post') || code.includes('Route::apiResource') || code.includes('api.php') || code.includes('json(')) {
+      return (
+        <div className="flex flex-col h-full bg-slate-950 font-mono text-[11px] text-slate-300 p-3 space-y-2 select-text">
+          <div className="flex items-center gap-2 bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-800 text-xs">
+            <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold text-[10px]">HTTP 200 OK</span>
+            <span className="text-slate-400 truncate text-[11px]">GET /api/v1/resource</span>
+          </div>
+          <div className="bg-black/60 p-3 rounded-lg border border-slate-800 text-emerald-400 overflow-x-auto text-[11px] leading-relaxed">
+            <pre>{`{
+  "status": "success",
+  "data": {
+    "framework": "Laravel 11.x",
+    "verified": true,
+    "timestamp": "2026-09-23T08:30:00Z"
+  }
+}`}</pre>
+          </div>
+          <p className="text-[10px] text-slate-500 font-sans italic">
+            ⚡ Response returned by Laravel HTTP pipeline in 14ms (Content-Type: application/json).
+          </p>
+        </div>
+      );
+    }
+
+    if (code.includes('artisan') || code.includes('composer') || code.includes('make:') || code.includes('migrate') || code.includes('npm run')) {
+      return (
+        <div className="flex flex-col h-full bg-slate-950 font-mono text-[11px] text-slate-300 p-3 space-y-2 select-text">
+          <div className="flex items-center justify-between text-slate-500 text-[10px] pb-1 border-b border-slate-800">
+            <span>Terminal CLI • php artisan</span>
+            <span className="text-emerald-400 font-bold">Exit: 0 (Success)</span>
+          </div>
+          <div className="bg-black/70 p-3 rounded-lg border border-slate-800 text-slate-200 space-y-1.5 text-[11px]">
+            <p className="text-slate-400">$ php artisan migrate --force</p>
+            <p className="text-emerald-400 font-bold">INFO  Running database migrations.</p>
+            <p className="text-slate-300 pl-2">2026_09_23_000001_create_posts_table ....... <span className="text-emerald-400 font-bold">24ms DONE</span></p>
+            <p className="text-slate-300 pl-2">2026_09_23_000002_create_comments_table .... <span className="text-emerald-400 font-bold">18ms DONE</span></p>
+            <p className="text-emerald-400 font-bold mt-2">✓ All migrations executed successfully.</p>
+          </div>
+        </div>
+      );
+    }
+
+    if (code.includes('@') || code.includes('{{') || code.includes('<x-') || code.includes('blade')) {
+      return (
+        <div className="flex flex-col h-full bg-slate-900 p-3 space-y-2 font-sans select-text">
+          <div className="flex items-center justify-between text-[10px] text-slate-400 border-b border-slate-800 pb-1">
+            <span className="font-bold uppercase tracking-wider text-rose-400">Rendered Blade Viewport</span>
+            <span className="bg-rose-500/20 text-rose-300 px-2 py-0.5 rounded font-mono text-[9px]">Live HTML5 Component</span>
+          </div>
+          <div className="bg-white rounded-xl p-4 text-slate-800 shadow-md border border-slate-200 space-y-2.5">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+              <h4 className="font-bold text-xs text-slate-900">Rendered Blade Component</h4>
+              <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-bold">Online</span>
+            </div>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Controller data safely escaped and rendered via Blade templating engine with zero XSS vulnerabilities.
+            </p>
+            <div className="flex gap-2 pt-1">
+              <button className="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition">
+                Explore Demo
+              </button>
+              <button className="px-3 py-1 bg-slate-100 text-slate-700 rounded-lg text-xs font-semibold">
+                Details
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (code.includes('Model') || code.includes('Schema::') || code.includes('Eloquent') || code.includes('where(')) {
+      return (
+        <div className="flex flex-col h-full bg-slate-950 p-3 space-y-2 font-mono text-xs select-text">
+          <div className="flex items-center justify-between text-[10px] text-slate-400 border-b border-slate-800 pb-1">
+            <span className="font-bold text-sky-400 flex items-center gap-1">
+              <Database className="w-3 h-3" /> Database Table Schema
+            </span>
+            <span className="text-emerald-400 font-mono text-[9px]">SQLite / MySQL</span>
+          </div>
+          <div className="bg-slate-900 border border-slate-800 rounded-lg overflow-hidden text-[11px]">
+            <div className="grid grid-cols-4 bg-slate-800 text-slate-300 font-bold px-3 py-1.5 border-b border-slate-700 text-[10px] uppercase">
+              <span>ID</span>
+              <span>Title</span>
+              <span>Status</span>
+              <span>Created</span>
+            </div>
+            <div className="divide-y divide-slate-800/80 text-slate-300">
+              <div className="grid grid-cols-4 px-3 py-1.5 bg-black/30">
+                <span className="text-sky-400 font-bold">#101</span>
+                <span className="truncate">First Post</span>
+                <span className="text-emerald-400 font-semibold">active</span>
+                <span className="text-slate-500">2026-09-23</span>
+              </div>
+              <div className="grid grid-cols-4 px-3 py-1.5">
+                <span className="text-sky-400 font-bold">#102</span>
+                <span className="truncate">Architecture Guide</span>
+                <span className="text-emerald-400 font-semibold">active</span>
+                <span className="text-slate-500">2026-09-23</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex flex-col h-full bg-slate-950 font-mono text-[11px] text-slate-300 p-3 space-y-2 select-text">
+        <div className="flex items-center justify-between text-slate-500 text-[10px] pb-1 border-b border-slate-800">
+          <span>Execution Environment</span>
+          <span className="text-emerald-400 font-bold">Status: OK (200)</span>
+        </div>
+        <div className="bg-black/60 p-3 rounded-lg border border-slate-800 text-slate-300 space-y-1">
+          <p className="text-slate-400">// Compiled Runtime Result</p>
+          <p className="text-emerald-400 font-bold">✓ Script initialized without errors.</p>
+          <p className="text-slate-300">Memory footprint: 0.8 MB</p>
+          <p className="text-slate-500 text-[10px]">Standard I/O stream closed with status 0.</p>
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className="md:col-span-5 w-full h-full min-h-[260px] max-h-[420px] bg-slate-950 border border-slate-800 rounded-xl overflow-hidden shadow-xl flex flex-col justify-between font-mono text-xs mt-4 md:mt-0">
+    <div className="md:col-span-5 w-full h-full min-h-[290px] max-h-[440px] bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl flex flex-col justify-between font-mono text-xs mt-4 md:mt-0">
+      {/* Header with Code vs Output Tabs */}
       <div className="bg-slate-900/90 px-3 py-2 border-b border-slate-800 flex items-center justify-between font-sans">
+        <div className="flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800">
+          <button
+            onClick={() => setActiveTab('code')}
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold transition ${
+              activeTab === 'code'
+                ? 'bg-indigo-600 text-white shadow-sm'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <Code2 className="w-3.5 h-3.5" />
+            <span>Code</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('output')}
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold transition ${
+              activeTab === 'output'
+                ? 'bg-rose-600 text-white shadow-sm'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <Play className="w-3.5 h-3.5" />
+            <span>Output Preview</span>
+          </button>
+        </div>
+
         <div className="flex items-center gap-2">
           <FileCode className={`w-4 h-4 ${iconColor}`} />
-          <span className="text-[11px] font-bold text-slate-300">{langBadge}</span>
+          <span className="hidden sm:inline text-[10px] text-slate-400 font-medium font-mono">{langBadge}</span>
+          <button
+            onClick={handleCopy}
+            className="text-slate-400 hover:text-white px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-[10px] flex items-center gap-1 transition font-sans font-semibold"
+          >
+            {copied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+            {copied ? 'Copied' : 'Copy'}
+          </button>
         </div>
-        <button
-          onClick={handleCopy}
-          className="text-slate-400 hover:text-white px-2 py-0.5 rounded bg-slate-800 text-[10px] flex items-center gap-1 transition"
-        >
-          {copied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-          {copied ? 'Copied' : 'Copy Code'}
-        </button>
       </div>
 
-      <div className="p-3.5 flex-grow overflow-y-auto overflow-x-auto bg-black/40 select-text">
-        <pre className="text-slate-200 leading-relaxed text-[11px] whitespace-pre font-mono">
-          {code}
-        </pre>
+      {/* Tab Content */}
+      <div className="flex-grow overflow-y-auto overflow-x-auto bg-black/40">
+        {activeTab === 'code' ? (
+          <div className="p-3.5 select-text font-mono">
+            <pre className="text-slate-200 leading-relaxed text-[11px] whitespace-pre">
+              {code}
+            </pre>
+          </div>
+        ) : (
+          renderOutput()
+        )}
       </div>
 
-      <div className="bg-slate-900/60 px-3 py-1 text-[10px] text-slate-500 border-t border-slate-800 flex justify-between items-center font-sans">
-        <span className="text-slate-400">Laravel Syntax</span>
-        <span className={`${isLaravel ? 'text-rose-400' : 'text-sky-400'} font-medium`}>Verified Official Docs</span>
+      {/* Footer Status Bar */}
+      <div className="bg-slate-900/80 px-3 py-1.5 text-[10px] text-slate-400 border-t border-slate-800 flex justify-between items-center font-sans">
+        <span className="text-slate-400 font-mono text-[9px]">Laravel 11.x Compatible</span>
+        <span className={`${isLaravel ? 'text-rose-400' : 'text-sky-400'} font-medium`}>
+          {activeTab === 'code' ? 'Verified Code Example' : 'Live Output Simulation'}
+        </span>
       </div>
     </div>
   );
@@ -2079,7 +2253,30 @@ const ConceptIllustration: React.FC<{ slideId: string }> = ({ slideId }) => {
 
 const InteractiveObjectives: React.FC<SlideContentProps> = ({ slide }) => {
   const [selected, setSelected] = useState<number | null>(null);
-  const objectives = [
+  const isWeek2 = slide.id?.startsWith('media2-');
+  const objectives = isWeek2 ? [
+    {
+      num: 1,
+      title: "1. Master the Principles of Interactivity",
+      meaning: "Understand how bidirectional loops, user agency, Donald Norman's principles (affordance, signifiers, feedback, mapping, constraints), and engagement loops drive digital systems.",
+      why: "To design digital interfaces where user actions produce predictable, error-tolerant, and immediate state updates rather than confusion.",
+      explain: "You should be able to audit any interface for Norman door flaws, identify missing signifiers, and classify media types from hypermedia to spatial XR."
+    },
+    {
+      num: 2,
+      title: "2. Apply User Interface (UI) Design Basics",
+      meaning: "Master layout visual hierarchy (F/Z scanning patterns, 8pt grid), the 60-30-10 color rule, WCAG AA/AAA contrast accessibility, and modular typography scale ladders.",
+      why: "To craft clean, scannable, accessible sensory surfaces that guide human visual attention effortlessly.",
+      explain: "You should be able to create a harmonious color palette, test contrast ratios, and format responsive component states."
+    },
+    {
+      num: 3,
+      title: "3. Implement User Experience (UX) Design Basics",
+      meaning: "Learn human-centered design, Jakob Nielsen's 10 usability heuristics, qualitative and quantitative research methods, user personas, and user journey mapping.",
+      why: "To solve the right problem for real humans, eliminating friction before writing expensive production code.",
+      explain: "You should be able to conduct a heuristic audit, synthesize empathy maps, and trace user emotional satisfaction curves."
+    }
+  ] : [
     {
       num: 1,
       title: "1. Understand the basics of interactive media design",
@@ -3524,16 +3721,31 @@ const CampusKiosk: React.FC<SlideContentProps> = ({ slide }) => {
 };
 
 const RecapOrdering: React.FC<SlideContentProps> = ({ slide }) => {
-  const [items, setItems] = useState<string[]>([
+  const isWeek2 = slide.id?.startsWith('media2-');
+  const initialItems = isWeek2 ? [
+    '3. Ideate (User Flows & IA)',
+    '1. Empathize (User Interviews & Research)',
+    '4. Prototype (Wireframes & UI Design)',
+    '2. Define (Problem Statement & Personas)',
+    '5. Test (Usability Testing & Iteration)'
+  ] : [
     'Feedback',
     'System Processing',
     'User Goal',
     'Input Action',
     'Output Display'
-  ]);
+  ];
+
+  const [items, setItems] = useState<string[]>(initialItems);
   const [result, setResult] = useState<boolean | null>(null);
 
-  const correctOrder = ['User Goal', 'Input Action', 'System Processing', 'Output Display', 'Feedback'];
+  const correctOrder = isWeek2 ? [
+    '1. Empathize (User Interviews & Research)',
+    '2. Define (Problem Statement & Personas)',
+    '3. Ideate (User Flows & IA)',
+    '4. Prototype (Wireframes & UI Design)',
+    '5. Test (Usability Testing & Iteration)'
+  ] : ['User Goal', 'Input Action', 'System Processing', 'Output Display', 'Feedback'];
 
   const handleMoveItem = (idx: number, dir: 'up' | 'down') => {
     const newItems = [...items];
@@ -3660,12 +3872,20 @@ const RecapOrdering: React.FC<SlideContentProps> = ({ slide }) => {
 const KnowledgeCheck: React.FC<SlideContentProps> = ({ slide }) => {
   const [selected, setSelected] = useState<number | null>(null);
 
+  const isWeek2 = slide.id?.startsWith('media2-');
   const isQ1 = slide.id?.includes('slide31');
   const isQ2 = slide.id?.includes('slide32');
 
-  const correctAnswer = isQ1 ? 1 : isQ2 ? 2 : 1;
+  const correctAnswer = isWeek2 ? 0 : isQ1 ? 1 : isQ2 ? 2 : 1;
 
-  const explanations = isQ1 
+  const explanations = isWeek2
+    ? [
+        "Correct! As Donald Norman defined, affordances determine what actions are physically possible, while signifiers are perceptible clues (labels, shadows, icons) communicating where and how to interact.",
+        "Incorrect. Affordances and signifiers apply equally to digital software, mobile glass, and physical everyday objects.",
+        "Incorrect. Color contrast and line-height are UI styling metrics, not definitions of affordance and signifiers.",
+        "Incorrect. Affordances and signifiers are distinct concepts. An object can have an affordance with no signifier (mystery meat navigation)!"
+      ]
+    : isQ1
     ? [
         'Incorrect. High-resolution images are static media formatting values, not indicators of dynamic interactivity.',
         'Correct! Interactivity is characterized by a two-way information loop and the user\'s agency to alter the system state.',
@@ -3790,16 +4010,19 @@ const EssayPrompt: React.FC<SlideContentProps> = ({ slide }) => {
   const [saved, setSaved] = useState(false);
   const [showRubric, setShowRubric] = useState(false);
 
+  const isWeek2 = slide.id?.startsWith('media2-');
+  const storageKey = isWeek2 ? 'mediadsn2_essay' : 'mediadsn_essay';
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('mediadsn_essay');
+      const stored = localStorage.getItem(storageKey);
       if (stored) setEssay(stored);
     }
-  }, []);
+  }, [storageKey]);
 
   const handleSaveEssay = () => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('mediadsn_essay', essay);
+      localStorage.setItem(storageKey, essay);
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     }
@@ -3822,7 +4045,7 @@ const EssayPrompt: React.FC<SlideContentProps> = ({ slide }) => {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-stretch flex-grow">
         <div className="md:col-span-7 flex flex-col justify-between h-full gap-2">
           <p className="text-xs text-slate-600 font-semibold leading-relaxed">
-            <strong>Prompt:</strong> Explain how interactive media has changed the way users interact with digital systems. Discuss at least one real-world example and identify the components (User, Input, Interface, System, Output, Feedback) involved.
+            <strong>Prompt:</strong> {isWeek2 ? 'Conduct an audit of an app you use daily (e.g. Spotify, Instagram, or Canvas). Identify: 1) One clear signifier and its affordance, 2) One area where the 60-30-10 color rule or visual hierarchy is used effectively, and 3) One UX friction point along your journey and how you would redesign it.' : 'Explain how interactive media has changed the way users interact with digital systems. Discuss at least one real-world example and identify the components (User, Input, Interface, System, Output, Feedback) involved.'}
           </p>
           
           <textarea
@@ -3897,16 +4120,19 @@ const ExitReflection: React.FC<SlideContentProps> = ({ slide }) => {
   const [reflection, setReflection] = useState('');
   const [saved, setSaved] = useState(false);
 
+  const isWeek2 = slide.id?.startsWith('media2-');
+  const storageKey = isWeek2 ? 'mediadsn2_reflection' : 'mediadsn_reflection';
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('mediadsn_reflection');
+      const stored = localStorage.getItem(storageKey);
       if (stored) setReflection(stored);
     }
-  }, []);
+  }, [storageKey]);
 
   const handleSaveReflection = () => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('mediadsn_reflection', reflection);
+      localStorage.setItem(storageKey, reflection);
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     }
@@ -3966,9 +4192,13 @@ const ExitReflection: React.FC<SlideContentProps> = ({ slide }) => {
 
 // -------------------------------------------------------------
 // MAIN SLIDE CONTENT ROUTER
-// -------------------------------------------------------------
 export const SlideContent: React.FC<SlideContentProps> = ({ slide }) => {
-  const isLaravel = slide.id?.includes('laravel');
+  const isLaravel =
+    slide.id?.includes('laravel') ||
+    slide.id?.startsWith('w') ||
+    slide.id?.startsWith('webdev3') ||
+    slide.moduleTag?.toLowerCase().includes('laravel') ||
+    slide.moduleTag?.toLowerCase().includes('web dev 3');
   const isDatabase = slide.id?.includes('db');
 
   const theme = {
@@ -4067,6 +4297,30 @@ export const SlideContent: React.FC<SlideContentProps> = ({ slide }) => {
   if (slide.type === 'exit_reflection') {
     return <ExitReflection slide={slide} />;
   }
+  if (slide.type === 'interactivity_principles_sandbox') {
+    return <InteractivityPrinciplesSandbox slide={slide} />;
+  }
+  if (slide.type === 'interactive_media_types_explorer') {
+    return <InteractiveMediaTypesExplorer slide={slide} />;
+  }
+  if (slide.type === 'ui_layout_hierarchy_lab') {
+    return <UiLayoutHierarchyLab slide={slide} />;
+  }
+  if (slide.type === 'color_theory_wcag_studio') {
+    return <ColorTheoryWcagStudio slide={slide} />;
+  }
+  if (slide.type === 'typography_scale_playground') {
+    return <TypographyScalePlayground slide={slide} />;
+  }
+  if (slide.type === 'ux_persona_empathy_studio') {
+    return <UxPersonaEmpathyStudio slide={slide} />;
+  }
+  if (slide.type === 'user_journey_map_simulator') {
+    return <UserJourneyMapSimulator slide={slide} />;
+  }
+  if (slide.type === 'ux_heuristics_audit') {
+    return <UxHeuristicsAudit slide={slide} />;
+  }
   if (slide.type === 'versus' || slide.type === 'comparison') {
     return (
       <div className="h-full w-full flex flex-col justify-between p-4 sm:p-6 md:p-10 relative z-10 text-slate-900 overflow-y-auto font-sans">
@@ -4150,6 +4404,12 @@ export const SlideContent: React.FC<SlideContentProps> = ({ slide }) => {
                 {slide.keyInsight.title}
               </strong>
               <p className="mt-1 font-sans font-medium text-slate-600">{slide.keyInsight.text}</p>
+            </div>
+          )}
+
+          {isLaravel && (
+            <div className="mt-5 w-full">
+              <InteractiveLaravelStudio slide={slide} />
             </div>
           )}
         </div>
@@ -4241,9 +4501,8 @@ export const SlideContent: React.FC<SlideContentProps> = ({ slide }) => {
     );
   }
 
-  // 3. TIMELINE / DEFAULT SLIDE
   const hasCode = !!slide.code;
-  const hasRightContent = !!slide.image || hasIllustration || hasCode;
+  const hasRightContent = !!slide.image || hasIllustration || hasCode || isLaravel;
   return (
     <div className="h-full w-full flex flex-col justify-between p-4 sm:p-6 md:p-8 lg:p-10 relative z-10 text-slate-900 overflow-y-auto">
       {/* Header */}
@@ -4335,6 +4594,22 @@ export const SlideContent: React.FC<SlideContentProps> = ({ slide }) => {
                 <p className="mt-1 font-sans font-medium text-slate-600">{slide.keyInsight.text}</p>
               </div>
             )}
+
+            {/* Real-World Industry Context */}
+            <div className="mt-3.5 p-3 rounded-xl bg-slate-900 text-slate-200 border border-slate-800 text-xs leading-relaxed animate-fade-in font-sans">
+              <div className="flex items-center justify-between mb-1.5 border-b border-slate-800 pb-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-400 flex items-center gap-1.5 font-lexend">
+                  <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                  Real-World Industry Context
+                </span>
+                <span className="text-[9px] px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 font-mono">
+                  Production Standard
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-300 font-medium">
+                Engineers in high-traffic web platforms (e.g. GitHub, Netflix, Stripe) leverage this pattern to enforce clean architecture, strict data validation, and predictable latency.
+              </p>
+            </div>
           </div>
         </div>
 
@@ -4354,6 +4629,11 @@ export const SlideContent: React.FC<SlideContentProps> = ({ slide }) => {
         {!slide.image && !hasIllustration && hasCode && (
           <div className="xl:col-span-6 w-full h-full flex flex-col mt-4 xl:mt-0">
             <SlideCodeViewer code={slide.code!} isLaravel={isLaravel} isDatabase={isDatabase} />
+          </div>
+        )}
+        {!slide.image && !hasIllustration && !hasCode && isLaravel && (
+          <div className="xl:col-span-6 w-full h-full flex flex-col mt-4 xl:mt-0">
+            <InteractiveLaravelStudio slide={slide} />
           </div>
         )}
       </div>

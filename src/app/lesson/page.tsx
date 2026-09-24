@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { slidesData } from '@/data/slidesData';
 import { laravelSlidesData } from '@/data/laravelSlidesData';
 import { mediaDsnSlidesData } from '@/data/mediaDsnSlidesData';
+import { mediaDsnWeek2SlidesData } from '@/data/mediaDsnWeek2SlidesData';
 import { webdevSlidesData } from '@/data/webdevSlidesData';
 import { cppSlidesData } from '@/data/cppSlidesData';
 import { databaseSlidesData } from '@/data/databaseSlidesData';
@@ -19,6 +20,7 @@ import { AdSidebar } from '@/components/AdSidebar';
 import { CONFIG } from '@/config';
 import { HeaderAd } from '@/components/HeaderAd';
 
+import { getWebDev3Slides } from '@/data/webdev3SlidesData';
 import { Lesson, DEFAULT_LESSONS } from '@/data/lessons';
 
 function SlidePageContent() {
@@ -123,12 +125,17 @@ function SlidePageContent() {
       setLesson(found || null);
 
       if (found) {
-        if (found.id === 'week1') {
+        const webdev3Slides = getWebDev3Slides(found.id);
+        if (webdev3Slides) {
+          setSlides(webdev3Slides);
+        } else if (found.id === 'week1') {
           setSlides(slidesData);
         } else if (found.id === 'laravel11') {
           setSlides(laravelSlidesData);
         } else if (found.id === 'mediadsn1') {
           setSlides(mediaDsnSlidesData);
+        } else if (found.id === 'mediadsn2') {
+          setSlides(mediaDsnWeek2SlidesData);
         } else if (found.id === 'webdev1') {
           setSlides(webdevSlidesData);
         } else if (found.id === 'cpp1') {
@@ -324,7 +331,7 @@ function SlidePageContent() {
               mode: 'no-cors',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(readLog)
-            }).catch(err => console.error("Failed to post reading webhook:", err));
+            }).catch(err => console.warn("Failed to post reading webhook:", err instanceof Error ? err.message : String(err)));
           }
         } catch (e) {
           console.error("Failed to parse stored user for reading completion:", e);

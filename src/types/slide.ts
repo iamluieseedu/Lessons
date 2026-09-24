@@ -29,7 +29,15 @@ export type SlideType =
   | 'cpp_compiler'
   | 'cpp_exercise'
   | 'escape_sequence_tester'
-  | 'pointer_visualizer';
+  | 'pointer_visualizer'
+  | 'interactivity_principles_sandbox'
+  | 'interactive_media_types_explorer'
+  | 'ui_layout_hierarchy_lab'
+  | 'color_theory_wcag_studio'
+  | 'typography_scale_playground'
+  | 'ux_persona_empathy_studio'
+  | 'user_journey_map_simulator'
+  | 'ux_heuristics_audit';
 
 export interface CalloutBox {
   title?: string;
