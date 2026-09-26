@@ -1138,72 +1138,109 @@
         <section class="guide-section" id="milestone-3">
             <h2 class="section-title">
                 <span class="milestone-badge">Milestone 3</span>
-                Static Terrain & Ground Setup
+                Static Terrain & Ground Setup (TileMap or TextureRect)
             </h2>
             <p class="section-desc">
-                Terrain in platform games must be solid and unyielding. Godot provides the <code>StaticBody2D</code> node for surfaces that participate in physics simulations but are not moved by collisions or gravity.
+                Terrain in platform games must be solid and unyielding. In Godot 4, you can construct terrain surfaces using either <strong>TileMap with Physics Layer painting</strong> (the workflow demonstrated in the video tutorial) or a standalone <strong>StaticBody2D with TextureRect Tiling</strong>.
             </p>
 
-            <div class="step-card">
+            <!-- Method A: Video Guide TileMap Workflow -->
+            <div class="step-card" style="border-left: 4px solid #4f46e5; margin-bottom: 24px;">
                 <div class="step-header">
                     <div class="step-num-title">
-                        <div class="step-num-circle">1</div>
-                        <span>Add StaticBody2D & Collision Shape</span>
+                        <div class="step-num-circle" style="background: #4f46e5;">A</div>
+                        <span>Method A (Primary • Video Guide Workflow): TileMap with 16×16 Physics TileSet</span>
                     </div>
-                    <span class="step-category-badge">Physics Terrain</span>
+                    <span class="step-category-badge" style="background: #eef2ff; color: #4338ca;">Video Tutorial Method</span>
                 </div>
+                <p style="font-size: 13.5px; color: var(--text-body); margin-bottom: 12px;">
+                    This is the exact method demonstrated in the reference video tutorial. It allows you to freely paint platforms and natural terrain using modular 16×16 pixel art tiles with built-in collision geometry:
+                </p>
+                <ol class="step-steps-list">
+                    <li>Right-click the <code>Main</code> root node &gt; <strong>Add Child Node...</strong> &gt; search for <strong>TileMap</strong> (or <strong>TileMapLayer</strong> in Godot 4.3+). Rename it to <code>TerrainTileMap</code>.</li>
+                    <li>In the Inspector Dock on the right, find the <strong>Tile Set</strong> property &gt; click the dropdown &gt; select <strong>New TileSet</strong>.</li>
+                    <li>Click on the newly created TileSet resource in the Inspector to expand its properties:
+                        <ul style="padding-left: 20px; margin-top: 6px;">
+                            <li>Set <strong>Tile Size</strong> to <code>x: 16, y: 16</code> px (matching the Pixel Adventure terrain tiles).</li>
+                            <li>Scroll down to expand <strong>Physics Layers</strong> &gt; click <strong>Add Element</strong>. This creates <code>Physics Layer 0</code> for solid collision queries.</li>
+                        </ul>
+                    </li>
+                    <li>In the bottom panel, click on the <strong>TileSet</strong> dock tab. Drag <code>Terrain (16x16).png</code> from <code>res://assets/</code> into the tiles panel.</li>
+                    <li>Godot will ask: <em>"The image will automatically create tiles across the grid. Would you like to do this?"</em> &mdash; click <strong>Yes</strong>.</li>
+                    <li>Click the <strong>Paint</strong> tab at the top of the TileSet panel &gt; set <strong>Paint Property</strong> to <strong>Physics Layer 0</strong>. Click on each solid ground, surface, and wall tile to paint green collision polygons onto them.</li>
+                    <li>Switch from the TileSet panel to the <strong>TileMap</strong> dock tab at the bottom. Select your ground tiles and paint platforms across the 2D viewport!</li>
+                </ol>
+
+                <div class="callout-box tip">
+                    <i class="fa-solid fa-cube"></i>
+                    <div>
+                        <strong>Video Tutorial Advantage:</strong> Using TileMap physics layers allows you to paint multi-tier platforms, floating islands, and stairs in seconds without manually positioning individual collision rectangles for every single ledge.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Method B: Direct TextureRect Platform -->
+            <div class="step-card" style="border-left: 4px solid #0284c7;">
+                <div class="step-header">
+                    <div class="step-num-title">
+                        <div class="step-num-circle" style="background: #0284c7;">B</div>
+                        <span>Method B (Alternative • Direct Platform): TextureRect Tiled Platform (StaticBody2D)</span>
+                    </div>
+                    <span class="step-category-badge" style="background: #e0f2fe; color: #0369a1;">Direct Platform</span>
+                </div>
+                <p style="font-size: 13.5px; color: var(--text-body); margin-bottom: 12px;">
+                    If you prefer a single continuous floor or simple rectangular platforms without configuring a tile sheet:
+                </p>
                 <ol class="step-steps-list">
                     <li>Right-click the <code>Main</code> root node &gt; <strong>Add Child Node...</strong> &gt; search for <strong>StaticBody2D</strong>. Rename it to <code>Ground</code>.</li>
-                    <li>Notice a yellow triangle warning next to <code>Ground</code>. Godot is telling you: <em>"This node has no shape, so it can't collide or interact with other objects."</em></li>
                     <li>With <code>Ground</code> selected, add a child node: right-click <code>Ground</code> &gt; <strong>Add Child Node...</strong> &gt; search for <strong>CollisionShape2D</strong>.</li>
                     <li>In the Inspector for <code>CollisionShape2D</code>:
                         <ul style="padding-left: 20px; margin-top: 6px;">
-                            <li>Click the dropdown next to <strong>Shape</strong>.</li>
-                            <li>Select <strong>New RectangleShape2D</strong>.</li>
-                            <li>Click on the newly created shape to expand its properties, then set <code>Size</code> to <code>x: 1280, y: 64</code>.</li>
+                            <li>Click the dropdown next to <strong>Shape</strong> &gt; select <strong>New RectangleShape2D</strong>.</li>
+                            <li>Set <code>Size</code> to <code>x: 1280, y: 64</code>.</li>
                         </ul>
                     </li>
-                    <li>Now add visual ground surface using <strong>TextureRect</strong> (Recommended for repeating/tiling terrain):
+                    <li>Add the visual ground surface: right-click <code>Ground</code> &gt; <strong>Add Child Node...</strong> &gt; search for <strong>TextureRect</strong>. Rename it to <code>GroundVisual</code>.
                         <ul style="padding-left: 20px; margin-top: 6px;">
-                            <li>Right-click <code>Ground</code> &gt; <strong>Add Child Node...</strong> &gt; search for <strong>TextureRect</strong>. Rename it to <code>GroundVisual</code>.</li>
-                            <li>In the Inspector, drag your ground/grass/dirt PNG into the <strong>Texture</strong> property.</li>
-                            <li>Set <strong>Expand Mode</strong> to <code>Ignore Size</code> (enables free dimensional sizing independent of the original image).</li>
-                            <li>Set <strong>Stretch Mode</strong> to <code>Tile</code> (automatically repeats the texture pattern across the platform without stretching or pixel distortion!).</li>
-                            <li>Under <strong>Layout &gt; Transform</strong>, set <code>Size</code> to <code>x: 1280, y: 64</code> and <code>Position</code> to <code>x: -640, y: -32</code> (aligning it with the centered collision shape).</li>
+                            <li>Drag your ground PNG into the <strong>Texture</strong> property.</li>
+                            <li>Set <strong>Expand Mode</strong> to <code>Ignore Size</code>.</li>
+                            <li>Set <strong>Stretch Mode</strong> to <code>Tile</code>.</li>
+                            <li>Under <strong>Layout &gt; Transform</strong>, set <code>Size</code> to <code>x: 1280, y: 64</code> and <code>Position</code> to <code>x: -640, y: -32</code>.</li>
                         </ul>
                     </li>
-                    <li><em>Prototyping Alternative:</em> If you don't have a ground texture yet, you can use a <strong>ColorRect</strong> (e.g. grass green <code>#2d6a4f</code>) sized <code>1280 × 64</code>.</li>
                     <li>Select the parent <code>Ground</code> node and set its <code>Transform &gt; Position</code> to <code>Vector2(640, 688)</code> to anchor it cleanly at the bottom of the 720p screen.</li>
+                    <li>Press <kbd>Ctrl + G</kbd> to group the node and its children so dragging never misaligns the collider.</li>
                 </ol>
 
                 <div class="node-tree-card">
-                    <div style="color: #94a3b8; font-size: 11px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Terrain Node Hierarchy (with TextureRect Tiling)</div>
-                    <div class="tree-line">
-                        <span class="tree-tag root">Node2D</span>
-                        <span style="font-weight: 700; color: #60a5fa;">Main</span>
+                    <div style="color: #94a3b8; font-size: 11px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Terrain Node Hierarchies Comparison</div>
+                    <div style="margin-bottom: 10px;">
+                        <span style="font-size: 12px; font-weight: 700; color: #818cf8;">Method A (Video Guide TileMap):</span>
+                        <div class="tree-line" style="margin-left: 10px; margin-top: 4px;">
+                            <span class="tree-tag root">Node2D</span>
+                            <span style="font-weight: 700; color: #60a5fa;">Main</span>
+                        </div>
+                        <div class="tree-line" style="margin-left: 30px;">
+                            <span class="tree-tag body">TileMap</span>
+                            <span style="font-weight: 700; color: #a78bfa;">TerrainTileMap</span>
+                            <span style="color: #94a3b8; font-size: 11px;">(TileSet 16×16 • Physics Layer 0)</span>
+                        </div>
                     </div>
-                    <div class="tree-line" style="margin-left: 20px;">
-                        <span class="tree-tag sprite">Sprite2D</span>
-                        <span>Background</span>
-                    </div>
-                    <div class="tree-line" style="margin-left: 20px;">
-                        <span class="tree-tag body">StaticBody2D</span>
-                        <span style="font-weight: 700; color: #34d399;">Ground</span>
-                    </div>
-                    <div class="tree-line" style="margin-left: 44px;">
-                        <span class="tree-tag shape">CollisionShape2D</span>
-                        <span>GroundCollider (RectangleShape2D 1280×64)</span>
-                    </div>
-                    <div class="tree-line" style="margin-left: 44px;">
-                        <span class="tree-tag sprite">TextureRect</span>
-                        <span>GroundVisual (Expand: Ignore Size | Stretch: Tile | Size: 1280×64)</span>
-                    </div>
-                </div>
-
-                <div class="callout-box tip">
-                    <i class="fa-solid fa-object-group"></i>
-                    <div>
-                        <strong>Pro-Tip (Group Selected Nodes):</strong> Click on the <code>Ground</code> node in the Scene tree, then press <kbd>Ctrl + G</kbd> (or click the <em>"Group Selected Nodes"</em> icon in the 2D viewport toolbar). This locks all child elements together so dragging the ground never accidentally misaligns the collider from the visual sprite!
+                    <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 10px;">
+                        <span style="font-size: 12px; font-weight: 700; color: #38bdf8;">Method B (TextureRect StaticBody2D):</span>
+                        <div class="tree-line" style="margin-left: 10px; margin-top: 4px;">
+                            <span class="tree-tag body">StaticBody2D</span>
+                            <span style="font-weight: 700; color: #34d399;">Ground</span>
+                            <span style="color: #94a3b8; font-size: 11px;">(Pos: 640, 688)</span>
+                        </div>
+                        <div class="tree-line" style="margin-left: 34px;">
+                            <span class="tree-tag shape">CollisionShape2D</span>
+                            <span>GroundCollider (RectangleShape2D 1280×64)</span>
+                        </div>
+                        <div class="tree-line" style="margin-left: 34px;">
+                            <span class="tree-tag sprite">TextureRect</span>
+                            <span>GroundVisual (Expand: Ignore Size | Stretch: Tile | Size: 1280×64)</span>
+                        </div>
                     </div>
                 </div>
             </div>

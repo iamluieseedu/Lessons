@@ -61,7 +61,7 @@ export default function GodotLabManualPage() {
   const milestones = [
     { id: 'm1', label: 'Milestone 1: Project Creation, Mobile Renderer & Pixel Art Nearest Filter (1280×720, canvas_items)' },
     { id: 'm2', label: 'Milestone 2: Blank Root Node2D & Background PNG (TextureRect Tile Mode / Sprite2D z-index -10)' },
-    { id: 'm3', label: 'Milestone 3: Terrain Setup (StaticBody2D + TextureRect Tiling or TileMap + RectangleShape2D)' },
+    { id: 'm3', label: 'Milestone 3: Terrain Setup (TileMap with 16×16 Physics TileSet or TextureRect Platform)' },
     { id: 'm4', label: 'Milestone 4: Character Assembly (CharacterBody2D + AnimatedSprite2D SpriteFrames / CapsuleShape2D)' },
     { id: 'm5', label: 'Milestone 5: GDScript Kinematic Physics & Animations (gravity, jump, move_toward, flip_h, move_and_slide)' },
     { id: 'm6', label: 'Milestone 6: 2D Physics Layer Matrix (Terrain Layer 1, Player Mask 1) & Camera2D Follow' },
@@ -435,39 +435,61 @@ func _physics_process(delta: float) -> void:
             </p>
 
             <div className="space-y-4">
-              <div className="border border-indigo-200 bg-indigo-50/40 rounded-xl p-4 space-y-2">
-                <h4 className="font-bold text-indigo-950 text-sm flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded bg-indigo-600 text-white text-xs font-mono">Method A</span>
-                  <span>TextureRect Tiled Platform (Fast &amp; Direct)</span>
+              {/* Method A: TileMap with Physics TileSet (Video Workflow) */}
+              <div className="border border-indigo-200 bg-indigo-50/50 rounded-xl p-4 sm:p-5 space-y-3">
+                <h4 className="font-bold text-indigo-950 text-sm sm:text-base flex items-center gap-2">
+                  <span className="px-2.5 py-0.5 rounded bg-indigo-600 text-white text-xs font-mono font-bold">Method A (Primary &bull; Video Guide Workflow)</span>
+                  <span>TileMap with 16×16 Physics TileSet</span>
                 </h4>
-                <ol className="list-decimal pl-5 text-xs sm:text-sm text-slate-700 space-y-1.5">
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                  This is the exact method demonstrated in the video tutorial, allowing you to paint dynamic platforms and terrain directly onto the canvas with automatic collision geometry:
+                </p>
+                <ol className="list-decimal pl-5 text-xs sm:text-sm text-slate-700 space-y-2">
+                  <li>Right-click <code className="text-slate-900 font-mono font-bold">Main</code> &gt; <strong>Add Child Node...</strong> &gt; search for <strong>TileMap</strong> (or <strong>TileMapLayer</strong> in Godot 4.3+). Rename it to <code className="text-indigo-700 font-mono font-bold">TerrainTileMap</code>.</li>
+                  <li>In the Inspector &gt; TileSet &gt; click dropdown &gt; <strong>New TileSet</strong>. Click into the newly created TileSet resource to open its properties.</li>
+                  <li>In TileSet properties in Inspector:
+                    <ul className="list-disc pl-5 mt-1 space-y-1 text-xs text-slate-600">
+                      <li>Set <strong>Tile Size:</strong> <code className="font-mono text-sky-700 font-bold">16 × 16</code> px (matching the Pixel Adventure terrain tiles).</li>
+                      <li>Expand <strong>Physics Layers</strong> &gt; click <strong>Add Element</strong> (this registers Physics Layer 0 for collision detection).</li>
+                    </ul>
+                  </li>
+                  <li>In the bottom <strong>TileSet</strong> dock, drag <code className="font-mono text-xs text-indigo-900 bg-indigo-100 px-1 py-0.2 rounded">Terrain (16x16).png</code> in. Click <strong>Yes</strong> when Godot prompts to automatically create tiles.</li>
+                  <li>Click the <strong>Paint</strong> tab in the TileSet dock &gt; select property <strong>Physics Layer 0</strong> &gt; click on each ground/platform tile to assign collision boundaries.</li>
+                  <li>Switch to the <strong>TileMap</strong> tab at the bottom, select your solid ground tiles, and paint platforms across the viewport!</li>
+                </ol>
+              </div>
+
+              {/* Method B: TextureRect Tiled Platform (Alternative Direct Approach) */}
+              <div className="border border-slate-200 bg-slate-50/70 rounded-xl p-4 sm:p-5 space-y-3">
+                <h4 className="font-bold text-slate-900 text-sm sm:text-base flex items-center gap-2">
+                  <span className="px-2.5 py-0.5 rounded bg-slate-700 text-white text-xs font-mono font-bold">Method B (Alternative &bull; Direct Platform)</span>
+                  <span>TextureRect Tiled Platform (StaticBody2D)</span>
+                </h4>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                  An alternative quick-setup approach using a standalone physical body with a repeating tiled texture:
+                </p>
+                <ol className="list-decimal pl-5 text-xs sm:text-sm text-slate-700 space-y-2">
                   <li>Right-click <code className="text-slate-900 font-mono font-bold">Main</code> &gt; <strong>Add Child Node...</strong> &gt; add a <strong>StaticBody2D</strong>. Rename to <code className="text-emerald-700 font-mono font-bold">Ground</code>.</li>
                   <li>Right-click <code className="text-emerald-700 font-mono">Ground</code> &gt; add a <strong>CollisionShape2D</strong>. Set Shape &rarr; <strong>New RectangleShape2D</strong> with size <code className="text-sky-700 font-mono font-bold">1280 × 64</code>.</li>
                   <li>Right-click <code className="text-emerald-700 font-mono">Ground</code> &gt; add a <strong>TextureRect</strong> (rename to <code className="text-sky-700 font-mono font-bold">GroundVisual</code>). Assign your ground tile PNG into Texture, set <strong>Expand Mode: Ignore Size</strong>, set <strong>Stretch Mode: Tile</strong>, and set <strong>Size: 1280 × 64</strong> with <strong>Position: (-640, -32)</strong> to center on the collider.</li>
                   <li>Set parent <code className="text-emerald-700 font-mono">Ground</code> position to <code className="text-sky-700 font-mono">(640, 688)</code> to rest cleanly at the screen bottom.</li>
                 </ol>
               </div>
-
-              <div className="border border-slate-200 bg-slate-50/60 rounded-xl p-4 space-y-2">
-                <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded bg-slate-700 text-white text-xs font-mono">Method B</span>
-                  <span>TileMap with 16×16 Physics TileSet (Video Guide Workflow)</span>
-                </h4>
-                <ol className="list-decimal pl-5 text-xs sm:text-sm text-slate-700 space-y-1.5">
-                  <li>Right-click <code className="text-slate-900 font-mono font-bold">Main</code> &gt; <strong>Add Child Node...</strong> &gt; search for <strong>TileMap</strong> (or <strong>TileMapLayer</strong> in Godot 4.3+).</li>
-                  <li>In the Inspector &gt; TileSet &gt; click <strong>New TileSet</strong>. Set <strong>Tile Size: 16 × 16</strong>.</li>
-                  <li>Under TileSet properties in Inspector, expand <strong>Physics Layers</strong> &gt; click <strong>Add Element</strong> (creates Physics Layer 0).</li>
-                  <li>In bottom TileSet panel, drag <code className="font-mono text-xs">Terrain (16x16).png</code> in. Click <strong>Paint &gt; Physics Layer 0</strong> and click tiles to paint collision boundaries.</li>
-                  <li>In the <strong>TileMap</strong> tab, paint ground platforms across the level!</li>
-                </ol>
-              </div>
             </div>
 
-            <div className="bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-xs leading-relaxed">
-              <span className="text-slate-500 uppercase tracking-wider text-[10px] block mb-1">Terrain Hierarchy:</span>
-              <p className="text-emerald-400 font-bold">Ground [StaticBody2D] &mdash; (Position: 640, 688)</p>
-              <p className="pl-4 text-pink-400">&boxur; CollisionShape2D &mdash; (RectangleShape2D 1280×64)</p>
-              <p className="pl-4 text-sky-400">&boxur; GroundVisual [TextureRect] &mdash; (Expand: Ignore Size | Stretch: Tile | Size: 1280×64)</p>
+            <div className="bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-xs leading-relaxed space-y-2">
+              <span className="text-slate-500 uppercase tracking-wider text-[10px] block mb-1">Terrain Node Hierarchies:</span>
+              <div>
+                <p className="text-indigo-400 font-bold">Method A (Video Guide TileMap):</p>
+                <p className="pl-4 text-slate-300">Main [Node2D]</p>
+                <p className="pl-8 text-emerald-400">&boxur; TerrainTileMap [TileMap / TileMapLayer] &mdash; (TileSet 16×16 | Physics Layer 0)</p>
+              </div>
+              <div className="pt-1 border-t border-slate-800">
+                <p className="text-sky-400 font-bold">Method B (TextureRect Alternative):</p>
+                <p className="pl-4 text-emerald-400">Ground [StaticBody2D] &mdash; (Position: 640, 688)</p>
+                <p className="pl-8 text-pink-400">&boxur; CollisionShape2D &mdash; (RectangleShape2D 1280×64)</p>
+                <p className="pl-8 text-sky-400">&boxur; GroundVisual [TextureRect] &mdash; (Expand: Ignore Size | Stretch: Tile | Size: 1280×64)</p>
+              </div>
             </div>
           </div>
         </section>
