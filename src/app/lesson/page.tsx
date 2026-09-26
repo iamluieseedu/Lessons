@@ -14,7 +14,6 @@ import { SlideViewer } from '@/components/SlideViewer';
 import { NavigationControls } from '@/components/NavigationControls';
 import { ThumbnailDrawer } from '@/components/ThumbnailDrawer';
 import { KeyboardHelpModal } from '@/components/KeyboardHelpModal';
-import { TeacherScriptDrawer } from '@/components/TeacherScriptDrawer';
 import { Film, ArrowLeft, Lock, BookOpen, GraduationCap, ExternalLink } from 'lucide-react';
 import { AdSidebar } from '@/components/AdSidebar';
 import { CONFIG } from '@/config';
