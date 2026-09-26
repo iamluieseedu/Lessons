@@ -21,7 +21,10 @@ import {
   ListChecks,
   Monitor,
   Cpu,
-  BookOpen
+  BookOpen,
+  Play,
+  ExternalLink,
+  Video
 } from 'lucide-react';
 
 export default function GodotLabManualPage() {
@@ -56,12 +59,12 @@ export default function GodotLabManualPage() {
   };
 
   const milestones = [
-    { id: 'm1', label: 'Milestone 1: Project Creation & Mobile Display Viewport (1280×720, canvas_items, touch emulation)' },
-    { id: 'm2', label: 'Milestone 2: Blank Root Node2D & Fullscreen Background PNG Setup (z-index -10)' },
-    { id: 'm3', label: 'Milestone 3: Static Terrain Setup (StaticBody2D + TextureRect tiling + RectangleShape2D)' },
-    { id: 'm4', label: 'Milestone 4: Player Character Assembly (CharacterBody2D + Sprite2D + CapsuleShape2D)' },
-    { id: 'm5', label: 'Milestone 5: GDScript Kinematic Physics Scripting (gravity, jump, input axis, move_and_slide)' },
-    { id: 'm6', label: 'Milestone 6: 2D Physics Layer Names & Collision Mask Matrix (Terrain Layer 1, Player Mask 1)' },
+    { id: 'm1', label: 'Milestone 1: Project Creation, Mobile Renderer & Pixel Art Nearest Filter (1280×720, canvas_items)' },
+    { id: 'm2', label: 'Milestone 2: Blank Root Node2D & Background PNG (TextureRect Tile Mode / Sprite2D z-index -10)' },
+    { id: 'm3', label: 'Milestone 3: Terrain Setup (StaticBody2D + TextureRect Tiling or TileMap + RectangleShape2D)' },
+    { id: 'm4', label: 'Milestone 4: Character Assembly (CharacterBody2D + AnimatedSprite2D SpriteFrames / CapsuleShape2D)' },
+    { id: 'm5', label: 'Milestone 5: GDScript Kinematic Physics & Animations (gravity, jump, move_toward, flip_h, move_and_slide)' },
+    { id: 'm6', label: 'Milestone 6: 2D Physics Layer Matrix (Terrain Layer 1, Player Mask 1) & Camera2D Follow' },
   ];
 
   const completedCount = milestones.filter(m => checkedItems[m.id]).length;
@@ -69,46 +72,53 @@ export default function GodotLabManualPage() {
 
   const playerGdScript = `extends CharacterBody2D
 
-## 2D Kinematic Player Controller with Gravity, Jump, and Directional Input
-## Designed for Mobile/Desktop 2D Platformer gameplay in Godot 4.
+## 2D Kinematic Player Controller with Gravity, Jump, and Animations
+## Based on Coco Code's Godot 2D Platformer tutorial (YouTube: 5V9f3MT86M8)
 
 # Movement Constants
 const SPEED: float = 300.0
-const JUMP_VELOCITY: float = -450.0
+const JUMP_VELOCITY: float = -400.0
 
 # Fetch default 2D gravity value from Project Settings (default: 980 px/s²)
 var gravity: float = ProjectSettings.get_setting("physics/2d/default_gravity")
 
-# Reference to the child visual sprite
-@onready var sprite: Sprite2D = $PlayerSprite
+# Reference to the AnimatedSprite2D child node
+@onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 
 func _physics_process(delta: float) -> void:
-	# 1. APPLY GRAVITY WHEN AIRBORNE
-	# Godot 2D coordinates: +Y points downward towards the ground.
+	# 1. APPLY GRAVITY WHEN AIRBORNE (+Y is downward in Godot 2D)
 	if not is_on_floor():
 		velocity.y += gravity * delta
 
 	# 2. HANDLE JUMP IMPULSE
-	# ui_accept corresponds to Spacebar, Enter, or Virtual Jump Button on mobile
+	# ui_accept corresponds to Spacebar, Enter, or Virtual Mobile Jump Button
 	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
 		velocity.y = JUMP_VELOCITY
 
-	# 3. READ HORIZONTAL INPUT AXIS
-	# Input.get_axis returns a float from -1.0 (left) to +1.0 (right), or 0.0 if idle
+	# 3. READ HORIZONTAL INPUT AXIS (-1.0 for Left, +1.0 for Right, 0.0 for Idle)
 	var direction: float = Input.get_axis("ui_left", "ui_right")
 
-	# 4. COMPUTE HORIZONTAL VELOCITY & SPRITE FLIPPING
+	# 4. HANDLE MOVEMENT & ANIMATION STATES
 	if direction != 0.0:
 		velocity.x = direction * SPEED
-		# Flip sprite texture horizontally based on facing direction
-		sprite.flip_h = direction < 0.0
+		# Flip sprite horizontally based on moving direction
+		animated_sprite.flip_h = direction < 0.0
+		# Play running animation when grounded
+		if is_on_floor():
+			animated_sprite.play("run")
 	else:
-		# Smooth deceleration towards 0 when no keys/joystick are held
-		velocity.x = move_toward(velocity.x, 0.0, SPEED * 8.0 * delta)
+		# Smooth deceleration towards 0 when no keys are held
+		velocity.x = move_toward(velocity.x, 0.0, SPEED)
+		# Play idle animation when standing on the ground
+		if is_on_floor():
+			animated_sprite.play("idle")
 
-	# 5. EXECUTE MOVE AND SLIDE COLLISION RESOLUTION
-	# In Godot 4, move_and_slide() automatically uses the body's internal 'velocity'
-	# and incorporates delta internally. It updates is_on_floor() automatically!
+	# 5. PLAY JUMP ANIMATION IN AIR
+	if not is_on_floor():
+		animated_sprite.play("jump")
+
+	# 6. EXECUTE KINEMATIC COLLISION RESOLUTION
+	# move_and_slide() automatically applies internal velocity and updates is_on_floor()!
 	move_and_slide()`;
 
   return (
@@ -212,6 +222,41 @@ func _physics_process(delta: float) -> void:
           </div>
         </header>
 
+        {/* YouTube Video Companion Reference */}
+        <div className="bg-gradient-to-r from-sky-50 via-indigo-50 to-purple-50 border border-sky-200/90 rounded-2xl p-5 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-3.5">
+            <div className="w-11 h-11 rounded-xl bg-red-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-red-600/20 mt-0.5">
+              <Play className="w-5 h-5 fill-current ml-0.5" />
+            </div>
+            <div className="space-y-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-red-100 text-red-700 font-mono">
+                  Official Video Companion
+                </span>
+                <span className="text-xs font-semibold text-slate-500">
+                  Coco Code &bull; Godot 4 Beginner Tutorial
+                </span>
+              </div>
+              <h3 className="text-sm sm:text-base font-bold text-slate-900 font-lexend">
+                Based on: &ldquo;Start Your Game Creation Journey Today!&rdquo;
+              </h3>
+              <p className="text-xs text-slate-600 leading-relaxed max-w-2xl">
+                This laboratory manual faithfully follows the exact progression from Coco Code&apos;s tutorial. Learn how to configure mobile viewports, set nearest pixel art filtering, tile backgrounds and terrain via <code className="text-sky-700 font-mono font-bold">TextureRect</code> / <code className="text-indigo-700 font-mono font-bold">TileMap</code>, assemble Ninja Frog with <code className="text-rose-700 font-mono font-bold">AnimatedSprite2D</code>, and script kinematic jump physics.
+              </p>
+            </div>
+          </div>
+          <a
+            href="https://youtu.be/5V9f3MT86M8?si=q2eBOXEq5z2sqa5C"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition flex items-center gap-2 shadow-sm font-lexend hover:shadow-md"
+          >
+            <Video className="w-3.5 h-3.5" />
+            <span>Watch Tutorial</span>
+            <ExternalLink className="w-3 h-3 text-red-200" />
+          </a>
+        </div>
+
         {/* Interactive Progress Checklist */}
         <section className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
           <div className="flex items-center justify-between mb-4">
@@ -283,43 +328,56 @@ func _physics_process(delta: float) -> void:
             <div className="space-y-2 pt-3 border-t border-slate-100">
               <h3 className="font-bold text-slate-900 text-sm sm:text-base flex items-center gap-2">
                 <span className="w-5 h-5 rounded-full bg-sky-100 text-sky-700 text-xs flex items-center justify-center font-bold">2</span>
-                Configure Mobile Resolution & Stretch Mode
+                Configure Mobile Resolution, Stretch Mode &amp; Pixel Art Filter
               </h3>
               <p className="text-sm text-slate-600">
-                Navigate to <strong>Project &gt; Project Settings &gt; General &gt; Display &gt; Window</strong>:
+                Navigate to <strong>Project &gt; Project Settings</strong> to configure display and rendering:
               </p>
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs sm:text-sm border-collapse">
                   <thead>
                     <tr className="bg-slate-50 border-b border-slate-200 text-slate-700">
-                      <th className="p-2.5 font-bold">Setting</th>
+                      <th className="p-2.5 font-bold">Setting Path</th>
                       <th className="p-2.5 font-bold">Value</th>
-                      <th className="p-2.5 font-bold">Purpose</th>
+                      <th className="p-2.5 font-bold">Coco Code Note / Purpose</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-slate-600 font-mono text-xs">
                     <tr>
-                      <td className="p-2.5 font-sans font-medium text-slate-800">Viewport Width / Height</td>
+                      <td className="p-2.5 font-sans font-medium text-slate-800">Display &gt; Window &gt; Size</td>
                       <td className="p-2.5 text-sky-700 font-bold">1280 × 720</td>
-                      <td className="p-2.5 font-sans text-slate-500">Standard 16:9 mobile landscape design resolution.</td>
+                      <td className="p-2.5 font-sans text-slate-500">Standard 16:9 mobile landscape base resolution.</td>
                     </tr>
                     <tr>
-                      <td className="p-2.5 font-sans font-medium text-slate-800">Stretch &gt; Mode</td>
+                      <td className="p-2.5 font-sans font-medium text-slate-800">Display &gt; Window &gt; Stretch &gt; Mode</td>
                       <td className="p-2.5 text-emerald-700 font-bold">canvas_items</td>
-                      <td className="p-2.5 font-sans text-slate-500">Scales 2D elements cleanly at native display resolution.</td>
+                      <td className="p-2.5 font-sans text-slate-500">Crisply scales 2D vector &amp; pixel art across phone screens.</td>
                     </tr>
                     <tr>
-                      <td className="p-2.5 font-sans font-medium text-slate-800">Stretch &gt; Aspect</td>
+                      <td className="p-2.5 font-sans font-medium text-slate-800">Display &gt; Window &gt; Stretch &gt; Aspect</td>
                       <td className="p-2.5 text-emerald-700 font-bold">keep</td>
-                      <td className="p-2.5 font-sans text-slate-500">Prevents distortion; preserves aspect ratio across screens.</td>
+                      <td className="p-2.5 font-sans text-slate-500">Preserves screen ratio; eliminates aspect distortion.</td>
                     </tr>
                     <tr>
-                      <td className="p-2.5 font-sans font-medium text-slate-800">Input Devices &gt; Pointing</td>
-                      <td className="p-2.5 text-indigo-700 font-bold">Emulate Touch From Mouse: ON</td>
-                      <td className="p-2.5 font-sans text-slate-500">Enables testing mobile touch taps via desktop mouse clicks.</td>
+                      <td className="p-2.5 font-sans font-medium text-slate-800">Rendering &gt; Textures &gt; Canvas Textures &gt; Default Texture Filter</td>
+                      <td className="p-2.5 text-purple-700 font-bold">Nearest</td>
+                      <td className="p-2.5 font-sans text-slate-500"><strong>Critical for Pixel Art!</strong> Disables bilinear blur so Pixel Adventure sprites remain razor-sharp.</td>
+                    </tr>
+                    <tr>
+                      <td className="p-2.5 font-sans font-medium text-slate-800">Input Devices &gt; Pointing &gt; Emulate Touch</td>
+                      <td className="p-2.5 text-indigo-700 font-bold">ON</td>
+                      <td className="p-2.5 font-sans text-slate-500">Allows testing mobile touch inputs using desktop mouse clicks.</td>
                     </tr>
                   </tbody>
                 </table>
+              </div>
+            </div>
+
+            {/* Asset Pack Note */}
+            <div className="bg-sky-50/70 border border-sky-200/80 rounded-xl p-3.5 text-xs text-slate-700 flex items-start gap-2.5">
+              <Box className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
+              <div>
+                <strong>Assets Used in Tutorial:</strong> Coco Code uses the free <a href="https://pixelfrog-assets.itch.io/pixel-adventure-1" target="_blank" rel="noopener noreferrer" className="text-sky-700 font-bold underline hover:text-sky-800">Pixel Adventure 1</a> pack by Pixel Frog (Ninja Frog, Background tiles, Terrain tiles). Unzip into your project folder under <code className="font-mono bg-sky-100/80 px-1 py-0.2 rounded text-sky-900">res://assets/</code>.
               </div>
             </div>
           </div>
@@ -332,26 +390,30 @@ func _physics_process(delta: float) -> void:
               Milestone 2
             </span>
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
-              Blank Root Node & Background PNG Setup
+              Blank Root Node &amp; Seamless Background Setup (TextureRect Tiling)
             </h2>
           </div>
 
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-4">
-            <ol className="list-decimal pl-6 text-sm text-slate-600 space-y-2">
-              <li>In the <strong>Scene Dock</strong> (top-left), click <strong>2D Scene</strong> to create a root <code className="text-sky-700 font-mono">Node2D</code>.</li>
-              <li>Rename the root node to <code className="text-slate-900 font-bold font-mono">Main</code>.</li>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              In Godot, backgrounds can be made from a single full illustration or an infinitely repeating 64×64 PNG tile. Coco Code utilizes a <code className="text-sky-700 font-mono font-bold">TextureRect</code> with <strong>Tile</strong> stretch mode so small seamless textures repeat across any mobile screen size:
+            </p>
+
+            <ol className="list-decimal pl-6 text-sm text-slate-600 space-y-2.5">
+              <li>In the <strong>Scene Dock</strong> (top-left), click <strong>2D Scene</strong> to create a root <code className="text-sky-700 font-mono font-bold">Node2D</code>. Rename it to <code className="text-slate-900 font-bold font-mono">Main</code> (or <code className="text-slate-900 font-bold font-mono">World</code>).</li>
               <li>Press <kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-300 rounded text-xs font-mono">Ctrl + S</kbd> and save as <code className="text-sky-700 font-mono">res://scenes/main.tscn</code>.</li>
-              <li>In the FileSystem dock, create an <code className="text-slate-700 font-mono">assets/</code> folder and drag in your background image (<code className="text-slate-700 font-mono">background.png</code>).</li>
-              <li>Right-click <code className="text-slate-900 font-bold font-mono">Main</code> &gt; <strong>Add Child Node...</strong> &gt; add a <strong>Sprite2D</strong>. Rename it to <code className="text-slate-900 font-mono">Background</code>.</li>
-              <li>Drag <code className="text-slate-700 font-mono">background.png</code> into the <strong>Texture</strong> property in the Inspector.</li>
-              <li>Set <code className="text-slate-700 font-mono">Transform &gt; Position</code> to <code className="text-sky-700 font-mono">(640, 360)</code> (center of the 1280×720 viewport).</li>
-              <li>Under <strong>Ordering</strong> in Inspector, set <code className="text-emerald-700 font-mono font-bold">Z Index = -10</code> so the background stays strictly behind gameplay objects.</li>
+              <li>Right-click <code className="text-slate-900 font-bold font-mono">Main</code> &gt; <strong>Add Child Node...</strong> &gt; search for <strong>TextureRect</strong>. Rename to <code className="text-slate-900 font-mono font-bold">Background</code>.</li>
+              <li>Drag your background tile (e.g. <code className="text-slate-700 font-mono">Blue.png</code> or <code className="text-slate-700 font-mono">Brown.png</code>) into the <strong>Texture</strong> property in the Inspector.</li>
+              <li>Under <strong>CanvasItem &gt; Texture &gt; Repeat</strong>, set to <code className="text-emerald-700 font-mono font-bold">Enabled</code>.</li>
+              <li>Under <strong>TextureRect &gt; Stretch Mode</strong>, set to <code className="text-emerald-700 font-mono font-bold">Tile</code> (<code className="text-xs font-mono text-slate-500">STRETCH_TILE</code>).</li>
+              <li>Set <strong>Layout &gt; Transform &gt; Size</strong> to <code className="text-sky-700 font-mono font-bold">1280 × 720</code> (or click the green <strong>Layout</strong> button in the 2D viewport header &gt; <strong>Full Rect</strong>).</li>
+              <li>Under <strong>CanvasItem &gt; Ordering</strong>, set <code className="text-emerald-700 font-mono font-bold">Z Index = -10</code> so all characters and terrain render in front.</li>
             </ol>
 
             <div className="bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-xs leading-relaxed">
               <span className="text-slate-500 uppercase tracking-wider text-[10px] block mb-1">Scene Tree Hierarchy:</span>
               <p className="text-blue-400 font-bold">Main [Node2D]</p>
-              <p className="pl-4 text-amber-300">&boxur; Background [Sprite2D] &mdash; (Position: 640, 360 | Z-Index: -10)</p>
+              <p className="pl-4 text-amber-300">&boxur; Background [TextureRect] &mdash; (Repeat: Enabled | Stretch: Tile | Size: 1280×720 | Z-Index: -10)</p>
             </div>
           </div>
         </section>
@@ -363,46 +425,46 @@ func _physics_process(delta: float) -> void:
               Milestone 3
             </span>
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
-              Static Terrain & Ground Setup (TextureRect Tiling)
+              Static Terrain &amp; Ground Setup (TextureRect or TileMap)
             </h2>
           </div>
 
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-5">
             <p className="text-sm text-slate-600 leading-relaxed">
-              A <code className="text-emerald-700 font-mono font-bold">StaticBody2D</code> represents immovable physical terrain that does not react to gravity or impulses. To give it visuals, we use a <code className="text-sky-700 font-mono font-bold">TextureRect</code> with <strong>Tile</strong> stretch mode so a repeating ground/grass texture tiles across the entire 1280px width without stretching!
+              A physical world boundary requires a <code className="text-emerald-700 font-mono font-bold">StaticBody2D</code> so characters can stand on it without falling through infinity. You can construct terrain using either <strong>TextureRect Tiling</strong> or a <strong>TileMap</strong>:
             </p>
 
-            <ol className="list-decimal pl-6 text-sm text-slate-600 space-y-3">
-              <li>
-                <strong>Create the Physics Body:</strong> Right-click <code className="text-slate-900 font-mono font-bold">Main</code> &gt; <strong>Add Child Node...</strong> &gt; search for <strong>StaticBody2D</strong>. Rename it to <code className="text-emerald-700 font-mono font-bold">Ground</code>.
-              </li>
-              <li>
-                <strong>Add Collision Boundary:</strong> Right-click <code className="text-emerald-700 font-mono">Ground</code> &gt; <strong>Add Child Node...</strong> &gt; add a <strong>CollisionShape2D</strong>. In the Inspector:
-                <ul className="list-disc pl-5 mt-1 space-y-1 text-xs">
-                  <li>Click <strong>Shape</strong> &gt; select <strong>New RectangleShape2D</strong>.</li>
-                  <li>Click into the shape and set <code className="text-sky-700 font-mono font-bold">Size = (x: 1280, y: 64)</code>.</li>
-                </ul>
-              </li>
-              <li>
-                <strong>Add Visual Surface via TextureRect (Recommended):</strong>
-                <ul className="list-disc pl-5 mt-1 space-y-1 text-xs text-slate-700">
-                  <li>Right-click <code className="text-emerald-700 font-mono">Ground</code> &gt; <strong>Add Child Node...</strong> &gt; search for <strong>TextureRect</strong>. Rename it to <code className="text-sky-700 font-mono font-bold">GroundVisual</code>.</li>
-                  <li>In Inspector, drag your ground/dirt/grass tile PNG into the <strong>Texture</strong> property.</li>
-                  <li>Set <strong>Expand Mode</strong> to <code className="text-indigo-700 font-mono font-bold">Ignore Size</code> (enables custom resizing).</li>
-                  <li>Set <strong>Stretch Mode</strong> to <code className="text-emerald-700 font-mono font-bold">Tile</code> (repeats the ground texture seamlessly across width!).</li>
-                  <li>Under <strong>Layout &gt; Transform</strong>, set <code className="text-sky-700 font-mono">Size = (x: 1280, y: 64)</code> and <code className="text-sky-700 font-mono">Position = (x: -640, y: -32)</code> so it aligns perfectly with the centered collision shape.</li>
-                </ul>
-              </li>
-              <li>
-                <strong>Prototyping Alternative (ColorRect):</strong> If you do not have a terrain texture yet, you can alternatively use a <strong>ColorRect</strong> with size <code className="text-sky-700 font-mono">1280 × 64</code> and color <code className="text-emerald-800 font-mono">#2d6a4f</code>.
-              </li>
-              <li>
-                <strong>Screen Anchor & Grouping:</strong> Select the parent <code className="text-emerald-700 font-mono">Ground</code> node and set its <code className="text-slate-900 font-mono font-bold">Transform &gt; Position</code> to <code className="text-sky-700 font-mono">(640, 688)</code> to anchor it at the screen bottom. Press <kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-300 rounded text-xs font-mono">Ctrl + G</kbd> to lock its children together.
-              </li>
-            </ol>
+            <div className="space-y-4">
+              <div className="border border-indigo-200 bg-indigo-50/40 rounded-xl p-4 space-y-2">
+                <h4 className="font-bold text-indigo-950 text-sm flex items-center gap-2">
+                  <span className="px-2 py-0.5 rounded bg-indigo-600 text-white text-xs font-mono">Method A</span>
+                  <span>TextureRect Tiled Platform (Fast &amp; Direct)</span>
+                </h4>
+                <ol className="list-decimal pl-5 text-xs sm:text-sm text-slate-700 space-y-1.5">
+                  <li>Right-click <code className="text-slate-900 font-mono font-bold">Main</code> &gt; <strong>Add Child Node...</strong> &gt; add a <strong>StaticBody2D</strong>. Rename to <code className="text-emerald-700 font-mono font-bold">Ground</code>.</li>
+                  <li>Right-click <code className="text-emerald-700 font-mono">Ground</code> &gt; add a <strong>CollisionShape2D</strong>. Set Shape &rarr; <strong>New RectangleShape2D</strong> with size <code className="text-sky-700 font-mono font-bold">1280 × 64</code>.</li>
+                  <li>Right-click <code className="text-emerald-700 font-mono">Ground</code> &gt; add a <strong>TextureRect</strong> (rename to <code className="text-sky-700 font-mono font-bold">GroundVisual</code>). Assign your ground tile PNG into Texture, set <strong>Expand Mode: Ignore Size</strong>, set <strong>Stretch Mode: Tile</strong>, and set <strong>Size: 1280 × 64</strong> with <strong>Position: (-640, -32)</strong> to center on the collider.</li>
+                  <li>Set parent <code className="text-emerald-700 font-mono">Ground</code> position to <code className="text-sky-700 font-mono">(640, 688)</code> to rest cleanly at the screen bottom.</li>
+                </ol>
+              </div>
+
+              <div className="border border-slate-200 bg-slate-50/60 rounded-xl p-4 space-y-2">
+                <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                  <span className="px-2 py-0.5 rounded bg-slate-700 text-white text-xs font-mono">Method B</span>
+                  <span>TileMap with 16×16 Physics TileSet (Coco Code Video Workflow)</span>
+                </h4>
+                <ol className="list-decimal pl-5 text-xs sm:text-sm text-slate-700 space-y-1.5">
+                  <li>Right-click <code className="text-slate-900 font-mono font-bold">Main</code> &gt; <strong>Add Child Node...</strong> &gt; search for <strong>TileMap</strong> (or <strong>TileMapLayer</strong> in Godot 4.3+).</li>
+                  <li>In the Inspector &gt; TileSet &gt; click <strong>New TileSet</strong>. Set <strong>Tile Size: 16 × 16</strong>.</li>
+                  <li>Under TileSet properties in Inspector, expand <strong>Physics Layers</strong> &gt; click <strong>Add Element</strong> (creates Physics Layer 0).</li>
+                  <li>In bottom TileSet panel, drag <code className="font-mono text-xs">Terrain (16x16).png</code> in. Click <strong>Paint &gt; Physics Layer 0</strong> and click tiles to paint collision boundaries.</li>
+                  <li>In the <strong>TileMap</strong> tab, paint ground platforms across the level!</li>
+                </ol>
+              </div>
+            </div>
 
             <div className="bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-xs leading-relaxed">
-              <span className="text-slate-500 uppercase tracking-wider text-[10px] block mb-1">Terrain Hierarchy with TextureRect:</span>
+              <span className="text-slate-500 uppercase tracking-wider text-[10px] block mb-1">Terrain Hierarchy:</span>
               <p className="text-emerald-400 font-bold">Ground [StaticBody2D] &mdash; (Position: 640, 688)</p>
               <p className="pl-4 text-pink-400">&boxur; CollisionShape2D &mdash; (RectangleShape2D 1280×64)</p>
               <p className="pl-4 text-sky-400">&boxur; GroundVisual [TextureRect] &mdash; (Expand: Ignore Size | Stretch: Tile | Size: 1280×64)</p>
@@ -417,18 +479,36 @@ func _physics_process(delta: float) -> void:
               Milestone 4
             </span>
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
-              Player Character Assembly
+              Player Character Assembly (AnimatedSprite2D &amp; Hitbox)
             </h2>
           </div>
 
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-4">
-            <ol className="list-decimal pl-6 text-sm text-slate-600 space-y-2">
-              <li>Right-click <code className="text-slate-900 font-mono font-bold">Main</code> &gt; <strong>Add Child Node...</strong> &gt; add a <strong>CharacterBody2D</strong>. Rename to <code className="text-rose-600 font-mono font-bold">Player</code>.</li>
-              <li>Add child <strong>Sprite2D</strong> named <code className="text-slate-800 font-mono">PlayerSprite</code>. Assign character PNG or <code className="text-slate-700 font-mono">icon.svg</code> into Texture.</li>
-              <li>Add child <strong>CollisionShape2D</strong> named <code className="text-slate-800 font-mono">PlayerCollider</code>. In Inspector, select <strong>New CapsuleShape2D</strong> (Radius: <code className="text-sky-700 font-mono">24</code>, Height: <code className="text-sky-700 font-mono">64</code>).</li>
-              <li>With <code className="text-rose-600 font-mono font-bold">Player</code> selected, press <kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-300 rounded text-xs font-mono">Ctrl + G</kbd> to lock child selection.</li>
-              <li>Position the player hovering in the air above the terrain (e.g. <code className="text-sky-700 font-mono">x: 320, y: 300</code>).</li>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              In Coco Code&apos;s tutorial, the character (Ninja Frog) is assembled as a dedicated scene using an <code className="text-rose-700 font-mono font-bold">AnimatedSprite2D</code> with multiple animation frames:
+            </p>
+
+            <ol className="list-decimal pl-6 text-sm text-slate-600 space-y-2.5">
+              <li>Click <strong>Scene &gt; New Scene</strong> &gt; choose <strong>Other Node</strong> &gt; search for <strong>CharacterBody2D</strong>. Rename root to <code className="text-rose-600 font-mono font-bold">Player</code>. Save as <code className="text-sky-700 font-mono">res://scenes/player.tscn</code>.</li>
+              <li>Right-click <code className="text-rose-600 font-mono">Player</code> &gt; <strong>Add Child Node...</strong> &gt; add an <strong>AnimatedSprite2D</strong>.</li>
+              <li>In the Inspector under <strong>Animation &gt; Sprite Frames</strong>, click dropdown &gt; <strong>New SpriteFrames</strong> &gt; click it to open the bottom SpriteFrames panel.</li>
+              <li>Configure the 3 core platformer animations:
+                <ul className="list-disc pl-5 mt-1 space-y-1 text-xs text-slate-700">
+                  <li><strong>idle:</strong> Click &ldquo;Add frames from sprite sheet&rdquo; &gt; select <code className="font-mono">Idle (32x32).png</code> &gt; set 11 horizontal slices &gt; select all &gt; set <strong>Speed: 20 FPS</strong> &gt; <strong>Loop: ON</strong>.</li>
+                  <li><strong>run:</strong> Click new animation icon &gt; name it <code className="font-mono">run</code> &gt; add frames from <code className="font-mono">Run (32x32).png</code> (12 frames) &gt; set <strong>Speed: 20 FPS</strong> &gt; <strong>Loop: ON</strong>.</li>
+                  <li><strong>jump:</strong> Click new animation icon &gt; name it <code className="font-mono">jump</code> &gt; add frame from <code className="font-mono">Jump (32x32).png</code> (1 frame) &gt; <strong>Loop: OFF</strong>.</li>
+                </ul>
+              </li>
+              <li>Right-click <code className="text-rose-600 font-mono">Player</code> &gt; add a <strong>CollisionShape2D</strong>. In Inspector, select <strong>New CapsuleShape2D</strong> (Radius: <code className="text-sky-700 font-mono">10</code>, Height: <code className="text-sky-700 font-mono">24</code>) and position it snugly around the character torso.</li>
+              <li>Switch back to <code className="text-slate-800 font-mono">main.tscn</code> and click the <strong>Instantiate Child Scene</strong> icon (chain link) on <code className="text-slate-900 font-mono">Main</code> &gt; pick <code className="text-sky-700 font-mono">player.tscn</code>. Position the player at <code className="text-sky-700 font-mono">(320, 400)</code>.</li>
             </ol>
+
+            <div className="bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-xs leading-relaxed">
+              <span className="text-slate-500 uppercase tracking-wider text-[10px] block mb-1">Player Scene Hierarchy:</span>
+              <p className="text-rose-400 font-bold">Player [CharacterBody2D]</p>
+              <p className="pl-4 text-emerald-300">&boxur; AnimatedSprite2D &mdash; (SpriteFrames: idle, run, jump @ 20 FPS)</p>
+              <p className="pl-4 text-pink-400">&boxur; CollisionShape2D &mdash; (CapsuleShape2D radius: 10, height: 24)</p>
+            </div>
           </div>
         </section>
 
@@ -518,10 +598,25 @@ func _physics_process(delta: float) -> void:
               </div>
             </div>
 
+            {/* Step 3: Camera2D Follow Setup (Coco Code Step) */}
+            <div className="space-y-2 pt-3 border-t border-slate-100">
+              <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                <span className="w-5 h-5 rounded-full bg-sky-100 text-sky-700 text-xs flex items-center justify-center font-bold">3</span>
+                Attach Camera2D Follow Node (Viewport Tracking)
+              </h4>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Open <code className="font-mono text-xs">player.tscn</code>, right-click <code className="font-mono text-xs font-bold text-rose-700">Player</code> &gt; <strong>Add Child Node...</strong> &gt; add a <strong>Camera2D</strong>:
+              </p>
+              <ul className="list-disc pl-5 space-y-1 text-xs text-slate-600">
+                <li>Set <strong>Zoom:</strong> <code className="font-mono text-sky-700 font-bold">(2.5, 2.5)</code> or <code className="font-mono text-sky-700 font-bold">(3.0, 3.0)</code> &mdash; zooms closely into the pixel art character for responsive mobile displays.</li>
+                <li>Under <strong>Position Smoothing:</strong> check <code className="font-mono text-emerald-700 font-bold">Enabled = ON</code> (Speed: 5.0) for silky smooth camera panning when the player runs and jumps.</li>
+              </ul>
+            </div>
+
             <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs sm:text-sm flex items-start gap-2.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
               <div>
-                <strong>Test & Verify (F5):</strong> Press <kbd className="px-1.5 py-0.5 bg-white border border-emerald-300 rounded text-xs font-mono font-bold">F5</kbd>. The player will fall with gravity and land securely on the green terrain. Press Left/Right arrows or <kbd>A</kbd>/<kbd>D</kbd> to move and flip, and <kbd>Space</kbd> to jump!
+                <strong>Test & Verify (F5):</strong> Press <kbd className="px-1.5 py-0.5 bg-white border border-emerald-300 rounded text-xs font-mono font-bold">F5</kbd>. The player will fall with gravity and land securely on the tiled terrain. Press Left/Right arrows or <kbd>A</kbd>/<kbd>D</kbd> to run and flip, and <kbd>Space</kbd> to jump with smooth Camera2D tracking!
               </div>
             </div>
           </div>

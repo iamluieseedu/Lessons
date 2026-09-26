@@ -93,23 +93,23 @@ export const DEFAULT_TASKS: CourseTask[] = [
     status: 'active',
     duration: '60 - 90 mins',
     weekAlignment: 'Week 1 Practical Lab',
-    description: 'Create a 2D mobile game from scratch in Godot 4: mobile resolution & viewport setup, Node2D root, background sprite, static terrain collision, CharacterBody2D player assembly, GDScript event-driven movement, and physics layer masking.',
+    description: 'Create a 2D mobile game from scratch in Godot 4 following Coco Code\'s beginner guide: mobile resolution & viewport setup, Nearest texture filtering, background TextureRect tiling, static terrain collision, CharacterBody2D player assembly with AnimatedSprite2D, GDScript movement, and physics layer masking.',
     objectives: [
-      'Initialize Godot 4 project with Mobile renderer, 1280x720 canvas_items stretch, and touch emulation',
-      'Construct a Node2D scene hierarchy and anchor a full-viewport single PNG background',
-      'Build static ground terrain geometry using StaticBody2D with TextureRect tiling and RectangleShape2D',
-      'Assemble a CharacterBody2D player with Sprite2D and CapsuleShape2D collision bounds',
+      'Initialize Godot 4 project with Mobile renderer, 1280x720 canvas_items stretch, Nearest filter, and touch emulation',
+      'Construct a Node2D scene hierarchy and tile a seamless background PNG using TextureRect',
+      'Build static ground terrain geometry using StaticBody2D with TextureRect tiling or TileMap with Physics Layer 0',
+      'Assemble a CharacterBody2D player with AnimatedSprite2D (idle, run, jump) and CapsuleShape2D bounds',
       'Implement event-driven movement, gravity, jump, and deceleration in GDScript',
-      'Configure 2D Physics Layers and Collision Masks to prevent falling through the world'
+      'Configure 2D Physics Layers, Collision Masks, and Camera2D follow node to complete the game loop'
     ],
     deliverables: [
-      'Playable Godot 4 project directory with scenes/main.tscn and scripts/player.gd',
-      'Verified physical collision contact where player stands and runs on terrain',
+      'Playable Godot 4 project directory with scenes/main.tscn, scenes/player.tscn, and scripts/player.gd',
+      'Verified physical collision contact where player stands, runs, and jumps on terrain',
       'Completed laboratory report and self-evaluation checklist'
     ],
-    techStack: ['Godot Engine 4.x', 'GDScript 2.0', '2D Physics Engine', 'Mobile Canvas Stretch'],
+    techStack: ['Godot Engine 4.x', 'GDScript 2.0', '2D Physics Engine', 'Mobile Canvas Stretch', 'Coco Code Guide'],
     launchUrl: '/godot/',
-    actionText: 'Launch Godot Lab Manual',
+    actionText: 'Open Godot Lab Manual',
     isExternal: true
   }
 ];
