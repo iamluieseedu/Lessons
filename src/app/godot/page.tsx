@@ -425,13 +425,13 @@ func _physics_process(delta: float) -> void:
               Milestone 3
             </span>
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
-              Static Terrain &amp; Ground Setup (TextureRect or TileMap)
+              Static Terrain &amp; Ground Setup (TileMap or TextureRect)
             </h2>
           </div>
 
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-5">
             <p className="text-sm text-slate-600 leading-relaxed">
-              A physical world boundary requires a <code className="text-emerald-700 font-mono font-bold">StaticBody2D</code> so characters can stand on it without falling through infinity. You can construct terrain using either <strong>TextureRect Tiling</strong> or a <strong>TileMap</strong>:
+              Terrain in platform games must be solid and unyielding so characters can stand securely without falling through infinity. In Godot 4, you can construct terrain surfaces using either a modular <strong>TileMap with 16×16 Physics Layer painting</strong> (the primary workflow from the video tutorial) or a standalone <strong>StaticBody2D with TextureRect Tiling</strong>:
             </p>
 
             <div className="space-y-4">
