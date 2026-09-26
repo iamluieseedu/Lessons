@@ -21,10 +21,7 @@ import {
   ListChecks,
   Monitor,
   Cpu,
-  BookOpen,
-  Play,
-  ExternalLink,
-  Video
+  BookOpen
 } from 'lucide-react';
 
 export default function GodotLabManualPage() {
@@ -73,7 +70,7 @@ export default function GodotLabManualPage() {
   const playerGdScript = `extends CharacterBody2D
 
 ## 2D Kinematic Player Controller with Gravity, Jump, and Animations
-## Based on the Godot 2D Platformer tutorial (YouTube: 5V9f3MT86M8)
+## Godot Engine 4.x CharacterBody2D Implementation
 
 # Movement Constants
 const SPEED: float = 300.0
@@ -222,40 +219,7 @@ func _physics_process(delta: float) -> void:
           </div>
         </header>
 
-        {/* YouTube Video Companion Reference */}
-        <div className="bg-gradient-to-r from-sky-50 via-indigo-50 to-purple-50 border border-sky-200/90 rounded-2xl p-5 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-start gap-3.5">
-            <div className="w-11 h-11 rounded-xl bg-red-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-red-600/20 mt-0.5">
-              <Play className="w-5 h-5 fill-current ml-0.5" />
-            </div>
-            <div className="space-y-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-red-100 text-red-700 font-mono">
-                  Official Video Companion
-                </span>
-                <span className="text-xs font-semibold text-slate-500">
-                  Godot 4 Beginner Tutorial Guide
-                </span>
-              </div>
-              <h3 className="text-sm sm:text-base font-bold text-slate-900 font-lexend">
-                Based on: &ldquo;Start Your Game Creation Journey Today!&rdquo;
-              </h3>
-              <p className="text-xs text-slate-600 leading-relaxed max-w-2xl">
-                This laboratory manual faithfully follows the exact progression from the reference video tutorial. Learn how to configure mobile viewports, set nearest pixel art filtering, tile backgrounds and terrain via <code className="text-sky-700 font-mono font-bold">TextureRect</code> / <code className="text-indigo-700 font-mono font-bold">TileMap</code>, assemble Ninja Frog with <code className="text-rose-700 font-mono font-bold">AnimatedSprite2D</code>, and script kinematic jump physics.
-              </p>
-            </div>
-          </div>
-          <a
-            href="https://youtu.be/5V9f3MT86M8?si=q2eBOXEq5z2sqa5C"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="shrink-0 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition flex items-center gap-2 shadow-sm font-lexend hover:shadow-md"
-          >
-            <Video className="w-3.5 h-3.5" />
-            <span>Watch Tutorial</span>
-            <ExternalLink className="w-3 h-3 text-red-200" />
-          </a>
-        </div>
+
 
         {/* Interactive Progress Checklist */}
         <section className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
