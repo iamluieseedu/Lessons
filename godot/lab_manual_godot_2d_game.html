@@ -1141,20 +1141,20 @@
                 Static Terrain & Ground Setup (TileMap or TextureRect)
             </h2>
             <p class="section-desc">
-                Terrain in platform games must be solid and unyielding. In Godot 4, you can construct terrain surfaces using either <strong>TileMap with Physics Layer painting</strong> (the workflow demonstrated in the video tutorial) or a standalone <strong>StaticBody2D with TextureRect Tiling</strong>.
+                Terrain in platform games must be solid and unyielding. In Godot 4, you can construct terrain surfaces using either <strong>TileMap with Physics Layer painting</strong> or a standalone <strong>StaticBody2D with TextureRect Tiling</strong>.
             </p>
 
-            <!-- Method A: Video Guide TileMap Workflow -->
+            <!-- Method A: TileMap with Physics TileSet -->
             <div class="step-card" style="border-left: 4px solid #4f46e5; margin-bottom: 24px;">
                 <div class="step-header">
                     <div class="step-num-title">
                         <div class="step-num-circle" style="background: #4f46e5;">A</div>
-                        <span>Method A (Primary • Video Guide Workflow): TileMap with 16×16 Physics TileSet</span>
+                        <span>Method A: TileMap with 16×16 Physics TileSet</span>
                     </div>
-                    <span class="step-category-badge" style="background: #eef2ff; color: #4338ca;">Video Tutorial Method</span>
+                    <span class="step-category-badge" style="background: #eef2ff; color: #4338ca;">TileMap &amp; Physics</span>
                 </div>
                 <p style="font-size: 13.5px; color: var(--text-body); margin-bottom: 12px;">
-                    This is the exact method demonstrated in the reference video tutorial. It allows you to freely paint platforms and natural terrain using modular 16×16 pixel art tiles with built-in collision geometry:
+                    Freely paint platforms and modular terrain using modular 16×16 pixel art tiles with built-in collision geometry:
                 </p>
                 <ol class="step-steps-list">
                     <li>Right-click the <code>Main</code> root node &gt; <strong>Add Child Node...</strong> &gt; search for <strong>TileMap</strong> (or <strong>TileMapLayer</strong> in Godot 4.3+). Rename it to <code>TerrainTileMap</code>.</li>
@@ -1174,7 +1174,7 @@
                 <div class="callout-box tip">
                     <i class="fa-solid fa-cube"></i>
                     <div>
-                        <strong>Video Tutorial Advantage:</strong> Using TileMap physics layers allows you to paint multi-tier platforms, floating islands, and stairs in seconds without manually positioning individual collision rectangles for every single ledge.
+                        <strong>TileMap Physics Advantage:</strong> Using TileMap physics layers allows you to paint multi-tier platforms, floating islands, and stairs in seconds without manually positioning individual collision rectangles for every single ledge.
                     </div>
                 </div>
             </div>
@@ -1184,12 +1184,12 @@
                 <div class="step-header">
                     <div class="step-num-title">
                         <div class="step-num-circle" style="background: #0284c7;">B</div>
-                        <span>Method B (Alternative • Direct Platform): TextureRect Tiled Platform (StaticBody2D)</span>
+                        <span>Method B: TextureRect Tiled Platform (StaticBody2D)</span>
                     </div>
-                    <span class="step-category-badge" style="background: #e0f2fe; color: #0369a1;">Direct Platform</span>
+                    <span class="step-category-badge" style="background: #e0f2fe; color: #0369a1;">StaticBody2D</span>
                 </div>
                 <p style="font-size: 13.5px; color: var(--text-body); margin-bottom: 12px;">
-                    If you prefer a single continuous floor or simple rectangular platforms without configuring a tile sheet:
+                    Construct a continuous floor or rectangular platforms using a physical body with repeating tiled texture:
                 </p>
                 <ol class="step-steps-list">
                     <li>Right-click the <code>Main</code> root node &gt; <strong>Add Child Node...</strong> &gt; search for <strong>StaticBody2D</strong>. Rename it to <code>Ground</code>.</li>
@@ -1215,7 +1215,7 @@
                 <div class="node-tree-card">
                     <div style="color: #94a3b8; font-size: 11px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Terrain Node Hierarchies Comparison</div>
                     <div style="margin-bottom: 10px;">
-                        <span style="font-size: 12px; font-weight: 700; color: #818cf8;">Method A (Video Guide TileMap):</span>
+                        <span style="font-size: 12px; font-weight: 700; color: #818cf8;">Method A (TileMap):</span>
                         <div class="tree-line" style="margin-left: 10px; margin-top: 4px;">
                             <span class="tree-tag root">Node2D</span>
                             <span style="font-weight: 700; color: #60a5fa;">Main</span>
@@ -1227,7 +1227,7 @@
                         </div>
                     </div>
                     <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 10px;">
-                        <span style="font-size: 12px; font-weight: 700; color: #38bdf8;">Method B (TextureRect StaticBody2D):</span>
+                        <span style="font-size: 12px; font-weight: 700; color: #38bdf8;">Method B (TextureRect):</span>
                         <div class="tree-line" style="margin-left: 10px; margin-top: 4px;">
                             <span class="tree-tag body">StaticBody2D</span>
                             <span style="font-weight: 700; color: #34d399;">Ground</span>

@@ -431,18 +431,18 @@ func _physics_process(delta: float) -> void:
 
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-5">
             <p className="text-sm text-slate-600 leading-relaxed">
-              Terrain in platform games must be solid and unyielding so characters can stand securely without falling through infinity. In Godot 4, you can construct terrain surfaces using either a modular <strong>TileMap with 16×16 Physics Layer painting</strong> (the primary workflow from the video tutorial) or a standalone <strong>StaticBody2D with TextureRect Tiling</strong>:
+              Terrain in platform games must be solid and unyielding so characters can stand securely without falling through infinity. In Godot 4, you can construct terrain surfaces using either a modular <strong>TileMap with 16×16 Physics Layer painting</strong> or a standalone <strong>StaticBody2D with TextureRect Tiling</strong>:
             </p>
 
             <div className="space-y-4">
-              {/* Method A: TileMap with Physics TileSet (Video Workflow) */}
+              {/* Method A: TileMap with Physics TileSet */}
               <div className="border border-indigo-200 bg-indigo-50/50 rounded-xl p-4 sm:p-5 space-y-3">
                 <h4 className="font-bold text-indigo-950 text-sm sm:text-base flex items-center gap-2">
-                  <span className="px-2.5 py-0.5 rounded bg-indigo-600 text-white text-xs font-mono font-bold">Method A (Primary &bull; Video Guide Workflow)</span>
+                  <span className="px-2.5 py-0.5 rounded bg-indigo-600 text-white text-xs font-mono font-bold">Method A</span>
                   <span>TileMap with 16×16 Physics TileSet</span>
                 </h4>
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                  This is the exact method demonstrated in the video tutorial, allowing you to paint dynamic platforms and terrain directly onto the canvas with automatic collision geometry:
+                  Paint dynamic platforms and modular terrain directly onto the canvas with automatic collision geometry:
                 </p>
                 <ol className="list-decimal pl-5 text-xs sm:text-sm text-slate-700 space-y-2">
                   <li>Right-click <code className="text-slate-900 font-mono font-bold">Main</code> &gt; <strong>Add Child Node...</strong> &gt; search for <strong>TileMap</strong> (or <strong>TileMapLayer</strong> in Godot 4.3+). Rename it to <code className="text-indigo-700 font-mono font-bold">TerrainTileMap</code>.</li>
@@ -459,10 +459,10 @@ func _physics_process(delta: float) -> void:
                 </ol>
               </div>
 
-              {/* Method B: TextureRect Tiled Platform (Alternative Direct Approach) */}
+              {/* Method B: TextureRect Tiled Platform */}
               <div className="border border-slate-200 bg-slate-50/70 rounded-xl p-4 sm:p-5 space-y-3">
                 <h4 className="font-bold text-slate-900 text-sm sm:text-base flex items-center gap-2">
-                  <span className="px-2.5 py-0.5 rounded bg-slate-700 text-white text-xs font-mono font-bold">Method B (Alternative &bull; Direct Platform)</span>
+                  <span className="px-2.5 py-0.5 rounded bg-slate-700 text-white text-xs font-mono font-bold">Method B</span>
                   <span>TextureRect Tiled Platform (StaticBody2D)</span>
                 </h4>
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
@@ -480,12 +480,12 @@ func _physics_process(delta: float) -> void:
             <div className="bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-xs leading-relaxed space-y-2">
               <span className="text-slate-500 uppercase tracking-wider text-[10px] block mb-1">Terrain Node Hierarchies:</span>
               <div>
-                <p className="text-indigo-400 font-bold">Method A (Video Guide TileMap):</p>
+                <p className="text-indigo-400 font-bold">Method A (TileMap):</p>
                 <p className="pl-4 text-slate-300">Main [Node2D]</p>
                 <p className="pl-8 text-emerald-400">&boxur; TerrainTileMap [TileMap / TileMapLayer] &mdash; (TileSet 16×16 | Physics Layer 0)</p>
               </div>
               <div className="pt-1 border-t border-slate-800">
-                <p className="text-sky-400 font-bold">Method B (TextureRect Alternative):</p>
+                <p className="text-sky-400 font-bold">Method B (TextureRect):</p>
                 <p className="pl-4 text-emerald-400">Ground [StaticBody2D] &mdash; (Position: 640, 688)</p>
                 <p className="pl-8 text-pink-400">&boxur; CollisionShape2D &mdash; (RectangleShape2D 1280×64)</p>
                 <p className="pl-8 text-sky-400">&boxur; GroundVisual [TextureRect] &mdash; (Expand: Ignore Size | Stretch: Tile | Size: 1280×64)</p>
@@ -620,7 +620,7 @@ func _physics_process(delta: float) -> void:
               </div>
             </div>
 
-            {/* Step 3: Camera2D Follow Setup (Video Guide Step) */}
+            {/* Step 3: Camera2D Follow Setup */}
             <div className="space-y-2 pt-3 border-t border-slate-100">
               <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
                 <span className="w-5 h-5 rounded-full bg-sky-100 text-sky-700 text-xs flex items-center justify-center font-bold">3</span>
