@@ -9,7 +9,11 @@ import {
   Check,
   CheckCircle2,
   Terminal,
-  ChevronRight
+  ChevronRight,
+  Camera,
+  Video,
+  Code,
+  FolderGit2
 } from 'lucide-react';
 
 export default function LaravelLabManualPage() {
@@ -486,6 +490,9 @@ Route::get('/contact', function () {
           </h2>
 
           <div className="bg-white border border-slate-200 border-l-4 border-l-rose-600 rounded-r-xl p-5 shadow-sm">
+            <span className="text-xs font-bold text-slate-900 uppercase tracking-wider block mb-2 font-mono">
+              Migration Task Steps:
+            </span>
             <ol className="list-decimal pl-5 text-sm text-slate-700 space-y-2.5">
               <li>
                 <strong className="text-slate-900">Audit Your Old Project:</strong> Take a complete multi-page native PHP website you created previously (minimum 3 connected pages).
@@ -500,6 +507,89 @@ Route::get('/contact', function () {
                 <strong className="text-slate-900">Configure Routes &amp; Test:</strong> Map all pages inside <code className="font-mono text-xs text-rose-600 bg-slate-100 px-1 py-0.5 rounded border border-slate-200">routes/web.php</code> and demonstrate your fully functioning multi-page Laravel application to your instructor for grading.
               </li>
             </ol>
+          </div>
+
+          {/* Required Submission Deliverables */}
+          <div className="pt-2">
+            <h3 className="text-base font-bold text-slate-900 mb-1">
+              Required Submission Deliverables
+            </h3>
+            <p className="text-sm text-slate-600 mb-4">
+              Attach and submit the following proof of completion to your instructor or laboratory portal:
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Deliverable 1: Screenshot */}
+              <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex items-start gap-3.5">
+                <div className="w-9 h-9 rounded-lg bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600 shrink-0">
+                  <Camera className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-slate-900 mb-1">1. Screenshot of Code &amp; File Location</h4>
+                  <p className="text-xs text-slate-600 mb-2 leading-relaxed">
+                    Capture a clear screenshot of your VS Code workspace / Explorer sidebar showing where your migrated files reside:
+                  </p>
+                  <ul className="list-disc pl-4 text-xs text-slate-500 space-y-1 font-mono">
+                    <li>resources/views/layouts/app.blade.php</li>
+                    <li>resources/views/ (child views: home, about, contact)</li>
+                    <li>routes/web.php</li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Deliverable 2: Screen Recording */}
+              <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex items-start gap-3.5">
+                <div className="w-9 h-9 rounded-lg bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600 shrink-0">
+                  <Video className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-slate-900 mb-1">2. Screen Recording of Working Output</h4>
+                  <p className="text-xs text-slate-600 mb-2 leading-relaxed">
+                    A short screen recording video (MP4 / GIF) demonstrating live navigation on http://127.0.0.1:8000:
+                  </p>
+                  <ul className="list-disc pl-4 text-xs text-slate-500 space-y-1">
+                    <li>Terminal with <code className="font-mono text-[11px] text-slate-700">php artisan serve</code> active</li>
+                    <li>Clicking across Home, About, and Contact pages</li>
+                    <li>Demonstrating persistent navbar &amp; footer with dynamically updated inner content</li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Deliverable 3: Code Snippets */}
+              <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex items-start gap-3.5">
+                <div className="w-9 h-9 rounded-lg bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600 shrink-0">
+                  <Code className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-slate-900 mb-1">3. Code Snippets Compilation</h4>
+                  <p className="text-xs text-slate-600 mb-2 leading-relaxed">
+                    Paste text excerpts of your core migrated code in your submission document:
+                  </p>
+                  <ul className="list-disc pl-4 text-xs text-slate-500 space-y-1 font-mono text-[11px]">
+                    <li>Master layout shell with @yield(&apos;content&apos;)</li>
+                    <li>Sample child view with @extends(&apos;layouts.app&apos;)</li>
+                    <li>Route definitions from routes/web.php</li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Deliverable 4: GitHub Link */}
+              <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex items-start gap-3.5">
+                <div className="w-9 h-9 rounded-lg bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600 shrink-0">
+                  <FolderGit2 className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-slate-900 mb-1">4. GitHub Repository Link</h4>
+                  <p className="text-xs text-slate-600 mb-2 leading-relaxed">
+                    Push your complete migrated Laravel application to GitHub and provide your repository URL:
+                  </p>
+                  <ul className="list-disc pl-4 text-xs text-slate-500 space-y-1">
+                    <li>Include complete commit history</li>
+                    <li>Ensure repository is set to Public for instructor evaluation</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 

@@ -404,7 +404,7 @@
             border-left: 4px solid var(--primary);
             border-radius: 0 12px 12px 0;
             padding: 22px;
-            margin: 16px 0;
+            margin: 16px 0 24px;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
         }
 
@@ -421,6 +421,71 @@
 
         .final-task-list strong {
             color: var(--text-title);
+        }
+
+        /* Submission Deliverables Cards */
+        .deliverables-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        @media (max-width: 680px) {
+            .deliverables-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .deliverable-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .deliv-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: var(--primary-bg);
+            border: 1px solid var(--primary-border);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .deliverable-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-title);
+            margin-bottom: 6px;
+        }
+
+        .deliverable-card p {
+            font-size: 13px;
+            color: var(--text-body);
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+
+        .deliverable-card ul {
+            padding-left: 18px;
+            font-size: 12.5px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .deliverable-card li {
+            margin-bottom: 3px;
         }
 
         /* Footer */
@@ -760,13 +825,83 @@ Route::get('/contact', function () {
                 Part 4: Final Laboratory Task &amp; Submission
             </h2>
 
+            <!-- Core Task Protocol -->
             <div class="final-task-box">
+                <strong style="color: var(--text-title); font-size: 15px; display: block; margin-bottom: 8px;">Migration Task Steps:</strong>
                 <ol class="final-task-list">
                     <li><strong>Audit Your Old Project:</strong> Take a complete multi-page native PHP website you created previously (minimum 3 connected pages).</li>
                     <li><strong>Build the Layout:</strong> Extract the common navigation and footer into a master Blade layout (<code>resources/views/layouts/app.blade.php</code>).</li>
                     <li><strong>Convert Child Pages:</strong> Migrate each page content section into individual <code>.blade.php</code> files using <code>@extends</code> and <code>@section</code>.</li>
                     <li><strong>Configure Routes &amp; Test:</strong> Map all pages inside <code>routes/web.php</code> and demonstrate your fully functioning multi-page Laravel application to your instructor for grading.</li>
                 </ol>
+            </div>
+
+            <!-- Required Submission Deliverables -->
+            <div style="margin-top: 28px;">
+                <h3 style="font-size: 16px; font-weight: 700; color: var(--text-title); margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-folder-open" style="color: var(--primary);"></i>
+                    Required Submission Deliverables
+                </h3>
+                <p class="section-desc">
+                    Attach and submit the following proof of completion to your instructor or laboratory portal:
+                </p>
+
+                <div class="deliverables-grid">
+                    <!-- Deliverable 1: Screenshot -->
+                    <div class="deliverable-card">
+                        <div class="deliv-icon"><i class="fa-solid fa-camera"></i></div>
+                        <div>
+                            <h4>1. Screenshot of Code &amp; File Location</h4>
+                            <p>Capture a clear screenshot of your VS Code workspace / Explorer sidebar showing where your migrated files reside:</p>
+                            <ul>
+                                <li><code>resources/views/layouts/app.blade.php</code> (Master Shell)</li>
+                                <li><code>resources/views/</code> (Child views: <code>home</code>, <code>about</code>, <code>contact</code>)</li>
+                                <li><code>routes/web.php</code> (Route controllers)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Deliverable 2: Screen Recording -->
+                    <div class="deliverable-card">
+                        <div class="deliv-icon"><i class="fa-solid fa-video"></i></div>
+                        <div>
+                            <h4>2. Screen Recording of Working Output</h4>
+                            <p>A short screen recording video (MP4 / GIF) demonstrating live navigation on <code>http://127.0.0.1:8000</code>:</p>
+                            <ul>
+                                <li>Terminal with <code>php artisan serve</code> active</li>
+                                <li>Clicking across <strong>Home</strong>, <strong>About</strong>, and <strong>Contact</strong> pages</li>
+                                <li>Demonstrating persistent navbar &amp; footer with dynamically updated inner content</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Deliverable 3: Code Snippets -->
+                    <div class="deliverable-card">
+                        <div class="deliv-icon"><i class="fa-solid fa-code"></i></div>
+                        <div>
+                            <h4>3. Code Snippets Compilation</h4>
+                            <p>Paste text excerpts of your core migrated code in your submission document:</p>
+                            <ul>
+                                <li>Master layout code with <code>@yield('content')</code></li>
+                                <li>Sample child view with <code>@extends('layouts.app')</code></li>
+                                <li>Route definitions from <code>routes/web.php</code></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Deliverable 4: GitHub Link -->
+                    <div class="deliverable-card">
+                        <div class="deliv-icon"><i class="fa-brands fa-github"></i></div>
+                        <div>
+                            <h4>4. GitHub Repository Link</h4>
+                            <p>Push your complete migrated Laravel application to GitHub and provide your repository URL:</p>
+                            <ul>
+                                <li>Include complete commit history</li>
+                                <li>Ensure repository is set to Public for instructor evaluation</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
