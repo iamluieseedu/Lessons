@@ -1,0 +1,561 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import {
+  Gamepad2,
+  ArrowLeft,
+  Copy,
+  Check,
+  CheckCircle2,
+  Layers,
+  Smartphone,
+  Box,
+  Code,
+  Sparkles,
+  Terminal,
+  ShieldAlert,
+  FolderGit2,
+  Camera,
+  FileCode,
+  ListChecks,
+  Monitor,
+  Cpu,
+  BookOpen
+} from 'lucide-react';
+
+export default function GodotLabManualPage() {
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('godot_app_checklist');
+      if (saved) {
+        setCheckedItems(JSON.parse(saved));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
+
+  const toggleCheck = (id: string) => {
+    const updated = { ...checkedItems, [id]: !checkedItems[id] };
+    setCheckedItems(updated);
+    try {
+      localStorage.setItem('godot_app_checklist', JSON.stringify(updated));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const copyCode = (text: string, key: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedKey(key);
+    setTimeout(() => setCopiedKey(null), 2000);
+  };
+
+  const milestones = [
+    { id: 'm1', label: 'Milestone 1: Project Creation & Mobile Display Viewport (1280×720, canvas_items, touch emulation)' },
+    { id: 'm2', label: 'Milestone 2: Blank Root Node2D & Fullscreen Background PNG Setup (z-index -10)' },
+    { id: 'm3', label: 'Milestone 3: Static Terrain Setup (StaticBody2D + TextureRect tiling + RectangleShape2D)' },
+    { id: 'm4', label: 'Milestone 4: Player Character Assembly (CharacterBody2D + Sprite2D + CapsuleShape2D)' },
+    { id: 'm5', label: 'Milestone 5: GDScript Kinematic Physics Scripting (gravity, jump, input axis, move_and_slide)' },
+    { id: 'm6', label: 'Milestone 6: 2D Physics Layer Names & Collision Mask Matrix (Terrain Layer 1, Player Mask 1)' },
+  ];
+
+  const completedCount = milestones.filter(m => checkedItems[m.id]).length;
+  const progressPercent = Math.round((completedCount / milestones.length) * 100);
+
+  const playerGdScript = `extends CharacterBody2D
+
+## 2D Kinematic Player Controller with Gravity, Jump, and Directional Input
+## Designed for Mobile/Desktop 2D Platformer gameplay in Godot 4.
+
+# Movement Constants
+const SPEED: float = 300.0
+const JUMP_VELOCITY: float = -450.0
+
+# Fetch default 2D gravity value from Project Settings (default: 980 px/s²)
+var gravity: float = ProjectSettings.get_setting("physics/2d/default_gravity")
+
+# Reference to the child visual sprite
+@onready var sprite: Sprite2D = $PlayerSprite
+
+func _physics_process(delta: float) -> void:
+	# 1. APPLY GRAVITY WHEN AIRBORNE
+	# Godot 2D coordinates: +Y points downward towards the ground.
+	if not is_on_floor():
+		velocity.y += gravity * delta
+
+	# 2. HANDLE JUMP IMPULSE
+	# ui_accept corresponds to Spacebar, Enter, or Virtual Jump Button on mobile
+	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
+		velocity.y = JUMP_VELOCITY
+
+	# 3. READ HORIZONTAL INPUT AXIS
+	# Input.get_axis returns a float from -1.0 (left) to +1.0 (right), or 0.0 if idle
+	var direction: float = Input.get_axis("ui_left", "ui_right")
+
+	# 4. COMPUTE HORIZONTAL VELOCITY & SPRITE FLIPPING
+	if direction != 0.0:
+		velocity.x = direction * SPEED
+		# Flip sprite texture horizontally based on facing direction
+		sprite.flip_h = direction < 0.0
+	else:
+		# Smooth deceleration towards 0 when no keys/joystick are held
+		velocity.x = move_toward(velocity.x, 0.0, SPEED * 8.0 * delta)
+
+	# 5. EXECUTE MOVE AND SLIDE COLLISION RESOLUTION
+	# In Godot 4, move_and_slide() automatically uses the body's internal 'velocity'
+	# and incorporates delta internally. It updates is_on_floor() automatically!
+	move_and_slide()`;
+
+  return (
+    <div className="min-h-screen bg-[#f8fafc] text-slate-700 font-sans pb-24 antialiased selection:bg-sky-500 selection:text-white">
+      {/* Sticky Top Navbar */}
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 sm:px-6 py-3.5 shadow-sm">
+        <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2.5">
+            <span className="w-8 h-8 rounded-lg bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-600">
+              <Gamepad2 className="w-4 h-4" />
+            </span>
+            <span className="font-extrabold text-sm text-slate-900 tracking-tight">
+              IT-EDP1: Event-Driven Programming
+            </span>
+            <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-sky-50 text-sky-700 border border-sky-200">
+              Godot 4 &bull; Week 1
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Link
+              href="/?filter=eventprog"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition flex items-center gap-1.5 shadow-sm"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Back to Course</span>
+            </Link>
+            <Link
+              href="/lesson/?id=eventprog-w1"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition flex items-center gap-1.5 shadow-sm"
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>Slides</span>
+            </Link>
+            <Link
+              href="/quiz/?id=eventprog-w1"
+              className="text-xs font-semibold text-white bg-sky-600 hover:bg-sky-700 px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 shadow-sm"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Quiz</span>
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Reading Container */}
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 pt-10 space-y-12">
+        {/* Header Section */}
+        <header className="border-b border-slate-200 pb-8">
+          <span className="text-xs font-bold uppercase tracking-wider text-sky-600 block mb-2 font-mono flex items-center gap-1.5">
+            <Cpu className="w-3.5 h-3.5" />
+            Laboratory Manual &bull; Week 1 Practical Exercise
+          </span>
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-4">
+            Building Your First 2D Game in Godot Engine 4
+          </h1>
+          <p className="text-slate-600 text-base leading-relaxed">
+            Construct a mobile-ready 2D game scene from scratch. You will configure native mobile display viewports, construct hierarchical node trees, compose static terrain geometry, assemble physics-driven kinematic player bodies, write deterministic movement scripts in GDScript, and configure 2D collision layer masks so character bodies interact seamlessly with the physical world.
+          </p>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
+            <div className="bg-white p-3 rounded-xl border border-slate-200 flex items-center gap-3 shadow-xs">
+              <div className="w-9 h-9 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center shrink-0">
+                <Smartphone className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="text-[10px] uppercase font-bold text-slate-600 block">Viewport</span>
+                <span className="text-xs font-bold text-slate-900">1280×720 Mobile</span>
+              </div>
+            </div>
+
+            <div className="bg-white p-3 rounded-xl border border-slate-200 flex items-center gap-3 shadow-xs">
+              <div className="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                <Box className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="text-[10px] uppercase font-bold text-slate-600 block">Engine</span>
+                <span className="text-xs font-bold text-slate-900">Godot 4.x Standard</span>
+              </div>
+            </div>
+
+            <div className="bg-white p-3 rounded-xl border border-slate-200 flex items-center gap-3 shadow-xs">
+              <div className="w-9 h-9 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                <Code className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="text-[10px] uppercase font-bold text-slate-600 block">Language</span>
+                <span className="text-xs font-bold text-slate-900">GDScript 2.0</span>
+              </div>
+            </div>
+
+            <div className="bg-white p-3 rounded-xl border border-slate-200 flex items-center gap-3 shadow-xs">
+              <div className="w-9 h-9 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                <Layers className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="text-[10px] uppercase font-bold text-slate-600 block">Physics</span>
+                <span className="text-xs font-bold text-slate-900">2D Layer Matrix</span>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Interactive Progress Checklist */}
+        <section className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+              <ListChecks className="w-5 h-5 text-sky-600" />
+              <span>Interactive Milestone Progress Checklist</span>
+            </h3>
+            <span className="text-xs font-extrabold text-sky-600 bg-sky-50 px-2.5 py-1 rounded-full border border-sky-200">
+              {progressPercent}% Completed ({completedCount}/{milestones.length})
+            </span>
+          </div>
+          <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden mb-5">
+            <div
+              className="bg-emerald-500 h-full transition-all duration-300 rounded-full"
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
+          <div className="space-y-2.5">
+            {milestones.map((m) => (
+              <label
+                key={m.id}
+                onClick={() => toggleCheck(m.id)}
+                className={`flex items-start gap-3 p-3 rounded-xl border transition cursor-pointer select-none ${
+                  checkedItems[m.id]
+                    ? 'bg-emerald-50/50 border-emerald-200 text-slate-500'
+                    : 'bg-slate-50/50 border-slate-200 hover:border-slate-300 text-slate-800'
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  checked={!!checkedItems[m.id]}
+                  onChange={() => {}}
+                  className="mt-0.5 rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4"
+                />
+                <span className={`text-xs sm:text-sm font-medium leading-relaxed ${checkedItems[m.id] ? 'line-through' : ''}`}>
+                  {m.label}
+                </span>
+              </label>
+            ))}
+          </div>
+        </section>
+
+        {/* MILESTONE 1 */}
+        <section className="space-y-6">
+          <div className="flex items-center gap-3">
+            <span className="px-2.5 py-1 rounded-md bg-sky-600 text-white font-extrabold text-xs uppercase tracking-wider">
+              Milestone 1
+            </span>
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
+              Project Creation & Mobile Display Configuration
+            </h2>
+          </div>
+
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-5">
+            <div className="space-y-2">
+              <h3 className="font-bold text-slate-900 text-sm sm:text-base flex items-center gap-2">
+                <span className="w-5 h-5 rounded-full bg-sky-100 text-sky-700 text-xs flex items-center justify-center font-bold">1</span>
+                Create Project in Godot 4
+              </h3>
+              <ol className="list-decimal pl-6 text-sm text-slate-600 space-y-1.5">
+                <li>Launch <strong>Godot Engine 4.x</strong> and click <strong>New Project</strong>.</li>
+                <li>Set <strong>Project Name:</strong> <code className="bg-slate-100 text-sky-700 px-1.5 py-0.5 rounded font-mono text-xs">Godot_2D_Mobile_Game</code>.</li>
+                <li>Click <strong>Create Folder</strong> to ensure a dedicated project root.</li>
+                <li>Select Renderer: <strong>Mobile</strong> (Vulkan) or <strong>Compatibility</strong> (OpenGL 3 - recommended for low-spec laptops).</li>
+                <li>Click <strong>Create & Edit</strong>.</li>
+              </ol>
+            </div>
+
+            <div className="space-y-2 pt-3 border-t border-slate-100">
+              <h3 className="font-bold text-slate-900 text-sm sm:text-base flex items-center gap-2">
+                <span className="w-5 h-5 rounded-full bg-sky-100 text-sky-700 text-xs flex items-center justify-center font-bold">2</span>
+                Configure Mobile Resolution & Stretch Mode
+              </h3>
+              <p className="text-sm text-slate-600">
+                Navigate to <strong>Project &gt; Project Settings &gt; General &gt; Display &gt; Window</strong>:
+              </p>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs sm:text-sm border-collapse">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-slate-200 text-slate-700">
+                      <th className="p-2.5 font-bold">Setting</th>
+                      <th className="p-2.5 font-bold">Value</th>
+                      <th className="p-2.5 font-bold">Purpose</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 text-slate-600 font-mono text-xs">
+                    <tr>
+                      <td className="p-2.5 font-sans font-medium text-slate-800">Viewport Width / Height</td>
+                      <td className="p-2.5 text-sky-700 font-bold">1280 × 720</td>
+                      <td className="p-2.5 font-sans text-slate-500">Standard 16:9 mobile landscape design resolution.</td>
+                    </tr>
+                    <tr>
+                      <td className="p-2.5 font-sans font-medium text-slate-800">Stretch &gt; Mode</td>
+                      <td className="p-2.5 text-emerald-700 font-bold">canvas_items</td>
+                      <td className="p-2.5 font-sans text-slate-500">Scales 2D elements cleanly at native display resolution.</td>
+                    </tr>
+                    <tr>
+                      <td className="p-2.5 font-sans font-medium text-slate-800">Stretch &gt; Aspect</td>
+                      <td className="p-2.5 text-emerald-700 font-bold">keep</td>
+                      <td className="p-2.5 font-sans text-slate-500">Prevents distortion; preserves aspect ratio across screens.</td>
+                    </tr>
+                    <tr>
+                      <td className="p-2.5 font-sans font-medium text-slate-800">Input Devices &gt; Pointing</td>
+                      <td className="p-2.5 text-indigo-700 font-bold">Emulate Touch From Mouse: ON</td>
+                      <td className="p-2.5 font-sans text-slate-500">Enables testing mobile touch taps via desktop mouse clicks.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* MILESTONE 2 */}
+        <section className="space-y-6">
+          <div className="flex items-center gap-3">
+            <span className="px-2.5 py-1 rounded-md bg-sky-600 text-white font-extrabold text-xs uppercase tracking-wider">
+              Milestone 2
+            </span>
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
+              Blank Root Node & Background PNG Setup
+            </h2>
+          </div>
+
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-4">
+            <ol className="list-decimal pl-6 text-sm text-slate-600 space-y-2">
+              <li>In the <strong>Scene Dock</strong> (top-left), click <strong>2D Scene</strong> to create a root <code className="text-sky-700 font-mono">Node2D</code>.</li>
+              <li>Rename the root node to <code className="text-slate-900 font-bold font-mono">Main</code>.</li>
+              <li>Press <kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-300 rounded text-xs font-mono">Ctrl + S</kbd> and save as <code className="text-sky-700 font-mono">res://scenes/main.tscn</code>.</li>
+              <li>In the FileSystem dock, create an <code className="text-slate-700 font-mono">assets/</code> folder and drag in your background image (<code className="text-slate-700 font-mono">background.png</code>).</li>
+              <li>Right-click <code className="text-slate-900 font-bold font-mono">Main</code> &gt; <strong>Add Child Node...</strong> &gt; add a <strong>Sprite2D</strong>. Rename it to <code className="text-slate-900 font-mono">Background</code>.</li>
+              <li>Drag <code className="text-slate-700 font-mono">background.png</code> into the <strong>Texture</strong> property in the Inspector.</li>
+              <li>Set <code className="text-slate-700 font-mono">Transform &gt; Position</code> to <code className="text-sky-700 font-mono">(640, 360)</code> (center of the 1280×720 viewport).</li>
+              <li>Under <strong>Ordering</strong> in Inspector, set <code className="text-emerald-700 font-mono font-bold">Z Index = -10</code> so the background stays strictly behind gameplay objects.</li>
+            </ol>
+
+            <div className="bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-xs leading-relaxed">
+              <span className="text-slate-500 uppercase tracking-wider text-[10px] block mb-1">Scene Tree Hierarchy:</span>
+              <p className="text-blue-400 font-bold">Main [Node2D]</p>
+              <p className="pl-4 text-amber-300">&boxur; Background [Sprite2D] &mdash; (Position: 640, 360 | Z-Index: -10)</p>
+            </div>
+          </div>
+        </section>
+
+        {/* MILESTONE 3 */}
+        <section className="space-y-6">
+          <div className="flex items-center gap-3">
+            <span className="px-2.5 py-1 rounded-md bg-sky-600 text-white font-extrabold text-xs uppercase tracking-wider">
+              Milestone 3
+            </span>
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
+              Static Terrain & Ground Setup (TextureRect Tiling)
+            </h2>
+          </div>
+
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-5">
+            <p className="text-sm text-slate-600 leading-relaxed">
+              A <code className="text-emerald-700 font-mono font-bold">StaticBody2D</code> represents immovable physical terrain that does not react to gravity or impulses. To give it visuals, we use a <code className="text-sky-700 font-mono font-bold">TextureRect</code> with <strong>Tile</strong> stretch mode so a repeating ground/grass texture tiles across the entire 1280px width without stretching!
+            </p>
+
+            <ol className="list-decimal pl-6 text-sm text-slate-600 space-y-3">
+              <li>
+                <strong>Create the Physics Body:</strong> Right-click <code className="text-slate-900 font-mono font-bold">Main</code> &gt; <strong>Add Child Node...</strong> &gt; search for <strong>StaticBody2D</strong>. Rename it to <code className="text-emerald-700 font-mono font-bold">Ground</code>.
+              </li>
+              <li>
+                <strong>Add Collision Boundary:</strong> Right-click <code className="text-emerald-700 font-mono">Ground</code> &gt; <strong>Add Child Node...</strong> &gt; add a <strong>CollisionShape2D</strong>. In the Inspector:
+                <ul className="list-disc pl-5 mt-1 space-y-1 text-xs">
+                  <li>Click <strong>Shape</strong> &gt; select <strong>New RectangleShape2D</strong>.</li>
+                  <li>Click into the shape and set <code className="text-sky-700 font-mono font-bold">Size = (x: 1280, y: 64)</code>.</li>
+                </ul>
+              </li>
+              <li>
+                <strong>Add Visual Surface via TextureRect (Recommended):</strong>
+                <ul className="list-disc pl-5 mt-1 space-y-1 text-xs text-slate-700">
+                  <li>Right-click <code className="text-emerald-700 font-mono">Ground</code> &gt; <strong>Add Child Node...</strong> &gt; search for <strong>TextureRect</strong>. Rename it to <code className="text-sky-700 font-mono font-bold">GroundVisual</code>.</li>
+                  <li>In Inspector, drag your ground/dirt/grass tile PNG into the <strong>Texture</strong> property.</li>
+                  <li>Set <strong>Expand Mode</strong> to <code className="text-indigo-700 font-mono font-bold">Ignore Size</code> (enables custom resizing).</li>
+                  <li>Set <strong>Stretch Mode</strong> to <code className="text-emerald-700 font-mono font-bold">Tile</code> (repeats the ground texture seamlessly across width!).</li>
+                  <li>Under <strong>Layout &gt; Transform</strong>, set <code className="text-sky-700 font-mono">Size = (x: 1280, y: 64)</code> and <code className="text-sky-700 font-mono">Position = (x: -640, y: -32)</code> so it aligns perfectly with the centered collision shape.</li>
+                </ul>
+              </li>
+              <li>
+                <strong>Prototyping Alternative (ColorRect):</strong> If you do not have a terrain texture yet, you can alternatively use a <strong>ColorRect</strong> with size <code className="text-sky-700 font-mono">1280 × 64</code> and color <code className="text-emerald-800 font-mono">#2d6a4f</code>.
+              </li>
+              <li>
+                <strong>Screen Anchor & Grouping:</strong> Select the parent <code className="text-emerald-700 font-mono">Ground</code> node and set its <code className="text-slate-900 font-mono font-bold">Transform &gt; Position</code> to <code className="text-sky-700 font-mono">(640, 688)</code> to anchor it at the screen bottom. Press <kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-300 rounded text-xs font-mono">Ctrl + G</kbd> to lock its children together.
+              </li>
+            </ol>
+
+            <div className="bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-xs leading-relaxed">
+              <span className="text-slate-500 uppercase tracking-wider text-[10px] block mb-1">Terrain Hierarchy with TextureRect:</span>
+              <p className="text-emerald-400 font-bold">Ground [StaticBody2D] &mdash; (Position: 640, 688)</p>
+              <p className="pl-4 text-pink-400">&boxur; CollisionShape2D &mdash; (RectangleShape2D 1280×64)</p>
+              <p className="pl-4 text-sky-400">&boxur; GroundVisual [TextureRect] &mdash; (Expand: Ignore Size | Stretch: Tile | Size: 1280×64)</p>
+            </div>
+          </div>
+        </section>
+
+        {/* MILESTONE 4 */}
+        <section className="space-y-6">
+          <div className="flex items-center gap-3">
+            <span className="px-2.5 py-1 rounded-md bg-sky-600 text-white font-extrabold text-xs uppercase tracking-wider">
+              Milestone 4
+            </span>
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
+              Player Character Assembly
+            </h2>
+          </div>
+
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-4">
+            <ol className="list-decimal pl-6 text-sm text-slate-600 space-y-2">
+              <li>Right-click <code className="text-slate-900 font-mono font-bold">Main</code> &gt; <strong>Add Child Node...</strong> &gt; add a <strong>CharacterBody2D</strong>. Rename to <code className="text-rose-600 font-mono font-bold">Player</code>.</li>
+              <li>Add child <strong>Sprite2D</strong> named <code className="text-slate-800 font-mono">PlayerSprite</code>. Assign character PNG or <code className="text-slate-700 font-mono">icon.svg</code> into Texture.</li>
+              <li>Add child <strong>CollisionShape2D</strong> named <code className="text-slate-800 font-mono">PlayerCollider</code>. In Inspector, select <strong>New CapsuleShape2D</strong> (Radius: <code className="text-sky-700 font-mono">24</code>, Height: <code className="text-sky-700 font-mono">64</code>).</li>
+              <li>With <code className="text-rose-600 font-mono font-bold">Player</code> selected, press <kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-300 rounded text-xs font-mono">Ctrl + G</kbd> to lock child selection.</li>
+              <li>Position the player hovering in the air above the terrain (e.g. <code className="text-sky-700 font-mono">x: 320, y: 300</code>).</li>
+            </ol>
+          </div>
+        </section>
+
+        {/* MILESTONE 5 */}
+        <section className="space-y-6">
+          <div className="flex items-center gap-3">
+            <span className="px-2.5 py-1 rounded-md bg-sky-600 text-white font-extrabold text-xs uppercase tracking-wider">
+              Milestone 5
+            </span>
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
+              GDScript Kinematic Movement Scripting
+            </h2>
+          </div>
+
+          <div className="space-y-4">
+            <p className="text-sm text-slate-600">
+              Select <code className="text-rose-600 font-mono font-bold">Player</code> and click <strong>Attach Script</strong>. Save as <code className="text-sky-700 font-mono">res://scripts/player.gd</code>. Paste the complete, production-ready script below:
+            </p>
+
+            <div className="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden shadow-lg">
+              <div className="bg-slate-900 px-4 py-2.5 border-b border-slate-800 flex items-center justify-between">
+                <div className="flex items-center gap-2 text-xs font-mono text-slate-300">
+                  <FileCode className="w-3.5 h-3.5 text-sky-400" />
+                  <span>res://scripts/player.gd</span>
+                </div>
+                <button
+                  onClick={() => copyCode(playerGdScript, 'player-script')}
+                  className="text-xs font-semibold px-2.5 py-1 rounded-md bg-white/10 hover:bg-white/20 text-white transition flex items-center gap-1.5"
+                >
+                  {copiedKey === 'player-script' ? (
+                    <>
+                      <Check className="w-3 h-3 text-emerald-400" />
+                      <span className="text-emerald-400 font-bold">Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3 h-3" />
+                      <span>Copy GDScript</span>
+                    </>
+                  )}
+                </button>
+              </div>
+              <pre className="p-4 sm:p-5 text-xs sm:text-sm font-mono text-slate-200 overflow-x-auto leading-relaxed">
+                <code>{playerGdScript}</code>
+              </pre>
+            </div>
+          </div>
+        </section>
+
+        {/* MILESTONE 6 */}
+        <section className="space-y-6">
+          <div className="flex items-center gap-3">
+            <span className="px-2.5 py-1 rounded-md bg-sky-600 text-white font-extrabold text-xs uppercase tracking-wider">
+              Milestone 6
+            </span>
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
+              2D Physics Layer Names & Collision Mask Matrix
+            </h2>
+          </div>
+
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-4">
+            <p className="text-sm text-slate-600 leading-relaxed">
+              Open <strong>Project &gt; Project Settings &gt; Layer Names &gt; 2D Physics</strong> and define:
+            </p>
+            <ul className="list-disc pl-6 text-sm text-slate-700 space-y-1 font-mono">
+              <li><strong>Layer 1:</strong> World (Terrain)</li>
+              <li><strong>Layer 2:</strong> Player</li>
+            </ul>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+              <div className="p-4 rounded-xl border border-sky-200 bg-sky-50/50">
+                <h4 className="font-bold text-sky-900 text-sm mb-1">StaticBody2D (Ground)</h4>
+                <p className="text-xs text-slate-600 mb-2">Immovable world boundary.</p>
+                <div className="space-y-1 text-xs font-mono">
+                  <div><strong>Layer:</strong> <span className="text-emerald-700 font-bold">1 (World) &mdash; ON</span></div>
+                  <div><strong>Mask:</strong> <span className="text-slate-500">None (0) &mdash; Static objects do not scan</span></div>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl border border-emerald-200 bg-emerald-50/50">
+                <h4 className="font-bold text-emerald-900 text-sm mb-1">CharacterBody2D (Player)</h4>
+                <p className="text-xs text-slate-600 mb-2">Kinematic moving character.</p>
+                <div className="space-y-1 text-xs font-mono">
+                  <div><strong>Layer:</strong> <span className="text-indigo-700 font-bold">2 (Player) &mdash; ON</span></div>
+                  <div><strong>Mask:</strong> <span className="text-emerald-700 font-bold">1 (World) &mdash; ON (scans and lands on terrain)</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs sm:text-sm flex items-start gap-2.5">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+              <div>
+                <strong>Test & Verify (F5):</strong> Press <kbd className="px-1.5 py-0.5 bg-white border border-emerald-300 rounded text-xs font-mono font-bold">F5</kbd>. The player will fall with gravity and land securely on the green terrain. Press Left/Right arrows or <kbd>A</kbd>/<kbd>D</kbd> to move and flip, and <kbd>Space</kbd> to jump!
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Deliverables Section */}
+        <section className="space-y-4">
+          <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+            <FolderGit2 className="w-5 h-5 text-sky-600" />
+            <span>Submission Deliverables</span>
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-xs">
+              <div className="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center mb-3">
+                <Camera className="w-4 h-4" />
+              </div>
+              <h4 className="font-bold text-slate-900 text-sm mb-1">1. Gameplay Screenshot</h4>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Capture running game showing the player standing securely on the ground with background PNG behind.
+              </p>
+            </div>
+
+            <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-xs">
+              <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center mb-3">
+                <FileCode className="w-4 h-4" />
+              </div>
+              <h4 className="font-bold text-slate-900 text-sm mb-1">2. Complete GDScript File</h4>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Submit <code className="font-mono text-xs">player.gd</code> with gravity, jump, input axis, and comments.
+              </p>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  );
+}

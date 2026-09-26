@@ -3,8 +3,44 @@ import { AdSenseScript } from "@/components/AdSenseScript";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Lesson Library",
-  description: "Interactive Learning Portal for Students & Educators.",
+  metadataBase: new URL("https://iamlesson.space"),
+  title: {
+    default: "Lesson Library • Higher Education Computer Science Portal",
+    template: "%s | Lesson Library",
+  },
+  description: "Comprehensive collegiate computer science and information technology curricula. Interactive visual slide decks, step-by-step practical laboratory manuals, and automated self-assessments in Web Development, Event-Driven Programming, and Database Architecture.",
+  keywords: [
+    "Computer Science Curricula",
+    "Godot 4 Game Development",
+    "Laravel 11 Multi-Page Migration",
+    "Event-Driven Programming",
+    "Database Management Systems",
+    "Interactive Media Design",
+    "C++ Object-Oriented Programming",
+    "College Computing Lab Manuals"
+  ],
+  authors: [{ name: "Luiese Armstrong", url: "https://iamlesson.space/about/" }],
+  creator: "Luiese Armstrong",
+  publisher: "Lesson Library",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://iamlesson.space",
+    siteName: "Lesson Library",
+    title: "Lesson Library • Higher Education Computer Science Portal",
+    description: "Structured collegiate computing curricula with interactive slides, laboratory manuals, and self-assessments.",
+  },
 };
 
 export default function RootLayout({
@@ -15,9 +51,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-        <meta httpEquiv="Pragma" content="no-cache" />
-        <meta httpEquiv="Expires" content="0" />
+        <link rel="canonical" href="https://iamlesson.space/" />
         <script
           dangerouslySetInnerHTML={{
             __html: `

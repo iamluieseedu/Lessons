@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratory Manual: Web Development 3 (Part 2) — Migrating to Laravel</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #e11d48;
+            --primary-bg: #fff1f2;
+            --primary-border: #fecdd3;
+            
+            --bg-base: #f8fafc;         /* Off-white background */
+            --bg-surface: #ffffff;      /* Pure white card */
+            --bg-card: #ffffff;
+            --bg-subtle: #f1f5f9;       /* Light off-white accent */
+            --border: #e2e8f0;          /* Soft border */
+            --border-hover: #cbd5e1;
+            
+            --text-title: #0f172a;      /* Deep slate heading */
+            --text-body: #334155;       /* Crisp slate body */
+            --text-muted: #64748b;      /* Slate muted */
+            
+            --code-bg: #0f172a;         /* High-contrast dark editor container */
+            --code-header: #1e293b;
+            --code-text: #f8fafc;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-body);
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.7;
+            font-size: 15px;
+            padding-bottom: 80px;
+        }
+
+        /* Top Bar */
+        .top-navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 24px;
+        }
+
+        .top-navbar-inner {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-title);
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .nav-brand i {
+            color: var(--primary);
+            font-size: 18px;
+        }
+
+        .nav-badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: var(--primary-bg);
+            color: var(--primary);
+            border: 1px solid var(--primary-border);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-link-btn {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-body);
+            text-decoration: none;
+            padding: 6px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-surface);
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        }
+
+        .nav-link-btn:hover {
+            color: var(--text-title);
+            border-color: var(--border-hover);
+            background: var(--bg-subtle);
+        }
+
+        /* Reading Container */
+        .manual-wrapper {
+            max-width: 880px;
+            margin: 0 auto;
+            padding: 36px 20px 0;
+        }
+
+        /* Hero / Header Section */
+        .manual-header {
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-course-tag {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 8px;
+        }
+
+        .manual-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-title);
+            line-height: 1.3;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .manual-intro-p {
+            font-size: 15px;
+            color: var(--text-body);
+            line-height: 1.7;
+        }
+
+        /* Content Sections */
+        .guide-section {
+            margin-bottom: 44px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-title);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: -0.3px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+            font-size: 18px;
+        }
+
+        .section-desc {
+            font-size: 15px;
+            color: var(--text-body);
+            margin-bottom: 16px;
+        }
+
+        /* Bullet Objective Cards */
+        .objectives-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin: 16px 0;
+        }
+
+        .objective-item {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        }
+
+        .objective-item i {
+            color: #059669;
+            margin-top: 3px;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        .objective-item strong {
+            color: var(--text-title);
+        }
+
+        /* Comparison Cards */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 680px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .compare-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+        }
+
+        .compare-card.laravel {
+            border-top: 3px solid #059669;
+        }
+
+        .compare-card h4 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-title);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .compare-card p {
+            font-size: 13.5px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Code Block Styling */
+        .code-block-card {
+            background: var(--code-bg);
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 16px 0 24px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+        }
+
+        .code-block-header {
+            background: var(--code-header);
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            font-size: 12px;
+            font-family: 'Fira Code', monospace;
+            color: #94a3b8;
+        }
+
+        .code-file-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            color: #e2e8f0;
+        }
+
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #f1f5f9;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        .copy-btn.copied {
+            background: #059669;
+            border-color: #059669;
+            color: #fff;
+        }
+
+        pre.code-view {
+            padding: 16px 18px;
+            margin: 0;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.65;
+            color: var(--code-text);
+        }
+
+        /* Step Instructions List */
+        .step-steps-list {
+            padding-left: 20px;
+            margin: 12px 0 16px;
+            color: var(--text-body);
+            font-size: 14px;
+        }
+
+        .step-steps-list li {
+            margin-bottom: 6px;
+        }
+
+        /* Step Subheaders (A, B, C) */
+        .substep-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-title);
+            margin: 24px 0 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .substep-title i {
+            color: var(--primary);
+            font-size: 12px;
+        }
+
+        /* Testing Route List */
+        .routes-test-box {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin: 14px 0;
+            font-size: 14px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        }
+
+        .routes-test-box ul {
+            list-style: none;
+            padding: 0;
+            margin: 8px 0 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .routes-test-box li {
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            color: #0284c7;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .routes-test-box li::before {
+            content: "→";
+            color: #64748b;
+        }
+
+        /* Final Task Submission Box */
+        .final-task-box {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--primary);
+            border-radius: 0 12px 12px 0;
+            padding: 22px;
+            margin: 16px 0 24px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+        }
+
+        .final-task-list {
+            padding-left: 20px;
+            margin: 10px 0 0;
+            font-size: 14px;
+        }
+
+        .final-task-list li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .final-task-list strong {
+            color: var(--text-title);
+        }
+
+        /* Submission Deliverables Cards */
+        .deliverables-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        @media (max-width: 680px) {
+            .deliverables-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .deliverable-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .deliv-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: var(--primary-bg);
+            border: 1px solid var(--primary-border);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .deliverable-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-title);
+            margin-bottom: 6px;
+        }
+
+        .deliverable-card p {
+            font-size: 13px;
+            color: var(--text-body);
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+
+        .deliverable-card ul {
+            padding-left: 18px;
+            font-size: 12.5px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .deliverable-card li {
+            margin-bottom: 3px;
+        }
+
+        /* Footer */
+        .manual-footer {
+            margin-top: 60px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        code {
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            background: var(--bg-subtle);
+            color: #e11d48;
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sticky Navigation Bar -->
+    <header class="top-navbar">
+        <div class="top-navbar-inner">
+            <a href="#" class="nav-brand">
+                <i class="fa-brands fa-laravel"></i>
+                <span>Web Dev 3: Laboratory Manual</span>
+                <span class="nav-badge">Part 2</span>
+            </a>
+            <div class="nav-actions">
+                <a href="/" class="nav-link-btn">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Back to Portal</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="manual-wrapper">
+
+        <!-- HEADER SECTION -->
+        <header class="manual-header">
+            <span class="header-course-tag">Laboratory Manual: Web Development 3 (Part 2)</span>
+            <h1 class="manual-title">Advanced Guide: Migrating a Full Multi-Page Native PHP Website to Laravel Framework</h1>
+            <p class="manual-intro-p">
+                In this second phase of our Laravel transition, you will move from migrating a single standalone script to migrating an entire multi-page native PHP website (e.g., Home, About, Services, Contact pages). Instead of duplicating headers, footers, and navigation bars across every file, you will harness Laravel's powerful Blade Layout Inheritance system to write modular, maintainable code.
+            </p>
+        </header>
+
+        <!-- MODULE OVERVIEW & LEARNING OBJECTIVES -->
+        <section class="guide-section">
+            <h2 class="section-title">
+                <i class="fa-solid fa-bullseye"></i>
+                Module Overview &amp; Learning Objectives
+            </h2>
+            <ul class="objectives-list">
+                <li class="objective-item">
+                    <i class="fa-solid fa-check-circle"></i>
+                    <div><strong>Structure &amp; Organize:</strong> Properly organize multi-page views within the <code>resources/views/</code> directory.</div>
+                </li>
+                <li class="objective-item">
+                    <i class="fa-solid fa-check-circle"></i>
+                    <div><strong>Master Layouts:</strong> Create reusable layout templates using Laravel Blade directives (<code>@yield</code>, <code>@extends</code>, <code>@section</code>).</div>
+                </li>
+                <li class="objective-item">
+                    <i class="fa-solid fa-check-circle"></i>
+                    <div><strong>Routing:</strong> Define multiple navigation routes inside <code>routes/web.php</code>.</div>
+                </li>
+                <li class="objective-item">
+                    <i class="fa-solid fa-check-circle"></i>
+                    <div><strong>Asset Management:</strong> Properly link stylesheets, scripts, and internal page navigation across a multi-page app.</div>
+                </li>
+            </ul>
+        </section>
+
+        <!-- PART 1: BLADE LAYOUT INHERITANCE VS NATIVE PHP INCLUDES -->
+        <section class="guide-section">
+            <h2 class="section-title">
+                <i class="fa-solid fa-layer-group"></i>
+                Part 1: Blade Layout Inheritance vs. Native PHP Includes
+            </h2>
+            <p class="section-desc">
+                In native PHP, you likely used <code>include 'header.php';</code> and <code>include 'footer.php';</code> repeatedly across files like <code>index.php</code>, <code>about.php</code>, and <code>contact.php</code>. In Laravel, we invert this pattern using <strong>Layout Inheritance</strong>:
+            </p>
+
+            <div class="comparison-grid">
+                <div class="compare-card laravel">
+                    <h4><i class="fa-regular fa-file-code"></i> Master Layout (The Shell)</h4>
+                    <p>A single template (e.g., <code>resources/views/layouts/app.blade.php</code>) that contains your HTML boilerplate, navigation bar, CSS links, and footer.</p>
+                </div>
+                <div class="compare-card laravel">
+                    <h4><i class="fa-regular fa-copy"></i> Child Views (The Content)</h4>
+                    <p>Individual pages that "extend" the master layout and only inject their unique content into designated slots.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- PART 2: STEP-BY-STEP GUIDE -->
+        <section class="guide-section">
+            <h2 class="section-title">
+                <i class="fa-solid fa-list-ol"></i>
+                Part 2: Step-by-Step Guide — Migrating a Multi-Page Website
+            </h2>
+
+            <!-- Step 2.1 -->
+            <div style="margin-top: 24px;">
+                <h3 style="font-size: 17px; font-weight: 700; color: var(--text-title); margin-bottom: 8px;">
+                    Step 2.1: Creating the Master Layout File
+                </h3>
+                <p class="section-desc">
+                    First, we will create a dedicated folder inside views called <code>layouts</code> to house your master template.
+                </p>
+
+                <ol class="step-steps-list">
+                    <li>Navigate to your project directory: <code>resources/views/</code></li>
+                    <li>Create a new folder named <code>layouts</code>.</li>
+                    <li>Inside <code>resources/views/layouts/</code>, create a file named <code>app.blade.php</code>.</li>
+                    <li>Paste the master layout code containing your shared navigation and structure:</li>
+                </ol>
+
+                <div class="code-block-card">
+                    <div class="code-block-header">
+                        <span class="code-file-name">
+                            <i class="fa-regular fa-file-code"></i>
+                            resources/views/layouts/app.blade.php
+                        </span>
+                        <button class="copy-btn" onclick="copyCode(this, 'code-app-blade')">
+                            <i class="fa-regular fa-copy"></i> Copy
+                        </button>
+                    </div>
+                    <pre class="code-view" id="code-app-blade">&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;@yield('title', 'My Laravel App')&lt;/title&gt;
+    &lt;!-- Linking CSS using Laravel asset helper --&gt;
+    &lt;link rel="stylesheet" href="{{ asset('css/style.css') }}"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;!-- Shared Navigation Bar --&gt;
+    &lt;nav style="background: #f4f4f4; padding: 10px; margin-bottom: 20px;"&gt;
+        &lt;a href="/"&gt;Home&lt;/a&gt; | 
+        &lt;a href="/about"&gt;About Us&lt;/a&gt; | 
+        &lt;a href="/services"&gt;Services&lt;/a&gt; | 
+        &lt;a href="/contact"&gt;Contact&lt;/a&gt;
+    &lt;/nav&gt;
+    &lt;hr&gt;
+    &lt;!-- Dynamic Page Content Injection Point --&gt;
+    &lt;div class="container"&gt;
+        @yield('content')
+    &lt;/div&gt;
+    &lt;hr&gt;
+    &lt;!-- Shared Footer --&gt;
+    &lt;footer&gt;
+        &lt;p&gt;&amp;copy; 2026 Web Development 3 Class. All rights reserved.&lt;/p&gt;
+    &lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+                </div>
+            </div>
+
+            <!-- Step 2.2 -->
+            <div style="margin-top: 36px;">
+                <h3 style="font-size: 17px; font-weight: 700; color: var(--text-title); margin-bottom: 8px;">
+                    Step 2.2: Creating Child Page Views
+                </h3>
+                <p class="section-desc">
+                    Now, migrate your individual native PHP pages into clean Blade views that extend this master template.
+                </p>
+
+                <ol class="step-steps-list">
+                    <li>Go back to the main views folder: <code>resources/views/</code></li>
+                    <li>Create three new files: <code>home.blade.php</code>, <code>about.blade.php</code>, and <code>contact.blade.php</code>.</li>
+                </ol>
+
+                <!-- A -->
+                <div class="substep-title">
+                    <i class="fa-solid fa-chevron-right"></i>
+                    A. Creating resources/views/home.blade.php
+                </div>
+                <div class="code-block-card">
+                    <div class="code-block-header">
+                        <span class="code-file-name">resources/views/home.blade.php</span>
+                        <button class="copy-btn" onclick="copyCode(this, 'code-home-blade')">
+                            <i class="fa-regular fa-copy"></i> Copy
+                        </button>
+                    </div>
+                    <pre class="code-view" id="code-home-blade">@extends('layouts.app')
+
+@section('title', 'Home Page')
+
+@section('content')
+    &lt;h1&gt;Welcome to Our Homepage&lt;/h1&gt;
+    &lt;p&gt;This page was successfully migrated from native PHP to Laravel Blade templates!&lt;/p&gt;
+    &lt;p&gt;Explore our navigation bar above to view other pages seamlessly without duplicating HTML structure.&lt;/p&gt;
+@endsection</pre>
+                </div>
+
+                <!-- B -->
+                <div class="substep-title">
+                    <i class="fa-solid fa-chevron-right"></i>
+                    B. Creating resources/views/about.blade.php
+                </div>
+                <div class="code-block-card">
+                    <div class="code-block-header">
+                        <span class="code-file-name">resources/views/about.blade.php</span>
+                        <button class="copy-btn" onclick="copyCode(this, 'code-about-blade')">
+                            <i class="fa-regular fa-copy"></i> Copy
+                        </button>
+                    </div>
+                    <pre class="code-view" id="code-about-blade">@extends('layouts.app')
+
+@section('title', 'About Us')
+
+@section('content')
+    &lt;h1&gt;About Our System&lt;/h1&gt;
+    &lt;p&gt;Learn more about our institutional mission, course objectives, and student web development projects.&lt;/p&gt;
+@endsection</pre>
+                </div>
+
+                <!-- C -->
+                <div class="substep-title">
+                    <i class="fa-solid fa-chevron-right"></i>
+                    C. Creating resources/views/contact.blade.php
+                </div>
+                <div class="code-block-card">
+                    <div class="code-block-header">
+                        <span class="code-file-name">resources/views/contact.blade.php</span>
+                        <button class="copy-btn" onclick="copyCode(this, 'code-contact-blade')">
+                            <i class="fa-regular fa-copy"></i> Copy
+                        </button>
+                    </div>
+                    <pre class="code-view" id="code-contact-blade">@extends('layouts.app')
+
+@section('title', 'Contact Us')
+
+@section('content')
+    &lt;h1&gt;Get in Touch&lt;/h1&gt;
+    &lt;p&gt;Reach out to our team via email or visit our university laboratory workstation.&lt;/p&gt;
+@endsection</pre>
+                </div>
+            </div>
+
+            <!-- Step 2.3 -->
+            <div style="margin-top: 36px;">
+                <h3 style="font-size: 17px; font-weight: 700; color: var(--text-title); margin-bottom: 8px;">
+                    Step 2.3: Registering Multiple Routes in routes/web.php
+                </h3>
+                <p class="section-desc">
+                    To connect your browser URLs to each of these newly created views, open your routing configuration file.
+                </p>
+
+                <ol class="step-steps-list">
+                    <li>Locate and open: <code>routes/web.php</code></li>
+                    <li>Define routes for each page at the bottom of the file:</li>
+                </ol>
+
+                <div class="code-block-card">
+                    <div class="code-block-header">
+                        <span class="code-file-name">routes/web.php</span>
+                        <button class="copy-btn" onclick="copyCode(this, 'code-routes-web')">
+                            <i class="fa-regular fa-copy"></i> Copy
+                        </button>
+                    </div>
+                    <pre class="code-view" id="code-routes-web">use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Multi-Page Migration Routes
+|--------------------------------------------------------------------------
+*/
+
+// Home Route
+Route::get('/', function () {
+    return view('home');
+});
+
+// About Route
+Route::get('/about', function () {
+    return view('about');
+});
+
+// Services Route (Optional extension)
+Route::get('/services', function () {
+    return view('services');
+});
+
+// Contact Route
+Route::get('/contact', function () {
+    return view('contact');
+});</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- PART 3: TESTING YOUR MULTI-PAGE MIGRATION -->
+        <section class="guide-section">
+            <h2 class="section-title">
+                <i class="fa-solid fa-terminal"></i>
+                Part 3: Testing Your Multi-Page Migration
+            </h2>
+            <p class="section-desc">
+                Ensure your local development server is running in your terminal:
+            </p>
+
+            <div class="code-block-card" style="margin-bottom: 16px;">
+                <div class="code-block-header">
+                    <span class="code-file-name">Terminal</span>
+                    <button class="copy-btn" onclick="copyCode(this, 'code-artisan')">
+                        <i class="fa-regular fa-copy"></i> Copy
+                    </button>
+                </div>
+                <pre class="code-view" id="code-artisan">php artisan serve</pre>
+            </div>
+
+            <div class="routes-test-box">
+                <strong style="color: var(--text-title); display: block; margin-bottom: 6px;">Open your web browser and test each navigation route path:</strong>
+                <ul>
+                    <li>Home: <strong>/</strong></li>
+                    <li>About: <strong>/about</strong></li>
+                    <li>Contact: <strong>/contact</strong></li>
+                </ul>
+                <p style="color: #059669; font-size: 13px; font-weight: 600; margin: 0;">
+                    <i class="fa-solid fa-check"></i> Verify that the shared navbar and footer remain consistent across pages while the inner content updates dynamically.
+                </p>
+            </div>
+        </section>
+
+        <!-- PART 4: FINAL LABORATORY TASK & SUBMISSION -->
+        <section class="guide-section">
+            <h2 class="section-title">
+                <i class="fa-solid fa-clipboard-check"></i>
+                Part 4: Final Laboratory Task &amp; Submission
+            </h2>
+
+            <!-- Core Task Protocol -->
+            <div class="final-task-box">
+                <strong style="color: var(--text-title); font-size: 15px; display: block; margin-bottom: 8px;">Migration Task Steps:</strong>
+                <ol class="final-task-list">
+                    <li><strong>Audit Your Old Project:</strong> Take a complete multi-page native PHP website you created previously (minimum 3 connected pages).</li>
+                    <li><strong>Build the Layout:</strong> Extract the common navigation and footer into a master Blade layout (<code>resources/views/layouts/app.blade.php</code>).</li>
+                    <li><strong>Convert Child Pages:</strong> Migrate each page content section into individual <code>.blade.php</code> files using <code>@extends</code> and <code>@section</code>.</li>
+                    <li><strong>Configure Routes &amp; Test:</strong> Map all pages inside <code>routes/web.php</code> and demonstrate your fully functioning multi-page Laravel application to your instructor for grading.</li>
+                </ol>
+            </div>
+
+            <!-- Required Submission Deliverables -->
+            <div style="margin-top: 28px;">
+                <h3 style="font-size: 16px; font-weight: 700; color: var(--text-title); margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-folder-open" style="color: var(--primary);"></i>
+                    Required Submission Deliverables
+                </h3>
+                <p class="section-desc">
+                    Attach and submit the following proof of completion to your instructor or laboratory portal:
+                </p>
+
+                <div class="deliverables-grid">
+                    <!-- Deliverable 1: Screenshot -->
+                    <div class="deliverable-card">
+                        <div class="deliv-icon"><i class="fa-solid fa-camera"></i></div>
+                        <div>
+                            <h4>1. Screenshot of Code &amp; File Location</h4>
+                            <p>Capture a clear screenshot of your VS Code workspace / Explorer sidebar showing where your migrated files reside:</p>
+                            <ul>
+                                <li><code>resources/views/layouts/app.blade.php</code> (Master Shell)</li>
+                                <li><code>resources/views/</code> (Child views: <code>home</code>, <code>about</code>, <code>contact</code>)</li>
+                                <li><code>routes/web.php</code> (Route controllers)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Deliverable 2: Screen Recording -->
+                    <div class="deliverable-card">
+                        <div class="deliv-icon"><i class="fa-solid fa-video"></i></div>
+                        <div>
+                            <h4>2. Screen Recording of Working Output</h4>
+                            <p>A short screen recording video (MP4 / GIF) demonstrating live navigation on <code>http://127.0.0.1:8000</code>:</p>
+                            <ul>
+                                <li>Terminal with <code>php artisan serve</code> active</li>
+                                <li>Clicking across <strong>Home</strong>, <strong>About</strong>, and <strong>Contact</strong> pages</li>
+                                <li>Demonstrating persistent navbar &amp; footer with dynamically updated inner content</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Deliverable 3: Code Snippets -->
+                    <div class="deliverable-card">
+                        <div class="deliv-icon"><i class="fa-solid fa-code"></i></div>
+                        <div>
+                            <h4>3. Code Snippets Compilation</h4>
+                            <p>Paste text excerpts of your core migrated code in your submission document:</p>
+                            <ul>
+                                <li>Master layout code with <code>@yield('content')</code></li>
+                                <li>Sample child view with <code>@extends('layouts.app')</code></li>
+                                <li>Route definitions from <code>routes/web.php</code></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Deliverable 4: GitHub Link -->
+                    <div class="deliverable-card">
+                        <div class="deliv-icon"><i class="fa-brands fa-github"></i></div>
+                        <div>
+                            <h4>4. GitHub Repository Link</h4>
+                            <p>Push your complete migrated Laravel application to GitHub and provide your repository URL:</p>
+                            <ul>
+                                <li>Include complete commit history</li>
+                                <li>Ensure repository is set to Public for instructor evaluation</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="manual-footer">
+            <p>&copy; 2026 Web Development 3 Class &bull; All rights reserved.</p>
+        </footer>
+
+    </div>
+
+    <!-- 1-Click Copy Script -->
+    <script>
+        function copyCode(btn, elementId) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            navigator.clipboard.writeText(el.innerText).then(() => {
+                const originalHtml = btn.innerHTML;
+                btn.classList.add('copied');
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    btn.innerHTML = originalHtml;
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

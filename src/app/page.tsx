@@ -30,13 +30,15 @@ import {
   Play,
   ArrowRight,
   MonitorPlay,
-  FileCode
+  FileCode,
+  Calendar
 } from 'lucide-react';
 import { AdSidebar } from '@/components/AdSidebar';
 import { CONFIG } from '@/config';
 import { HeaderAd } from '@/components/HeaderAd';
 
 import { Lesson, DEFAULT_LESSONS } from '@/data/lessons';
+import { CourseTask, DEFAULT_TASKS } from '@/data/tasks';
 
 const LogoIcon = () => (
   <div className="relative flex items-center justify-center">
@@ -84,7 +86,7 @@ const COURSE_FOLDERS: CourseFolderDef[] = [
     gradient: 'from-indigo-600 via-purple-600 to-rose-600',
     glow: 'shadow-indigo-500/10',
     borderAccent: 'border-indigo-200 hover:border-indigo-400',
-    filter: (l) => l.course === 'Web Dev 3' || l.id.startsWith('webdev3-')
+    filter: (l) => l.course === 'Web Dev 3' || l.id.startsWith('webdev3-') || l.id === 'laravel11'
   },
   {
     id: 'mediadsn',
@@ -113,6 +115,19 @@ const COURSE_FOLDERS: CourseFolderDef[] = [
     filter: (l) => l.id === 'webdev1' || l.course === 'Web Development 1'
   },
   {
+    id: 'database',
+    code: 'IT-DB1',
+    title: 'Fundamentals of Database Systems',
+    courseTrack: 'Database & Data Modeling',
+    description: 'Relational data modeling, SQL queries and JOINs, normalization (1NF-3NF), ACID transactions, data integrity constraints, and query optimization.',
+    level: 'Database Systems Track',
+    badgeColor: 'bg-cyan-50 text-cyan-700 border-cyan-200/80',
+    gradient: 'from-cyan-600 to-blue-600',
+    glow: 'shadow-cyan-500/10',
+    borderAccent: 'border-cyan-200 hover:border-cyan-400',
+    filter: (l) => l.id === 'database1' || l.course === 'Fundamentals of Database' || l.course === 'Database Systems'
+  },
+  {
     id: 'cpp',
     code: 'CS-CPP1',
     title: 'C++ Systems & OOP Programming',
@@ -136,14 +151,28 @@ const COURSE_FOLDERS: CourseFolderDef[] = [
     gradient: 'from-amber-500 to-orange-600',
     glow: 'shadow-amber-500/10',
     borderAccent: 'border-amber-200 hover:border-amber-400',
-    filter: (l) => l.id === 'week1' || l.id === 'laravel11'
+    filter: (l) => l.id === 'week1' || l.course === 'Digital Video Production' || l.course === 'Video Editing'
+  },
+  {
+    id: 'eventprog',
+    code: 'IT-EDP1',
+    title: 'Event-Driven Programming',
+    courseTrack: 'Game Engine & Event Systems',
+    description: 'Event-driven architecture, node trees, input propagation pipelines, signal-slot mechanics, state machines, and 2D mobile game development using Godot Engine 4.',
+    level: 'Game Development Track',
+    badgeColor: 'bg-teal-50 text-teal-700 border-teal-200/80',
+    gradient: 'from-teal-600 via-emerald-600 to-cyan-600',
+    glow: 'shadow-teal-500/10',
+    borderAccent: 'border-teal-200 hover:border-teal-400',
+    filter: (l) => l.course === 'Event-Driven Programming' || l.course === 'Event Programming' || l.id.startsWith('eventprog') || l.id.startsWith('godot')
   }
 ];
 
 export default function Home() {
   const [lessons, setLessons] = useState<Lesson[]>(DEFAULT_LESSONS);
+  const [tasks, setTasks] = useState<CourseTask[]>(DEFAULT_TASKS);
   const [openFolderId, setOpenFolderId] = useState<string>('webdev3'); // Default to Web Dev 3 folder
-  const [viewMode, setViewMode] = useState<'cards' | 'outline'>('cards'); // Cards vs Compiled Outline
+  const [viewMode, setViewMode] = useState<'cards' | 'tasks' | 'outline'>('cards'); // Cards vs Tasks vs Compiled Outline
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'week-asc' | 'week-desc' | 'title-asc'>('week-asc');
   const [toast, setToast] = useState<string | null>(null);
@@ -189,7 +218,7 @@ export default function Home() {
               if (existingIdx === -1) {
                 updated.push(defLesson);
                 hasChanges = true;
-              } else if (!updated[existingIdx].course || !updated[existingIdx].competencies) {
+              } else if (updated[existingIdx].course !== defLesson.course || !updated[existingIdx].competencies) {
                 updated[existingIdx] = { 
                   ...defLesson, 
                   ...updated[existingIdx], 
@@ -345,6 +374,27 @@ export default function Home() {
   const activeFolder = COURSE_FOLDERS.find((f) => f.id === openFolderId) || COURSE_FOLDERS[0];
   const activeLessons = isAllFolders ? lessons : lessons.filter(activeFolder.filter);
 
+  // Filter tasks based on active folder & search query
+  const activeTasks = isAllFolders 
+    ? tasks 
+    : tasks.filter((t) => t.courseFolderId === openFolderId);
+
+  const currentFolderTasks = activeTasks;
+  const currentFolderActiveTasks = currentFolderTasks.filter((t) => t.status === 'active');
+
+  const displayedTasks = activeTasks.filter((task) => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      task.title.toLowerCase().includes(q) ||
+      task.description.toLowerCase().includes(q) ||
+      task.badge.toLowerCase().includes(q) ||
+      task.phaseTag.toLowerCase().includes(q) ||
+      task.techStack.some((tech) => tech.toLowerCase().includes(q)) ||
+      task.objectives.some((obj) => obj.toLowerCase().includes(q))
+    );
+  });
+
   // Filter & sort lessons for display
   const displayedLessons = activeLessons
     .filter((lesson) => {
@@ -393,7 +443,20 @@ export default function Home() {
           </Link>
 
           {/* Right Header Navigation & User Profile */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Link
+              href="/courses/"
+              className="text-xs font-bold text-slate-600 hover:text-indigo-600 px-3 py-1.5 rounded-xl border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition flex items-center gap-1.5"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-indigo-500" />
+              <span>Courses</span>
+            </Link>
+            <Link
+              href="/about/"
+              className="text-xs font-bold text-slate-600 hover:text-indigo-600 px-3 py-1.5 rounded-xl border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition hidden md:flex items-center gap-1.5"
+            >
+              <span>About</span>
+            </Link>
             <Link
               href="/admin"
               className="text-xs font-bold text-slate-600 hover:text-indigo-600 px-3 py-1.5 rounded-xl border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition flex items-center gap-1.5"
@@ -456,6 +519,47 @@ export default function Home() {
         {/* Main Content Area */}
         <section className={`flex-grow w-full ${showAds ? 'lg:max-w-[72%]' : 'lg:max-w-full'}`}>
           
+          {/* Educational Welcome & Quick Links Hero Banner */}
+          <div className="mb-6 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white rounded-3xl p-6 sm:p-7 shadow-sm border border-indigo-900/50 relative overflow-hidden">
+            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
+              <div className="space-y-2 max-w-2xl">
+                <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-[11px] font-bold border border-indigo-400/30">
+                  <Sparkles className="w-3 h-3 text-indigo-300" />
+                  <span>Higher Education Computing Portal</span>
+                </div>
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tight font-lexend">
+                  Computer Science Curricula, Interactive Decks &amp; Lab Manuals
+                </h1>
+                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+                  Structured semester materials curated for students and educators. Explore comprehensive course syllabi, visual lecture slides, and step-by-step laboratory projects in Web Development, Godot Game Systems, and Databases.
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+                <Link
+                  href="/courses/"
+                  className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm font-lexend"
+                >
+                  <BookOpen className="w-3.5 h-3.5" />
+                  <span>Browse Syllabi</span>
+                </Link>
+                <Link
+                  href="/godot/"
+                  className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition flex items-center gap-1.5 border border-slate-700 font-lexend"
+                >
+                  <FileCode className="w-3.5 h-3.5 text-sky-400" />
+                  <span>Godot 4 Lab</span>
+                </Link>
+                <Link
+                  href="/laravel/"
+                  className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition flex items-center gap-1.5 border border-slate-700 font-lexend"
+                >
+                  <FileCode className="w-3.5 h-3.5 text-rose-400" />
+                  <span>Laravel Lab</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+
           {/* Balanced Course Folder Navigation Bar */}
           <div className="mb-5">
             <div className="flex items-center justify-between mb-2.5">
@@ -471,7 +575,7 @@ export default function Home() {
             </div>
 
             {/* Clean Grid of Course Folder Cards */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
               {/* All Folders Option */}
               <button
                 onClick={() => {
@@ -501,8 +605,15 @@ export default function Home() {
                   </p>
                 </div>
                 <div className="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between text-[10px] font-bold text-slate-500">
-                  <span>{lessons.length} Lessons</span>
-                  {openFolderId === 'all' && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />}
+                  <div className="flex items-center gap-1.5 truncate">
+                    <span>{lessons.length} Lessons</span>
+                    {tasks.filter(t => t.status === 'active').length > 0 && (
+                      <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-rose-50 text-rose-600 border border-rose-200/60 font-black">
+                        {tasks.filter(t => t.status === 'active').length} {tasks.filter(t => t.status === 'active').length === 1 ? 'Task' : 'Tasks'}
+                      </span>
+                    )}
+                  </div>
+                  {openFolderId === 'all' && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />}
                 </div>
               </button>
 
@@ -510,6 +621,7 @@ export default function Home() {
               {COURSE_FOLDERS.map((folder) => {
                 const isOpen = folder.id === openFolderId;
                 const folderLessonCount = lessons.filter(folder.filter).length;
+                const folderActiveTasksCount = tasks.filter((t) => t.courseFolderId === folder.id && t.status === 'active').length;
 
                 return (
                   <button
@@ -541,7 +653,7 @@ export default function Home() {
                       <h4 className={`text-xs font-bold leading-tight line-clamp-1 font-lexend ${
                         isOpen ? 'text-indigo-950 font-black' : 'text-slate-800'
                       }`}>
-                        {folder.title.replace('Web Dev 3: ', '').replace('Web Development 1: ', '')}
+                        {folder.title.replace('Web Dev 3: ', '').replace('Web Development 1: ', '').replace('Fundamentals of ', '')}
                       </h4>
                       <p className="text-[10px] font-semibold text-slate-400 mt-0.5 truncate">
                         {folder.courseTrack}
@@ -549,8 +661,15 @@ export default function Home() {
                     </div>
 
                     <div className="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between text-[10px] font-bold text-slate-500">
-                      <span>{folderLessonCount} {folderLessonCount === 1 ? 'Lesson' : 'Lessons'}</span>
-                      {isOpen && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />}
+                      <div className="flex items-center gap-1.5 truncate">
+                        <span>{folderLessonCount} {folderLessonCount === 1 ? 'Lesson' : 'Lessons'}</span>
+                        {folderActiveTasksCount > 0 && (
+                          <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-rose-50 text-rose-600 border border-rose-200/60 font-black">
+                            {folderActiveTasksCount} {folderActiveTasksCount === 1 ? 'Task' : 'Tasks'}
+                          </span>
+                        )}
+                      </div>
+                      {isOpen && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />}
                     </div>
                   </button>
                 );
@@ -558,123 +677,87 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Clean Action & Filter Toolbar (Balanced, No Cluttered Giant Banner) */}
-          <div className="bg-white border border-slate-200/90 rounded-2xl p-3.5 sm:p-4 shadow-sm mb-6 flex flex-col sm:flex-row items-center justify-between gap-3.5">
-            <div className="flex items-center gap-2.5 w-full sm:w-auto">
-              <FolderOpen className="w-4 h-4 text-indigo-600 shrink-0" />
-              <h2 className="font-lexend text-sm sm:text-base font-bold text-slate-900 truncate">
-                {openFolderId === 'all' ? 'All Course Lessons' : activeFolder?.title}
-              </h2>
-              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200/60 shrink-0">
-                {displayedLessons.length} {displayedLessons.length === 1 ? 'Module' : 'Modules'}
-              </span>
+          {/* Clean Action & Filter Toolbar */}
+          <div className="bg-white border border-slate-200/90 rounded-2xl p-2.5 sm:p-3 shadow-sm mb-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+            {/* View Mode Tabs (Cards, Tasks, Roadmap) */}
+            <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200/80 select-none w-full sm:w-auto">
+              <button
+                onClick={() => setViewMode('cards')}
+                className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer select-none ${
+                  viewMode === 'cards'
+                    ? 'bg-white text-indigo-700 shadow-sm'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+                title="Lecture Deck Cards"
+              >
+                <LayoutGrid className="w-3.5 h-3.5" />
+                <span>Cards</span>
+              </button>
+
+              <button
+                onClick={() => setViewMode('tasks')}
+                className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer select-none ${
+                  viewMode === 'tasks'
+                    ? 'bg-white text-rose-600 shadow-sm'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+                title="Laboratory Manuals & Tasks"
+              >
+                <FileCode className={`w-3.5 h-3.5 ${viewMode === 'tasks' ? 'text-rose-600' : 'text-slate-400'}`} />
+                <span>Tasks</span>
+                {currentFolderActiveTasks.length > 0 && (
+                  <span className={`text-[9px] font-mono font-black px-1.5 py-0.2 rounded-full ${
+                    viewMode === 'tasks' 
+                      ? 'bg-rose-100 text-rose-700' 
+                      : 'bg-rose-600 text-white'
+                  }`}>
+                    {currentFolderActiveTasks.length}
+                  </span>
+                )}
+              </button>
+
+              <button
+                onClick={() => setViewMode('outline')}
+                className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer select-none ${
+                  viewMode === 'outline'
+                    ? 'bg-white text-indigo-700 shadow-sm'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+                title="Syllabus Roadmap View"
+              >
+                <ListOrdered className="w-3.5 h-3.5" />
+                <span>Roadmap</span>
+              </button>
             </div>
 
-            {/* View Mode & Filter Controls */}
-            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
-              {/* Dual View Mode: Cards vs Roadmap Table */}
-              <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200/80 select-none">
-                <button
-                  onClick={() => setViewMode('cards')}
-                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition ${
-                    viewMode === 'cards'
-                      ? 'bg-white text-indigo-700 shadow-sm'
-                      : 'text-slate-500 hover:text-slate-800'
-                  }`}
-                  title="Grid Cards View"
-                >
-                  <LayoutGrid className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Cards</span>
-                </button>
-
-                <button
-                  onClick={() => setViewMode('outline')}
-                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition ${
-                    viewMode === 'outline'
-                      ? 'bg-white text-indigo-700 shadow-sm'
-                      : 'text-slate-500 hover:text-slate-800'
-                  }`}
-                  title="Syllabus Roadmap View"
-                >
-                  <ListOrdered className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Roadmap</span>
-                </button>
-              </div>
-
+            {/* Search & Sort Controls */}
+            <div className="flex items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end">
               {/* Search */}
-              <div className="relative flex-grow sm:flex-grow-0 sm:w-52">
+              <div className="relative flex-grow sm:flex-grow-0 sm:w-60">
                 <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
                 <input
                   type="text"
-                  placeholder="Search lessons..."
+                  placeholder={viewMode === 'tasks' ? "Search lab tasks..." : "Search lessons..."}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-800 font-medium placeholder-slate-400 focus:outline-none transition"
                 />
               </div>
 
-              {/* Sort */}
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
-                className="bg-slate-50 border border-slate-200 focus:border-indigo-500 rounded-xl px-2.5 py-1.5 text-xs text-slate-700 font-bold focus:outline-none cursor-pointer transition"
-              >
-                <option value="week-asc">Week (1 → 16)</option>
-                <option value="week-desc">Week (16 → 1)</option>
-                <option value="title-asc">Title (A-Z)</option>
-              </select>
+              {/* Sort (only on cards or outline) */}
+              {viewMode !== 'tasks' && (
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as any)}
+                  className="bg-slate-50 border border-slate-200 focus:border-indigo-500 rounded-xl px-3 py-1.5 text-xs text-slate-700 font-bold focus:outline-none cursor-pointer transition shrink-0"
+                >
+                  <option value="week-asc">Week (1 → 16)</option>
+                  <option value="week-desc">Week (16 → 1)</option>
+                  <option value="title-asc">Title (A-Z)</option>
+                </select>
+              )}
             </div>
           </div>
-
-          {/* Featured Lab Manual Banner for Laravel Web Dev 3 */}
-          {(openFolderId === 'webdev3' || openFolderId === 'all') && (
-            <div className="mb-6 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-900 to-rose-950/80 border border-rose-500/30 p-5 sm:p-6 shadow-xl relative overflow-hidden group">
-              <div className="absolute -right-10 -bottom-10 w-64 h-64 bg-rose-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-rose-500/20 transition duration-700" />
-              <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-5 relative z-10">
-                <div className="space-y-2 max-w-2xl">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-[10px] font-mono font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40">
-                      Laboratory Manual • Part 2
-                    </span>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/10 text-slate-300 border border-white/10 font-mono">
-                      Phase 2: Multi-Page
-                    </span>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                      Graded Lab Task
-                    </span>
-                  </div>
-                  <h3 className="text-lg sm:text-xl font-black text-white font-lexend tracking-tight flex items-center gap-2">
-                    Migrating Multi-Page Native PHP to Laravel Blade
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-300 font-medium leading-relaxed">
-                    Master Blade Layout Inheritance (<code className="text-rose-300 font-mono">@yield</code>, <code className="text-rose-300 font-mono">@extends</code>, <code className="text-rose-300 font-mono">@section</code>), configure multi-page routing in <code className="text-rose-300 font-mono">routes/web.php</code>, and eliminate repetitive native includes with an interactive step-by-step guide.
-                  </p>
-                </div>
-
-                <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 w-full lg:w-auto shrink-0">
-                  <a
-                    href="/laravel/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 sm:flex-initial py-3 px-5 rounded-2xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-lexend font-bold text-xs shadow-lg shadow-rose-600/30 active:scale-95 transition flex items-center justify-center gap-2"
-                  >
-                    <FileCode className="w-4 h-4" />
-                    <span>Launch Lab Manual</span>
-                    <ExternalLink className="w-3.5 h-3.5 opacity-80" />
-                  </a>
-
-                  <button
-                    onClick={() => copyToClipboard('/laravel/', 'Lab Manual (Part 2)')}
-                    className="py-3 px-4 rounded-2xl bg-white/10 hover:bg-white/15 text-slate-200 border border-white/15 font-lexend font-bold text-xs transition flex items-center justify-center gap-2 cursor-pointer"
-                    title="Copy direct shareable link"
-                  >
-                    <Copy className="w-4 h-4" />
-                    <span className="hidden sm:inline">Copy Link</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* VIEW MODE 1: PRESENTATION CARDS */}
           {viewMode === 'cards' && (
@@ -791,7 +874,243 @@ export default function Home() {
             </div>
           )}
 
-          {/* VIEW MODE 2: COMPILED SYLLABUS ROADMAP TABLE */}
+          {/* VIEW MODE 2: LABORATORY TASKS & MIGRATION MANUALS */}
+          {viewMode === 'tasks' && (
+            <div className="space-y-6">
+              {/* Header Overview Banner for Tasks */}
+              <div className="rounded-3xl bg-gradient-to-r from-slate-900 via-slate-900 to-rose-950/80 border border-slate-800 p-6 text-white shadow-xl relative overflow-hidden">
+                <div className="absolute -right-8 -bottom-8 w-60 h-60 bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
+                <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div className="space-y-1.5 max-w-2xl">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-[10px] font-mono font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 flex items-center gap-1">
+                        <FileCode className="w-3 h-3" />
+                        Practical Lab Tasks & Manuals
+                      </span>
+                      <span className="text-[10px] font-mono text-slate-400">
+                        {openFolderId === 'all' ? 'All Course Tracks' : activeFolder?.title}
+                      </span>
+                    </div>
+                    <h3 className="text-xl sm:text-2xl font-black font-lexend tracking-tight text-white">
+                      Hands-On Code Tasks & Migration Lab Manuals
+                    </h3>
+                    <p className="text-xs sm:text-sm text-slate-300 font-medium leading-relaxed">
+                      Interactive step-by-step programming tasks, architectural migrations, and graded deliverables built for practical mastery.
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-3 shrink-0 self-start md:self-auto">
+                    <div className="px-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 text-center">
+                      <span className="text-[10px] uppercase font-bold text-slate-400 block font-lexend">Active Graded</span>
+                      <span className="text-lg font-black text-rose-400 font-mono">
+                        {displayedTasks.filter(t => t.status === 'active').length}
+                      </span>
+                    </div>
+                    <div className="px-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 text-center">
+                      <span className="text-[10px] uppercase font-bold text-slate-400 block font-lexend">Total Guides</span>
+                      <span className="text-lg font-black text-indigo-400 font-mono">
+                        {displayedTasks.length}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tasks List */}
+              {displayedTasks.length > 0 ? (
+                <div className="grid grid-cols-1 gap-6">
+                  {displayedTasks.map((task) => {
+                    const isActive = task.status === 'active';
+                    const isGraded = task.type === 'Graded Lab Task';
+
+                    return (
+                      <div
+                        key={task.id}
+                        className={`bg-white border rounded-3xl p-6 shadow-sm transition-all duration-300 relative overflow-hidden group ${
+                          isActive 
+                            ? 'border-slate-200/90 hover:border-rose-400/60 hover:shadow-xl' 
+                            : 'border-slate-200/60 bg-slate-50/50 opacity-90'
+                        }`}
+                      >
+                        {/* Top Accent line for graded task */}
+                        {isActive && (
+                          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-rose-500 via-red-500 to-indigo-500" />
+                        )}
+
+                        <div className="flex flex-col gap-5">
+                          {/* Badges & Meta Row */}
+                          <div className="flex flex-wrap items-center justify-between gap-3">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="text-[10px] font-mono font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200 font-bold">
+                                {task.badge}
+                              </span>
+                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200/80 font-mono">
+                                {task.phaseTag}
+                              </span>
+                              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full font-mono ${
+                                isGraded 
+                                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
+                                  : 'bg-indigo-50 text-indigo-700 border border-indigo-200'
+                              }`}>
+                                {task.type}
+                              </span>
+                              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200/60">
+                                {task.weekAlignment}
+                              </span>
+                            </div>
+
+                            <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+                              <div className="flex items-center gap-1 font-mono text-[11px] bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-md">
+                                <Clock className="w-3 h-3 text-slate-400" />
+                                <span>{task.duration}</span>
+                              </div>
+                              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200/80">
+                                {task.difficulty}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Title & Description */}
+                          <div>
+                            <div className="flex items-center gap-2 mb-1.5">
+                              <span className="text-[11px] font-bold text-slate-400 font-mono uppercase tracking-wider">
+                                {task.courseTitle}
+                              </span>
+                            </div>
+                            <h3 className="text-xl sm:text-2xl font-black text-slate-900 font-lexend tracking-tight group-hover:text-rose-600 transition">
+                              {task.title}
+                            </h3>
+                            <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed mt-2">
+                              {task.description}
+                            </p>
+                          </div>
+
+                          {/* Objectives & Deliverables Container */}
+                          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 pt-1">
+                            {/* Key Learning Objectives */}
+                            <div className="lg:col-span-2 bg-slate-50/80 border border-slate-200/70 rounded-2xl p-4 space-y-2.5">
+                              <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 flex items-center gap-1.5 font-lexend">
+                                <CheckCircle2 className="w-3.5 h-3.5 text-rose-500" />
+                                <span>Step-by-Step Lab Milestones & Learning Objectives</span>
+                              </span>
+                              <div className="space-y-2">
+                                {task.objectives.map((obj, idx) => (
+                                  <div key={idx} className="flex items-start gap-2 text-xs text-slate-700 font-medium leading-relaxed">
+                                    <span className="w-4 h-4 rounded-full bg-rose-100 text-rose-700 font-mono font-black text-[9px] flex items-center justify-center shrink-0 mt-0.5">
+                                      {idx + 1}
+                                    </span>
+                                    <span>{obj}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Tech Stack & Submission Requirements */}
+                            <div className="bg-slate-50/80 border border-slate-200/70 rounded-2xl p-4 flex flex-col justify-between gap-3">
+                              <div>
+                                <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-2 font-lexend">
+                                  Framework & Tooling Stack
+                                </span>
+                                <div className="flex flex-wrap gap-1.5 mb-4">
+                                  {task.techStack.map((tech, idx) => (
+                                    <span key={idx} className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-lg bg-white border border-slate-200 text-slate-700 shadow-2xs">
+                                      {tech}
+                                    </span>
+                                  ))}
+                                </div>
+
+                                {task.deliverables && task.deliverables.length > 0 && (
+                                  <div>
+                                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-1.5 font-lexend">
+                                      Expected Deliverables
+                                    </span>
+                                    <ul className="space-y-1">
+                                      {task.deliverables.map((deliv, idx) => (
+                                        <li key={idx} className="text-[11px] text-slate-600 font-medium flex items-center gap-1.5">
+                                          <Check className="w-3 h-3 text-emerald-500 shrink-0" />
+                                          <span className="truncate">{deliv}</span>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
+                              </div>
+
+                              <div className="pt-2 border-t border-slate-200/60 flex items-center justify-between text-[11px] text-slate-500 font-mono">
+                                <span>Format: Interactive Web Manual</span>
+                                <span className="text-rose-600 font-bold">Self-Paced / Graded</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Action Footer */}
+                          <div className="pt-3 border-t border-slate-100 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3">
+                            <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                              <a
+                                href={task.launchUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full sm:w-auto py-3 px-6 rounded-2xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-lexend font-bold text-xs shadow-lg shadow-rose-600/25 active:scale-95 transition flex items-center justify-center gap-2"
+                              >
+                                <FileCode className="w-4 h-4" />
+                                <span>{task.actionText || 'Launch Lab Manual'}</span>
+                                <ExternalLink className="w-3.5 h-3.5 opacity-80" />
+                              </a>
+
+                              <button
+                                onClick={() => copyToClipboard(task.launchUrl, task.title)}
+                                className="w-full sm:w-auto py-3 px-4 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/80 font-lexend font-bold text-xs transition flex items-center justify-center gap-2 cursor-pointer"
+                                title="Copy shareable link"
+                              >
+                                <Copy className="w-4 h-4 text-slate-500" />
+                                <span>Copy Link</span>
+                              </button>
+                            </div>
+
+                            <div className="flex items-center gap-3 text-xs text-slate-400">
+                              <a
+                                href="/laravel/lab_manual_part_2_multi_page_migration.html"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="hover:text-rose-600 transition underline font-medium text-[11px]"
+                              >
+                                Direct HTML Standalone File
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                /* Empty state when the active folder has no tasks */
+                <div className="bg-white border border-slate-200/80 rounded-3xl p-10 sm:p-12 text-center shadow-sm max-w-2xl mx-auto">
+                  <div className="w-14 h-14 rounded-2xl bg-slate-100 border border-slate-200 text-slate-400 flex items-center justify-center mx-auto mb-4">
+                    <FileCode className="w-7 h-7" />
+                  </div>
+                  <h4 className="text-base font-bold text-slate-900 font-lexend mb-1">
+                    No Lab Tasks Configured For {activeFolder?.title || 'This Folder'}
+                  </h4>
+                  <p className="text-xs text-slate-500 max-w-md mx-auto mb-6">
+                    Hands-on lab manuals and migration exercises are currently published under the <strong className="text-slate-800">Laravel Framework</strong> course.
+                  </p>
+                  <button
+                    onClick={() => {
+                      setOpenFolderId('webdev3');
+                      setViewMode('tasks');
+                    }}
+                    className="py-2.5 px-5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-lexend font-bold text-xs shadow-md transition inline-flex items-center gap-2 cursor-pointer"
+                  >
+                    <FolderOpen className="w-4 h-4" />
+                    <span>View Laravel Framework Tasks</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* VIEW MODE 3: COMPILED SYLLABUS ROADMAP TABLE */}
           {viewMode === 'outline' && (
             <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm">
               <div className="p-4 bg-slate-900 text-white flex items-center justify-between font-lexend">
@@ -889,12 +1208,67 @@ export default function Home() {
         </div>
       )}
 
-      {/* Bottom Footer signature */}
-      <footer className="w-full max-w-7xl mx-auto text-center text-xs text-slate-400 font-semibold tracking-wide border-t border-slate-200/80 py-6 px-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-        <span>Developed by Luiese Amstrong • Lesson Library © 2026</span>
-        <Link href="/privacy" className="hover:text-indigo-600 transition underline">
-          Privacy Policy
-        </Link>
+      {/* Comprehensive Academic Footer */}
+      <footer className="w-full max-w-7xl mx-auto border-t border-slate-200/80 mt-16 pt-12 pb-10 px-4 sm:px-6 text-slate-600">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 mb-10 text-xs">
+          {/* Column 1: About the Platform */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <span className="w-7 h-7 rounded-lg bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600">
+                <GraduationCap className="w-4 h-4" />
+              </span>
+              <span className="font-extrabold text-sm text-slate-900 font-lexend tracking-tight">Lesson Library</span>
+            </div>
+            <p className="text-slate-500 leading-relaxed text-[11.5px]">
+              Open-access university computing curricula, interactive visual slide decks, hands-on lab manuals, and self-assessment engines for students and educators.
+            </p>
+            <p className="text-[11px] text-slate-400 font-mono">iamlesson.space &bull; Higher Education Portal</p>
+          </div>
+
+          {/* Column 2: Academic Curricula */}
+          <div className="space-y-2.5">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 font-mono">Academic Courses</h4>
+            <ul className="space-y-1.5 text-[11.5px] text-slate-500">
+              <li><Link href="/courses/event-driven-programming/" className="hover:text-indigo-600 transition">IT-EDP1: Event-Driven Programming</Link></li>
+              <li><Link href="/courses/laravel-framework/" className="hover:text-indigo-600 transition">IT-WD3: Laravel 11 Framework</Link></li>
+              <li><Link href="/courses/interactive-media-design/" className="hover:text-indigo-600 transition">IT-MD1: Interactive Media Design</Link></li>
+              <li><Link href="/courses/database-systems/" className="hover:text-indigo-600 transition">IT-DB1: Database Management Systems</Link></li>
+              <li><Link href="/courses/cpp-programming/" className="hover:text-indigo-600 transition">CS-CPP1: Object-Oriented C++</Link></li>
+              <li><Link href="/courses/web-development-fundamentals/" className="hover:text-indigo-600 transition">IT-WD1: Web Development 1</Link></li>
+            </ul>
+          </div>
+
+          {/* Column 3: Practical Lab Manuals */}
+          <div className="space-y-2.5">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 font-mono">Practical Lab Manuals</h4>
+            <ul className="space-y-1.5 text-[11.5px] text-slate-500">
+              <li><Link href="/godot/" className="hover:text-sky-600 transition font-medium">&bull; Godot 4 2D Mobile Game Lab</Link></li>
+              <li><Link href="/laravel/" className="hover:text-rose-600 transition font-medium">&bull; Laravel 11 Multi-Page Migration Lab</Link></li>
+              <li><Link href="/courses/" className="hover:text-indigo-600 transition font-medium">&bull; View All Course Syllabi &rarr;</Link></li>
+            </ul>
+          </div>
+
+          {/* Column 4: Institutional Trust & Legal */}
+          <div className="space-y-2.5">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 font-mono">Trust &amp; Transparency</h4>
+            <ul className="space-y-1.5 text-[11.5px] text-slate-500">
+              <li><Link href="/about/" className="hover:text-indigo-600 transition">About the Platform &amp; Educator</Link></li>
+              <li><Link href="/contact/" className="hover:text-indigo-600 transition">Contact &amp; Student Inquiries</Link></li>
+              <li><Link href="/privacy/" className="hover:text-indigo-600 transition">Privacy &amp; Cookie Policy (AdSense)</Link></li>
+              <li><Link href="/terms/" className="hover:text-indigo-600 transition">Terms of Service</Link></li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="border-t border-slate-200/80 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-400">
+          <span>Curated by Luiese Armstrong &bull; Lesson Library &copy; 2026 &bull; All Rights Reserved</span>
+          <div className="flex items-center gap-4 font-medium">
+            <Link href="/about/" className="hover:text-slate-600 transition">About</Link>
+            <Link href="/contact/" className="hover:text-slate-600 transition">Contact</Link>
+            <Link href="/privacy/" className="hover:text-slate-600 transition">Privacy</Link>
+            <Link href="/terms/" className="hover:text-slate-600 transition">Terms</Link>
+          </div>
+        </div>
       </footer>
     </main>
   );

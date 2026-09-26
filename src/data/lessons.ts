@@ -257,7 +257,7 @@ export const DEFAULT_LESSONS: Lesson[] = [
   {
     id: 'laravel11',
     week: 1,
-    course: 'All Subjects',
+    course: 'Web Dev 3',
     title: 'Laravel Fundamentals (Comprehensive Master Deck)',
     description: '50-slide complete master deck covering Laravel architecture, zero-config SQLite, RESTful routing, Blade components, migrations, and interactive simulations.',
     duration: '50 mins',
@@ -274,7 +274,7 @@ export const DEFAULT_LESSONS: Lesson[] = [
   {
     id: 'webdev1',
     week: 1,
-    course: 'All Subjects',
+    course: 'Web Development 1',
     title: 'Introduction to Web Development',
     description: 'Learn the core building blocks of the web: HTML5 structure, CSS3 presentation, file extensions, and basic browser rendering loops.',
     duration: '15 mins',
@@ -288,7 +288,7 @@ export const DEFAULT_LESSONS: Lesson[] = [
   {
     id: 'cpp1',
     week: 1,
-    course: 'All Subjects',
+    course: 'C++ Programming',
     title: 'Fundamentals of Programming: C & C++ Masterclass',
     description: 'Master programming from core basics, escape sequences, identifiers, and control flow to pointers, memory management, and OOP classes with live code execution.',
     duration: '35 mins',
@@ -349,7 +349,7 @@ export const DEFAULT_LESSONS: Lesson[] = [
   {
     id: 'week1',
     week: 1,
-    course: 'All Subjects',
+    course: 'Digital Video Production',
     title: 'Introduction to Video Editing',
     description: 'Learn the fundamentals of video editing, timeline cuts, A-Roll/B-Roll layering, and Walter Murch\'s rules of rendering.',
     duration: '25 mins',
@@ -359,5 +359,24 @@ export const DEFAULT_LESSONS: Lesson[] = [
     isActive: true,
     quizEnabled: true,
     competencies: ['Timeline Trimming', 'A/B Roll Layering', 'Rule of Six']
+  },
+  {
+    id: 'eventprog-w1',
+    week: 1,
+    course: 'Event-Driven Programming',
+    title: 'Introduction to Godot 2D & Event-Driven Game Loops',
+    description: 'Explore the Godot 4 scene tree hierarchy, event-driven signal propagation, input processing (_unhandled_input vs _physics_process), mobile 2D viewport scaling, and character kinematics.',
+    duration: '40 mins',
+    slidesCount: 16,
+    difficulty: 'Beginner',
+    thumbnail: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80',
+    isActive: true,
+    quizEnabled: true,
+    competencies: [
+      'Godot 4 Project Setup & Mobile Viewport Scaling',
+      'Scene Hierarchy & 2D Node Composition',
+      'Event-Driven GDScript Inputs & CharacterBody2D Movement',
+      'Physics Layers & Collision Mask Architecture'
+    ]
   }
 ];

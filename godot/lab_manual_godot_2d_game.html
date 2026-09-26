@@ -1,0 +1,1731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratory Manual: IT-EDP1 (Week 1) — Building Your First 2D Game in Godot 4</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #478cbf;         /* Godot Engine iconic blue */
+            --primary-dark: #356b93;
+            --primary-bg: #eff6fc;
+            --primary-border: #bae0fd;
+            
+            --secondary: #0284c7;       /* Electric cyan */
+            --success: #059669;
+            --success-bg: #ecfdf5;
+            --warning: #d97706;
+            --warning-bg: #fffbeb;
+            
+            --bg-base: #f8fafc;         /* Crisp off-white */
+            --bg-surface: #ffffff;      /* Pure white card */
+            --bg-subtle: #f1f5f9;       /* Light neutral accent */
+            --border: #e2e8f0;          /* Soft border */
+            --border-hover: #cbd5e1;
+            
+            --text-title: #0f172a;      /* Deep slate heading */
+            --text-body: #334155;       /* Crisp slate body */
+            --text-muted: #64748b;      /* Slate muted */
+            
+            --code-bg: #0b1120;         /* Dark editor background */
+            --code-header: #1e293b;
+            --code-text: #f1f5f9;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-body);
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.7;
+            font-size: 15px;
+            padding-bottom: 80px;
+        }
+
+        /* Top Bar */
+        .top-navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 24px;
+        }
+
+        .top-navbar-inner {
+            max-width: 940px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-title);
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .nav-brand i {
+            color: var(--primary);
+            font-size: 20px;
+        }
+
+        .nav-badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: 6px;
+            background: var(--primary-bg);
+            color: var(--primary-dark);
+            border: 1px solid var(--primary-border);
+            letter-spacing: 0.3px;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-link-btn {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-body);
+            text-decoration: none;
+            padding: 7px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-surface);
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        }
+
+        .nav-link-btn:hover {
+            color: var(--text-title);
+            border-color: var(--border-hover);
+            background: var(--bg-subtle);
+        }
+
+        .nav-link-btn.primary {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+        }
+
+        .nav-link-btn.primary:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Reading Container */
+        .manual-wrapper {
+            max-width: 940px;
+            margin: 0 auto;
+            padding: 36px 20px 0;
+        }
+
+        /* Hero / Header Section */
+        .manual-header {
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-course-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 10px;
+            background: var(--primary-bg);
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid var(--primary-border);
+        }
+
+        .manual-title {
+            font-size: 30px;
+            font-weight: 800;
+            color: var(--text-title);
+            line-height: 1.3;
+            margin-bottom: 12px;
+            letter-spacing: -0.6px;
+        }
+
+        .manual-intro-p {
+            font-size: 15.5px;
+            color: var(--text-body);
+            line-height: 1.75;
+        }
+
+        /* Meta Info Grid */
+        .manual-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .manual-meta-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .meta-pill {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .meta-pill i {
+            font-size: 18px;
+            color: var(--primary);
+        }
+
+        .meta-pill-text small {
+            display: block;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .meta-pill-text span {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-title);
+        }
+
+        /* Content Sections */
+        .guide-section {
+            margin-bottom: 48px;
+        }
+
+        .section-title {
+            font-size: 21px;
+            font-weight: 800;
+            color: var(--text-title);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: -0.4px;
+        }
+
+        .milestone-badge {
+            background: var(--primary);
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .section-desc {
+            font-size: 15px;
+            color: var(--text-body);
+            margin-bottom: 18px;
+            line-height: 1.7;
+        }
+
+        /* Objective Cards */
+        .objectives-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin: 16px 0;
+        }
+
+        .objective-item {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        }
+
+        .objective-item i {
+            color: var(--success);
+            margin-top: 3px;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .objective-item strong {
+            color: var(--text-title);
+        }
+
+        /* Step Card */
+        .step-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+            transition: border-color 0.2s;
+        }
+
+        .step-card:hover {
+            border-color: var(--border-hover);
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--bg-subtle);
+        }
+
+        .step-num-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 17px;
+            font-weight: 750;
+            color: var(--text-title);
+        }
+
+        .step-num-circle {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--primary-bg);
+            color: var(--primary-dark);
+            font-size: 13px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--primary-border);
+        }
+
+        .step-category-badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background: var(--bg-subtle);
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        /* Callout Alerts */
+        .callout-box {
+            border-radius: 10px;
+            padding: 16px 18px;
+            margin: 18px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 14px;
+            line-height: 1.65;
+        }
+
+        .callout-box i {
+            font-size: 18px;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .callout-box.tip {
+            background: var(--primary-bg);
+            border: 1px solid var(--primary-border);
+            color: #1e3a8a;
+        }
+
+        .callout-box.tip i {
+            color: var(--primary);
+        }
+
+        .callout-box.warning {
+            background: var(--warning-bg);
+            border: 1px solid #fde68a;
+            color: #78350f;
+        }
+
+        .callout-box.warning i {
+            color: var(--warning);
+        }
+
+        .callout-box.success {
+            background: var(--success-bg);
+            border: 1px solid #a7f3d0;
+            color: #064e3b;
+        }
+
+        .callout-box.success i {
+            color: var(--success);
+        }
+
+        /* Property Table */
+        .config-table-wrapper {
+            overflow-x: auto;
+            margin: 16px 0 20px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+
+        .config-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13.5px;
+            text-align: left;
+            background: var(--bg-surface);
+        }
+
+        .config-table th {
+            background: var(--bg-subtle);
+            padding: 10px 14px;
+            font-weight: 700;
+            color: var(--text-title);
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        .config-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-body);
+            vertical-align: middle;
+        }
+
+        .config-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .config-table code {
+            font-family: 'Fira Code', monospace;
+            background: #f1f5f9;
+            color: #0369a1;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12.5px;
+            font-weight: 600;
+        }
+
+        /* Node Tree Box */
+        .node-tree-card {
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 18px 20px;
+            margin: 16px 0;
+            color: #e2e8f0;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.8;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+        }
+
+        .tree-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tree-tag {
+            font-size: 11px;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .tree-tag.root { background: #3b82f6; color: #fff; }
+        .tree-tag.body { background: #10b981; color: #fff; }
+        .tree-tag.sprite { background: #f59e0b; color: #fff; }
+        .tree-tag.shape { background: #ec4899; color: #fff; }
+
+        /* Code Block Styling */
+        .code-block-card {
+            background: var(--code-bg);
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 16px 0 24px;
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.1);
+        }
+
+        .code-block-header {
+            background: var(--code-header);
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 12px;
+            font-family: 'Fira Code', monospace;
+            color: #94a3b8;
+        }
+
+        .code-file-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            color: #e2e8f0;
+        }
+
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #f1f5f9;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        .copy-btn.copied {
+            background: var(--success);
+            border-color: var(--success);
+            color: #fff;
+        }
+
+        pre.code-view {
+            padding: 18px 20px;
+            margin: 0;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.7;
+            color: var(--code-text);
+        }
+
+        /* Step instructions list */
+        .step-steps-list {
+            padding-left: 20px;
+            margin: 12px 0 16px;
+            color: var(--text-body);
+            font-size: 14.5px;
+        }
+
+        .step-steps-list li {
+            margin-bottom: 8px;
+        }
+
+        /* Matrix / Comparison Grid */
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 18px 0;
+        }
+
+        @media (max-width: 680px) {
+            .matrix-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .matrix-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        }
+
+        .matrix-card.layer {
+            border-top: 4px solid #3b82f6;
+        }
+
+        .matrix-card.mask {
+            border-top: 4px solid #10b981;
+        }
+
+        .matrix-card h4 {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--text-title);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .matrix-card p {
+            font-size: 13.5px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Interactive Checklist */
+        .checklist-container {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px;
+            margin: 24px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+        }
+
+        .checklist-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .checklist-header h3 {
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--text-title);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checklist-progress-bar-bg {
+            height: 8px;
+            background: var(--bg-subtle);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .checklist-progress-fill {
+            height: 100%;
+            background: var(--success);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .check-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--bg-subtle);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .check-item:last-child {
+            border-bottom: none;
+        }
+
+        .check-item input[type="checkbox"] {
+            margin-top: 4px;
+            width: 17px;
+            height: 17px;
+            accent-color: var(--success);
+            cursor: pointer;
+        }
+
+        .check-item-text {
+            font-size: 14px;
+            color: var(--text-body);
+        }
+
+        .check-item.done .check-item-text {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        /* Deliverables Grid */
+        .deliverables-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 18px;
+        }
+
+        @media (max-width: 680px) {
+            .deliverables-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .deliverable-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .deliv-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: var(--primary-bg);
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+            border: 1px solid var(--primary-border);
+        }
+
+        .deliverable-card h4 {
+            font-size: 14.5px;
+            font-weight: 750;
+            color: var(--text-title);
+            margin-bottom: 4px;
+        }
+
+        .deliverable-card p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .deliverable-card ul {
+            padding-left: 18px;
+            margin-top: 6px;
+            font-size: 12.5px;
+            color: var(--text-body);
+        }
+
+        /* Footer */
+        .manual-footer {
+            margin-top: 60px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP STICKY NAVBAR -->
+    <nav class="top-navbar">
+        <div class="top-navbar-inner">
+            <a href="/?filter=eventprog" class="nav-brand">
+                <i class="fa-solid fa-gamepad"></i>
+                <span>IT-EDP1: Event-Driven Programming</span>
+                <span class="nav-badge">Godot Engine 4</span>
+            </a>
+            <div class="nav-actions">
+                <a href="/?filter=eventprog" class="nav-link-btn">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Back to Course</span>
+                </a>
+                <a href="/lesson?id=eventprog-w1" class="nav-link-btn">
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                    <span>Week 1 Slides</span>
+                </a>
+                <a href="/quiz?id=eventprog-w1" class="nav-link-btn primary">
+                    <i class="fa-solid fa-brain"></i>
+                    <span>Take Quiz</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN READING CONTAINER -->
+    <div class="manual-wrapper">
+
+        <!-- HEADER SECTION -->
+        <header class="manual-header">
+            <span class="header-course-tag">
+                <i class="fa-solid fa-microchip"></i>
+                Laboratory Manual &bull; Week 1 Practical Exercise
+            </span>
+            <h1 class="manual-title">Building Your First 2D Game in Godot Engine 4</h1>
+            <p class="manual-intro-p">
+                A rigorous, step-by-step practical guide to constructing a mobile-ready 2D game scene from scratch. You will configure native mobile display viewports, construct hierarchical node trees, compose static terrain geometry, assemble physics-driven kinematic player bodies, write deterministic movement scripts in GDScript, and configure 2D collision layer masks so character bodies interact seamlessly with the physical world.
+            </p>
+
+            <div class="manual-meta-grid">
+                <div class="meta-pill">
+                    <i class="fa-solid fa-clock"></i>
+                    <div class="meta-pill-text">
+                        <small>Duration</small>
+                        <span>60 - 90 Mins</span>
+                    </div>
+                </div>
+                <div class="meta-pill">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <div class="meta-pill-text">
+                        <small>Engine Target</small>
+                        <span>Godot 4.x Standard</span>
+                    </div>
+                </div>
+                <div class="meta-pill">
+                    <i class="fa-solid fa-mobile-screen"></i>
+                    <div class="meta-pill-text">
+                        <small>Display Profile</small>
+                        <span>Mobile 1280×720</span>
+                    </div>
+                </div>
+                <div class="meta-pill">
+                    <i class="fa-solid fa-code"></i>
+                    <div class="meta-pill-text">
+                        <small>Scripting Language</small>
+                        <span>GDScript 2.0</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- OBJECTIVES SECTION -->
+        <section class="guide-section">
+            <h2 class="section-title">
+                <i class="fa-solid fa-bullseye"></i>
+                Laboratory Learning Outcomes
+            </h2>
+            <p class="section-desc">By the end of this practical laboratory exercise, you will have accomplished and validated the following competencies:</p>
+            
+            <ul class="objectives-list">
+                <li class="objective-item">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <div>
+                        <strong>Mobile Project Initialization & Viewport Stretch:</strong> Provision a clean Godot 4 project configured with <code>Mobile / Compatibility</code> rendering, 1280×720 base resolution, <code>canvas_items</code> stretch mode, <code>keep</code> aspect ratio, and mouse touch emulation.
+                    </div>
+                </li>
+                <li class="objective-item">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <div>
+                        <strong>Scene Tree Composition & 2D Background Anchoring:</strong> Build a clean root <code>Node2D</code> scene architecture and anchor an asset-driven full-screen single PNG background with negative z-indexing.
+                    </div>
+                </li>
+                <li class="objective-item">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <div>
+                        <strong>Static Terrain & Collision Architecture:</strong> Create immovable world boundaries using <code>StaticBody2D</code>, visual surface representation, and assigned <code>CollisionShape2D</code> bounding geometry.
+                    </div>
+                </li>
+                <li class="objective-item">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <div>
+                        <strong>Kinematic Player Assembly:</strong> Assemble a controllable <code>CharacterBody2D</code> composite containing a <code>Sprite2D</code> visual node and an enclosed <code>CapsuleShape2D</code> collider with child grouping locks.
+                    </div>
+                </li>
+                <li class="objective-item">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <div>
+                        <strong>Event-Driven GDScript Physics:</strong> Script deterministic kinematic movement in <code>_physics_process(delta)</code>, incorporating directional input polling, velocity accumulation, gravity integration, jump mechanics, and <code>move_and_slide()</code>.
+                    </div>
+                </li>
+                <li class="objective-item">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <div>
+                        <strong>2D Physics Layers & Collision Masks:</strong> Architect the collision matrix in Project Settings, assigning explicit layer identities and collision detection masks so characters collide, run, and land securely on terrain without falling through the abyss.
+                    </div>
+                </li>
+            </ul>
+        </section>
+
+        <!-- PROGRESS CHECKLIST -->
+        <div class="checklist-container">
+            <div class="checklist-header">
+                <h3>
+                    <i class="fa-solid fa-list-check" style="color: var(--primary);"></i>
+                    Interactive Milestone Progress Checklist
+                </h3>
+                <span id="progress-percent" style="font-size: 13px; font-weight: 700; color: var(--primary-dark);">0% Completed</span>
+            </div>
+            <div class="checklist-progress-bar-bg">
+                <div id="progress-bar-fill" class="checklist-progress-fill"></div>
+            </div>
+            <div id="checklist-items">
+                <label class="check-item" data-id="m1">
+                    <input type="checkbox" onchange="toggleCheck(this)">
+                    <span class="check-item-text"><strong>Milestone 1:</strong> Mobile Project Created & Viewport Stretch configured to 1280×720 (canvas_items / keep / touch emulation)</span>
+                </label>
+                <label class="check-item" data-id="m2">
+                    <input type="checkbox" onchange="toggleCheck(this)">
+                    <span class="check-item-text"><strong>Milestone 2:</strong> Root Node2D created & Background PNG anchored with proper z-index and centering</span>
+                </label>
+                <label class="check-item" data-id="m3">
+                    <input type="checkbox" onchange="toggleCheck(this)">
+                    <span class="check-item-text"><strong>Milestone 3:</strong> StaticBody2D terrain configured with TextureRect tiling visual ground and RectangleShape2D collision</span>
+                </label>
+                <label class="check-item" data-id="m4">
+                    <input type="checkbox" onchange="toggleCheck(this)">
+                    <span class="check-item-text"><strong>Milestone 4:</strong> CharacterBody2D player assembled with Sprite2D and CapsuleShape2D</span>
+                </label>
+                <label class="check-item" data-id="m5">
+                    <input type="checkbox" onchange="toggleCheck(this)">
+                    <span class="check-item-text"><strong>Milestone 5:</strong> GDScript movement attached, handling input axis, gravity, jumping, and move_and_slide()</span>
+                </label>
+                <label class="check-item" data-id="m6">
+                    <input type="checkbox" onchange="toggleCheck(this)">
+                    <span class="check-item-text"><strong>Milestone 6:</strong> 2D Physics Layer names mapped, Terrain assigned to Layer 1, Player Mask scanning Layer 1</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- MILESTONE 1 -->
+        <!-- ========================================== -->
+        <section class="guide-section" id="milestone-1">
+            <h2 class="section-title">
+                <span class="milestone-badge">Milestone 1</span>
+                Project Creation & Mobile Display Configuration
+            </h2>
+            <p class="section-desc">
+                Godot 4 allows targeting desktop, mobile (Android/iOS), and web platforms with a single unified codebase. Configuring mobile display geometry and stretch policies before placing assets prevents distortion and pixel blurring across varying screen aspect ratios.
+            </p>
+
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-num-title">
+                        <div class="step-num-circle">1</div>
+                        <span>Create the Godot 4 Project</span>
+                    </div>
+                    <span class="step-category-badge">Project Setup</span>
+                </div>
+                <ol class="step-steps-list">
+                    <li>Launch the <strong>Godot Engine 4.x</strong> Project Manager.</li>
+                    <li>Click <strong>New Project</strong> on the right sidebar.</li>
+                    <li>Set <strong>Project Name:</strong> <code>Godot_2D_Mobile_Game</code>.</li>
+                    <li>Click <strong>Create Folder</strong> to ensure a self-contained directory is generated on your filesystem.</li>
+                    <li>Under <strong>Renderer</strong>, select <strong>Mobile</strong> (Vulkan Mobile) or <strong>Compatibility</strong> (OpenGL 3 ES - highly recommended for maximum legacy mobile device support and low-spec laptops).</li>
+                    <li>Click <strong>Create & Edit</strong> to open the editor.</li>
+                </ol>
+
+                <div class="callout-box tip">
+                    <i class="fa-solid fa-lightbulb"></i>
+                    <div>
+                        <strong>Compatibility vs Mobile Renderer:</strong> If your development workstation or target Android test devices do not support Vulkan drivers reliably, choose the <strong>Compatibility</strong> renderer. It starts significantly faster and renders standard 2D sprites with minimal overhead.
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-num-title">
+                        <div class="step-num-circle">2</div>
+                        <span>Configure Mobile Viewport & Stretch Settings</span>
+                    </div>
+                    <span class="step-category-badge">Project Settings</span>
+                </div>
+                <p style="font-size: 14.5px; margin-bottom: 14px;">
+                    Navigate to <strong>Project &gt; Project Settings &gt; General &gt; Display &gt; Window</strong> and configure the following parameters:
+                </p>
+
+                <div class="config-table-wrapper">
+                    <table class="config-table">
+                        <thead>
+                            <tr>
+                                <th>Category / Sub-Section</th>
+                                <th>Property Name</th>
+                                <th>Value to Set</th>
+                                <th>Engineering Purpose</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>Display &gt; Window &gt; Size</code></td>
+                                <td>Viewport Width</td>
+                                <td><code>1280</code></td>
+                                <td>Target native landscape width in logical design pixels.</td>
+                            </tr>
+                            <tr>
+                                <td><code>Display &gt; Window &gt; Size</code></td>
+                                <td>Viewport Height</td>
+                                <td><code>720</code></td>
+                                <td>Standard 16:9 720p base resolution for mobile gameplay.</td>
+                            </tr>
+                            <tr>
+                                <td><code>Display &gt; Window &gt; Size</code></td>
+                                <td>Window Width Override</td>
+                                <td><code>1280</code> (Optional)</td>
+                                <td>Window size when running on desktop workstation.</td>
+                            </tr>
+                            <tr>
+                                <td><code>Display &gt; Window &gt; Stretch</code></td>
+                                <td><strong>Mode</strong></td>
+                                <td><code>canvas_items</code></td>
+                                <td><strong>Crucial:</strong> Scales 2D canvas elements at native display resolution without pixelated scaling artifacts.</td>
+                            </tr>
+                            <tr>
+                                <td><code>Display &gt; Window &gt; Stretch</code></td>
+                                <td><strong>Aspect</strong></td>
+                                <td><code>keep</code></td>
+                                <td>Preserves the 16:9 aspect ratio; adds subtle pillarboxes/letterboxes on ultra-wide screens rather than squishing sprites.</td>
+                            </tr>
+                            <tr>
+                                <td><code>Display &gt; Window &gt; Handheld</code></td>
+                                <td>Orientation</td>
+                                <td><code>sensor_landscape</code></td>
+                                <td>Locks mobile orientation to landscape while allowing left/right rotation.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="step-header" style="margin-top: 24px;">
+                    <div class="step-num-title">
+                        <div class="step-num-circle">3</div>
+                        <span>Enable Mouse Touch Emulation</span>
+                    </div>
+                    <span class="step-category-badge">Input Emulation</span>
+                </div>
+                <ol class="step-steps-list">
+                    <li>In the same Project Settings modal, navigate to <strong>Input Devices &gt; Pointing</strong>.</li>
+                    <li>Toggle <strong>Emulate Touch From Mouse</strong> to <code>ON</code> (Enabled).</li>
+                    <li>Click <strong>Save & Close</strong>.</li>
+                </ol>
+                <div class="callout-box success">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <div>
+                        <strong>Why Touch Emulation Matters:</strong> With <em>Emulate Touch From Mouse</em> enabled, your mouse clicks trigger touch screen events (<code>InputEventScreenTouch</code>), allowing you to build and test mobile touch gestures or virtual on-screen controls directly in the desktop editor!
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- MILESTONE 2 -->
+        <!-- ========================================== -->
+        <section class="guide-section" id="milestone-2">
+            <h2 class="section-title">
+                <span class="milestone-badge">Milestone 2</span>
+                Blank Root Node & Background PNG Setup
+            </h2>
+            <p class="section-desc">
+                In Godot, all gameplay elements are organized inside a hierarchical <strong>Scene Tree</strong> made of Nodes. We start with a blank 2D root node and anchor a single background PNG asset.
+            </p>
+
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-num-title">
+                        <div class="step-num-circle">1</div>
+                        <span>Create the Root Scene</span>
+                    </div>
+                    <span class="step-category-badge">Scene Hierarchy</span>
+                </div>
+                <ol class="step-steps-list">
+                    <li>In the top-left <strong>Scene Dock</strong>, click the <strong>2D Scene</strong> button (this automatically creates a root node of type <code>Node2D</code>).</li>
+                    <li>Double-click the created root node and rename it to <code>Main</code> (or <code>GameLevel</code>).</li>
+                    <li>Press <kbd>Ctrl + S</kbd> to save the scene as <code>res://scenes/main.tscn</code> (create a new folder named <code>scenes</code> inside the save dialog).</li>
+                </ol>
+
+                <div class="node-tree-card">
+                    <div style="color: #94a3b8; font-size: 11px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Initial Scene Tree Structure</div>
+                    <div class="tree-line">
+                        <span class="tree-tag root">Node2D</span>
+                        <span style="font-weight: 700; color: #60a5fa;">Main</span>
+                        <span style="color: #64748b;">(Root Scene Node at res://scenes/main.tscn)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-num-title">
+                        <div class="step-num-circle">2</div>
+                        <span>Import & Add Background Image (PNG)</span>
+                    </div>
+                    <span class="step-category-badge">Visual Layer</span>
+                </div>
+                <ol class="step-steps-list">
+                    <li>Create an <code>assets/</code> folder in your <strong>FileSystem Dock</strong> (bottom-left).</li>
+                    <li>Drag your background image file (e.g. <code>background.png</code>, ideally 1280×720 or 1920×1080) into <code>res://assets/</code>.</li>
+                    <li>Right-click on the <code>Main</code> root node and select <strong>Add Child Node...</strong> (<kbd>Ctrl + A</kbd>).</li>
+                    <li>Search for <strong>Sprite2D</strong> (or <strong>TextureRect</strong> for UI anchoring) and click <strong>Create</strong>. Rename this child node to <code>Background</code>.</li>
+                    <li>With <code>Background</code> selected, look at the <strong>Inspector Dock</strong> on the right:
+                        <ul style="padding-left: 20px; margin-top: 6px;">
+                            <li>Locate the <strong>Texture</strong> property.</li>
+                            <li>Drag <code>background.png</code> from the FileSystem dock into the empty Texture slot.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Positioning and Centering:</strong>
+                        <ul style="padding-left: 20px; margin-top: 6px;">
+                            <li><em>Option A (Centered):</em> Keep <code>Offset &gt; Centered</code> checked, and set <code>Transform &gt; Position</code> to <code>Vector2(640, 360)</code> (the exact midpoint of 1280×720).</li>
+                            <li><em>Option B (Top-Left Origin):</em> Uncheck <code>Offset &gt; Centered</code>, and set <code>Transform &gt; Position</code> to <code>Vector2(0, 0)</code>.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Z-Index Layering:</strong> Under the <code>Ordering</code> category in the Inspector, set <code>Z Index</code> to <code>-10</code>. This guarantees the background will always render behind the player, terrain, and UI elements.</li>
+                </ol>
+
+                <div class="callout-box warning">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <div>
+                        <strong>Godot 2D Origin Rule:</strong> In Godot 2D space, the coordinates <code>(0, 0)</code> represent the <strong>Top-Left corner</strong> of the viewport. The X axis increases to the right (+X), and the Y axis increases <strong>downwards (+Y)</strong>. Setting the position to <code>(640, 360)</code> places a centered 1280×720 image perfectly inside the screen bounds.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- MILESTONE 3 -->
+        <!-- ========================================== -->
+        <section class="guide-section" id="milestone-3">
+            <h2 class="section-title">
+                <span class="milestone-badge">Milestone 3</span>
+                Static Terrain & Ground Setup
+            </h2>
+            <p class="section-desc">
+                Terrain in platform games must be solid and unyielding. Godot provides the <code>StaticBody2D</code> node for surfaces that participate in physics simulations but are not moved by collisions or gravity.
+            </p>
+
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-num-title">
+                        <div class="step-num-circle">1</div>
+                        <span>Add StaticBody2D & Collision Shape</span>
+                    </div>
+                    <span class="step-category-badge">Physics Terrain</span>
+                </div>
+                <ol class="step-steps-list">
+                    <li>Right-click the <code>Main</code> root node &gt; <strong>Add Child Node...</strong> &gt; search for <strong>StaticBody2D</strong>. Rename it to <code>Ground</code>.</li>
+                    <li>Notice a yellow triangle warning next to <code>Ground</code>. Godot is telling you: <em>"This node has no shape, so it can't collide or interact with other objects."</em></li>
+                    <li>With <code>Ground</code> selected, add a child node: right-click <code>Ground</code> &gt; <strong>Add Child Node...</strong> &gt; search for <strong>CollisionShape2D</strong>.</li>
+                    <li>In the Inspector for <code>CollisionShape2D</code>:
+                        <ul style="padding-left: 20px; margin-top: 6px;">
+                            <li>Click the dropdown next to <strong>Shape</strong>.</li>
+                            <li>Select <strong>New RectangleShape2D</strong>.</li>
+                            <li>Click on the newly created shape to expand its properties, then set <code>Size</code> to <code>x: 1280, y: 64</code>.</li>
+                        </ul>
+                    </li>
+                    <li>Now add visual ground surface using <strong>TextureRect</strong> (Recommended for repeating/tiling terrain):
+                        <ul style="padding-left: 20px; margin-top: 6px;">
+                            <li>Right-click <code>Ground</code> &gt; <strong>Add Child Node...</strong> &gt; search for <strong>TextureRect</strong>. Rename it to <code>GroundVisual</code>.</li>
+                            <li>In the Inspector, drag your ground/grass/dirt PNG into the <strong>Texture</strong> property.</li>
+                            <li>Set <strong>Expand Mode</strong> to <code>Ignore Size</code> (enables free dimensional sizing independent of the original image).</li>
+                            <li>Set <strong>Stretch Mode</strong> to <code>Tile</code> (automatically repeats the texture pattern across the platform without stretching or pixel distortion!).</li>
+                            <li>Under <strong>Layout &gt; Transform</strong>, set <code>Size</code> to <code>x: 1280, y: 64</code> and <code>Position</code> to <code>x: -640, y: -32</code> (aligning it with the centered collision shape).</li>
+                        </ul>
+                    </li>
+                    <li><em>Prototyping Alternative:</em> If you don't have a ground texture yet, you can use a <strong>ColorRect</strong> (e.g. grass green <code>#2d6a4f</code>) sized <code>1280 × 64</code>.</li>
+                    <li>Select the parent <code>Ground</code> node and set its <code>Transform &gt; Position</code> to <code>Vector2(640, 688)</code> to anchor it cleanly at the bottom of the 720p screen.</li>
+                </ol>
+
+                <div class="node-tree-card">
+                    <div style="color: #94a3b8; font-size: 11px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Terrain Node Hierarchy (with TextureRect Tiling)</div>
+                    <div class="tree-line">
+                        <span class="tree-tag root">Node2D</span>
+                        <span style="font-weight: 700; color: #60a5fa;">Main</span>
+                    </div>
+                    <div class="tree-line" style="margin-left: 20px;">
+                        <span class="tree-tag sprite">Sprite2D</span>
+                        <span>Background</span>
+                    </div>
+                    <div class="tree-line" style="margin-left: 20px;">
+                        <span class="tree-tag body">StaticBody2D</span>
+                        <span style="font-weight: 700; color: #34d399;">Ground</span>
+                    </div>
+                    <div class="tree-line" style="margin-left: 44px;">
+                        <span class="tree-tag shape">CollisionShape2D</span>
+                        <span>GroundCollider (RectangleShape2D 1280×64)</span>
+                    </div>
+                    <div class="tree-line" style="margin-left: 44px;">
+                        <span class="tree-tag sprite">TextureRect</span>
+                        <span>GroundVisual (Expand: Ignore Size | Stretch: Tile | Size: 1280×64)</span>
+                    </div>
+                </div>
+
+                <div class="callout-box tip">
+                    <i class="fa-solid fa-object-group"></i>
+                    <div>
+                        <strong>Pro-Tip (Group Selected Nodes):</strong> Click on the <code>Ground</code> node in the Scene tree, then press <kbd>Ctrl + G</kbd> (or click the <em>"Group Selected Nodes"</em> icon in the 2D viewport toolbar). This locks all child elements together so dragging the ground never accidentally misaligns the collider from the visual sprite!
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- MILESTONE 4 -->
+        <!-- ========================================== -->
+        <section class="guide-section" id="milestone-4">
+            <h2 class="section-title">
+                <span class="milestone-badge">Milestone 4</span>
+                Player Character Assembly
+            </h2>
+            <p class="section-desc">
+                In Godot 4, controllable 2D characters inherit from <code>CharacterBody2D</code>. This specialized node provides velocity-based movement, surface collision queries, and slope handling.
+            </p>
+
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-num-title">
+                        <div class="step-num-circle">1</div>
+                        <span>Assemble the CharacterBody2D Tree</span>
+                    </div>
+                    <span class="step-category-badge">Player Hierarchy</span>
+                </div>
+                <ol class="step-steps-list">
+                    <li>Right-click <code>Main</code> &gt; <strong>Add Child Node...</strong> &gt; search for <strong>CharacterBody2D</strong>. Rename it to <code>Player</code>.</li>
+                    <li>Add the visual sprite: right-click <code>Player</code> &gt; <strong>Add Child Node...</strong> &gt; select <strong>Sprite2D</strong>. Rename it to <code>PlayerSprite</code>.</li>
+                    <li>In the Inspector for <code>PlayerSprite</code>, assign your character texture (e.g. Godot's default <code>icon.svg</code> or a character PNG sprite from <code>res://assets/</code>).</li>
+                    <li>Add the physics bounding box: right-click <code>Player</code> &gt; <strong>Add Child Node...</strong> &gt; select <strong>CollisionShape2D</strong>. Rename it to <code>PlayerCollider</code>.</li>
+                    <li>In the Inspector for <code>PlayerCollider</code>:
+                        <ul style="padding-left: 20px; margin-top: 6px;">
+                            <li>Select <strong>New CapsuleShape2D</strong> (or <code>RectangleShape2D</code>).</li>
+                            <li>Adjust <code>Radius</code> and <code>Height</code> in the 2D viewport or inspector to tightly match the sprite's dimensions (e.g. Radius: <code>24</code>, Height: <code>64</code>).</li>
+                        </ul>
+                    </li>
+                    <li>With <code>Player</code> selected, press <kbd>Ctrl + G</kbd> to lock its children into a unified object.</li>
+                    <li>In the 2D viewport, position the <code>Player</code> in the air above the terrain (e.g., <code>Vector2(320, 300)</code>). When we run the game, gravity will pull the character down onto the ground!</li>
+                </ol>
+
+                <div class="node-tree-card">
+                    <div style="color: #94a3b8; font-size: 11px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Complete 2D Scene Tree Hierarchy</div>
+                    <div class="tree-line">
+                        <span class="tree-tag root">Node2D</span>
+                        <span style="font-weight: 700; color: #60a5fa;">Main</span>
+                    </div>
+                    <div class="tree-line" style="margin-left: 20px;">
+                        <span class="tree-tag sprite">Sprite2D</span>
+                        <span>Background (Z-Index: -10)</span>
+                    </div>
+                    <div class="tree-line" style="margin-left: 20px;">
+                        <span class="tree-tag body">StaticBody2D</span>
+                        <span style="color: #34d399;">Ground</span>
+                    </div>
+                    <div class="tree-line" style="margin-left: 44px;">
+                        <span class="tree-tag shape">CollisionShape2D</span>
+                        <span>GroundCollider (RectangleShape2D)</span>
+                    </div>
+                    <div class="tree-line" style="margin-left: 44px;">
+                        <span class="tree-tag sprite">ColorRect</span>
+                        <span>GroundVisual</span>
+                    </div>
+                    <div class="tree-line" style="margin-left: 20px;">
+                        <span class="tree-tag body">CharacterBody2D</span>
+                        <span style="font-weight: 700; color: #f43f5e;">Player</span>
+                        <span style="color: #64748b;">(with player.gd attached)</span>
+                    </div>
+                    <div class="tree-line" style="margin-left: 44px;">
+                        <span class="tree-tag sprite">Sprite2D</span>
+                        <span>PlayerSprite</span>
+                    </div>
+                    <div class="tree-line" style="margin-left: 44px;">
+                        <span class="tree-tag shape">CollisionShape2D</span>
+                        <span>PlayerCollider (CapsuleShape2D)</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- MILESTONE 5 -->
+        <!-- ========================================== -->
+        <section class="guide-section" id="milestone-5">
+            <h2 class="section-title">
+                <span class="milestone-badge">Milestone 5</span>
+                GDScript Kinematic Movement & Physics Scripting
+            </h2>
+            <p class="section-desc">
+                Event-driven programming in game engines couples user input signals with the fixed-rate physics integration loop. We will attach a complete GDScript to <code>Player</code> that queries input actions, accumulates gravitational acceleration, executes jump impulses, and solves collisions via <code>move_and_slide()</code>.
+            </p>
+
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-num-title">
+                        <div class="step-num-circle">1</div>
+                        <span>Attach Script to Player Node</span>
+                    </div>
+                    <span class="step-category-badge">GDScript Scripting</span>
+                </div>
+                <ol class="step-steps-list">
+                    <li>Select the <code>Player</code> (<code>CharacterBody2D</code>) node in the Scene tree.</li>
+                    <li>Click the <strong>Attach Script</strong> button (icon with a scroll and green plus) in the Scene dock toolbar.</li>
+                    <li>In the creation modal:
+                        <ul style="padding-left: 20px; margin-top: 6px;">
+                            <li><strong>Language:</strong> <code>GDScript</code></li>
+                            <li><strong>Inherits:</strong> <code>CharacterBody2D</code></li>
+                            <li><strong>Template:</strong> <code>CharacterBody2D: Basic Movement</code> (or <code>Default</code>)</li>
+                            <li><strong>Path:</strong> <code>res://scripts/player.gd</code> (create a <code>scripts</code> folder)</li>
+                        </ul>
+                    </li>
+                    <li>Click <strong>Create</strong>. Replace the contents of <code>res://scripts/player.gd</code> with the complete, production-ready script below:</li>
+                </ol>
+
+                <div class="code-block-card">
+                    <div class="code-block-header">
+                        <div class="code-file-name">
+                            <i class="fa-solid fa-file-code" style="color: #60a5fa;"></i>
+                            <span>res://scripts/player.gd</span>
+                        </div>
+                        <button class="copy-btn" onclick="copyCode(this, 'code-player-script')">
+                            <i class="fa-solid fa-copy"></i>
+                            <span>Copy GDScript</span>
+                        </button>
+                    </div>
+                    <pre class="code-view" id="code-player-script"><code>extends CharacterBody2D
+
+## 2D Kinematic Player Controller with Gravity, Jump, and Directional Input
+## Designed for Mobile/Desktop 2D Platformer gameplay in Godot 4.
+
+# Movement Constants
+const SPEED: float = 300.0
+const JUMP_VELOCITY: float = -450.0
+
+# Fetch default 2D gravity value from Project Settings (default: 980 px/s²)
+var gravity: float = ProjectSettings.get_setting("physics/2d/default_gravity")
+
+# Reference to the child visual sprite
+@onready var sprite: Sprite2D = $PlayerSprite
+
+func _physics_process(delta: float) -> void:
+	# 1. APPLY GRAVITY WHEN AIRBORNE
+	# Godot 2D coordinates: +Y points downward towards the ground.
+	if not is_on_floor():
+		velocity.y += gravity * delta
+
+	# 2. HANDLE JUMP IMPULSE
+	# ui_accept corresponds to Spacebar, Enter, or Virtual Jump Button on mobile
+	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
+		velocity.y = JUMP_VELOCITY
+
+	# 3. READ HORIZONTAL INPUT AXIS
+	# Input.get_axis returns a float from -1.0 (left) to +1.0 (right), or 0.0 if idle
+	var direction: float = Input.get_axis("ui_left", "ui_right")
+
+	# 4. COMPUTE HORIZONTAL VELOCITY & SPRITE FLIPPING
+	if direction != 0.0:
+		velocity.x = direction * SPEED
+		# Flip sprite texture horizontally based on facing direction
+		sprite.flip_h = direction < 0.0
+	else:
+		# Smooth deceleration towards 0 when no keys/joystick are held
+		velocity.x = move_toward(velocity.x, 0.0, SPEED * 8.0 * delta)
+
+	# 5. EXECUTE MOVE AND SLIDE COLLISION RESOLUTION
+	# In Godot 4, move_and_slide() automatically uses the body's internal 'velocity'
+	# and incorporates delta internally. It updates is_on_floor() automatically!
+	move_and_slide()
+</code></pre>
+                </div>
+
+                <div class="step-header" style="margin-top: 24px;">
+                    <div class="step-num-title">
+                        <div class="step-num-circle">2</div>
+                        <span>Understanding the Code: Technical Breakdown</span>
+                    </div>
+                    <span class="step-category-badge">Code Analysis</span>
+                </div>
+                <div class="config-table-wrapper">
+                    <table class="config-table">
+                        <thead>
+                            <tr>
+                                <th>Code Statement</th>
+                                <th>Type / Signature</th>
+                                <th>Architectural Explanation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>extends CharacterBody2D</code></td>
+                                <td>Class Inheritance</td>
+                                <td>Exposes built-in kinematic properties (<code>velocity</code>, <code>move_and_slide</code>, <code>is_on_floor</code>).</td>
+                            </tr>
+                            <tr>
+                                <td><code>_physics_process(delta)</code></td>
+                                <td>Lifecycle Callback</td>
+                                <td>Executed at a fixed 60 Hz physics tickrate, preventing frame-rate dependent tunneling.</td>
+                            </tr>
+                            <tr>
+                                <td><code>velocity.y += gravity * delta</code></td>
+                                <td>Euler Integration</td>
+                                <td>Multiplies by <code>delta</code> (elapsed seconds ~0.0166s) so gravity acceleration is completely framerate independent.</td>
+                            </tr>
+                            <tr>
+                                <td><code>JUMP_VELOCITY = -450.0</code></td>
+                                <td>Impulse Constant</td>
+                                <td>Negative value because Godot's Y axis points <em>downward</em>. A negative velocity pushes the body <em>upward</em>.</td>
+                            </tr>
+                            <tr>
+                                <td><code>Input.get_axis("ui_left", "ui_right")</code></td>
+                                <td>Axis Polling</td>
+                                <td>Evaluates directional buttons and returns a normalized float between <code>-1.0</code> and <code>+1.0</code>.</td>
+                            </tr>
+                            <tr>
+                                <td><code>move_and_slide()</code></td>
+                                <td>Kinematic Solver</td>
+                                <td>Calculates collisions against <code>StaticBody2D</code>, slides along geometry, and marks <code>is_on_floor() = true</code> upon impact.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- MILESTONE 6 -->
+        <!-- ========================================== -->
+        <section class="guide-section" id="milestone-6">
+            <h2 class="section-title">
+                <span class="milestone-badge">Milestone 6</span>
+                2D Physics Layers & Collision Masks
+            </h2>
+            <p class="section-desc">
+                Why does the player land cleanly on the ground instead of falling into the void? The answer lies in Godot's <strong>Collision Layers</strong> and <strong>Collision Masks</strong>. Configuring these properly is essential for clean game architecture.
+            </p>
+
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-num-title">
+                        <div class="step-num-circle">1</div>
+                        <span>Name the 2D Physics Layers in Project Settings</span>
+                    </div>
+                    <span class="step-category-badge">Project Configuration</span>
+                </div>
+                <ol class="step-steps-list">
+                    <li>Open <strong>Project &gt; Project Settings</strong>.</li>
+                    <li>In the left panel, scroll down to <strong>Layer Names &gt; 2D Physics</strong>.</li>
+                    <li>Define the following semantic layer names:
+                        <ul style="padding-left: 20px; margin-top: 6px;">
+                            <li><strong>Layer 1:</strong> <code>World</code> (or <code>Terrain</code>)</li>
+                            <li><strong>Layer 2:</strong> <code>Player</code></li>
+                            <li><strong>Layer 3:</strong> <code>Enemies</code> (for future labs)</li>
+                            <li><strong>Layer 4:</strong> <code>Collectibles</code> (for future labs)</li>
+                        </ul>
+                    </li>
+                    <li>Click <strong>Close</strong>. Now, instead of raw bit numbers, the Inspector will display human-readable labels!</li>
+                </ol>
+
+                <div class="matrix-grid">
+                    <div class="matrix-card layer">
+                        <h4><i class="fa-solid fa-id-badge" style="color: #3b82f6;"></i> Collision Layer ("Who am I?")</h4>
+                        <p>
+                            Defines which physics channels this specific object <strong>exists on</strong>. Other objects in the game world can detect and collide with this body if their mask includes this layer.
+                        </p>
+                    </div>
+                    <div class="matrix-card mask">
+                        <h4><i class="fa-solid fa-radar" style="color: #10b981;"></i> Collision Mask ("What do I look for?")</h4>
+                        <p>
+                            Defines which physics channels this body actively <strong>scans and collides against</strong>. If an obstacle's layer is not checked in this body's mask, the body will pass through it like a ghost!
+                        </p>
+                    </div>
+                </div>
+
+                <div class="step-header" style="margin-top: 24px;">
+                    <div class="step-num-title">
+                        <div class="step-num-circle">2</div>
+                        <span>Configure StaticBody2D (Ground) Physics Layer</span>
+                    </div>
+                    <span class="step-category-badge">Terrain Collision</span>
+                </div>
+                <ol class="step-steps-list">
+                    <li>Select the <code>Ground</code> (<code>StaticBody2D</code>) node in the Scene tree.</li>
+                    <li>In the Inspector, expand the <strong>Collision</strong> category:
+                        <ul style="padding-left: 20px; margin-top: 6px;">
+                            <li><strong>Layer:</strong> Check <code>Layer 1 (World)</code> = <strong>ON</strong>. All other layers = OFF.</li>
+                            <li><strong>Mask:</strong> Set all bits to <strong>OFF</strong> (Static bodies never query moving objects; leaving Mask empty saves physics CPU calculations!).</li>
+                        </ul>
+                    </li>
+                </ol>
+
+                <div class="step-header" style="margin-top: 24px;">
+                    <div class="step-num-title">
+                        <div class="step-num-circle">3</div>
+                        <span>Configure CharacterBody2D (Player) Physics Layer & Mask</span>
+                    </div>
+                    <span class="step-category-badge">Player Collision</span>
+                </div>
+                <ol class="step-steps-list">
+                    <li>Select the <code>Player</code> (<code>CharacterBody2D</code>) node in the Scene tree.</li>
+                    <li>In the Inspector, expand the <strong>Collision</strong> category:
+                        <ul style="padding-left: 20px; margin-top: 6px;">
+                            <li><strong>Layer:</strong> Check <code>Layer 2 (Player)</code> = <strong>ON</strong>. (The player resides on Layer 2).</li>
+                            <li><strong>Mask:</strong> Check <code>Layer 1 (World)</code> = <strong>ON</strong>. (The player actively scans Layer 1 to land on the terrain!).</li>
+                        </ul>
+                    </li>
+                </ol>
+
+                <div class="config-table-wrapper">
+                    <table class="config-table">
+                        <thead>
+                            <tr>
+                                <th>Game Entity Node</th>
+                                <th>Collision Layer (Identity)</th>
+                                <th>Collision Mask (Scanning Query)</th>
+                                <th>Resulting Behavior</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Ground (StaticBody2D)</strong></td>
+                                <td><code>Layer 1 (World)</code></td>
+                                <td><code>None (Empty)</code></td>
+                                <td>Stationary platform. Emits physical boundary to scanning masks.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Player (CharacterBody2D)</strong></td>
+                                <td><code>Layer 2 (Player)</code></td>
+                                <td><code>Layer 1 (World)</code></td>
+                                <td>Moves with velocity; immediately stops and slides when hitting Layer 1 terrain.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="callout-box success">
+                    <i class="fa-solid fa-gamepad"></i>
+                    <div>
+                        <strong>Launch & Test:</strong> Press <kbd>F5</kbd> (or the Play button in top-right). If prompted, select <code>res://scenes/main.tscn</code> as the default main scene. Observe:
+                        <ul style="margin-top: 6px; padding-left: 18px;">
+                            <li>The player falls naturally under gravitational acceleration.</li>
+                            <li>The player lands cleanly on the green terrain without clipping through.</li>
+                            <li>Pressing <kbd>A</kbd> / <kbd>D</kbd> or <kbd>&larr;</kbd> / <kbd>&rarr;</kbd> moves the character left and right and flips the sprite.</li>
+                            <li>Pressing <kbd>Space</kbd> or <kbd>&uarr;</kbd> triggers a crisp jump that only activates when <code>is_on_floor()</code> is true!</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TROUBLESHOOTING GUIDE -->
+        <!-- ========================================== -->
+        <section class="guide-section">
+            <h2 class="section-title">
+                <i class="fa-solid fa-wrench"></i>
+                Common Gotchas & Troubleshooting Guide
+            </h2>
+
+            <div class="step-card">
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                    <div style="border-left: 3px solid var(--warning); padding-left: 14px;">
+                        <h4 style="font-size: 15px; font-weight: 750; color: var(--text-title); margin-bottom: 4px;">
+                            Issue: Player falls straight through the ground into the void
+                        </h4>
+                        <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.6;">
+                            <strong>Diagnosis:</strong> Collision Mask mismatch or missing shape. Check that your <code>Ground</code> has an assigned <code>RectangleShape2D</code> (not empty). Verify that <code>Ground</code> has <strong>Layer 1</strong> checked, and that <code>Player</code> has <strong>Mask 1</strong> checked. If either is unchecked, no collision event occurs.
+                        </p>
+                    </div>
+
+                    <div style="border-left: 3px solid var(--primary); padding-left: 14px;">
+                        <h4 style="font-size: 15px; font-weight: 750; color: var(--text-title); margin-bottom: 4px;">
+                            Issue: Player moves way too fast or teleports across screen
+                        </h4>
+                        <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.6;">
+                            <strong>Diagnosis:</strong> Accidental double multiplication of delta. In Godot 4, <code>move_and_slide()</code> automatically applies <code>delta</code> internally! Never pass delta to <code>move_and_slide()</code> (unlike Godot 3's <code>move_and_collide</code>).
+                        </p>
+                    </div>
+
+                    <div style="border-left: 3px solid #6366f1; padding-left: 14px;">
+                        <h4 style="font-size: 15px; font-weight: 750; color: var(--text-title); margin-bottom: 4px;">
+                            Issue: Pixel art sprites appear blurry or anti-aliased
+                        </h4>
+                        <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.6;">
+                            <strong>Solution:</strong> Open <strong>Project Settings &gt; Rendering &gt; Textures &gt; Canvas Textures &gt; Default Texture Filter</strong> and change it from <em>Linear</em> to <strong>Nearest</strong>.
+                        </p>
+                    </div>
+
+                    <div style="border-left: 3px solid var(--success); padding-left: 14px;">
+                        <h4 style="font-size: 15px; font-weight: 750; color: var(--text-title); margin-bottom: 4px;">
+                            Issue: Dragging the player in the editor detaches the sprite from collider
+                        </h4>
+                        <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.6;">
+                            <strong>Solution:</strong> Select the parent <code>Player</code> node and press <kbd>Ctrl + G</kbd> to enable <em>"Make sure the object's children are not selectable"</em>. This ensures the entire hierarchy moves as one unit.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- DELIVERABLES & SUBMISSION -->
+        <!-- ========================================== -->
+        <section class="guide-section">
+            <h2 class="section-title">
+                <i class="fa-solid fa-file-arrow-up"></i>
+                Laboratory Deliverables & Evaluation
+            </h2>
+            <p class="section-desc">Submit the following artifacts to the course portal for Week 1 laboratory evaluation:</p>
+
+            <div class="deliverables-grid">
+                <div class="deliverable-card">
+                    <div class="deliv-icon"><i class="fa-solid fa-camera"></i></div>
+                    <div>
+                        <h4>1. Gameplay & Physics In-Action Screenshot</h4>
+                        <p>Capture the running Godot game window (<kbd>F5</kbd>) showing:</p>
+                        <ul>
+                            <li>Player character successfully standing on the terrain platform</li>
+                            <li>Background PNG visible behind all objects</li>
+                            <li>Proper 1280×720 aspect ratio rendering</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="deliverable-card">
+                    <div class="deliv-icon"><i class="fa-solid fa-sitemap"></i></div>
+                    <div>
+                        <h4>2. Scene Dock & Inspector Screenshot</h4>
+                        <p>Capture the Godot editor workspace showing:</p>
+                        <ul>
+                            <li>Complete <code>Main</code> scene tree hierarchy with all child nodes</li>
+                            <li>Inspector panel showing <code>Ground</code> Collision Layer 1</li>
+                            <li>Inspector panel showing <code>Player</code> Collision Mask 1</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="deliverable-card">
+                    <div class="deliv-icon"><i class="fa-solid fa-code"></i></div>
+                    <div>
+                        <h4>3. Complete player.gd Script</h4>
+                        <p>Submit your complete GDScript file:</p>
+                        <ul>
+                            <li>Must include gravity integration</li>
+                            <li>Must handle <code>Input.get_axis</code> and sprite flipping</li>
+                            <li>Must include documented comments</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="deliverable-card">
+                    <div class="deliv-icon"><i class="fa-solid fa-file-zipper"></i></div>
+                    <div>
+                        <h4>4. Project ZIP or GitHub Repository</h4>
+                        <p>Archive your project folder containing:</p>
+                        <ul>
+                            <li><code>project.godot</code> configuration file</li>
+                            <li><code>scenes/main.tscn</code> and <code>scripts/player.gd</code></li>
+                            <li><code>assets/</code> folder with your sprite PNGs</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="manual-footer">
+            <p>&copy; 2026 IT-EDP1: Event-Driven Programming &bull; Godot Engine 4 Curriculum &bull; All rights reserved.</p>
+        </footer>
+
+    </div>
+
+    <!-- JAVASCRIPT: 1-Click Copy & Checklist State Persistence -->
+    <script>
+        function copyCode(btn, elementId) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            navigator.clipboard.writeText(el.innerText).then(() => {
+                const originalHtml = btn.innerHTML;
+                btn.classList.add('copied');
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    btn.innerHTML = originalHtml;
+                }, 2000);
+            });
+        }
+
+        // Interactive Checklist Persistence
+        const STORAGE_KEY = 'godot_lab1_progress';
+
+        function loadChecklistState() {
+            try {
+                const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+                const items = document.querySelectorAll('.check-item');
+                let checkedCount = 0;
+
+                items.forEach(item => {
+                    const id = item.getAttribute('data-id');
+                    const checkbox = item.querySelector('input[type="checkbox"]');
+                    if (saved[id]) {
+                        checkbox.checked = true;
+                        item.classList.add('done');
+                        checkedCount++;
+                    } else {
+                        checkbox.checked = false;
+                        item.classList.remove('done');
+                    }
+                });
+
+                updateProgressBar(checkedCount, items.length);
+            } catch (e) {
+                console.error("Checklist load error:", e);
+            }
+        }
+
+        function toggleCheck(checkbox) {
+            const item = checkbox.closest('.check-item');
+            const id = item.getAttribute('data-id');
+
+            try {
+                const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+                if (checkbox.checked) {
+                    item.classList.add('done');
+                    saved[id] = true;
+                } else {
+                    item.classList.remove('done');
+                    delete saved[id];
+                }
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+
+                const items = document.querySelectorAll('.check-item');
+                const checkedCount = document.querySelectorAll('.check-item input[type="checkbox"]:checked').length;
+                updateProgressBar(checkedCount, items.length);
+            } catch (e) {
+                console.error("Checklist save error:", e);
+            }
+        }
+
+        function updateProgressBar(checked, total) {
+            const percent = total > 0 ? Math.round((checked / total) * 100) : 0;
+            const fill = document.getElementById('progress-bar-fill');
+            const label = document.getElementById('progress-percent');
+            if (fill) fill.style.width = percent + '%';
+            if (label) label.textContent = percent + '% Completed';
+        }
+
+        document.addEventListener('DOMContentLoaded', loadChecklistState);
+    </script>
+</body>
+</html>

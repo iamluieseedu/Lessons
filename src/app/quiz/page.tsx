@@ -571,6 +571,119 @@ function QuizPageContent() {
               explanation: "Prepared statements send the SQL query template and the parameter values in separate network packets. Even if an attacker types ' OR 1=1 --, the database engine treats it as a benign string value rather than SQL syntax."
             }
           ]);
+        } else if (found.id === 'eventprog-w1') {
+          setCustomQuestions([
+            {
+              question: "When configuring a 2D game for mobile devices in Godot 4 Project Settings, which stretch mode and aspect ratio settings ensure proper scaling without distortion or letterboxing blur?",
+              options: [
+                "Mode: disabled, Aspect: ignore",
+                "Mode: canvas_items, Aspect: keep",
+                "Mode: viewport, Aspect: expand",
+                "Mode: 2d_pixel, Aspect: stretch"
+              ],
+              answer: 1,
+              explanation: "Stretch Mode 'canvas_items' renders 2D elements at the native target resolution while scaling the coordinate space, and Aspect 'keep' preserves the 16:9 design ratio across various mobile aspect ratios."
+            },
+            {
+              question: "Which node type serves as the standard 2D root node for spatial scene composition in Godot Engine?",
+              options: [
+                "Control",
+                "Node3D",
+                "Node2D",
+                "CanvasLayer"
+              ],
+              answer: 2,
+              explanation: "Node2D provides position, rotation, and scale transforms in 2D Euclidean coordinate space, serving as the canonical root for 2D game levels and gameplay scenes."
+            },
+            {
+              question: "Which specialized node should you select in Godot 4 for a controllable 2D player character with gravity, jumping, and ground collision detection?",
+              options: [
+                "Area2D",
+                "RigidBody2D",
+                "StaticBody2D",
+                "CharacterBody2D"
+              ],
+              answer: 3,
+              explanation: "CharacterBody2D (formerly KinematicBody2D in Godot 3) is specifically designed for code-driven kinematic characters that move with custom physics and need built-in floor/wall detection via move_and_slide()."
+            },
+            {
+              question: "In GDScript, which lifecycle callback must be used for executing physics movements, gravity accumulation, and collision detection?",
+              options: [
+                "_process(delta)",
+                "_physics_process(delta)",
+                "_input(event)",
+                "_ready()"
+              ],
+              answer: 1,
+              explanation: "_physics_process(delta) is synchronized with the fixed-rate physics tick (default 60 Hz), ensuring deterministic collision calculations and consistent movement regardless of display refresh rate."
+            },
+            {
+              question: "Why does adding only a Sprite2D to a CharacterBody2D fail to stop the character from falling through the floor?",
+              options: [
+                "Sprite2D nodes only render 2D textures visually and do not register any physical bounding volume with the 2D physics engine.",
+                "Sprite2D nodes are strictly 3D nodes.",
+                "You must convert the Sprite2D into an AnimatedSprite3D first.",
+                "Godot 4 requires all sprites to have custom shaders for collision."
+              ],
+              answer: 0,
+              explanation: "A Sprite2D is purely a graphical visual element. Physics bodies require a child CollisionShape2D with an assigned shape (like RectangleShape2D or CapsuleShape2D) to register collision bounds."
+            },
+            {
+              question: "In Godot 4 CharacterBody2D scripts, which method automatically moves the body along its velocity vector and handles slide collisions against obstacles?",
+              options: [
+                "move_and_collide(velocity)",
+                "translate(velocity * delta)",
+                "move_and_slide()",
+                "apply_impulse(velocity)"
+              ],
+              answer: 2,
+              explanation: "In Godot 4, move_and_slide() uses the body's internal 'velocity' property (Vector2), automatically factoring delta, sliding along walls/floors, and updating is_on_floor() status."
+            },
+            {
+              question: "What is the recommended Godot 4 method for reading horizontal analog or keyboard direction inputs into a normalized -1.0 to +1.0 float?",
+              options: [
+                "Input.get_axis(\"ui_left\", \"ui_right\")",
+                "Input.is_key_pressed(KEY_A) - Input.is_key_pressed(KEY_D)",
+                "Input.get_vector_horizontal()",
+                "Input.get_mouse_position().x"
+              ],
+              answer: 0,
+              explanation: "Input.get_axis(negative_action, positive_action) provides smooth analog/digital evaluation returning -1.0 for left, +1.0 for right, and 0.0 when neither or both are pressed."
+            },
+            {
+              question: "In Godot 2D Physics, what is the fundamental difference between 'Collision Layer' and 'Collision Mask'?",
+              options: [
+                "Layer defines the sprite rendering z-index, while Mask defines visibility.",
+                "Layer specifies what channels this body exists on; Mask specifies which channels this body scans and collides against.",
+                "Layer is for mobile touch, while Mask is for keyboard input.",
+                "Layer and Mask are identical and interchangeable in Godot 4."
+              ],
+              answer: 1,
+              explanation: "Collision Layer answers 'Where am I located in the physics world?' while Collision Mask answers 'What layers do I look at to detect collisions?'"
+            },
+            {
+              question: "Which Project Setting allows developers to test mobile single-touch and gesture mechanics on a desktop development workstation using a standard mouse?",
+              options: [
+                "Display > Window > Mobile Test Mode",
+                "Input Devices > Pointing > Emulate Touch From Mouse",
+                "Rendering > Textures > Canvas Textures",
+                "Physics > 2D > Touch Emulation Mode"
+              ],
+              answer: 1,
+              explanation: "'Emulate Touch From Mouse' converts left-mouse button clicks into simulated touch screen events, enabling desktop testing of mobile virtual buttons and gestures."
+            },
+            {
+              question: "If a player's CharacterBody2D has Collision Layer 2 and Collision Mask 1, which Collision Layer must the Terrain StaticBody2D have for the player to stand on it?",
+              options: [
+                "Layer 1",
+                "Layer 2",
+                "Layer 3",
+                "Layer 0"
+              ],
+              answer: 0,
+              explanation: "Since the player scans Mask 1, the terrain must exist on Layer 1 so that the physics server detects the collision and prevents the player from falling through."
+            }
+          ]);
         } else if (found.id !== 'week1') {
           // Generate general questions for custom uploaded quizzes
           setCustomQuestions([

@@ -21,6 +21,7 @@ import { CONFIG } from '@/config';
 import { HeaderAd } from '@/components/HeaderAd';
 
 import { getWebDev3Slides } from '@/data/webdev3SlidesData';
+import { eventProgWeek1Slides } from '@/data/eventProgSlidesData';
 import { Lesson, DEFAULT_LESSONS } from '@/data/lessons';
 
 function SlidePageContent() {
@@ -142,6 +143,8 @@ function SlidePageContent() {
           setSlides(cppSlidesData);
         } else if (found.id === 'database1') {
           setSlides(databaseSlidesData);
+        } else if (found.id === 'eventprog-w1') {
+          setSlides(eventProgWeek1Slides);
         } else {
           // Dynamic slide deck for custom uploaded lessons
           setSlides([
