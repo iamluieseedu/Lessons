@@ -1129,8 +1129,8 @@ function TeacherGuideContent() {
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white text-xs font-bold shadow-sm transition"
               title="Open Student Slides in Separate Screen"
             >
-              <Play className="w-3 h-3 fill-current" />
-              <span className="hidden sm:inline">Launch Slides</span>
+              <BookOpen className="w-3 h-3" />
+              <span className="hidden sm:inline">Read Slides</span>
               <ExternalLink className="w-3 h-3 text-rose-200" />
             </Link>
           </div>

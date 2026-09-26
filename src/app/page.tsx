@@ -845,8 +845,8 @@ export default function Home() {
                           href={`/lesson/?id=${lesson.id}`}
                           className="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-600/10 active:scale-[0.98] transition flex items-center justify-center gap-2 font-lexend"
                         >
-                          <Play className="w-3.5 h-3.5 fill-current" />
-                          <span>Launch Lecture Deck</span>
+                          <BookOpen className="w-3.5 h-3.5" />
+                          <span>Read</span>
                         </Link>
                       </div>
 
@@ -1174,8 +1174,8 @@ export default function Home() {
                         href={`/lesson/?id=${lesson.id}`}
                         className="px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition flex items-center gap-1 font-lexend"
                       >
-                        <Play className="w-3 h-3 fill-current" />
-                        <span>Slides</span>
+                        <BookOpen className="w-3 h-3" />
+                        <span>Read</span>
                       </Link>
 
                       <Link
