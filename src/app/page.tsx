@@ -626,6 +626,56 @@ export default function Home() {
             </div>
           </div>
 
+          {/* Featured Lab Manual Banner for Laravel Web Dev 3 */}
+          {(openFolderId === 'webdev3' || openFolderId === 'all') && (
+            <div className="mb-6 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-900 to-rose-950/80 border border-rose-500/30 p-5 sm:p-6 shadow-xl relative overflow-hidden group">
+              <div className="absolute -right-10 -bottom-10 w-64 h-64 bg-rose-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-rose-500/20 transition duration-700" />
+              <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-5 relative z-10">
+                <div className="space-y-2 max-w-2xl">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-[10px] font-mono font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40">
+                      Laboratory Manual • Part 2
+                    </span>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/10 text-slate-300 border border-white/10 font-mono">
+                      Phase 2: Multi-Page
+                    </span>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                      Graded Lab Task
+                    </span>
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-black text-white font-lexend tracking-tight flex items-center gap-2">
+                    Migrating Multi-Page Native PHP to Laravel Blade
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-300 font-medium leading-relaxed">
+                    Master Blade Layout Inheritance (<code className="text-rose-300 font-mono">@yield</code>, <code className="text-rose-300 font-mono">@extends</code>, <code className="text-rose-300 font-mono">@section</code>), configure multi-page routing in <code className="text-rose-300 font-mono">routes/web.php</code>, and eliminate repetitive native includes with an interactive step-by-step guide.
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 w-full lg:w-auto shrink-0">
+                  <a
+                    href="/laravel/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 sm:flex-initial py-3 px-5 rounded-2xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-lexend font-bold text-xs shadow-lg shadow-rose-600/30 active:scale-95 transition flex items-center justify-center gap-2"
+                  >
+                    <FileCode className="w-4 h-4" />
+                    <span>Launch Lab Manual</span>
+                    <ExternalLink className="w-3.5 h-3.5 opacity-80" />
+                  </a>
+
+                  <button
+                    onClick={() => copyToClipboard('/laravel/', 'Lab Manual (Part 2)')}
+                    className="py-3 px-4 rounded-2xl bg-white/10 hover:bg-white/15 text-slate-200 border border-white/15 font-lexend font-bold text-xs transition flex items-center justify-center gap-2 cursor-pointer"
+                    title="Copy direct shareable link"
+                  >
+                    <Copy className="w-4 h-4" />
+                    <span className="hidden sm:inline">Copy Link</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* VIEW MODE 1: PRESENTATION CARDS */}
           {viewMode === 'cards' && (
             <div className={`grid gap-6 ${showAds ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}>
