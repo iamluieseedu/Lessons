@@ -93,7 +93,7 @@ export const DEFAULT_TASKS: CourseTask[] = [
     status: 'active',
     duration: '60 - 90 mins',
     weekAlignment: 'Week 1 Practical Lab',
-    description: 'Create a 2D mobile game from scratch in Godot 4 following Coco Code\'s beginner guide: mobile resolution & viewport setup, Nearest texture filtering, background TextureRect tiling, static terrain collision, CharacterBody2D player assembly with AnimatedSprite2D, GDScript movement, and physics layer masking.',
+    description: 'Create a 2D mobile game from scratch in Godot 4 following the step-by-step video guide: mobile resolution & viewport setup, Nearest texture filtering, background TextureRect tiling, static terrain collision, CharacterBody2D player assembly with AnimatedSprite2D, GDScript movement, and physics layer masking.',
     objectives: [
       'Initialize Godot 4 project with Mobile renderer, 1280x720 canvas_items stretch, Nearest filter, and touch emulation',
       'Construct a Node2D scene hierarchy and tile a seamless background PNG using TextureRect',
@@ -107,7 +107,7 @@ export const DEFAULT_TASKS: CourseTask[] = [
       'Verified physical collision contact where player stands, runs, and jumps on terrain',
       'Completed laboratory report and self-evaluation checklist'
     ],
-    techStack: ['Godot Engine 4.x', 'GDScript 2.0', '2D Physics Engine', 'Mobile Canvas Stretch', 'Coco Code Guide'],
+    techStack: ['Godot Engine 4.x', 'GDScript 2.0', '2D Physics Engine', 'Mobile Canvas Stretch', 'Video Guide Companion'],
     launchUrl: '/godot/',
     actionText: 'Open Godot Lab Manual',
     isExternal: true

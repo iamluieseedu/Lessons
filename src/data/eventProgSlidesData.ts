@@ -449,7 +449,7 @@ export const eventProgWeek1Slides: SlideData[] = [
     ],
     layman: {
       title: 'Ready to Build?',
-      text: 'Launch the interactive Lab Manual directly at /godot/ or from the Tasks tab. Faithfully based on Coco Code\'s popular Godot tutorial "Start Your Game Creation Journey Today!" (YouTube: 5V9f3MT86M8) using Pixel Adventure 1 assets.'
+      text: 'Launch the interactive Lab Manual directly at /godot/ or from the Tasks tab. Faithfully based on the popular Godot beginner tutorial "Start Your Game Creation Journey Today!" (YouTube: 5V9f3MT86M8) using Pixel Adventure 1 assets.'
     },
     keyInsight: {
       title: 'Action Link & Video Companion',

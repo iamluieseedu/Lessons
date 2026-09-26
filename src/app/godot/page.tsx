@@ -73,7 +73,7 @@ export default function GodotLabManualPage() {
   const playerGdScript = `extends CharacterBody2D
 
 ## 2D Kinematic Player Controller with Gravity, Jump, and Animations
-## Based on Coco Code's Godot 2D Platformer tutorial (YouTube: 5V9f3MT86M8)
+## Based on the Godot 2D Platformer tutorial (YouTube: 5V9f3MT86M8)
 
 # Movement Constants
 const SPEED: float = 300.0
@@ -234,14 +234,14 @@ func _physics_process(delta: float) -> void:
                   Official Video Companion
                 </span>
                 <span className="text-xs font-semibold text-slate-500">
-                  Coco Code &bull; Godot 4 Beginner Tutorial
+                  Godot 4 Beginner Tutorial Guide
                 </span>
               </div>
               <h3 className="text-sm sm:text-base font-bold text-slate-900 font-lexend">
                 Based on: &ldquo;Start Your Game Creation Journey Today!&rdquo;
               </h3>
               <p className="text-xs text-slate-600 leading-relaxed max-w-2xl">
-                This laboratory manual faithfully follows the exact progression from Coco Code&apos;s tutorial. Learn how to configure mobile viewports, set nearest pixel art filtering, tile backgrounds and terrain via <code className="text-sky-700 font-mono font-bold">TextureRect</code> / <code className="text-indigo-700 font-mono font-bold">TileMap</code>, assemble Ninja Frog with <code className="text-rose-700 font-mono font-bold">AnimatedSprite2D</code>, and script kinematic jump physics.
+                This laboratory manual faithfully follows the exact progression from the reference video tutorial. Learn how to configure mobile viewports, set nearest pixel art filtering, tile backgrounds and terrain via <code className="text-sky-700 font-mono font-bold">TextureRect</code> / <code className="text-indigo-700 font-mono font-bold">TileMap</code>, assemble Ninja Frog with <code className="text-rose-700 font-mono font-bold">AnimatedSprite2D</code>, and script kinematic jump physics.
               </p>
             </div>
           </div>
@@ -339,7 +339,7 @@ func _physics_process(delta: float) -> void:
                     <tr className="bg-slate-50 border-b border-slate-200 text-slate-700">
                       <th className="p-2.5 font-bold">Setting Path</th>
                       <th className="p-2.5 font-bold">Value</th>
-                      <th className="p-2.5 font-bold">Coco Code Note / Purpose</th>
+                      <th className="p-2.5 font-bold">Tutorial Reference / Purpose</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-slate-600 font-mono text-xs">
@@ -377,7 +377,7 @@ func _physics_process(delta: float) -> void:
             <div className="bg-sky-50/70 border border-sky-200/80 rounded-xl p-3.5 text-xs text-slate-700 flex items-start gap-2.5">
               <Box className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
               <div>
-                <strong>Assets Used in Tutorial:</strong> Coco Code uses the free <a href="https://pixelfrog-assets.itch.io/pixel-adventure-1" target="_blank" rel="noopener noreferrer" className="text-sky-700 font-bold underline hover:text-sky-800">Pixel Adventure 1</a> pack by Pixel Frog (Ninja Frog, Background tiles, Terrain tiles). Unzip into your project folder under <code className="font-mono bg-sky-100/80 px-1 py-0.2 rounded text-sky-900">res://assets/</code>.
+                <strong>Assets Used in Tutorial:</strong> The tutorial uses the free <a href="https://pixelfrog-assets.itch.io/pixel-adventure-1" target="_blank" rel="noopener noreferrer" className="text-sky-700 font-bold underline hover:text-sky-800">Pixel Adventure 1</a> pack by Pixel Frog (Ninja Frog, Background tiles, Terrain tiles). Unzip into your project folder under <code className="font-mono bg-sky-100/80 px-1 py-0.2 rounded text-sky-900">res://assets/</code>.
               </div>
             </div>
           </div>
@@ -396,7 +396,7 @@ func _physics_process(delta: float) -> void:
 
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-4">
             <p className="text-sm text-slate-600 leading-relaxed">
-              In Godot, backgrounds can be made from a single full illustration or an infinitely repeating 64×64 PNG tile. Coco Code utilizes a <code className="text-sky-700 font-mono font-bold">TextureRect</code> with <strong>Tile</strong> stretch mode so small seamless textures repeat across any mobile screen size:
+              In Godot, backgrounds can be made from a single full illustration or an infinitely repeating 64×64 PNG tile. We utilize a <code className="text-sky-700 font-mono font-bold">TextureRect</code> with <strong>Tile</strong> stretch mode so small seamless textures repeat across any mobile screen size:
             </p>
 
             <ol className="list-decimal pl-6 text-sm text-slate-600 space-y-2.5">
@@ -451,7 +451,7 @@ func _physics_process(delta: float) -> void:
               <div className="border border-slate-200 bg-slate-50/60 rounded-xl p-4 space-y-2">
                 <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
                   <span className="px-2 py-0.5 rounded bg-slate-700 text-white text-xs font-mono">Method B</span>
-                  <span>TileMap with 16×16 Physics TileSet (Coco Code Video Workflow)</span>
+                  <span>TileMap with 16×16 Physics TileSet (Video Guide Workflow)</span>
                 </h4>
                 <ol className="list-decimal pl-5 text-xs sm:text-sm text-slate-700 space-y-1.5">
                   <li>Right-click <code className="text-slate-900 font-mono font-bold">Main</code> &gt; <strong>Add Child Node...</strong> &gt; search for <strong>TileMap</strong> (or <strong>TileMapLayer</strong> in Godot 4.3+).</li>
@@ -485,7 +485,7 @@ func _physics_process(delta: float) -> void:
 
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-4">
             <p className="text-sm text-slate-600 leading-relaxed">
-              In Coco Code&apos;s tutorial, the character (Ninja Frog) is assembled as a dedicated scene using an <code className="text-rose-700 font-mono font-bold">AnimatedSprite2D</code> with multiple animation frames:
+              In this tutorial, the character (Ninja Frog) is assembled as a dedicated scene using an <code className="text-rose-700 font-mono font-bold">AnimatedSprite2D</code> with multiple animation frames:
             </p>
 
             <ol className="list-decimal pl-6 text-sm text-slate-600 space-y-2.5">
@@ -598,7 +598,7 @@ func _physics_process(delta: float) -> void:
               </div>
             </div>
 
-            {/* Step 3: Camera2D Follow Setup (Coco Code Step) */}
+            {/* Step 3: Camera2D Follow Setup (Video Guide Step) */}
             <div className="space-y-2 pt-3 border-t border-slate-100">
               <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
                 <span className="w-5 h-5 rounded-full bg-sky-100 text-sky-700 text-xs flex items-center justify-center font-bold">3</span>
