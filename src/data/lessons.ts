@@ -378,5 +378,27 @@ export const DEFAULT_LESSONS: Lesson[] = [
       'Event-Driven GDScript Inputs & CharacterBody2D Movement',
       'Physics Layers & Collision Mask Architecture'
     ]
+  },
+  // ==========================================
+  // MOBILE DEVELOPMENT 3: ARCTIC FOX TRACK
+  // ==========================================
+  {
+    id: 'mobdev3-w1',
+    week: 1,
+    course: 'Mobile Development 3',
+    title: 'Building Your First Multi-Screen Android Application',
+    description: 'Master Android Studio Arctic Fox (2020.3.1), Activity lifecycles, explicit Intents, XML layouts, form input validation, and data passing across Welcome, Login, Sign Up, and Dashboard screens.',
+    duration: '45 mins',
+    slidesCount: 16,
+    difficulty: 'Beginner',
+    thumbnail: 'https://images.unsplash.com/photo-1607252650355-f7fd0460ccdb?auto=format&fit=crop&w=800&q=80',
+    isActive: true,
+    quizEnabled: true,
+    competencies: [
+      'Navigate Android Studio Arctic Fox (2020.3.1) and Empty Activity project scaffolding.',
+      'Construct traditional XML linear layouts, ScrollViews, TextViews, and EditTexts.',
+      'Implement explicit Intent screen navigation and Back Stack lifecycle management.',
+      'Safely pass and receive user state across screen boundaries using putExtra and getStringExtra.'
+    ]
   }
 ];

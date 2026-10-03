@@ -111,5 +111,36 @@ export const DEFAULT_TASKS: CourseTask[] = [
     launchUrl: '/godot/',
     actionText: 'Open Godot Lab Manual',
     isExternal: true
+  },
+  {
+    id: 'android-lab-part-1',
+    courseFolderId: 'mobdev',
+    courseCode: 'IT-MD3',
+    courseTitle: 'Mobile Development 3',
+    title: 'Building Your First Multi-Screen Android Application',
+    badge: 'Laboratory Manual • Week 1',
+    phaseTag: 'Multi-Screen Navigation',
+    type: 'Graded Lab Task',
+    difficulty: 'Beginner',
+    status: 'active',
+    duration: '90 - 120 mins',
+    weekAlignment: 'Week 1 - 2 Practical Lab',
+    description: 'Construct a 4-screen Android application in Android Studio Arctic Fox (2020.3.1) using Kotlin and XML: Welcome Page, Login with demo auth, Sign Up with input validation, and personalized Dashboard with data passing.',
+    objectives: [
+      'Scaffold an Empty Activity project in Android Studio Arctic Fox 2020.3.1 with API 21 minimum SDK',
+      'Create XML layouts with LinearLayout, ScrollView, TextViews, and EditTexts',
+      'Implement explicit Intents and startActivity() to navigate between 4 screens',
+      'Pass and read user state across screen boundaries using putExtra and getStringExtra',
+      'Implement secure Back Stack clearance on logout using FLAG_ACTIVITY_CLEAR_TOP'
+    ],
+    deliverables: [
+      'Working 4-screen Android APK/project running on emulator',
+      'Verified credential check (admin/1234) and registration validation',
+      'Completed submission screenshots of all screens and logout'
+    ],
+    techStack: ['Android Studio Arctic Fox', 'Kotlin', 'XML Layouts', 'Android Activities', 'Intents'],
+    launchUrl: '/Lesson/mobile_dev_3_first_multi_screen_android_app.html',
+    actionText: 'Launch Android Lab Manual',
+    isExternal: true
   }
 ];

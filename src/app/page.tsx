@@ -26,6 +26,7 @@ import {
   CheckCircle2,
   ListOrdered,
   LayoutGrid,
+  List,
   ChevronRight,
   Play,
   ArrowRight,
@@ -165,6 +166,19 @@ const COURSE_FOLDERS: CourseFolderDef[] = [
     glow: 'shadow-teal-500/10',
     borderAccent: 'border-teal-200 hover:border-teal-400',
     filter: (l) => l.course === 'Event-Driven Programming' || l.course === 'Event Programming' || l.id.startsWith('eventprog') || l.id.startsWith('godot')
+  },
+  {
+    id: 'mobdev',
+    code: 'IT-MD3',
+    title: 'Mobile Development 3',
+    courseTrack: 'Native Mobile Engineering',
+    description: 'Native Android application development using Kotlin, XML layout architecture, Activity lifecycles, and explicit Intents in Android Studio Arctic Fox (2020.3.1).',
+    level: 'Mobile Track',
+    badgeColor: 'bg-sky-50 text-sky-700 border-sky-200/80',
+    gradient: 'from-sky-600 via-blue-600 to-indigo-600',
+    glow: 'shadow-sky-500/10',
+    borderAccent: 'border-sky-200 hover:border-sky-400',
+    filter: (l) => l.course === 'Mobile Development 3' || l.id.startsWith('mobdev3')
   }
 ];
 
@@ -173,8 +187,10 @@ export default function Home() {
   const [tasks, setTasks] = useState<CourseTask[]>(DEFAULT_TASKS);
   const [openFolderId, setOpenFolderId] = useState<string>('webdev3'); // Default to Web Dev 3 folder
   const [viewMode, setViewMode] = useState<'cards' | 'tasks' | 'outline'>('cards'); // Cards vs Tasks vs Compiled Outline
+  const [taskLayoutMode, setTaskLayoutMode] = useState<'grid' | 'list'>('grid'); // Grid View vs Detailed List View (Default: Grid)
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'week-asc' | 'week-desc' | 'title-asc'>('week-asc');
+  const [taskSortBy, setTaskSortBy] = useState<'default' | 'title-asc' | 'title-desc' | 'difficulty-asc' | 'difficulty-desc' | 'duration-asc'>('default');
   const [toast, setToast] = useState<string | null>(null);
   const [baseUrl, setBaseUrl] = useState('');
   const [showAds, setShowAds] = useState(false);
@@ -382,18 +398,48 @@ export default function Home() {
   const currentFolderTasks = activeTasks;
   const currentFolderActiveTasks = currentFolderTasks.filter((t) => t.status === 'active');
 
-  const displayedTasks = activeTasks.filter((task) => {
-    if (!searchQuery.trim()) return true;
-    const q = searchQuery.toLowerCase();
-    return (
-      task.title.toLowerCase().includes(q) ||
-      task.description.toLowerCase().includes(q) ||
-      task.badge.toLowerCase().includes(q) ||
-      task.phaseTag.toLowerCase().includes(q) ||
-      task.techStack.some((tech) => tech.toLowerCase().includes(q)) ||
-      task.objectives.some((obj) => obj.toLowerCase().includes(q))
-    );
-  });
+  const displayedTasks = activeTasks
+    .filter((task) => {
+      if (!searchQuery.trim()) return true;
+      const q = searchQuery.toLowerCase();
+      return (
+        task.title.toLowerCase().includes(q) ||
+        task.description.toLowerCase().includes(q) ||
+        task.badge.toLowerCase().includes(q) ||
+        task.phaseTag.toLowerCase().includes(q) ||
+        task.techStack.some((tech) => tech.toLowerCase().includes(q)) ||
+        task.objectives.some((obj) => obj.toLowerCase().includes(q))
+      );
+    })
+    .sort((a, b) => {
+      if (taskSortBy === 'title-asc') {
+        return a.title.localeCompare(b.title);
+      }
+      if (taskSortBy === 'title-desc') {
+        return b.title.localeCompare(a.title);
+      }
+      if (taskSortBy === 'difficulty-asc') {
+        const weight: Record<string, number> = { 'Beginner': 1, 'Intermediate': 2, 'Advanced': 3 };
+        return (weight[a.difficulty] || 0) - (weight[b.difficulty] || 0);
+      }
+      if (taskSortBy === 'difficulty-desc') {
+        const weight: Record<string, number> = { 'Beginner': 1, 'Intermediate': 2, 'Advanced': 3 };
+        return (weight[b.difficulty] || 0) - (weight[a.difficulty] || 0);
+      }
+      if (taskSortBy === 'duration-asc') {
+        const getMins = (d: string) => {
+          const m = d.match(/\d+/);
+          return m ? parseInt(m[0], 10) : 0;
+        };
+        return getMins(a.duration) - getMins(b.duration);
+      }
+      // Default: active tasks first, then graded lab tasks first
+      if (a.status === 'active' && b.status !== 'active') return -1;
+      if (b.status === 'active' && a.status !== 'active') return 1;
+      if (a.type === 'Graded Lab Task' && b.type !== 'Graded Lab Task') return -1;
+      if (b.type === 'Graded Lab Task' && a.type !== 'Graded Lab Task') return 1;
+      return 0;
+    });
 
   // Filter & sort lessons for display
   const displayedLessons = activeLessons
@@ -744,8 +790,50 @@ export default function Home() {
                 />
               </div>
 
-              {/* Sort (only on cards or outline) */}
-              {viewMode !== 'tasks' && (
+              {/* Sort Controls */}
+              {viewMode === 'tasks' ? (
+                <div className="flex items-center gap-2 shrink-0">
+                  <select
+                    value={taskSortBy}
+                    onChange={(e) => setTaskSortBy(e.target.value as any)}
+                    className="bg-slate-50 border border-slate-200 focus:border-rose-500 rounded-xl px-2.5 sm:px-3 py-1.5 text-xs text-slate-700 font-bold focus:outline-none cursor-pointer transition shrink-0"
+                    title="Sort Tasks"
+                  >
+                    <option value="default">Sort: Active Graded</option>
+                    <option value="title-asc">Sort: Title (A → Z)</option>
+                    <option value="title-desc">Sort: Title (Z → A)</option>
+                    <option value="difficulty-asc">Sort: Beginner First</option>
+                    <option value="difficulty-desc">Sort: Advanced First</option>
+                    <option value="duration-asc">Sort: Shortest Duration</option>
+                  </select>
+
+                  {/* Grid / List Layout Switcher */}
+                  <div className="flex items-center bg-slate-100 p-0.5 rounded-xl border border-slate-200/90 shrink-0">
+                    <button
+                      onClick={() => setTaskLayoutMode('grid')}
+                      className={`p-1.5 rounded-lg transition cursor-pointer ${
+                        taskLayoutMode === 'grid'
+                          ? 'bg-white text-rose-600 shadow-xs'
+                          : 'text-slate-400 hover:text-slate-700'
+                      }`}
+                      title="Grid View"
+                    >
+                      <LayoutGrid className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={() => setTaskLayoutMode('list')}
+                      className={`p-1.5 rounded-lg transition cursor-pointer ${
+                        taskLayoutMode === 'list'
+                          ? 'bg-white text-rose-600 shadow-xs'
+                          : 'text-slate-400 hover:text-slate-700'
+                      }`}
+                      title="Detailed List View"
+                    >
+                      <List className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              ) : (
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as any)}
@@ -913,173 +1001,318 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Tasks List */}
+              {/* Tasks Content: Grid View or List View */}
               {displayedTasks.length > 0 ? (
-                <div className="grid grid-cols-1 gap-6">
-                  {displayedTasks.map((task) => {
-                    const isActive = task.status === 'active';
-                    const isGraded = task.type === 'Graded Lab Task';
+                taskLayoutMode === 'grid' ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {displayedTasks.map((task) => {
+                      const isActive = task.status === 'active';
+                      const isGraded = task.type === 'Graded Lab Task';
 
-                    return (
-                      <div
-                        key={task.id}
-                        className={`bg-white border rounded-3xl p-6 shadow-sm transition-all duration-300 relative overflow-hidden group ${
-                          isActive 
-                            ? 'border-slate-200/90 hover:border-rose-400/60 hover:shadow-xl' 
-                            : 'border-slate-200/60 bg-slate-50/50 opacity-90'
-                        }`}
-                      >
-                        {/* Top Accent line for graded task */}
-                        {isActive && (
-                          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-rose-500 via-red-500 to-indigo-500" />
-                        )}
+                      return (
+                        <div
+                          key={task.id}
+                          className={`bg-white border rounded-3xl p-6 shadow-sm transition-all duration-300 relative overflow-hidden group flex flex-col justify-between ${
+                            isActive 
+                              ? 'border-slate-200/90 hover:border-rose-400/60 hover:shadow-xl' 
+                              : 'border-slate-200/60 bg-slate-50/50 opacity-90'
+                          }`}
+                        >
+                          {/* Top Accent line for active task */}
+                          {isActive && (
+                            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-rose-500 via-red-500 to-indigo-500" />
+                          )}
 
-                        <div className="flex flex-col gap-5">
-                          {/* Badges & Meta Row */}
-                          <div className="flex flex-wrap items-center justify-between gap-3">
-                            <div className="flex flex-wrap items-center gap-2">
-                              <span className="text-[10px] font-mono font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200 font-bold">
-                                {task.badge}
-                              </span>
-                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200/80 font-mono">
+                          <div className="space-y-4">
+                            {/* Badges & Meta Row */}
+                            <div className="flex flex-wrap items-center justify-between gap-2">
+                              <div className="flex flex-wrap items-center gap-1.5">
+                                <span className="text-[10px] font-mono font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200">
+                                  {task.courseCode}
+                                </span>
+                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full font-mono ${
+                                  isGraded 
+                                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
+                                    : 'bg-indigo-50 text-indigo-700 border border-indigo-200'
+                                }`}>
+                                  {task.type}
+                                </span>
+                              </div>
+
+                              <div className="flex items-center gap-1.5 text-xs font-semibold">
+                                <div className="flex items-center gap-1 font-mono text-[10px] bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-md text-slate-500">
+                                  <Clock className="w-3 h-3 text-slate-400" />
+                                  <span>{task.duration}</span>
+                                </div>
+                                <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md ${
+                                  task.difficulty === 'Beginner' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/70' :
+                                  task.difficulty === 'Intermediate' ? 'bg-amber-50 text-amber-700 border border-amber-200/70' :
+                                  'bg-rose-50 text-rose-700 border border-rose-200/70'
+                                }`}>
+                                  {task.difficulty}
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Phase Tag & Week Alignment */}
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200/80 font-mono">
                                 {task.phaseTag}
                               </span>
-                              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full font-mono ${
-                                isGraded 
-                                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
-                                  : 'bg-indigo-50 text-indigo-700 border border-indigo-200'
-                              }`}>
-                                {task.type}
-                              </span>
-                              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200/60">
+                              <span className="text-[10px] font-medium text-slate-400">
                                 {task.weekAlignment}
                               </span>
                             </div>
 
-                            <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
-                              <div className="flex items-center gap-1 font-mono text-[11px] bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-md">
-                                <Clock className="w-3 h-3 text-slate-400" />
-                                <span>{task.duration}</span>
-                              </div>
-                              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200/80">
-                                {task.difficulty}
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* Title & Description */}
-                          <div>
-                            <div className="flex items-center gap-2 mb-1.5">
-                              <span className="text-[11px] font-bold text-slate-400 font-mono uppercase tracking-wider">
+                            {/* Title & Description */}
+                            <div>
+                              <span className="text-[10px] font-bold text-slate-400 font-mono uppercase tracking-wider block mb-1">
                                 {task.courseTitle}
                               </span>
+                              <h3 className="text-lg font-black text-slate-900 font-lexend tracking-tight group-hover:text-rose-600 transition leading-snug">
+                                {task.title}
+                              </h3>
+                              <p className="text-xs text-slate-600 font-medium leading-relaxed mt-2 line-clamp-3">
+                                {task.description}
+                              </p>
                             </div>
-                            <h3 className="text-xl sm:text-2xl font-black text-slate-900 font-lexend tracking-tight group-hover:text-rose-600 transition">
-                              {task.title}
-                            </h3>
-                            <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed mt-2">
-                              {task.description}
-                            </p>
-                          </div>
 
-                          {/* Objectives & Deliverables Container */}
-                          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 pt-1">
-                            {/* Key Learning Objectives */}
-                            <div className="lg:col-span-2 bg-slate-50/80 border border-slate-200/70 rounded-2xl p-4 space-y-2.5">
-                              <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 flex items-center gap-1.5 font-lexend">
-                                <CheckCircle2 className="w-3.5 h-3.5 text-rose-500" />
-                                <span>Step-by-Step Lab Milestones & Learning Objectives</span>
+                            {/* Key Lab Milestones Preview */}
+                            <div className="bg-slate-50/80 border border-slate-200/70 rounded-2xl p-3.5 space-y-2">
+                              <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 flex items-center justify-between font-lexend">
+                                <span className="flex items-center gap-1.5">
+                                  <CheckCircle2 className="w-3.5 h-3.5 text-rose-500" />
+                                  <span>Lab Milestones</span>
+                                </span>
+                                <span className="font-mono text-slate-400 text-[10px]">
+                                  {task.objectives.length} Steps
+                                </span>
                               </span>
-                              <div className="space-y-2">
-                                {task.objectives.map((obj, idx) => (
-                                  <div key={idx} className="flex items-start gap-2 text-xs text-slate-700 font-medium leading-relaxed">
-                                    <span className="w-4 h-4 rounded-full bg-rose-100 text-rose-700 font-mono font-black text-[9px] flex items-center justify-center shrink-0 mt-0.5">
+                              <div className="space-y-1.5">
+                                {task.objectives.slice(0, 3).map((obj, idx) => (
+                                  <div key={idx} className="flex items-start gap-1.5 text-[11px] text-slate-700 font-medium leading-relaxed">
+                                    <span className="w-3.5 h-3.5 rounded-full bg-rose-100 text-rose-700 font-mono font-black text-[9px] flex items-center justify-center shrink-0 mt-0.5">
                                       {idx + 1}
                                     </span>
-                                    <span>{obj}</span>
+                                    <span className="line-clamp-1">{obj}</span>
                                   </div>
+                                ))}
+                                {task.objectives.length > 3 && (
+                                  <p className="text-[10px] font-bold text-rose-600 pl-5">
+                                    +{task.objectives.length - 3} more lab steps...
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Tech Stack */}
+                            <div>
+                              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-1.5 font-lexend">
+                                Tech Stack
+                              </span>
+                              <div className="flex flex-wrap gap-1">
+                                {task.techStack.map((tech, idx) => (
+                                  <span key={idx} className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200 text-slate-700">
+                                    {tech}
+                                  </span>
                                 ))}
                               </div>
                             </div>
-
-                            {/* Tech Stack & Submission Requirements */}
-                            <div className="bg-slate-50/80 border border-slate-200/70 rounded-2xl p-4 flex flex-col justify-between gap-3">
-                              <div>
-                                <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-2 font-lexend">
-                                  Framework & Tooling Stack
-                                </span>
-                                <div className="flex flex-wrap gap-1.5 mb-4">
-                                  {task.techStack.map((tech, idx) => (
-                                    <span key={idx} className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-lg bg-white border border-slate-200 text-slate-700 shadow-2xs">
-                                      {tech}
-                                    </span>
-                                  ))}
-                                </div>
-
-                                {task.deliverables && task.deliverables.length > 0 && (
-                                  <div>
-                                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-1.5 font-lexend">
-                                      Expected Deliverables
-                                    </span>
-                                    <ul className="space-y-1">
-                                      {task.deliverables.map((deliv, idx) => (
-                                        <li key={idx} className="text-[11px] text-slate-600 font-medium flex items-center gap-1.5">
-                                          <Check className="w-3 h-3 text-emerald-500 shrink-0" />
-                                          <span className="truncate">{deliv}</span>
-                                        </li>
-                                      ))}
-                                    </ul>
-                                  </div>
-                                )}
-                              </div>
-
-                              <div className="pt-2 border-t border-slate-200/60 flex items-center justify-between text-[11px] text-slate-500 font-mono">
-                                <span>Format: Interactive Web Manual</span>
-                                <span className="text-rose-600 font-bold">Self-Paced / Graded</span>
-                              </div>
-                            </div>
                           </div>
 
-                          {/* Action Footer */}
-                          <div className="pt-3 border-t border-slate-100 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3">
-                            <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-                              <a
-                                href={task.launchUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="w-full sm:w-auto py-3 px-6 rounded-2xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-lexend font-bold text-xs shadow-lg shadow-rose-600/25 active:scale-95 transition flex items-center justify-center gap-2"
-                              >
-                                <FileCode className="w-4 h-4" />
-                                <span>{task.actionText || 'Launch Lab Manual'}</span>
-                                <ExternalLink className="w-3.5 h-3.5 opacity-80" />
-                              </a>
+                          {/* Card Action Footer */}
+                          <div className="pt-4 mt-4 border-t border-slate-100 flex items-center gap-2">
+                            <a
+                              href={task.launchUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-lexend font-bold text-xs shadow-md shadow-rose-600/20 active:scale-95 transition flex items-center justify-center gap-1.5"
+                            >
+                              <FileCode className="w-3.5 h-3.5" />
+                              <span>{task.actionText || 'Launch Lab Manual'}</span>
+                              <ExternalLink className="w-3 h-3 opacity-80" />
+                            </a>
 
-                              <button
-                                onClick={() => copyToClipboard(task.launchUrl, task.title)}
-                                className="w-full sm:w-auto py-3 px-4 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/80 font-lexend font-bold text-xs transition flex items-center justify-center gap-2 cursor-pointer"
-                                title="Copy shareable link"
-                              >
-                                <Copy className="w-4 h-4 text-slate-500" />
-                                <span>Copy Link</span>
-                              </button>
+                            <button
+                              onClick={() => copyToClipboard(task.launchUrl, task.title)}
+                              className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/80 transition flex items-center justify-center cursor-pointer shrink-0"
+                              title="Copy link"
+                            >
+                              <Copy className="w-3.5 h-3.5 text-slate-500" />
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  /* Detailed List View */
+                  <div className="grid grid-cols-1 gap-6">
+                    {displayedTasks.map((task) => {
+                      const isActive = task.status === 'active';
+                      const isGraded = task.type === 'Graded Lab Task';
+
+                      return (
+                        <div
+                          key={task.id}
+                          className={`bg-white border rounded-3xl p-6 shadow-sm transition-all duration-300 relative overflow-hidden group ${
+                            isActive 
+                              ? 'border-slate-200/90 hover:border-rose-400/60 hover:shadow-xl' 
+                              : 'border-slate-200/60 bg-slate-50/50 opacity-90'
+                          }`}
+                        >
+                          {/* Top Accent line for graded task */}
+                          {isActive && (
+                            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-rose-500 via-red-500 to-indigo-500" />
+                          )}
+
+                          <div className="flex flex-col gap-5">
+                            {/* Badges & Meta Row */}
+                            <div className="flex flex-wrap items-center justify-between gap-3">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span className="text-[10px] font-mono font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200 font-bold">
+                                  {task.badge}
+                                </span>
+                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200/80 font-mono">
+                                  {task.phaseTag}
+                                </span>
+                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full font-mono ${
+                                  isGraded 
+                                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
+                                    : 'bg-indigo-50 text-indigo-700 border border-indigo-200'
+                                }`}>
+                                  {task.type}
+                                </span>
+                                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200/60">
+                                  {task.weekAlignment}
+                                </span>
+                              </div>
+
+                              <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+                                <div className="flex items-center gap-1 font-mono text-[11px] bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-md">
+                                  <Clock className="w-3 h-3 text-slate-400" />
+                                  <span>{task.duration}</span>
+                                </div>
+                                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200/80">
+                                  {task.difficulty}
+                                </span>
+                              </div>
                             </div>
 
-                            <div className="flex items-center gap-3 text-xs text-slate-400">
-                              <a
-                                href="/laravel/lab_manual_part_2_multi_page_migration.html"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="hover:text-rose-600 transition underline font-medium text-[11px]"
-                              >
-                                Direct HTML Standalone File
-                              </a>
+                            {/* Title & Description */}
+                            <div>
+                              <div className="flex items-center gap-2 mb-1.5">
+                                <span className="text-[11px] font-bold text-slate-400 font-mono uppercase tracking-wider">
+                                  {task.courseTitle}
+                                </span>
+                              </div>
+                              <h3 className="text-xl sm:text-2xl font-black text-slate-900 font-lexend tracking-tight group-hover:text-rose-600 transition">
+                                {task.title}
+                              </h3>
+                              <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed mt-2">
+                                {task.description}
+                              </p>
+                            </div>
+
+                            {/* Objectives & Deliverables Container */}
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 pt-1">
+                              {/* Key Learning Objectives */}
+                              <div className="lg:col-span-2 bg-slate-50/80 border border-slate-200/70 rounded-2xl p-4 space-y-2.5">
+                                <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 flex items-center gap-1.5 font-lexend">
+                                  <CheckCircle2 className="w-3.5 h-3.5 text-rose-500" />
+                                  <span>Step-by-Step Lab Milestones & Learning Objectives</span>
+                                </span>
+                                <div className="space-y-2">
+                                  {task.objectives.map((obj, idx) => (
+                                    <div key={idx} className="flex items-start gap-2 text-xs text-slate-700 font-medium leading-relaxed">
+                                      <span className="w-4 h-4 rounded-full bg-rose-100 text-rose-700 font-mono font-black text-[9px] flex items-center justify-center shrink-0 mt-0.5">
+                                        {idx + 1}
+                                      </span>
+                                      <span>{obj}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+
+                              {/* Tech Stack & Submission Requirements */}
+                              <div className="bg-slate-50/80 border border-slate-200/70 rounded-2xl p-4 flex flex-col justify-between gap-3">
+                                <div>
+                                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-2 font-lexend">
+                                    Framework & Tooling Stack
+                                  </span>
+                                  <div className="flex flex-wrap gap-1.5 mb-4">
+                                    {task.techStack.map((tech, idx) => (
+                                      <span key={idx} className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-lg bg-white border border-slate-200 text-slate-700 shadow-2xs">
+                                        {tech}
+                                      </span>
+                                    ))}
+                                  </div>
+
+                                  {task.deliverables && task.deliverables.length > 0 && (
+                                    <div>
+                                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-1.5 font-lexend">
+                                        Expected Deliverables
+                                      </span>
+                                      <ul className="space-y-1">
+                                        {task.deliverables.map((deliv, idx) => (
+                                          <li key={idx} className="text-[11px] text-slate-600 font-medium flex items-center gap-1.5">
+                                            <Check className="w-3 h-3 text-emerald-500 shrink-0" />
+                                            <span className="truncate">{deliv}</span>
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    </div>
+                                  )}
+                                </div>
+
+                                <div className="pt-2 border-t border-slate-200/60 flex items-center justify-between text-[11px] text-slate-500 font-mono">
+                                  <span>Format: Interactive Web Manual</span>
+                                  <span className="text-rose-600 font-bold">Self-Paced / Graded</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Action Footer */}
+                            <div className="pt-3 border-t border-slate-100 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3">
+                              <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                                <a
+                                  href={task.launchUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="w-full sm:w-auto py-3 px-6 rounded-2xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-lexend font-bold text-xs shadow-lg shadow-rose-600/25 active:scale-95 transition flex items-center justify-center gap-2"
+                                >
+                                  <FileCode className="w-4 h-4" />
+                                  <span>{task.actionText || 'Launch Lab Manual'}</span>
+                                  <ExternalLink className="w-3.5 h-3.5 opacity-80" />
+                                </a>
+
+                                <button
+                                  onClick={() => copyToClipboard(task.launchUrl, task.title)}
+                                  className="w-full sm:w-auto py-3 px-4 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/80 font-lexend font-bold text-xs transition flex items-center justify-center gap-2 cursor-pointer"
+                                  title="Copy shareable link"
+                                >
+                                  <Copy className="w-4 h-4 text-slate-500" />
+                                  <span>Copy Link</span>
+                                </button>
+                              </div>
+
+                              <div className="flex items-center gap-3 text-xs text-slate-400">
+                                <a
+                                  href="/laravel/lab_manual_part_2_multi_page_migration.html"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="hover:text-rose-600 transition underline font-medium text-[11px]"
+                                >
+                                  Direct HTML Standalone File
+                                </a>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                      );
+                    })}
+                  </div>
+                )
               ) : (
                 /* Empty state when the active folder has no tasks */
                 <div className="bg-white border border-slate-200/80 rounded-3xl p-10 sm:p-12 text-center shadow-sm max-w-2xl mx-auto">
