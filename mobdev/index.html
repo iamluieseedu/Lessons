@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mob Dev 1 Lab — Building Your First Multi-Screen Android Application (Arctic Fox 2020.3.1)</title>
+    <title>Mob Dev 1 Lab — Multi-Screen Android UI & Button Navigation (Arctic Fox 2020.3.1)</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -55,11 +55,12 @@
             color: var(--text-body);
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
             line-height: 1.7;
-            font-size: 15.5px;
+            font-size: 15px;
             padding-bottom: 100px;
+            overflow-x: hidden;
         }
 
-        /* Top Navigation Bar - Widened to 1240px */
+        /* Top Navigation Bar */
         .top-navbar {
             position: sticky;
             top: 0;
@@ -76,7 +77,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 20px;
+            gap: 16px;
+            flex-wrap: wrap;
         }
 
         .nav-brand {
@@ -120,7 +122,7 @@
             border-radius: 8px;
             border: 1px solid var(--border);
             background: var(--bg-surface);
-            transition: all 0.2s;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             display: inline-flex;
             align-items: center;
             gap: 8px;
@@ -132,19 +134,21 @@
             color: var(--primary);
             border-color: var(--primary-border);
             background: var(--primary-bg);
+            transform: translateY(-1px);
         }
 
-        /* Reading Container - Spacious 1220px max-width */
+        /* Reading Container - Fluid Responsive Max-Width */
         .manual-wrapper {
             max-width: 1220px;
             margin: 0 auto;
-            padding: 40px 28px 0;
+            padding: 36px 24px 0;
+            width: 100%;
         }
 
-        /* Hero Header */
+        /* Hero Header (Clean, Punchy, No Pill Clutter) */
         .manual-header {
-            margin-bottom: 36px;
-            padding-bottom: 32px;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
             border-bottom: 1px solid var(--border);
         }
 
@@ -152,7 +156,7 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            font-size: 12.5px;
+            font-size: 12px;
             font-weight: 800;
             color: var(--primary);
             text-transform: uppercase;
@@ -165,46 +169,24 @@
         }
 
         .manual-title {
-            font-size: 34px;
+            font-size: clamp(26px, 4vw, 36px);
             font-weight: 800;
             color: var(--text-title);
             line-height: 1.25;
-            margin-bottom: 12px;
-            letter-spacing: -0.6px;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+            word-wrap: break-word;
         }
 
         .manual-subtitle {
-            font-size: 17px;
+            font-size: clamp(15px, 2vw, 17px);
             font-weight: 600;
             color: var(--primary-dark);
-            margin-bottom: 18px;
             display: flex;
             align-items: center;
             gap: 10px;
-        }
-
-        .manual-meta-pills {
-            display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .meta-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 12.5px;
-            padding: 6px 14px;
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-body);
-            font-weight: 600;
-        }
-
-        .meta-pill strong {
-            color: var(--text-title);
+            line-height: 1.5;
         }
 
         /* Quick Navigation Bar */
@@ -212,8 +194,8 @@
             background: var(--bg-surface);
             border: 1px solid var(--border);
             border-radius: 14px;
-            padding: 18px 24px;
-            margin-bottom: 40px;
+            padding: 16px 20px;
+            margin-bottom: 36px;
             box-shadow: 0 1px 4px rgba(0,0,0,0.02);
         }
 
@@ -244,13 +226,18 @@
             border: 1px solid var(--border);
             padding: 6px 14px;
             border-radius: 8px;
-            transition: all 0.15s;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .quick-pill:hover {
             background: var(--primary);
             color: #ffffff;
             border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(2, 132, 199, 0.25);
         }
 
         /* Lab Sections */
@@ -258,14 +245,16 @@
             background: var(--bg-surface);
             border: 1px solid var(--border);
             border-radius: 16px;
-            padding: 36px 40px;
-            margin-bottom: 36px;
+            padding: 32px 36px;
+            margin-bottom: 32px;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+            width: 100%;
+            overflow: hidden;
         }
 
-        @media (max-width: 640px) {
+        @media (max-width: 768px) {
             .lab-section {
-                padding: 24px 20px;
+                padding: 22px 18px;
             }
         }
 
@@ -273,19 +262,20 @@
             display: flex;
             align-items: center;
             gap: 16px;
-            margin-bottom: 22px;
-            padding-bottom: 18px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
             border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
         }
 
         .section-step-num {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
             background: var(--primary-bg);
             color: var(--primary);
             font-weight: 800;
-            font-size: 17px;
+            font-size: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -301,28 +291,30 @@
         }
 
         .section-title {
-            font-size: 23px;
+            font-size: clamp(19px, 2.5vw, 23px);
             font-weight: 800;
             color: var(--text-title);
             letter-spacing: -0.4px;
+            word-wrap: break-word;
         }
 
         .section-desc {
             font-size: 15px;
             color: var(--text-body);
-            margin-bottom: 24px;
+            margin-bottom: 22px;
             line-height: 1.7;
+            overflow-wrap: break-word;
         }
 
-        /* WIDENED & SPACIOUS SCREEN FLOW CARDS */
+        /* DYNAMIC & RESPONSIVE SCREEN FLOW CARDS */
         .screen-flow-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 24px;
-            margin: 24px 0 32px;
+            gap: 22px;
+            margin: 22px 0 28px;
         }
 
-        @media (max-width: 900px) {
+        @media (max-width: 860px) {
             .screen-flow-grid {
                 grid-template-columns: 1fr;
             }
@@ -331,74 +323,51 @@
         .flow-card {
             background: var(--bg-surface);
             border: 1.5px solid var(--border);
-            border-radius: 16px;
-            padding: 24px 26px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border-radius: 14px;
+            padding: 22px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            transition: all 0.2s ease;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
         }
 
         .flow-card:hover {
             border-color: var(--border-hover);
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
         }
 
-        .flow-card.c-welcome {
-            border-top: 5px solid var(--primary);
-        }
-
-        .flow-card.c-dashboard {
-            border-top: 5px solid #10b981;
-        }
-
-        .flow-card.c-login {
-            border-top: 5px solid #6366f1;
-        }
-
-        .flow-card.c-signup {
-            border-top: 5px solid #f59e0b;
-        }
+        .flow-card.c-welcome { border-top: 5px solid var(--primary); }
+        .flow-card.c-dashboard { border-top: 5px solid #10b981; }
+        .flow-card.c-login { border-top: 5px solid #6366f1; }
+        .flow-card.c-signup { border-top: 5px solid #f59e0b; }
 
         .flow-card-head {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 14px;
-            gap: 12px;
+            margin-bottom: 12px;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
         .flow-badge {
-            font-size: 11.5px;
+            font-size: 11px;
             font-weight: 800;
-            padding: 3px 10px;
+            padding: 3px 8px;
             border-radius: 6px;
             font-family: 'Fira Code', monospace;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
-        .flow-badge.launcher {
-            background: #e0f2fe;
-            color: #0369a1;
-            border: 1px solid #bae6fd;
-        }
-
-        .flow-badge.target {
-            background: #ecfdf5;
-            color: #047857;
-            border: 1px solid #a7f3d0;
-        }
-
-        .flow-badge.screen {
-            background: #f1f5f9;
-            color: #475569;
-            border: 1px solid #e2e8f0;
-        }
+        .flow-badge.launcher { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+        .flow-badge.target { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+        .flow-badge.screen { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
 
         .flow-file-name {
-            font-size: 12px;
+            font-size: 11.5px;
             font-family: 'Fira Code', monospace;
             color: var(--text-muted);
             font-weight: 700;
@@ -409,75 +378,56 @@
         }
 
         .flow-title {
-            font-size: 19px;
+            font-size: 18px;
             font-weight: 800;
             color: var(--text-title);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .flow-desc {
-            font-size: 14px;
+            font-size: 13.5px;
             color: var(--text-body);
-            line-height: 1.65;
-            margin-bottom: 20px;
+            line-height: 1.6;
+            margin-bottom: 18px;
         }
 
-        /* Full-Width Spacious Action Box */
+        /* Clean Navigation Trigger List */
         .flow-actions-box {
             background: #f8fafc;
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 14px 16px;
+            border-radius: 10px;
+            padding: 12px 14px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
 
         .flow-action-row {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             font-size: 13px;
             flex-wrap: wrap;
+            line-height: 1.5;
         }
 
         .flow-btn-mock {
-            font-size: 11px;
+            font-size: 10.5px;
             font-weight: 800;
-            padding: 4px 10px;
-            border-radius: 6px;
+            padding: 3px 8px;
+            border-radius: 5px;
             text-transform: uppercase;
             font-family: 'Fira Code', monospace;
             white-space: nowrap;
-            letter-spacing: 0.3px;
         }
 
-        .flow-btn-mock.blue {
-            background: #0284c7;
-            color: #ffffff;
-            box-shadow: 0 1px 3px rgba(2, 132, 199, 0.2);
-        }
-
-        .flow-btn-mock.green {
-            background: #10b981;
-            color: #ffffff;
-            box-shadow: 0 1px 3px rgba(16, 185, 129, 0.2);
-        }
-
-        .flow-btn-mock.white {
-            background: #ffffff;
-            color: #0284c7;
-            border: 1.5px solid #bae6fd;
-        }
-
-        .flow-btn-mock.red {
-            background: #ef4444;
-            color: #ffffff;
-            box-shadow: 0 1px 3px rgba(239, 68, 68, 0.2);
-        }
+        .flow-btn-mock.blue { background: #0284c7; color: #ffffff; }
+        .flow-btn-mock.green { background: #10b981; color: #ffffff; }
+        .flow-btn-mock.white { background: #ffffff; color: #0284c7; border: 1px solid #bae6fd; }
+        .flow-btn-mock.red { background: #ef4444; color: #ffffff; }
 
         .flow-action-dest {
             color: var(--text-title);
@@ -489,110 +439,184 @@
             color: var(--primary);
         }
 
-        /* Spacious Concept Explanation Banner */
+        /* Dynamic 3-Step Navigation Pattern Banner */
         .concept-banner {
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            border-radius: 16px;
-            padding: 26px 30px;
+            border-radius: 14px;
+            padding: 22px 26px;
             color: #ffffff;
-            margin: 28px 0;
+            margin: 24px 0;
             border: 1px solid #334155;
-            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.1);
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
         }
 
         .concept-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 18px;
-            padding-bottom: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
             border-bottom: 1px solid rgba(255,255,255,0.12);
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         .concept-header h4 {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 800;
             color: #38bdf8;
-            letter-spacing: 0.3px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .concept-steps-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
+            gap: 14px;
         }
 
-        @media (max-width: 820px) {
+        @media (max-width: 800px) {
             .concept-steps-grid {
                 grid-template-columns: 1fr;
             }
         }
 
         .concept-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 12px;
-            padding: 16px;
-            font-size: 13.5px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 14px;
+            font-size: 13px;
+            transition: all 0.2s ease;
+        }
+
+        .concept-card:hover {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: rgba(56, 189, 248, 0.4);
         }
 
         .concept-num {
             display: inline-block;
-            width: 24px;
-            height: 24px;
+            width: 22px;
+            height: 22px;
             border-radius: 6px;
             background: #38bdf8;
             color: #0f172a;
             font-weight: 800;
-            font-size: 13px;
+            font-size: 12px;
             text-align: center;
-            line-height: 24px;
-            margin-bottom: 8px;
+            line-height: 22px;
+            margin-bottom: 6px;
         }
 
         .concept-card strong {
             display: block;
             color: #ffffff;
-            margin-bottom: 6px;
-            font-size: 14px;
+            margin-bottom: 4px;
+            font-size: 13.5px;
         }
 
         .concept-card p {
             color: #cbd5e1;
-            font-size: 13px;
-            line-height: 1.6;
+            font-size: 12.5px;
+            line-height: 1.5;
             margin-bottom: 8px;
         }
 
         .concept-card code {
             font-family: 'Fira Code', monospace;
-            font-size: 12px;
+            font-size: 11.5px;
             color: #7dd3fc;
             display: block;
             background: rgba(0,0,0,0.35);
-            padding: 6px 10px;
+            padding: 6px 8px;
             border-radius: 6px;
             overflow-x: auto;
             white-space: nowrap;
         }
 
+        /* Image Guide Box (Dedicated Step on How to Add Images) */
+        .image-guide-container {
+            background: #f0fdf4;
+            border: 1.5px solid #86efac;
+            border-radius: 14px;
+            padding: 22px;
+            margin: 20px 0 24px;
+        }
+
+        .image-guide-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 16px;
+            color: #166534;
+            margin-bottom: 14px;
+        }
+
+        .image-guide-steps {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .img-step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #14532d;
+        }
+
+        .img-step-badge {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #16a34a;
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .img-step-content strong {
+            color: #0f172a;
+        }
+
+        .img-rule-alert {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 4px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: #fef3c7;
+            border: 1px solid #fde68a;
+            color: #92400e;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
         /* Callout Boxes */
         .callout {
             border-radius: 12px;
-            padding: 18px 22px;
-            margin: 22px 0;
+            padding: 16px 20px;
+            margin: 20px 0;
             display: flex;
             align-items: flex-start;
             gap: 14px;
-            font-size: 14.5px;
+            font-size: 14px;
             line-height: 1.65;
         }
 
         .callout-icon {
-            font-size: 20px;
+            font-size: 18px;
             margin-top: 2px;
             flex-shrink: 0;
         }
@@ -603,9 +627,7 @@
             color: #92400e;
         }
 
-        .callout-warning .callout-icon {
-            color: #d97706;
-        }
+        .callout-warning .callout-icon { color: #d97706; }
 
         .callout-info {
             background: var(--primary-bg);
@@ -613,36 +635,35 @@
             color: #0369a1;
         }
 
-        .callout-info .callout-icon {
-            color: var(--primary);
-        }
+        .callout-info .callout-icon { color: var(--primary); }
 
         /* File Placement Banner */
         .file-guide-card {
             background: #f0f9ff;
             border: 1.5px solid #7dd3fc;
             border-radius: 12px;
-            padding: 14px 20px;
-            margin: 20px 0 12px;
+            padding: 12px 18px;
+            margin: 18px 0 10px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 10px;
-            font-size: 13.5px;
+            font-size: 13px;
         }
 
         .file-guide-left {
             display: flex;
             align-items: center;
             gap: 10px;
+            flex-wrap: wrap;
         }
 
         .file-guide-label {
             font-weight: 800;
             color: #0369a1;
             text-transform: uppercase;
-            font-size: 12px;
+            font-size: 11.5px;
             letter-spacing: 0.5px;
         }
 
@@ -654,11 +675,12 @@
             padding: 3px 10px;
             border-radius: 6px;
             border: 1px solid #bae6fd;
-            font-size: 13px;
+            font-size: 12.5px;
+            word-break: break-all;
         }
 
         .file-guide-tag {
-            font-size: 11.5px;
+            font-size: 11px;
             color: #64748b;
             font-weight: 600;
         }
@@ -667,20 +689,23 @@
         .code-container {
             background: var(--code-bg);
             border: 1px solid #1e293b;
-            border-radius: 14px;
+            border-radius: 12px;
             overflow: hidden;
-            margin: 14px 0 28px;
-            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+            margin: 12px 0 24px;
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+            width: 100%;
         }
 
         .code-header {
             background: var(--code-header);
-            padding: 12px 20px;
+            padding: 10px 18px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             border-bottom: 1px solid #334155;
-            font-size: 13px;
+            font-size: 12.5px;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         .code-file-name {
@@ -689,28 +714,29 @@
             font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .copy-btn {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.18);
             color: #f1f5f9;
-            font-size: 12px;
+            font-size: 11.5px;
             font-weight: 700;
-            padding: 6px 14px;
+            padding: 5px 12px;
             border-radius: 6px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .copy-btn:hover {
             background: var(--primary);
             border-color: var(--primary);
             color: #ffffff;
+            transform: scale(1.03);
         }
 
         .copy-btn.copied {
@@ -721,10 +747,10 @@
 
         pre {
             margin: 0;
-            padding: 22px 24px;
+            padding: 18px 20px;
             overflow-x: auto;
             font-family: 'Fira Code', monospace;
-            font-size: 13.5px;
+            font-size: 13px;
             line-height: 1.7;
             color: #f8fafc;
         }
@@ -738,11 +764,11 @@
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
-            margin: 18px 0;
+            margin: 16px 0;
             border: 1px solid var(--border);
             border-radius: 12px;
             overflow: hidden;
-            font-size: 14px;
+            font-size: 13.5px;
         }
 
         .clean-table th {
@@ -750,12 +776,12 @@
             color: var(--text-title);
             font-weight: 800;
             text-align: left;
-            padding: 14px 18px;
+            padding: 12px 16px;
             border-bottom: 1px solid var(--border);
         }
 
         .clean-table td {
-            padding: 14px 18px;
+            padding: 12px 16px;
             border-bottom: 1px solid var(--border);
             color: var(--text-body);
         }
@@ -773,26 +799,31 @@
             background: var(--bg-subtle);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 22px;
-            margin: 22px 0;
+            padding: 20px;
+            margin: 20px 0;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
 
         .check-item {
             display: flex;
             align-items: flex-start;
-            gap: 14px;
-            font-size: 14.5px;
+            gap: 12px;
+            font-size: 14px;
             cursor: pointer;
             padding: 6px 0;
             user-select: none;
+            transition: all 0.15s ease;
+        }
+
+        .check-item:hover {
+            opacity: 0.85;
         }
 
         .check-box-ui {
-            width: 22px;
-            height: 22px;
+            width: 20px;
+            height: 20px;
             border-radius: 6px;
             border: 2px solid #cbd5e1;
             background: #ffffff;
@@ -819,8 +850,8 @@
         .trouble-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 18px;
-            margin: 20px 0;
+            gap: 16px;
+            margin: 18px 0;
         }
 
         @media (max-width: 768px) {
@@ -834,8 +865,14 @@
             border: 1px solid var(--border);
             border-left: 4px solid var(--accent-rose);
             border-radius: 12px;
-            padding: 18px 20px;
-            font-size: 13.5px;
+            padding: 16px 18px;
+            font-size: 13px;
+            transition: all 0.2s ease;
+        }
+
+        .trouble-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
         .trouble-title {
@@ -845,17 +882,17 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 14px;
+            font-size: 13.5px;
         }
 
         .trouble-fix {
-            margin-top: 10px;
+            margin-top: 8px;
             background: #f8fafc;
             border: 1px solid #e2e8f0;
-            padding: 10px 12px;
-            border-radius: 8px;
+            padding: 8px 10px;
+            border-radius: 6px;
             color: #0f172a;
-            font-size: 13px;
+            font-size: 12.5px;
         }
     </style>
 </head>
@@ -883,24 +920,14 @@
 
     <div class="manual-wrapper">
 
-        <!-- Hero Header -->
+        <!-- Hero Header (Clean, Direct, Zero Pill Clutter) -->
         <header class="manual-header">
             <span class="header-course-tag">
                 <i class="fa-solid fa-graduation-cap"></i> Mob Dev 1 Lab &bull; Practical Lab Manual
             </span>
-            <h1 class="manual-title">Building Multi-Screen Android UI &amp; Navigation</h1>
+            <h1 class="manual-title">Multi-Screen Android UI &amp; Button Navigation</h1>
             <div class="manual-subtitle">
                 <i class="fa-solid fa-route"></i> Welcome Screen &rarr; Direct Button Click Event &rarr; Dashboard &amp; Screens
-            </div>
-            <p style="font-size: 16px; color: var(--text-body); max-width: 980px; line-height: 1.75;">
-                Welcome to your first multi-screen Android engineering lab! In this exercise, you will master <strong>Android UI Screen Design</strong> and <strong>Button Click Events</strong> in <strong>Android Studio Arctic Fox (2020.3.1)</strong> using <strong>Kotlin</strong> and <strong>XML Layouts</strong>. This is a <strong>pure static UI design lab</strong>: no complex username/password validation logic is required—simply tap a button to trigger an explicit <code>Intent</code> and navigate seamlessly between screens!
-            </p>
-            <div class="manual-meta-pills">
-                <div class="meta-pill"><i class="fa-solid fa-laptop-code"></i> IDE: <strong>Android Studio Arctic Fox | 2020.3.1</strong></div>
-                <div class="meta-pill"><i class="fa-solid fa-code"></i> Language: <strong>Kotlin</strong></div>
-                <div class="meta-pill"><i class="fa-solid fa-layer-group"></i> UI Engine: <strong>XML Layouts (Static Design)</strong></div>
-                <div class="meta-pill"><i class="fa-solid fa-bolt"></i> Mechanics: <strong>Button Click Navigation Events</strong></div>
-                <div class="meta-pill"><i class="fa-solid fa-clock"></i> Duration: <strong>60 - 90 Mins</strong></div>
             </div>
         </header>
 
@@ -910,9 +937,9 @@
                 <i class="fa-solid fa-map-location-dot"></i> Step-by-Step Lab Navigation
             </div>
             <div class="quick-nav-pills">
-                <a href="#overview-flow" class="quick-pill">Screen Flow Map</a>
+                <a href="#overview-flow" class="quick-pill"><i class="fa-solid fa-diagram-project"></i> Screen Flow Map</a>
                 <a href="#step-1-project" class="quick-pill">1. Project Setup</a>
-                <a href="#step-2-resources" class="quick-pill">2. Design Colors &amp; Strings</a>
+                <a href="#step-2-resources" class="quick-pill">2. Colors, Strings &amp; Image</a>
                 <a href="#step-3-welcome" class="quick-pill">3. Welcome Screen (MainActivity)</a>
                 <a href="#step-4-dashboard" class="quick-pill">4. Dashboard Screen (DashboardActivity)</a>
                 <a href="#step-5-login" class="quick-pill">5. Login Design (LoginActivity)</a>
@@ -923,14 +950,14 @@
             </div>
         </nav>
 
-        <!-- Visual Architecture Overview (SPACIOUS WIDE CARDS - NO SQUISHED TEXT) -->
+        <!-- Visual Architecture Overview -->
         <section id="overview-flow" class="lab-section">
             <div class="section-header">
-                <div class="section-step-num"><i class="fa-solid fa-diagram-project" style="font-size: 15px;"></i></div>
+                <div class="section-step-num"><i class="fa-solid fa-diagram-project" style="font-size: 14px;"></i></div>
                 <h2 class="section-title">Screen Navigation &amp; Design Architecture</h2>
             </div>
             <p class="section-desc">
-                Your application consists of <strong>clean visual screens</strong>. Navigation is 100% event-driven: clicking any action button fires a clean Kotlin <code>setOnClickListener</code> event that tells the Android OS to open the requested screen. No login credentials, database, or password validation needed!
+                Your application consists of <strong>clean visual screens</strong>. Navigation is 100% event-driven: clicking any action button fires a Kotlin <code>setOnClickListener</code> event that tells the Android OS to open the requested screen. No login credentials, database, or password validation needed!
             </p>
 
             <!-- 4 Widened, Generously Spaced Visual Cards -->
@@ -944,7 +971,7 @@
                             <span class="flow-file-name">MainActivity.kt</span>
                         </div>
                         <h3 class="flow-title"><i class="fa-solid fa-house" style="color: var(--primary);"></i> Welcome Screen</h3>
-                        <p class="flow-desc">First screen launched by the phone. Displays the university logo, portal title, and direct navigation buttons.</p>
+                        <p class="flow-desc">First screen launched by the phone. Displays your custom image logo, app title, and direct navigation buttons.</p>
                     </div>
                     <div class="flow-actions-box">
                         <div class="flow-action-row">
@@ -1034,13 +1061,13 @@
             <div class="concept-banner">
                 <div class="concept-header">
                     <h4><i class="fa-solid fa-bolt"></i> How Button Click Navigation Works in Android</h4>
-                    <span style="font-size: 12px; color: #94a3b8; font-family: 'Fira Code', monospace;">The 3-Step Pattern</span>
+                    <span style="font-size: 11.5px; color: #94a3b8; font-family: 'Fira Code', monospace;">The 3-Step Pattern</span>
                 </div>
                 <div class="concept-steps-grid">
                     <div class="concept-card">
                         <div class="concept-num">1</div>
                         <strong>Declare Button in XML</strong>
-                        <p>Give your button an ID in the layout file:</p>
+                        <p>Give your button an ID in the layout:</p>
                         <code>android:id="@+id/btnEnterDashboard"</code>
                     </div>
                     <div class="concept-card">
@@ -1052,7 +1079,7 @@
                     <div class="concept-card">
                         <div class="concept-num">3</div>
                         <strong>Attach Click Event</strong>
-                        <p>Start the target Activity on tap:</p>
+                        <p>Launch target screen on tap:</p>
                         <code>btn.setOnClickListener {<br>&nbsp;&nbsp;startActivity(Intent(this, DashboardActivity::class.java))<br>}</code>
                     </div>
                 </div>
@@ -1113,15 +1140,68 @@
             </p>
         </section>
 
-        <!-- STEP 2: DESIGN RESOURCES -->
+        <!-- STEP 2: DESIGN RESOURCES & ADDING IMAGE -->
         <section id="step-2-resources" class="lab-section">
             <div class="section-header">
                 <div class="section-step-num">2</div>
-                <h2 class="section-title">Setup Colors, Strings &amp; Vector Logo</h2>
+                <h2 class="section-title">Setup Colors, Strings &amp; Adding an Image to Drawable</h2>
             </div>
             <p class="section-desc">
-                Configure your project's color palette, localized text strings, and vector graphics in the <code>res</code> folder.
+                Configure your project's color palette, localized text strings, and learn how to add your own custom image file (PNG / JPG) into Android Studio.
             </p>
+
+            <!-- DEDICATED HOW TO ADD AN IMAGE GUIDE (NO VECTOR JARGON) -->
+            <div class="image-guide-container">
+                <div class="image-guide-head">
+                    <i class="fa-solid fa-image" style="font-size: 20px;"></i>
+                    <span>How to Add an Image (PNG / JPG) in Android Studio</span>
+                </div>
+                <div class="image-guide-steps">
+                    <div class="img-step-item">
+                        <div class="img-step-badge">1</div>
+                        <div class="img-step-content">
+                            <strong>Prepare your image on your computer:</strong>
+                            <p>Pick any image or logo on your computer and save or rename it as <code>logo.png</code> (or <code>app_logo.png</code>).</p>
+                            <div class="img-rule-alert">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                                <span><strong>Android Rule:</strong> File names in <code>res/drawable</code> must be strictly <strong>lowercase</strong> and have <strong>no spaces</strong> (e.g. <code>logo.png</code>, NOT <code>Logo.png</code> or <code>my logo.png</code>).</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="img-step-item">
+                        <div class="img-step-badge">2</div>
+                        <div class="img-step-content">
+                            <strong>Copy the image file:</strong>
+                            <p>In Windows File Explorer, click your image file and press <kbd style="background: #ffffff; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-family: monospace;">Ctrl + C</kbd>.</p>
+                        </div>
+                    </div>
+
+                    <div class="img-step-item">
+                        <div class="img-step-badge">3</div>
+                        <div class="img-step-content">
+                            <strong>Paste into Android Studio:</strong>
+                            <p>In Android Studio's left Project panel, expand <code>app &gt; src &gt; main &gt; res</code>. Right-click the <strong><code>drawable</code></strong> folder and select <strong>Paste</strong> (<kbd style="background: #ffffff; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-family: monospace;">Ctrl + V</kbd>).</p>
+                        </div>
+                    </div>
+
+                    <div class="img-step-item">
+                        <div class="img-step-badge">4</div>
+                        <div class="img-step-content">
+                            <strong>Select Destination Directory:</strong>
+                            <p>If a popup asks to choose a destination, select the standard <code>.../res/drawable</code> folder (do NOT choose <code>drawable-v24</code>) and click <strong>OK</strong>.</p>
+                        </div>
+                    </div>
+
+                    <div class="img-step-item">
+                        <div class="img-step-badge">5</div>
+                        <div class="img-step-content">
+                            <strong>How to display it in XML:</strong>
+                            <p>In any layout file, simply use an <code>&lt;ImageView&gt;</code> tag with <code>android:src="@drawable/logo"</code>!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- 2.1 colors.xml -->
             <div class="file-guide-card">
@@ -1177,35 +1257,10 @@
 &lt;/resources&gt;</code></pre>
             </div>
 
-            <!-- 2.3 ic_app_logo.xml -->
+            <!-- 2.3 edit_text_border.xml -->
             <div class="file-guide-card">
                 <div class="file-guide-left">
-                    <span class="file-guide-label"><i class="fa-solid fa-shapes"></i> Vector Graphic:</span>
-                    <span class="file-guide-path">app &gt; src &gt; main &gt; res &gt; drawable &gt; ic_app_logo.xml</span>
-                </div>
-                <span class="file-guide-tag">Right click drawable &rarr; New &rarr; Drawable Resource File</span>
-            </div>
-
-            <div class="code-container">
-                <div class="code-header">
-                    <span class="code-file-name"><i class="fa-solid fa-shapes"></i> ic_app_logo.xml</span>
-                    <button class="copy-btn" onclick="copyCode('code-logo', this)"><i class="fa-regular fa-copy"></i> Copy XML</button>
-                </div>
-                <pre><code id="code-logo">&lt;vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="96dp"
-    android:height="96dp"
-    android:viewportWidth="24"
-    android:viewportHeight="24"&gt;
-    &lt;path
-        android:fillColor="#0284C7"
-        android:pathData="M12,3L1,9L12,15L21,10.09V17H23V9M5,13.18V17.18C5,19.94 8.13,22 12,22C15.87,22 19,19.94 19,17.18V13.18L12,17L5,13.18Z"/&gt;
-&lt;/vector&gt;</code></pre>
-            </div>
-
-            <!-- 2.4 edit_text_border.xml -->
-            <div class="file-guide-card">
-                <div class="file-guide-left">
-                    <span class="file-guide-label"><i class="fa-solid fa-draw-polygon"></i> Rounded Border:</span>
+                    <span class="file-guide-label"><i class="fa-solid fa-draw-polygon"></i> Rounded Card Border:</span>
                     <span class="file-guide-path">app &gt; src &gt; main &gt; res &gt; drawable &gt; edit_text_border.xml</span>
                 </div>
                 <span class="file-guide-tag">Right click drawable &rarr; New &rarr; Drawable Resource File</span>
@@ -1232,7 +1287,7 @@
                 <h2 class="section-title">Screen 1: Welcome Screen (MainActivity)</h2>
             </div>
             <p class="section-desc">
-                The Welcome screen is the starting point of the app. It provides a direct <strong>"ENTER DASHBOARD"</strong> button to navigate straight to the Dashboard, along with buttons to view the Login and Sign Up screen designs.
+                The Welcome screen is the starting point of the app. It displays your custom image logo (<code>@drawable/logo</code>), portal title, and buttons that navigate directly on click.
             </p>
 
             <!-- 3.1 activity_main.xml -->
@@ -1258,12 +1313,12 @@
     android:padding="28dp"
     android:background="@color/bg_canvas"&gt;
 
-    &lt;!-- App Logo --&gt;
+    &lt;!-- App Image Logo (Paste your 'logo.png' into res/drawable) --&gt;
     &lt;ImageView
-        android:id="@+id/ivWelcomeLogo"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:src="@drawable/ic_app_logo"
+        android:id="@+id/ivLogo"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
+        android:src="@drawable/logo"
         android:contentDescription="CampusConnect Logo"
         android:layout_marginBottom="20dp" /&gt;
 
@@ -2113,7 +2168,7 @@ class SignUpActivity : AppCompatActivity() {
                 </tbody>
             </table>
 
-            <h3 style="font-size: 17px; margin: 26px 0 14px; color: var(--text-title); font-weight: 800;">
+            <h3 style="font-size: 16px; margin: 24px 0 12px; color: var(--text-title); font-weight: 800;">
                 <i class="fa-solid fa-list-check" style="color: var(--accent-green);"></i> Student Lab Deliverables Checklist
             </h3>
 
@@ -2124,7 +2179,7 @@ class SignUpActivity : AppCompatActivity() {
                 </div>
                 <div class="check-item" onclick="toggleCheck(this)">
                     <div class="check-box-ui"><i class="fa-solid fa-check" style="font-size: 11px;"></i></div>
-                    <span>Welcome screen (MainActivity) navigates directly to DashboardActivity on button click.</span>
+                    <span>Welcome screen (MainActivity) displays custom image logo and navigates directly to DashboardActivity on button click.</span>
                 </div>
                 <div class="check-item" onclick="toggleCheck(this)">
                     <div class="check-box-ui"><i class="fa-solid fa-check" style="font-size: 11px;"></i></div>
@@ -2144,7 +2199,7 @@ class SignUpActivity : AppCompatActivity() {
         <!-- TROUBLESHOOTING -->
         <section id="troubleshooting" class="lab-section">
             <div class="section-header">
-                <div class="section-step-num"><i class="fa-solid fa-wrench" style="font-size: 15px;"></i></div>
+                <div class="section-step-num"><i class="fa-solid fa-wrench" style="font-size: 14px;"></i></div>
                 <h2 class="section-title">Quick Troubleshooting Guide</h2>
             </div>
 
@@ -2154,6 +2209,14 @@ class SignUpActivity : AppCompatActivity() {
                     <p>App crashes when clicking a button.</p>
                     <div class="trouble-fix">
                         <strong>Fix:</strong> Open <code>AndroidManifest.xml</code> and confirm the activity is registered inside <code>&lt;application&gt;</code>.
+                    </div>
+                </div>
+
+                <div class="trouble-card">
+                    <div class="trouble-title"><i class="fa-solid fa-bug" style="color: var(--accent-rose);"></i> Image Won't Show or Build Error</div>
+                    <p>Error: "Resource entry ... is not a valid resource name".</p>
+                    <div class="trouble-fix">
+                        <strong>Fix:</strong> Ensure your image file name is strictly <strong>lowercase</strong> with NO spaces (e.g. <code>logo.png</code>, NOT <code>Logo.png</code>).
                     </div>
                 </div>
 
@@ -2172,21 +2235,13 @@ class SignUpActivity : AppCompatActivity() {
                         <strong>Fix:</strong> Confirm <code>button.setOnClickListener { ... }</code> is written inside <code>onCreate()</code>, after <code>setContentView()</code>.
                     </div>
                 </div>
-
-                <div class="trouble-card">
-                    <div class="trouble-title"><i class="fa-solid fa-bug" style="color: var(--accent-rose);"></i> XML Red Lines in Layout</div>
-                    <p>Tags show unclosed warnings.</p>
-                    <div class="trouble-fix">
-                        <strong>Fix:</strong> Every self-closing tag like <code>&lt;ImageView ... /&gt;</code> must end with <code>/&gt;</code>.
-                    </div>
-                </div>
             </div>
         </section>
 
     </div>
 
     <script>
-        // Copy Code to Clipboard
+        // Copy Code to Clipboard with feedback
         function copyCode(codeId, btnElement) {
             const codeBlock = document.getElementById(codeId);
             if (!codeBlock) return;

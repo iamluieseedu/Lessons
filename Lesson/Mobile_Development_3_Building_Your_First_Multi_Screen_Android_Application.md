@@ -164,23 +164,15 @@ app
 
 ---
 
-### 1.3 Vector Brand Icon
-- **FILE:** `ic_app_logo.xml`
-- **LOCATION:** `app > src > main > res > drawable > ic_app_logo.xml`
-- **HOW TO CREATE:** Right-click the `drawable` folder → **New** → **Drawable Resource File** → Name: `ic_app_logo.xml`. Click **OK**.
-- **ACTION:** Replace contents with:
+### 1.3 How to Add an Image (PNG / JPG) to `res/drawable`
+Instead of coding a vector, you can use any real image file (logo or illustration) from your computer:
 
-```xml
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="96dp"
-    android:height="96dp"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
-    <path
-        android:fillColor="#0284C7"
-        android:pathData="M12,3L1,9L12,15L21,10.09V17H23V9M5,13.18V17.18C5,19.94 8.13,22 12,22C15.87,22 19,19.94 19,17.18V13.18L12,17L5,13.18Z"/>
-</vector>
-```
+1. **Prepare your image:** Save an image on your computer as `logo.png` (or `.jpg`).
+   > ⚠️ **Android Resource Naming Rule:** File names in `res/drawable` MUST be strictly **lowercase** with **no spaces** and no special symbols (e.g. `logo.png`, `app_logo.png`).
+2. **Copy the file:** Select the image in Windows Explorer and press `Ctrl + C`.
+3. **Paste in Android Studio:** In the Project panel, expand `app > src > main > res`. Right-click the **`drawable`** folder and select **Paste** (`Ctrl + V`).
+4. **Choose Destination:** If prompted, select the standard `.../res/drawable` directory (do NOT select `drawable-v24`) and click **OK**.
+5. **Display in XML:** Reference it inside `<ImageView>` using `android:src="@drawable/logo"`.
 
 ---
 
