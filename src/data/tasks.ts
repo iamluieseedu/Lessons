@@ -125,18 +125,18 @@ export const DEFAULT_TASKS: CourseTask[] = [
     status: 'active',
     duration: '90 - 120 mins',
     weekAlignment: 'Week 1 - 2 Practical Lab',
-    description: 'Construct a 4-screen Android application in Android Studio Arctic Fox (2020.3.1) using Kotlin and XML: Welcome Page, Login with demo auth, Sign Up with input validation, and personalized Dashboard with data passing.',
+    description: 'Construct a 4-screen Android application in Android Studio Arctic Fox (2020.3.1) using Kotlin and XML: Welcome Page, Static Login Design, Sign Up Design, and Student Dashboard with direct button click navigation events.',
     objectives: [
       'Scaffold an Empty Activity project in Android Studio Arctic Fox 2020.3.1 with API 21 minimum SDK',
-      'Create XML layouts with LinearLayout, ScrollView, TextViews, and EditTexts',
-      'Implement explicit Intents and startActivity() to navigate between 4 screens',
-      'Pass and read user state across screen boundaries using putExtra and getStringExtra',
-      'Implement secure Back Stack clearance on logout using FLAG_ACTIVITY_CLEAR_TOP'
+      'Design clean static XML layouts with LinearLayout, ScrollView, TextViews, and Buttons',
+      'Implement explicit Intents and startActivity() to navigate between 4 screens on button click',
+      'Attach Kotlin setOnClickListener events to trigger immediate screen transitions',
+      'Implement return navigation to Welcome screen and verify AndroidManifest declarations'
     ],
     deliverables: [
-      'Working 4-screen Android APK/project running on emulator',
-      'Verified credential check (admin/1234) and registration validation',
-      'Completed submission screenshots of all screens and logout'
+      'Working 4-screen Android project running on emulator',
+      'Verified button click events navigating between Welcome, Dashboard, and Mock screens',
+      'Completed submission screenshots of all screens'
     ],
     techStack: ['Android Studio Arctic Fox', 'Kotlin', 'XML Layouts', 'Android Activities', 'Intents'],
     launchUrl: '/mobdev/',

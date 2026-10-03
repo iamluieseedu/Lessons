@@ -20,23 +20,23 @@
 
 | Screen | Activity & Layout | Purpose & User Actions |
 | :--- | :--- | :--- |
-| **Screen 1: Welcome** | `MainActivity.kt`<br>`activity_main.xml` | App entry point with logo and title.<br>• **[LOG IN]** → Opens `LoginActivity`<br>• **[CREATE AN ACCOUNT]** → Opens `SignUpActivity` |
-| **Screen 2: Login** | `LoginActivity.kt`<br>`activity_login.xml` | Validates credentials (`admin` / `1234`).<br>• **[LOG IN]** → Passes username & opens `DashboardActivity`<br>• **[Sign Up link]** → Jumps to `SignUpActivity` |
-| **Screen 3: Sign Up** | `SignUpActivity.kt`<br>`activity_sign_up.xml` | Captures name, email, and passwords with form validation.<br>• **[COMPLETE REGISTRATION]** → Passes name & opens `DashboardActivity`<br>• **[Log In link]** → Jumps to `LoginActivity` |
-| **Screen 4: Dashboard** | `DashboardActivity.kt`<br>`activity_dashboard.xml` | Displays personalized **"Welcome, [Name]!"** via Intent extras.<br>• **[LOG OUT]** → Clears Back Stack & returns to `MainActivity` |
+| **Screen 1: Welcome** | `MainActivity.kt`<br>`activity_main.xml` | App entry point with logo and title.<br>• **[ENTER DASHBOARD]** → Navigates directly to `DashboardActivity`!<br>• **[VIEW LOGIN SCREEN]** → Opens `LoginActivity`<br>• **[VIEW SIGN UP SCREEN]** → Opens `SignUpActivity` |
+| **Screen 2: Dashboard** | `DashboardActivity.kt`<br>`activity_dashboard.xml` | Static student portal hub with Profile, Courses, and Settings cards.<br>• **[RETURN TO WELCOME SCREEN]** → Navigates back to `MainActivity`<br>• **[GO TO LOGIN SCREEN]** → Opens `LoginActivity` |
+| **Screen 3: Login** | `LoginActivity.kt`<br>`activity_login.xml` | Static UI design of a login form.<br>• **[LOG IN TO DASHBOARD]** → Navigates directly to `DashboardActivity`!<br>• **[← Back to Welcome]** → Returns to `MainActivity` |
+| **Screen 4: Sign Up** | `SignUpActivity.kt`<br>`activity_sign_up.xml` | Static UI design of a registration form.<br>• **[COMPLETE REGISTRATION]** → Navigates directly to `DashboardActivity`!<br>• **[← Back to Welcome]** → Returns to `MainActivity` |
 
-### How Data Moves Between Screens (Intent Extras)
-1. **Sender (`LoginActivity.kt` or `SignUpActivity.kt`):**
-   ```kotlin
-   val intent = Intent(this, DashboardActivity::class.java)
-   intent.putExtra("USER_NAME", enteredName)
-   startActivity(intent)
-   ```
-2. **Receiver (`DashboardActivity.kt`):**
-   ```kotlin
-   val name = intent.getStringExtra("USER_NAME") ?: "Student"
-   tvGreeting.text = "Welcome, $name!"
-   ```
+### How Button Click Navigation Works in Android
+```kotlin
+// 1. Locate the button from your XML layout
+val btnEnterDashboard = findViewById<Button>(R.id.btnEnterDashboard)
+
+// 2. Attach the click event
+btnEnterDashboard.setOnClickListener {
+    // 3. Launch the target Activity!
+    val intent = Intent(this, DashboardActivity::class.java)
+    startActivity(intent)
+}
+```
 
 
 ---
