@@ -1,28 +1,28 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mob Dev 1 Lab — Building Your First Multi-Screen Android Application (Android Studio Arctic Fox 2020.3.1)</title>
+    <title>Mob Dev 1 Lab — Building Your First Multi-Screen Android Application (Arctic Fox 2020.3.1)</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- FontAwesome -->
+    <!-- FontAwesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
         :root {
-            --primary: #0284c7;         /* Android Cyan / Arctic Fox Blue */
+            --primary: #0284c7;         /* Arctic Fox Cyan / Android Blue */
             --primary-dark: #0369a1;
             --primary-bg: #f0f9ff;
             --primary-border: #bae6fd;
             --accent-green: #10b981;
             --accent-purple: #6366f1;
             --accent-amber: #f59e0b;
-            --accent-rose: #f43f5e;
+            --accent-rose: #ef4444;
             
             --bg-base: #f8fafc;
             --bg-surface: #ffffff;
@@ -56,16 +56,16 @@
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
             line-height: 1.7;
             font-size: 15px;
-            padding-bottom: 80px;
+            padding-bottom: 90px;
         }
 
-        /* Top Bar */
+        /* Top Navigation Bar */
         .top-navbar {
             position: sticky;
             top: 0;
             z-index: 100;
             background: rgba(255, 255, 255, 0.94);
-            backdrop-filter: blur(12px);
+            backdrop-filter: blur(14px);
             border-bottom: 1px solid var(--border);
             padding: 12px 24px;
         }
@@ -85,7 +85,7 @@
             gap: 10px;
             text-decoration: none;
             color: var(--text-title);
-            font-weight: 700;
+            font-weight: 800;
             font-size: 14px;
         }
 
@@ -96,39 +96,27 @@
 
         .nav-badge {
             font-size: 11px;
-            font-weight: 600;
+            font-weight: 700;
             padding: 2px 8px;
             border-radius: 6px;
             background: var(--primary-bg);
             color: var(--primary);
             border: 1px solid var(--primary-border);
-        }
-
-        .nav-version-badge {
-            font-size: 11px;
-            font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 6px;
-            background: #fef3c7;
-            color: #92400e;
-            border: 1px solid #fde68a;
-            display: flex;
-            align-items: center;
-            gap: 4px;
+            font-family: 'Fira Code', monospace;
         }
 
         .nav-actions {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .nav-link-btn {
             font-size: 12px;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--text-body);
             text-decoration: none;
-            padding: 6px 14px;
+            padding: 7px 14px;
             border-radius: 8px;
             border: 1px solid var(--border);
             background: var(--bg-surface);
@@ -137,25 +125,26 @@
             align-items: center;
             gap: 6px;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+            cursor: pointer;
         }
 
         .nav-link-btn:hover {
-            color: var(--text-title);
-            border-color: var(--border-hover);
-            background: var(--bg-subtle);
+            color: var(--primary);
+            border-color: var(--primary-border);
+            background: var(--primary-bg);
         }
 
         /* Reading Container */
         .manual-wrapper {
-            max-width: 960px;
+            max-width: 940px;
             margin: 0 auto;
             padding: 36px 20px 0;
         }
 
-        /* Hero / Header Section */
+        /* Hero Header */
         .manual-header {
-            margin-bottom: 36px;
-            padding-bottom: 30px;
+            margin-bottom: 32px;
+            padding-bottom: 28px;
             border-bottom: 1px solid var(--border);
         }
 
@@ -164,84 +153,400 @@
             align-items: center;
             gap: 6px;
             font-size: 12px;
-            font-weight: 700;
-            color: var(--primary-dark);
+            font-weight: 800;
+            color: var(--primary);
             text-transform: uppercase;
             letter-spacing: 0.8px;
             margin-bottom: 10px;
+            background: var(--primary-bg);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--primary-border);
         }
 
         .manual-title {
-            font-size: 32px;
+            font-size: 30px;
             font-weight: 800;
             color: var(--text-title);
             line-height: 1.25;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             letter-spacing: -0.5px;
         }
 
         .manual-subtitle {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
-            color: var(--primary);
+            color: var(--primary-dark);
             margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .manual-meta-pills {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-            margin-top: 14px;
+            margin-top: 18px;
         }
 
         .meta-pill {
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            font-size: 12px;
+            padding: 5px 12px;
             background: var(--bg-surface);
             border: 1px solid var(--border);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            color: var(--text-muted);
-            font-weight: 500;
+            border-radius: 8px;
+            color: var(--text-body);
+            font-weight: 600;
         }
 
         .meta-pill strong {
             color: var(--text-title);
         }
 
-        /* Alert / Callout Boxes */
+        /* Quick Navigation Bar */
+        .quick-nav-bar {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin-bottom: 36px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .quick-nav-title {
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .quick-nav-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .quick-pill {
+            font-size: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            color: var(--text-body);
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+            padding: 5px 12px;
+            border-radius: 8px;
+            transition: all 0.15s;
+        }
+
+        .quick-pill:hover {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+        }
+
+        /* Lab Sections */
+        .lab-section {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 32px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-step-num {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--primary-bg);
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--primary-border);
+            flex-shrink: 0;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .section-step-num.finish {
+            background: #ecfdf5;
+            color: #059669;
+            border-color: #a7f3d0;
+        }
+
+        .section-title {
+            font-size: 21px;
+            font-weight: 800;
+            color: var(--text-title);
+            letter-spacing: -0.3px;
+        }
+
+        .section-desc {
+            font-size: 14.5px;
+            color: var(--text-body);
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+
+        /* Visual Screen Flow Cards (NO BROKEN ASCII) */
+        .screen-flow-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .screen-flow-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .flow-card {
+            background: var(--bg-surface);
+            border: 1.5px solid var(--border);
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+            display: flex;
+            flex-col;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .flow-card.c-welcome {
+            border-top: 4px solid var(--primary);
+        }
+
+        .flow-card.c-login {
+            border-top: 4px solid #6366f1;
+        }
+
+        .flow-card.c-signup {
+            border-top: 4px solid var(--accent-green);
+        }
+
+        .flow-card.c-dashboard {
+            border-top: 4px solid #f59e0b;
+        }
+
+        .flow-card-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .flow-badge {
+            font-size: 11px;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-family: 'Fira Code', monospace;
+            text-transform: uppercase;
+        }
+
+        .flow-badge.launcher {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .flow-badge.screen {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .flow-badge.target {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .flow-file-name {
+            font-size: 11px;
+            font-family: 'Fira Code', monospace;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .flow-title {
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--text-title);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .flow-desc {
+            font-size: 13px;
+            color: var(--text-body);
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .flow-actions-box {
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .flow-action-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .flow-btn-mock {
+            font-size: 10px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .flow-btn-mock.blue {
+            background: #0284c7;
+            color: #ffffff;
+        }
+
+        .flow-btn-mock.white {
+            background: #ffffff;
+            color: #0284c7;
+            border: 1px solid #bae6fd;
+        }
+
+        .flow-btn-mock.green {
+            background: #10b981;
+            color: #ffffff;
+        }
+
+        .flow-btn-mock.red {
+            background: #ef4444;
+            color: #ffffff;
+        }
+
+        /* Modern Data Flow Diagram Card */
+        .intent-flow-banner {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border-radius: 14px;
+            padding: 20px 24px;
+            color: #ffffff;
+            margin: 20px 0;
+            border: 1px solid #334155;
+        }
+
+        .intent-flow-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .intent-flow-header h4 {
+            font-size: 14px;
+            font-weight: 800;
+            color: #38bdf8;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .intent-grid {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 16px;
+            align-items: center;
+        }
+
+        @media (max-width: 680px) {
+            .intent-grid {
+                grid-template-columns: 1fr;
+            }
+            .intent-arrow {
+                transform: rotate(90deg);
+                margin: 4px auto;
+            }
+        }
+
+        .intent-card-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+            padding: 14px;
+            font-size: 13px;
+        }
+
+        .intent-card-box strong {
+            display: block;
+            color: #ffffff;
+            margin-bottom: 4px;
+            font-size: 13px;
+        }
+
+        .intent-card-box code {
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            color: #38bdf8;
+            display: block;
+            margin-top: 4px;
+            background: rgba(0,0,0,0.3);
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        .intent-arrow {
+            color: #38bdf8;
+            font-size: 22px;
+            text-align: center;
+        }
+
+        /* Callout Boxes */
         .callout {
             border-radius: 12px;
-            padding: 18px 20px;
-            margin: 24px 0;
+            padding: 16px 20px;
+            margin: 20px 0;
             display: flex;
-            gap: 14px;
             align-items: flex-start;
-        }
-
-        .callout-icon {
-            font-size: 20px;
-            margin-top: 2px;
-            flex-shrink: 0;
-        }
-
-        .callout-content {
+            gap: 14px;
             font-size: 14px;
             line-height: 1.6;
         }
 
-        .callout-content strong {
-            display: block;
-            margin-bottom: 4px;
-            font-size: 15px;
-        }
-
-        .callout-info {
-            background: #f0f9ff;
-            border: 1px solid #bae6fd;
-            color: #0369a1;
+        .callout-icon {
+            font-size: 18px;
+            margin-top: 2px;
+            flex-shrink: 0;
         }
 
         .callout-warning {
@@ -250,10 +555,18 @@
             color: #92400e;
         }
 
-        .callout-danger {
-            background: #fff1f2;
-            border: 1px solid #fecdd3;
-            color: #be123c;
+        .callout-warning .callout-icon {
+            color: #d97706;
+        }
+
+        .callout-info {
+            background: var(--primary-bg);
+            border: 1px solid var(--primary-border);
+            color: #0369a1;
+        }
+
+        .callout-info .callout-icon {
+            color: var(--primary);
         }
 
         .callout-success {
@@ -262,130 +575,64 @@
             color: #15803d;
         }
 
-        /* Content Sections */
-        .lesson-section {
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 32px;
-            margin-bottom: 32px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        .callout-success .callout-icon {
+            color: #16a34a;
         }
 
-        .section-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .section-number {
-            width: 34px;
-            height: 34px;
-            border-radius: 10px;
-            background: var(--primary-bg);
-            color: var(--primary);
-            font-weight: 800;
-            font-size: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid var(--primary-border);
-            flex-shrink: 0;
-        }
-
-        .section-title {
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--text-title);
-            letter-spacing: -0.3px;
-        }
-
-        h3 {
-            font-size: 17px;
-            font-weight: 700;
-            color: var(--text-title);
-            margin: 24px 0 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        p, ul, ol {
-            margin-bottom: 16px;
-            color: var(--text-body);
-        }
-
-        ul, ol {
-            padding-left: 24px;
-        }
-
-        li {
-            margin-bottom: 8px;
-        }
-
-        /* "Where do I put this code?" Box */
-        .placement-card {
-            border: 2px solid #38bdf8;
+        /* File Placement Banner */
+        .file-guide-card {
             background: #f0f9ff;
+            border: 1.5px solid #7dd3fc;
             border-radius: 12px;
-            padding: 16px 20px;
-            margin: 20px 0 14px;
+            padding: 14px 18px;
+            margin: 18px 0 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 13px;
         }
 
-        .placement-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .file-guide-header {
             font-weight: 800;
-            font-size: 13px;
+            font-size: 12px;
             color: #0369a1;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 10px;
-        }
-
-        .placement-grid {
-            display: grid;
-            grid-template-columns: 120px 1fr;
-            gap: 6px 14px;
-            font-size: 13px;
-        }
-
-        .placement-label {
-            font-weight: 700;
-            color: #0f172a;
-        }
-
-        .placement-value {
-            font-family: 'Fira Code', monospace;
-            color: #0284c7;
-            word-break: break-all;
-        }
-
-        .placement-warning {
-            grid-column: 1 / -1;
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px dashed #bae6fd;
-            font-size: 12px;
-            color: #b91c1c;
-            font-weight: 600;
             display: flex;
             align-items: center;
             gap: 6px;
         }
 
-        /* Code Containers */
+        .file-guide-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px 12px;
+        }
+
+        .file-guide-label {
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .file-guide-path {
+            font-family: 'Fira Code', monospace;
+            color: #0284c7;
+            font-weight: 600;
+            background: #ffffff;
+            padding: 2px 8px;
+            border-radius: 6px;
+            border: 1px solid #bae6fd;
+        }
+
+        /* Code Block Container */
         .code-container {
             background: var(--code-bg);
+            border: 1px solid #1e293b;
             border-radius: 12px;
             overflow: hidden;
-            margin: 16px 0 24px;
-            border: 1px solid var(--border);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            margin: 14px 0 24px;
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
         }
 
         .code-header {
@@ -395,664 +642,460 @@
             align-items: center;
             justify-content: space-between;
             border-bottom: 1px solid #334155;
+            font-size: 12px;
         }
 
         .code-file-name {
             font-family: 'Fira Code', monospace;
-            font-size: 12px;
-            font-weight: 600;
             color: #94a3b8;
+            font-weight: 600;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .code-file-name i {
-            color: #38bdf8;
-        }
-
         .copy-btn {
-            background: #334155;
-            color: #f8fafc;
-            border: none;
-            padding: 4px 10px;
-            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #f1f5f9;
             font-size: 11px;
-            font-weight: 600;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 6px;
             cursor: pointer;
-            display: flex;
+            transition: all 0.2s;
+            display: inline-flex;
             align-items: center;
             gap: 6px;
-            transition: all 0.2s;
         }
 
         .copy-btn:hover {
-            background: #475569;
-            color: #38bdf8;
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #ffffff;
+        }
+
+        .copy-btn.copied {
+            background: #10b981;
+            border-color: #10b981;
+            color: #ffffff;
         }
 
         pre {
-            padding: 16px;
+            margin: 0;
+            padding: 18px 20px;
             overflow-x: auto;
-            color: var(--code-text);
             font-family: 'Fira Code', monospace;
             font-size: 13px;
-            line-height: 1.6;
+            line-height: 1.65;
+            color: #f8fafc;
         }
 
-        /* Expected Result Card */
-        .result-box {
-            background: #f8fafc;
-            border: 1px solid #cbd5e1;
-            border-left: 4px solid var(--accent-green);
-            border-radius: 8px;
-            padding: 14px 18px;
-            margin: 16px 0 24px;
-            font-size: 13.5px;
+        code {
+            font-family: 'Fira Code', monospace;
         }
 
-        .result-box strong {
-            color: #0f172a;
-            display: block;
-            margin-bottom: 4px;
-            font-size: 14px;
-        }
-
-        /* Troubleshooting Card */
-        .trouble-box {
-            background: #fff1f2;
-            border: 1px solid #fecdd3;
-            border-radius: 10px;
-            padding: 14px 18px;
-            margin: 16px 0 24px;
-            font-size: 13px;
-        }
-
-        .trouble-title {
-            color: #be123c;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-bottom: 6px;
-        }
-
-        /* Tables */
-        .data-table {
+        /* Clean Tables */
+        .clean-table {
             width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0 28px;
-            font-size: 13.5px;
-            background: #fff;
-            border-radius: 10px;
-            overflow: hidden;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 16px 0;
             border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            font-size: 13.5px;
         }
 
-        .data-table th, .data-table td {
-            padding: 12px 16px;
+        .clean-table th {
+            background: var(--bg-subtle);
+            color: var(--text-title);
+            font-weight: 800;
             text-align: left;
+            padding: 12px 16px;
             border-bottom: 1px solid var(--border);
         }
 
-        .data-table th {
-            background: #f1f5f9;
-            font-weight: 700;
-            color: var(--text-title);
+        .clean-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-body);
         }
 
-        .data-table tr:last-child td {
+        .clean-table tr:last-child td {
             border-bottom: none;
         }
 
-        .data-table tr:hover td {
+        .clean-table tr:hover td {
             background: #f8fafc;
         }
 
-        .badge-tag {
-            font-family: 'Fira Code', monospace;
-            font-size: 11px;
-            padding: 2px 6px;
-            border-radius: 4px;
-            background: #e2e8f0;
-            color: #334155;
-            font-weight: 600;
-        }
-
-        .badge-tag.xml {
-            background: #ede9fe;
-            color: #6d28d9;
-        }
-
-        .badge-tag.kt {
-            background: #e0f2fe;
-            color: #0369a1;
-        }
-
-        .badge-tag.manifest {
-            background: #fef3c7;
-            color: #b45309;
-        }
-
-        /* Flow Diagrams */
-        .flow-diagram {
-            background: #0f172a;
-            color: #e2e8f0;
-            padding: 24px;
-            border-radius: 12px;
-            font-family: 'Fira Code', monospace;
-            font-size: 13px;
-            line-height: 1.6;
-            margin: 20px 0;
-            overflow-x: auto;
-            border: 1px solid #334155;
-        }
-
-        /* Interactive Checklist */
-        .checklist-container {
-            background: #f8fafc;
+        /* Interactive Verification Checklist */
+        .check-list-box {
+            background: var(--bg-subtle);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 20px;
+            padding: 18px;
             margin: 20px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
         .check-item {
             display: flex;
             align-items: flex-start;
             gap: 12px;
-            padding: 8px 0;
-            cursor: pointer;
-            border-bottom: 1px solid #edf2f7;
-        }
-
-        .check-item:last-child {
-            border-bottom: none;
-        }
-
-        .check-item input[type="checkbox"] {
-            margin-top: 4px;
-            width: 17px;
-            height: 17px;
-            accent-color: var(--primary);
-            cursor: pointer;
-        }
-
-        .check-label {
             font-size: 14px;
-            color: var(--text-body);
-        }
-
-        /* Knowledge Check Quiz */
-        .quiz-card {
-            background: #fff;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 18px;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
-        }
-
-        .quiz-q {
-            font-weight: 700;
-            font-size: 15px;
-            color: var(--text-title);
-            margin-bottom: 12px;
-        }
-
-        .quiz-options {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .quiz-opt {
-            background: #f8fafc;
-            border: 1px solid var(--border);
-            padding: 10px 14px;
-            border-radius: 8px;
-            font-size: 13.5px;
             cursor: pointer;
+            padding: 6px 0;
+            user-select: none;
+        }
+
+        .check-box-ui {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            border: 2px solid #cbd5e1;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
             transition: all 0.2s;
         }
 
-        .quiz-opt:hover {
-            background: #f1f5f9;
-            border-color: #cbd5e1;
+        .check-item.done .check-box-ui {
+            background: var(--accent-green);
+            border-color: var(--accent-green);
+            color: #ffffff;
         }
 
-        .quiz-answer {
-            margin-top: 12px;
-            padding: 10px 14px;
-            background: #f0fdf4;
-            border: 1px solid #bbf7d0;
-            border-radius: 8px;
-            font-size: 13px;
-            color: #166534;
-            display: none;
-        }
-
-        .show-ans-btn {
-            background: none;
-            border: none;
-            color: var(--primary);
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 10px;
-            padding: 0;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        /* Footer */
-        .manual-footer {
-            margin-top: 60px;
-            padding-top: 24px;
-            border-top: 1px solid var(--border);
-            text-align: center;
-            font-size: 13px;
+        .check-item.done span {
+            text-decoration: line-through;
             color: var(--text-muted);
         }
 
-        .manual-footer a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 600;
+        /* Troubleshooting Cards */
+        .trouble-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 18px 0;
+        }
+
+        @media (max-width: 768px) {
+            .trouble-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .trouble-card {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--accent-rose);
+            border-radius: 10px;
+            padding: 16px;
+            font-size: 13px;
+        }
+
+        .trouble-title {
+            font-weight: 800;
+            color: var(--text-title);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .trouble-fix {
+            margin-top: 8px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 8px 10px;
+            border-radius: 6px;
+            color: #0f172a;
+            font-size: 12.5px;
         }
     </style>
 </head>
 <body>
 
-    <!-- Top Sticky Navbar -->
-    <header className="top-navbar">
+    <!-- Sticky Top Navigation -->
+    <header class="top-navbar">
         <div class="top-navbar-inner">
             <a href="/" class="nav-brand">
-                <i class="fa-brands fa-android"></i>
+                <i class="fa-solid fa-mobile-screen-button"></i>
                 <span>iamlesson.space</span>
-                <span class="nav-badge">Mobile Dev 3</span>
+                <span class="nav-badge">MOB DEV 1 LAB</span>
             </a>
+
             <div class="nav-actions">
-                <span class="nav-version-badge">
-                    <i class="fa-solid fa-snowflake"></i> Arctic Fox 2020.3.1
-                </span>
-                <a href="#quick-jump" class="nav-link-btn">
-                    <i class="fa-solid fa-list-check"></i> Project Index
+                <a href="#quick-steps" class="nav-link-btn">
+                    <i class="fa-solid fa-list-ol"></i> Step Index
+                </a>
+                <a href="/" class="nav-link-btn">
+                    <i class="fa-solid fa-arrow-left"></i> Course Portal
                 </a>
             </div>
         </div>
     </header>
 
     <div class="manual-wrapper">
+
         <!-- Hero Header -->
         <header class="manual-header">
             <span class="header-course-tag">
-                <i class="fa-solid fa-graduation-cap"></i> College Computing Curriculum &bull; Mob Dev 1 Lab
+                <i class="fa-solid fa-graduation-cap"></i> Mob Dev 1 Lab &bull; Practical Lab Manual
             </span>
             <h1 class="manual-title">Building Your First Multi-Screen Android Application</h1>
             <div class="manual-subtitle">
-                Welcome Page &rarr; Login &rarr; Sign Up &rarr; Dashboard
+                <i class="fa-solid fa-route"></i> Welcome Screen &rarr; Login &rarr; Sign Up &rarr; Personalized Dashboard &rarr; Logout
             </div>
             <p style="font-size: 15px; color: var(--text-body); max-width: 820px; line-height: 1.7;">
-                Welcome, collegiate developers! In your previous lessons, you completed your local Android Studio Arctic Fox environment setup, launched an Android Virtual Device (AVD), and verified your tools with a single-screen "Hello World". Today, you step into real-world Android engineering by connecting multiple screens, declaring Activities, triggering explicit Intents, capturing interactive form input, and safely passing user state across screens.
+                In this hands-on laboratory, you will build a complete 4-screen native Android application in <strong>Android Studio Arctic Fox (2020.3.1)</strong> using <strong>Kotlin</strong> and <strong>XML Layouts</strong>. You will connect multiple screens, manage Activity lifecycles, pass user data across screens using explicit <code>Intent</code> extras, and implement secure back-stack clearance on logout.
             </p>
             <div class="manual-meta-pills">
-                <div class="meta-pill"><i class="fa-solid fa-code"></i> Language: <strong>Kotlin</strong></div>
                 <div class="meta-pill"><i class="fa-solid fa-laptop-code"></i> IDE: <strong>Android Studio Arctic Fox | 2020.3.1</strong></div>
-                <div class="meta-pill"><i class="fa-solid fa-gears"></i> Build System: <strong>AGP 7.0.0 / Gradle 7.0.2</strong></div>
-                <div class="meta-pill"><i class="fa-solid fa-mobile-screen"></i> Min SDK: <strong>API 21 (Android 5.0 Lollipop)</strong></div>
-                <div class="meta-pill"><i class="fa-solid fa-clock"></i> Duration: <strong>90 - 120 Minutes</strong></div>
+                <div class="meta-pill"><i class="fa-solid fa-code"></i> Language: <strong>Kotlin</strong></div>
+                <div class="meta-pill"><i class="fa-solid fa-layer-group"></i> UI Engine: <strong>XML Layouts</strong></div>
+                <div class="meta-pill"><i class="fa-solid fa-mobile-screen"></i> Min SDK: <strong>API 21 (Android 5.0)</strong></div>
+                <div class="meta-pill"><i class="fa-solid fa-clock"></i> Duration: <strong>90 - 120 Mins</strong></div>
             </div>
         </header>
 
-        <!-- Version & Scope Callout -->
-        <div class="callout callout-warning">
-            <i class="fa-solid fa-triangle-exclamation callout-icon"></i>
-            <div class="callout-content">
-                <strong>CRITICAL VERSION &amp; ENVIRONMENT REQUIREMENT: Android Studio Arctic Fox (2020.3.1)</strong>
-                This lesson is meticulously authored for <strong>Android Studio Arctic Fox | 2020.3.1</strong> (Android Gradle Plugin 7.0.0). All screenshots, menu paths, wizard dialogs, and layout editor modes correspond strictly to Arctic Fox. 
-                <br>&bull; In Arctic Fox, choose the template named <strong>"Empty Activity"</strong> (do not look for "Empty Views Activity" which was introduced in later IDE editions).
-                <br>&bull; Layout design mode is switched via the three distinct buttons (<strong>Code</strong>, <strong>Split</strong>, <strong>Design</strong>) in the top-right corner of the layout editor.
-                <br>&bull; This curriculum employs the robust, foundational <strong>XML + Activity + findViewById</strong> workflow. We deliberately operate 100% offline—no external servers, databases, or Firebase required.
+        <!-- Quick Steps Index -->
+        <nav id="quick-steps" class="quick-nav-bar">
+            <div class="quick-nav-title">
+                <i class="fa-solid fa-map-location-dot"></i> Step-by-Step Lab Navigation
             </div>
-        </div>
-
-        <!-- Quick Jump Index -->
-        <div id="quick-jump" class="lesson-section" style="padding: 24px;">
-            <h3 style="margin-top: 0; margin-bottom: 14px; font-size: 16px;">
-                <i class="fa-solid fa-signs-post" style="color: var(--primary);"></i> Lesson Navigation &amp; Milestones
-            </h3>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; font-size: 13px;">
-                <a href="#section-arch" class="nav-link-btn" style="justify-content: flex-start;"><i class="fa-solid fa-diagram-project"></i> 1. App Architecture &amp; Flow</a>
-                <a href="#section-concepts" class="nav-link-btn" style="justify-content: flex-start;"><i class="fa-solid fa-book-open"></i> 2. Core Concepts: Activity &amp; XML</a>
-                <a href="#section-code-rule" class="nav-link-btn" style="justify-content: flex-start;"><i class="fa-solid fa-folder-tree"></i> 3. "Where Does My Code Go?"</a>
-                <a href="#section-setup" class="nav-link-btn" style="justify-content: flex-start;"><i class="fa-solid fa-plus"></i> 4. Arctic Fox Project Creation</a>
-                <a href="#section-resources" class="nav-link-btn" style="justify-content: flex-start;"><i class="fa-solid fa-palette"></i> 5. Color, String &amp; Icon Resources</a>
-                <a href="#section-part1" class="nav-link-btn" style="justify-content: flex-start;"><i class="fa-solid fa-house"></i> 6. Part 1: Welcome Page</a>
-                <a href="#section-part2" class="nav-link-btn" style="justify-content: flex-start;"><i class="fa-solid fa-arrow-right-to-bracket"></i> 7. Part 2: Login Activity</a>
-                <a href="#section-part3" class="nav-link-btn" style="justify-content: flex-start;"><i class="fa-solid fa-user-plus"></i> 8. Part 3: Sign Up Activity</a>
-                <a href="#section-part4" class="nav-link-btn" style="justify-content: flex-start;"><i class="fa-solid fa-arrow-right-arrow-left"></i> 9. Part 4: Data Passing (Intents)</a>
-                <a href="#section-part5" class="nav-link-btn" style="justify-content: flex-start;"><i class="fa-solid fa-gauge-high"></i> 10. Part 5: Dashboard Activity</a>
-                <a href="#section-part6" class="nav-link-btn" style="justify-content: flex-start;"><i class="fa-solid fa-power-off"></i> 11. Part 6: Logout Navigation</a>
-                <a href="#section-manifest" class="nav-link-btn" style="justify-content: flex-start;"><i class="fa-solid fa-file-shield"></i> 12. AndroidManifest Master Guide</a>
-                <a href="#section-troubleshooting" class="nav-link-btn" style="justify-content: flex-start;"><i class="fa-solid fa-wrench"></i> 13. Top 8 Beginner Errors &amp; Fixes</a>
-                <a href="#section-full-code" class="nav-link-btn" style="justify-content: flex-start;"><i class="fa-solid fa-cubes"></i> 14. Complete Verified Project Code</a>
-                <a href="#section-exercise" class="nav-link-btn" style="justify-content: flex-start;"><i class="fa-solid fa-pen-ruler"></i> 15. Classroom Exercise &amp; Rubric</a>
-                <a href="#section-assessment" class="nav-link-btn" style="justify-content: flex-start;"><i class="fa-solid fa-circle-question"></i> 16. 10-Question Knowledge Check</a>
+            <div class="quick-nav-pills">
+                <a href="#overview-flow" class="quick-pill">Screen Flow Map</a>
+                <a href="#step-1-project" class="quick-pill">1. Project Setup</a>
+                <a href="#step-2-resources" class="quick-pill">2. Design Resources</a>
+                <a href="#step-3-welcome" class="quick-pill">3. Welcome Screen</a>
+                <a href="#step-4-login" class="quick-pill">4. Login Screen</a>
+                <a href="#step-5-signup" class="quick-pill">5. Sign Up Screen</a>
+                <a href="#step-6-dashboard" class="quick-pill">6. Dashboard &amp; Logout</a>
+                <a href="#step-7-manifest" class="quick-pill">7. AndroidManifest</a>
+                <a href="#step-8-test" class="quick-pill">8. Run &amp; Checklist</a>
+                <a href="#troubleshooting" class="quick-pill">Troubleshooting</a>
             </div>
-        </div>
+        </nav>
 
-        <!-- Section 1: Architecture & Flow -->
-        <section id="section-arch" class="lesson-section">
+        <!-- Visual Architecture Overview (NO BROKEN ASCII) -->
+        <section id="overview-flow" class="lab-section">
             <div class="section-header">
-                <div class="section-number">1</div>
-                <h2 class="section-title">Application Architecture &amp; Screen Flow</h2>
+                <div class="section-step-num"><i class="fa-solid fa-diagram-project" style="font-size: 14px;"></i></div>
+                <h2 class="section-title">Application Screen Flow Map</h2>
             </div>
-            <p>
-                In a multi-screen Android application, each distinct user screen is governed by an independent <strong>Activity</strong> class paired with an <strong>XML layout</strong> file. Transitions between screens do not happen through URL links like on the web; instead, they are requested via the Android operating system using <strong>Intents</strong>.
-            </p>
-            <p>Here is the architectural journey you will build today:</p>
-
-            <div class="flow-diagram">
-========================================================================================
-                          CAMPUSCONNECT: 4-SCREEN ARCHITECTURE FLOW
-========================================================================================
-
-                 +---------------------------------------------+
-                 |          MainActivity (Welcome Page)        |
-                 |     Logo + Title + Description + 2 Buttons  |
-                 +---------------------------------------------+
-                            |                       |
-          [Click Login Button]            [Click Sign Up Button]
-                            |                       |
-                            v                       v
-     +-------------------------------+     +-------------------------------+
-     |         LoginActivity         |     |        SignUpActivity         |
-     |  Username + Password Form     |     |  Name + Email + Passwords     |
-     +-------------------------------+     +-------------------------------+
-        |                         |           |                         |
-  [Click "Create Acc"]   [Valid: admin/1234]  |                  [Click "Log In"]
-        |                         |     [Valid Form Submission]         |
-        +-------&gt; (To SignUp)     |           |          (To Login) &lt;---+
-                                  |           | (Passes "USER_NAME" extra)
-                                  v           v
-                        +-------------------------------+
-                        |       DashboardActivity       |
-                        |   "Welcome, [USER_NAME]!"     |
-                        |   3 Dashboard Action Cards    |
-                        |   [LOG OUT] Button            |
-                        +-------------------------------+
-                                        |
-                             [Click Logout Button]
-                                        |
-                                        v
-                        +-------------------------------+
-                        | MainActivity (Returns to Home)|
-                        +-------------------------------+
-            </div>
-
-            <h3>The Explicit Intent Lifecycle</h3>
-            <p>
-                When a user touches a button, the calling Activity creates an explicit <code>Intent</code> specifying the target class. The Android OS receives this request, constructs the new Activity, executes its <code>onCreate()</code> lifecycle callback, inflates its XML visual tree, and pushes it onto the application's <strong>Back Stack</strong>.
-            </p>
-            <div class="flow-diagram">
-User Taps Button  ---&gt;  val intent = Intent(this, LoginActivity::class.java)
-                        startActivity(intent)
-                              |
-                              v (Android OS checks AndroidManifest.xml)
-                        LoginActivity is instantiated
-                        onCreate() fires
-                        setContentView(R.layout.activity_login) renders pixels!
-            </div>
-        </section>
-
-        <!-- Section 2: Concepts -->
-        <section id="section-concepts" class="lesson-section">
-            <div class="section-header">
-                <div class="section-number">2</div>
-                <h2 class="section-title">Core Conceptual Pillars: Activity vs XML Layout</h2>
-            </div>
-
-            <h3>What is an Android Activity?</h3>
-            <p>
-                Think of an <strong>Activity</strong> as a single page or focused workstation in your app. In physical terms, if your application is a physical binder, each page inside that binder is an Activity.
-            </p>
-            <ul>
-                <li><strong>MainActivity:</strong> The reception lobby (Welcome Page) welcoming the student.</li>
-                <li><strong>LoginActivity:</strong> The security desk verifying credentials.</li>
-                <li><strong>SignUpActivity:</strong> The registrar's desk gathering personal registration details.</li>
-                <li><strong>DashboardActivity:</strong> The private student portal displaying personalized data.</li>
-            </ul>
-
-            <h3>What is an XML Layout?</h3>
-            <p>
-                An <strong>XML layout</strong> is the visual blueprint of an Activity. Just like HTML defines elements on a web page, XML specifies the position, dimensions, colors, margins, and hierarchy of every visual element (called a <strong>View</strong>) on the Android screen.
+            <p class="section-desc">
+                Your application consists of <strong>4 distinct screens</strong>. In Android, each screen is represented by an <strong>Activity</strong> (Kotlin logic) paired with an <strong>XML layout</strong> (visual user interface). Screens communicate and navigate via <strong>explicit Intents</strong>.
             </p>
 
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>UI Component</th>
-                        <th>XML Tag Name</th>
-                        <th>Role in Our Application</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Label / Text</strong></td>
-                        <td><code>&lt;TextView&gt;</code></td>
-                        <td>Displays static or dynamic non-editable titles, descriptions, and greetings.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Input Field</strong></td>
-                        <td><code>&lt;EditText&gt;</code></td>
-                        <td>Captures user typing (names, email addresses, masked passwords).</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Action Button</strong></td>
-                        <td><code>&lt;Button&gt;</code></td>
-                        <td>Triggers actions when tapped (Login, Register, Logout, Navigation).</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Graphic / Icon</strong></td>
-                        <td><code>&lt;ImageView&gt;</code></td>
-                        <td>Renders vector graphics, brand logos, and status illustrations.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Linear Container</strong></td>
-                        <td><code>&lt;LinearLayout&gt;</code></td>
-                        <td>Stacks children linearly either vertically (top to bottom) or horizontally.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Scroll Container</strong></td>
-                        <td><code>&lt;ScrollView&gt;</code></td>
-                        <td>Permits vertical scrolling when the software keyboard opens and covers inputs.</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <!-- Section 3: "Where Does My Code Go?" -->
-        <section id="section-code-rule" class="lesson-section">
-            <div class="section-header">
-                <div class="section-number">3</div>
-                <h2 class="section-title">The Master Rule: "Where Does My Code Go?"</h2>
-            </div>
-            <p>
-                A universal point of confusion for beginner Android developers is deciding whether code belongs in an XML file, a Kotlin class, or the Manifest. Keep this reference table pinned while programming:
-            </p>
-
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>What I Am Building</th>
-                        <th>Target File</th>
-                        <th>Location in Project Tree</th>
-                        <th>Language</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Screen Layout &amp; Visual Blueprint</td>
-                        <td><code>activity_*.xml</code></td>
-                        <td><code>app &gt; src &gt; main &gt; res &gt; layout &gt;</code></td>
-                        <td><span class="badge-tag xml">XML</span></td>
-                    </tr>
-                    <tr>
-                        <td>Button Styling, Colors &amp; Margins</td>
-                        <td><code>activity_*.xml</code></td>
-                        <td><code>app &gt; src &gt; main &gt; res &gt; layout &gt;</code></td>
-                        <td><span class="badge-tag xml">XML</span></td>
-                    </tr>
-                    <tr>
-                        <td>Color Palette Hex Values</td>
-                        <td><code>colors.xml</code></td>
-                        <td><code>app &gt; src &gt; main &gt; res &gt; values &gt;</code></td>
-                        <td><span class="badge-tag xml">XML</span></td>
-                    </tr>
-                    <tr>
-                        <td>Re-usable Text Strings</td>
-                        <td><code>strings.xml</code></td>
-                        <td><code>app &gt; src &gt; main &gt; res &gt; values &gt;</code></td>
-                        <td><span class="badge-tag xml">XML</span></td>
-                    </tr>
-                    <tr>
-                        <td>Button Click Event Listeners</td>
-                        <td><code>*Activity.kt</code></td>
-                        <td><code>app &gt; src &gt; main &gt; java &gt; [package] &gt;</code></td>
-                        <td><span class="badge-tag kt">Kotlin</span></td>
-                    </tr>
-                    <tr>
-                        <td>Screen Navigation (Intents)</td>
-                        <td><code>*Activity.kt</code></td>
-                        <td><code>app &gt; src &gt; main &gt; java &gt; [package] &gt;</code></td>
-                        <td><span class="badge-tag kt">Kotlin</span></td>
-                    </tr>
-                    <tr>
-                        <td>Form Validation &amp; Passwords</td>
-                        <td><code>*Activity.kt</code></td>
-                        <td><code>app &gt; src &gt; main &gt; java &gt; [package] &gt;</code></td>
-                        <td><span class="badge-tag kt">Kotlin</span></td>
-                    </tr>
-                    <tr>
-                        <td>Passing &amp; Reading Data Across Screens</td>
-                        <td><code>*Activity.kt</code></td>
-                        <td><code>app &gt; src &gt; main &gt; java &gt; [package] &gt;</code></td>
-                        <td><span class="badge-tag kt">Kotlin</span></td>
-                    </tr>
-                    <tr>
-                        <td>Registering Activities with the OS</td>
-                        <td><code>AndroidManifest.xml</code></td>
-                        <td><code>app &gt; src &gt; main &gt;</code></td>
-                        <td><span class="badge-tag manifest">XML</span></td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <!-- Section 4: Arctic Fox Project Setup -->
-        <section id="section-setup" class="lesson-section">
-            <div class="section-header">
-                <div class="section-number">4</div>
-                <h2 class="section-title">Step-by-Step Project Creation in Arctic Fox 2020.3.1</h2>
-            </div>
-            <p>Follow these exact steps inside your Arctic Fox environment:</p>
-
-            <ol>
-                <li>Launch <strong>Android Studio Arctic Fox (2020.3.1)</strong> from your desktop or start menu.</li>
-                <li>In the Welcome dialog, click <strong>New Project</strong>. (If a previous project opens automatically, navigate to the top menu bar and select <code>File &gt; New &gt; New Project...</code>).</li>
-                <li>
-                    In the <strong>New Project</strong> wizard window:
-                    <ul>
-                        <li>Look at the left-hand category pane and confirm <strong>Phone and Tablet</strong> is selected.</li>
-                        <li>In the template grid, click on <strong>Empty Activity</strong> (represented by a white phone mockup with no blue header bars).</li>
-                        <li>Click <strong>Next</strong> at the bottom right.</li>
-                    </ul>
-                </li>
-                <li>
-                    On the <strong>Configure Your Project</strong> screen, enter the exact configuration below:
-                    <ul>
-                        <li><strong>Name:</strong> <code>CampusConnect</code></li>
-                        <li><strong>Package name:</strong> <code>com.example.campusconnect</code></li>
-                        <li><strong>Save location:</strong> Leave as default or choose your course workspace.</li>
-                        <li><strong>Language:</strong> <strong>Kotlin</strong> (ensure Java is NOT selected).</li>
-                        <li><strong>Minimum SDK:</strong> Select <strong>API 21: Android 5.0 (Lollipop)</strong>. This ensures your app runs on over 99% of global Android devices.</li>
-                        <li>Leave <em>"Use legacy android.support libraries"</em> <strong>UNCHECKED</strong> (Arctic Fox uses modern AndroidX components).</li>
-                    </ul>
-                </li>
-                <li>Click <strong>Finish</strong> at the bottom right.</li>
-                <li>
-                    <strong>CRITICAL WAIT:</strong> Look at the bottom status bar. You will see <em>"Gradle sync started"</em>. Arctic Fox is indexing dependencies, downloading Gradle 7.0.2 tooling, and building project symbols. <strong>Do NOT touch the editor or click buttons until the status bar displays "BUILD SUCCESSFUL" or "Gradle sync finished".</strong>
-                </li>
-            </ol>
-
-            <h3>The Arctic Fox Project Structure</h3>
-            <p>
-                In the top-left <strong>Project tool window</strong> (keyboard shortcut <code>Alt + 1</code> on Windows), ensure the top dropdown is set to <strong>Android</strong> view. You will observe this clean folder hierarchy:
-            </p>
-            <div class="flow-diagram">
-app
-├── manifests
-│   └── AndroidManifest.xml        &lt;-- Declares all activities, app icon, and launcher
-│
-├── java
-│   └── com.example.campusconnect   &lt;-- Where all your Kotlin Activity code files live
-│       └── MainActivity.kt
-│
-├── res                             &lt;-- Resource folder (UI visuals, values, drawings)
-│   ├── drawable                    &lt;-- Vector graphics, icons, and background shapes
-│   ├── layout                      &lt;-- XML visual blueprints for your activities
-│   │   └── activity_main.xml
-│   ├── mipmap                      &lt;-- App launcher icons for the phone's home screen
-│   └── values                      &lt;-- Static variables: colors.xml, strings.xml, themes.xml
-│
-└── Gradle Scripts                  &lt;-- Build configuration (AGP 7.0.0, Kotlin dependencies)
-            </div>
-        </section>
-
-        <!-- Section 5: Resource Files -->
-        <section id="section-resources" class="lesson-section">
-            <div class="section-header">
-                <div class="section-number">5</div>
-                <h2 class="section-title">Design Resources: Colors, Strings &amp; Vector Icon</h2>
-            </div>
-            <p>
-                Before laying out screens, we will establish a cohesive color palette, declare our string constants, and add a professional vector icon.
-            </p>
-
-            <!-- colors.xml -->
-            <div class="placement-card">
-                <div class="placement-header"><i class="fa-solid fa-file-code"></i> FILE PLACEMENT GUIDE</div>
-                <div class="placement-grid">
-                    <span class="placement-label">File:</span>
-                    <span class="placement-value">colors.xml</span>
-                    <span class="placement-label">Exact Path:</span>
-                    <span class="placement-value">app &gt; src &gt; main &gt; res &gt; values &gt; colors.xml</span>
-                    <span class="placement-label">Action:</span>
-                    <span class="placement-value">Replace file contents with the code below</span>
+            <!-- 4 Clean Visual Cards -->
+            <div class="screen-flow-grid">
+                <!-- Card 1 -->
+                <div class="flow-card c-welcome">
+                    <div>
+                        <div class="flow-card-head">
+                            <span class="flow-badge launcher">Screen 1 &bull; Launcher</span>
+                            <span class="flow-file-name">MainActivity.kt</span>
+                        </div>
+                        <h3 class="flow-title"><i class="fa-solid fa-house" style="color: var(--primary);"></i> Welcome Screen</h3>
+                        <p class="flow-desc">First screen seen when opening the app. Shows logo, portal title, and entry navigation buttons.</p>
+                    </div>
+                    <div class="flow-actions-box">
+                        <div class="flow-action-row">
+                            <span class="flow-btn-mock blue">LOG IN</span>
+                            <span>&rarr; Opens <strong>LoginActivity</strong></span>
+                        </div>
+                        <div class="flow-action-row">
+                            <span class="flow-btn-mock white">SIGN UP</span>
+                            <span>&rarr; Opens <strong>SignUpActivity</strong></span>
+                        </div>
+                    </div>
                 </div>
-                <div class="placement-warning">
-                    <i class="fa-solid fa-triangle-exclamation"></i> DO NOT put this XML code inside any .kt Kotlin file!
+
+                <!-- Card 2 -->
+                <div class="flow-card c-login">
+                    <div>
+                        <div class="flow-card-head">
+                            <span class="flow-badge screen">Screen 2 &bull; Auth</span>
+                            <span class="flow-file-name">LoginActivity.kt</span>
+                        </div>
+                        <h3 class="flow-title"><i class="fa-solid fa-right-to-bracket" style="color: #6366f1;"></i> Login Screen</h3>
+                        <p class="flow-desc">Captures username and password. Validates against demo credentials (<code>admin</code> / <code>1234</code>).</p>
+                    </div>
+                    <div class="flow-actions-box">
+                        <div class="flow-action-row">
+                            <span class="flow-btn-mock blue">LOG IN</span>
+                            <span>&rarr; Passes username to <strong>Dashboard</strong></span>
+                        </div>
+                        <div class="flow-action-row">
+                            <span class="flow-btn-mock white">SIGN UP</span>
+                            <span>&rarr; Jumps to <strong>SignUpActivity</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="flow-card c-signup">
+                    <div>
+                        <div class="flow-card-head">
+                            <span class="flow-badge screen">Screen 3 &bull; Register</span>
+                            <span class="flow-file-name">SignUpActivity.kt</span>
+                        </div>
+                        <h3 class="flow-title"><i class="fa-solid fa-user-plus" style="color: var(--accent-green);"></i> Sign Up Screen</h3>
+                        <p class="flow-desc">Registration form with input validation (checks for empty fields and confirms passwords match).</p>
+                    </div>
+                    <div class="flow-actions-box">
+                        <div class="flow-action-row">
+                            <span class="flow-btn-mock green">SUBMIT</span>
+                            <span>&rarr; Passes Full Name to <strong>Dashboard</strong></span>
+                        </div>
+                        <div class="flow-action-row">
+                            <span class="flow-btn-mock white">LOG IN</span>
+                            <span>&rarr; Jumps to <strong>LoginActivity</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="flow-card c-dashboard">
+                    <div>
+                        <div class="flow-card-head">
+                            <span class="flow-badge target">Screen 4 &bull; Home Portal</span>
+                            <span class="flow-file-name">DashboardActivity.kt</span>
+                        </div>
+                        <h3 class="flow-title"><i class="fa-solid fa-gauge-high" style="color: #f59e0b;"></i> Dashboard Screen</h3>
+                        <p class="flow-desc">Displays personalized greeting with student name, interactive course cards, and secure logout.</p>
+                    </div>
+                    <div class="flow-actions-box">
+                        <div class="flow-action-row">
+                            <span class="flow-btn-mock red">LOG OUT</span>
+                            <span>&rarr; Clears Back Stack &rarr; <strong>Welcome</strong></span>
+                        </div>
+                        <div class="flow-action-row">
+                            <span style="color: #64748b; font-size: 11px;">Pressing Android Back button will NOT reopen dashboard!</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- How Intent Data Passing Works -->
+            <div class="intent-flow-banner">
+                <div class="intent-flow-header">
+                    <h4><i class="fa-solid fa-paper-plane"></i> How Data Moves Between Screens (Intent Extras)</h4>
+                    <span style="font-size: 11px; color: #94a3b8; font-family: 'Fira Code', monospace;">Key-Value Pair Contract</span>
+                </div>
+                <div class="intent-grid">
+                    <div class="intent-card-box">
+                        <strong>1. Sender (Login or Sign Up)</strong>
+                        Packs the username into the Intent:
+                        <code>intent.putExtra("USER_NAME", name)</code>
+                    </div>
+                    <div class="intent-arrow">
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </div>
+                    <div class="intent-card-box">
+                        <strong>2. Receiver (DashboardActivity)</strong>
+                        Reads the name using the exact matching key:
+                        <code>val name = intent.getStringExtra("USER_NAME")</code>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- STEP 1: CREATE PROJECT -->
+        <section id="step-1-project" class="lab-section">
+            <div class="section-header">
+                <div class="section-step-num">1</div>
+                <h2 class="section-title">Create the Project in Android Studio Arctic Fox</h2>
+            </div>
+            <p class="section-desc">
+                Launch <strong>Android Studio Arctic Fox (2020.3.1)</strong> and start a brand-new project.
+            </p>
+
+            <div class="callout callout-warning">
+                <i class="fa-solid fa-triangle-exclamation callout-icon"></i>
+                <div>
+                    <strong>CRITICAL TEMPLATE REQUIREMENT IN ARCTIC FOX:</strong>
+                    Choose the project template named <strong>"Empty Activity"</strong>. Do NOT look for "Empty Views Activity" (which only exists in newer Android Studio versions).
+                </div>
+            </div>
+
+            <table class="clean-table">
+                <thead>
+                    <tr>
+                        <th style="width: 200px;">Project Wizard Field</th>
+                        <th>Exact Value to Enter / Select</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Template</strong></td>
+                        <td><code>Empty Activity</code> (Phone and Tablet tab)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Name</strong></td>
+                        <td><code>CampusConnect</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Package name</strong></td>
+                        <td><code>com.example.campusconnect</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Language</strong></td>
+                        <td><code>Kotlin</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Minimum SDK</strong></td>
+                        <td><code>API 21: Android 5.0 (Lollipop)</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p style="font-size: 13.5px; color: var(--text-muted); margin-top: 10px;">
+                <i class="fa-solid fa-circle-info" style="color: var(--primary);"></i> Click <strong>Finish</strong>. Wait 1-2 minutes for Gradle to sync. When sync finishes, you will see your project files in the left <strong>Project</strong> panel.
+            </p>
+        </section>
+
+        <!-- STEP 2: DESIGN RESOURCES -->
+        <section id="step-2-resources" class="lab-section">
+            <div class="section-header">
+                <div class="section-step-num">2</div>
+                <h2 class="section-title">Setup Colors, Strings &amp; Vector Logo</h2>
+            </div>
+            <p class="section-desc">
+                Before building screens, configure the project's color palette, localized text strings, and vector drawable assets.
+            </p>
+
+            <!-- 2.1 colors.xml -->
+            <div class="file-guide-card">
+                <div class="file-guide-header"><i class="fa-solid fa-palette"></i> Resource File 2.1</div>
+                <div class="file-guide-row">
+                    <span class="file-guide-label">File:</span>
+                    <span class="file-guide-path">app &gt; src &gt; main &gt; res &gt; values &gt; colors.xml</span>
                 </div>
             </div>
 
             <div class="code-container">
                 <div class="code-header">
-                    <span class="code-file-name"><i class="fa-solid fa-palette"></i> app &gt; src &gt; main &gt; res &gt; values &gt; colors.xml</span>
+                    <span class="code-file-name"><i class="fa-solid fa-file-code"></i> colors.xml</span>
                     <button class="copy-btn" onclick="copyCode('code-colors', this)"><i class="fa-regular fa-copy"></i> Copy XML</button>
                 </div>
                 <pre><code id="code-colors">&lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;resources&gt;
-    &lt;!-- Brand Palette --&gt;
+    &lt;!-- Brand Colors --&gt;
     &lt;color name="primary_blue"&gt;#0284C7&lt;/color&gt;
     &lt;color name="primary_blue_dark"&gt;#0369A1&lt;/color&gt;
     &lt;color name="accent_emerald"&gt;#10B981&lt;/color&gt;
     
-    &lt;!-- Neutral Background &amp; Surface Tones --&gt;
+    &lt;!-- Background &amp; Surface Tones --&gt;
     &lt;color name="bg_canvas"&gt;#F8FAFC&lt;/color&gt;
     &lt;color name="surface_white"&gt;#FFFFFF&lt;/color&gt;
-    &lt;color name="card_subtle"&gt;#F1F5F9&lt;/color&gt;
     &lt;color name="border_light"&gt;#CBD5E1&lt;/color&gt;
     
     &lt;!-- Text Colors --&gt;
@@ -1062,49 +1105,42 @@ app
 &lt;/resources&gt;</code></pre>
             </div>
 
-            <!-- strings.xml -->
-            <div class="placement-card">
-                <div class="placement-header"><i class="fa-solid fa-file-code"></i> FILE PLACEMENT GUIDE</div>
-                <div class="placement-grid">
-                    <span class="placement-label">File:</span>
-                    <span class="placement-value">strings.xml</span>
-                    <span class="placement-label">Exact Path:</span>
-                    <span class="placement-value">app &gt; src &gt; main &gt; res &gt; values &gt; strings.xml</span>
-                    <span class="placement-label">Action:</span>
-                    <span class="placement-value">Replace file contents with the code below</span>
+            <!-- 2.2 strings.xml -->
+            <div class="file-guide-card">
+                <div class="file-guide-header"><i class="fa-solid fa-font"></i> Resource File 2.2</div>
+                <div class="file-guide-row">
+                    <span class="file-guide-label">File:</span>
+                    <span class="file-guide-path">app &gt; src &gt; main &gt; res &gt; values &gt; strings.xml</span>
                 </div>
             </div>
 
             <div class="code-container">
                 <div class="code-header">
-                    <span class="code-file-name"><i class="fa-solid fa-font"></i> app &gt; src &gt; main &gt; res &gt; values &gt; strings.xml</span>
+                    <span class="code-file-name"><i class="fa-solid fa-file-code"></i> strings.xml</span>
                     <button class="copy-btn" onclick="copyCode('code-strings', this)"><i class="fa-regular fa-copy"></i> Copy XML</button>
                 </div>
                 <pre><code id="code-strings">&lt;resources&gt;
     &lt;string name="app_name"&gt;CampusConnect&lt;/string&gt;
     &lt;string name="welcome_title"&gt;CampusConnect&lt;/string&gt;
-    &lt;string name="welcome_subtitle"&gt;Mob Dev 1 Lab Multi-Screen Learning Portal&lt;/string&gt;
+    &lt;string name="welcome_subtitle"&gt;Mob Dev 1 Lab • Multi-Screen Learning Portal&lt;/string&gt;
     &lt;string name="btn_login_label"&gt;LOG IN&lt;/string&gt;
     &lt;string name="btn_signup_label"&gt;CREATE AN ACCOUNT&lt;/string&gt;
 &lt;/resources&gt;</code></pre>
             </div>
 
-            <!-- ic_app_logo.xml Vector Drawable -->
-            <div class="placement-card">
-                <div class="placement-header"><i class="fa-solid fa-file-code"></i> FILE CREATION GUIDE</div>
-                <div class="placement-grid">
-                    <span class="placement-label">File to Create:</span>
-                    <span class="placement-value">ic_app_logo.xml</span>
-                    <span class="placement-label">Exact Path:</span>
-                    <span class="placement-value">app &gt; src &gt; main &gt; res &gt; drawable &gt; ic_app_logo.xml</span>
-                    <span class="placement-label">How to Create:</span>
-                    <span class="placement-value">Right-click 'drawable' folder &gt; New &gt; Drawable Resource File &gt; File name: ic_app_logo</span>
+            <!-- 2.3 ic_app_logo.xml -->
+            <div class="file-guide-card">
+                <div class="file-guide-header"><i class="fa-solid fa-shapes"></i> Vector Graphic 2.3</div>
+                <div class="file-guide-row">
+                    <span class="file-guide-label">File to Create:</span>
+                    <span class="file-guide-path">app &gt; src &gt; main &gt; res &gt; drawable &gt; ic_app_logo.xml</span>
+                    <span style="font-size: 11px; color: var(--text-muted);">(Right click drawable &rarr; New &rarr; Drawable Resource File)</span>
                 </div>
             </div>
 
             <div class="code-container">
                 <div class="code-header">
-                    <span class="code-file-name"><i class="fa-solid fa-shapes"></i> app &gt; src &gt; main &gt; res &gt; drawable &gt; ic_app_logo.xml</span>
+                    <span class="code-file-name"><i class="fa-solid fa-shapes"></i> ic_app_logo.xml</span>
                     <button class="copy-btn" onclick="copyCode('code-logo', this)"><i class="fa-regular fa-copy"></i> Copy XML</button>
                 </div>
                 <pre><code id="code-logo">&lt;vector xmlns:android="http://schemas.android.com/apk/res/android"
@@ -1117,46 +1153,56 @@ app
         android:pathData="M12,3L1,9L12,15L21,10.09V17H23V9M5,13.18V17.18C5,19.94 8.13,22 12,22C15.87,22 19,19.94 19,17.18V13.18L12,17L5,13.18Z"/&gt;
 &lt;/vector&gt;</code></pre>
             </div>
-            <div class="result-box">
-                <strong><i class="fa-solid fa-circle-check" style="color: var(--accent-green);"></i> Result of Step 5:</strong>
-                Your project now possesses central color definitions, localized string values, and a crisp graduation cap vector graphic stored in your drawable library.
-            </div>
-        </section>
 
-        <!-- Section 6: Part 1 - Welcome Page -->
-        <section id="section-part1" class="lesson-section">
-            <div class="section-header">
-                <div class="section-number">6</div>
-                <h2 class="section-title">Part 1: Build the Welcome Page (MainActivity)</h2>
-            </div>
-            <p>
-                The Welcome Page is the first screen launched by Android when the user taps your app's icon. It welcomes the user with a title, a logo, and two prominent buttons: <strong>LOG IN</strong> and <strong>CREATE AN ACCOUNT</strong>.
-            </p>
-
-            <h3>Step 1.1: Edit the Layout (activity_main.xml)</h3>
-            <p>
-                In the Android Studio Project panel, double-click <code>app &gt; res &gt; layout &gt; activity_main.xml</code>.
-                In Arctic Fox, look at the top right of the editor window and click the <strong>Split</strong> icon (second icon from left) so you can view the code and preview simultaneously.
-            </p>
-
-            <div class="placement-card">
-                <div class="placement-header"><i class="fa-solid fa-file-code"></i> FILE PLACEMENT GUIDE</div>
-                <div class="placement-grid">
-                    <span class="placement-label">File to Edit:</span>
-                    <span class="placement-value">activity_main.xml</span>
-                    <span class="placement-label">Exact Path:</span>
-                    <span class="placement-value">app &gt; src &gt; main &gt; res &gt; layout &gt; activity_main.xml</span>
-                    <span class="placement-label">Action:</span>
-                    <span class="placement-value">Select all existing code (Ctrl + A) and paste the complete XML below</span>
+            <!-- 2.4 edit_text_border.xml -->
+            <div class="file-guide-card">
+                <div class="file-guide-header"><i class="fa-solid fa-square"></i> Input Field Shape 2.4</div>
+                <div class="file-guide-row">
+                    <span class="file-guide-label">File to Create:</span>
+                    <span class="file-guide-path">app &gt; src &gt; main &gt; res &gt; drawable &gt; edit_text_border.xml</span>
+                    <span style="font-size: 11px; color: var(--text-muted);">(Right click drawable &rarr; New &rarr; Drawable Resource File)</span>
                 </div>
             </div>
 
             <div class="code-container">
                 <div class="code-header">
-                    <span class="code-file-name"><i class="fa-brands fa-android"></i> app &gt; src &gt; main &gt; res &gt; layout &gt; activity_main.xml</span>
-                    <button class="copy-btn" onclick="copyCode('code-activity-main-xml', this)"><i class="fa-regular fa-copy"></i> Copy XML</button>
+                    <span class="code-file-name"><i class="fa-solid fa-draw-polygon"></i> edit_text_border.xml</span>
+                    <button class="copy-btn" onclick="copyCode('code-border', this)"><i class="fa-regular fa-copy"></i> Copy XML</button>
                 </div>
-                <pre><code id="code-activity-main-xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+                <pre><code id="code-border">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;shape xmlns:android="http://schemas.android.com/apk/res/android"&gt;
+    &lt;solid android:color="@color/surface_white" /&gt;
+    &lt;stroke android:width="1.5dp" android:color="@color/border_light" /&gt;
+    &lt;corners android:radius="8dp" /&gt;
+&lt;/shape&gt;</code></pre>
+            </div>
+        </section>
+
+        <!-- STEP 3: WELCOME SCREEN (MainActivity) -->
+        <section id="step-3-welcome" class="lab-section">
+            <div class="section-header">
+                <div class="section-step-num">3</div>
+                <h2 class="section-title">Screen 1: Welcome Screen (MainActivity)</h2>
+            </div>
+            <p class="section-desc">
+                The Welcome screen greets the user with the app logo and title, offering two direct choices: <strong>LOG IN</strong> or <strong>CREATE AN ACCOUNT</strong>.
+            </p>
+
+            <!-- 3.1 activity_main.xml -->
+            <div class="file-guide-card">
+                <div class="file-guide-header"><i class="fa-brands fa-android"></i> Step 3.1: Layout Blueprint</div>
+                <div class="file-guide-row">
+                    <span class="file-guide-label">File to Edit:</span>
+                    <span class="file-guide-path">app &gt; src &gt; main &gt; res &gt; layout &gt; activity_main.xml</span>
+                </div>
+            </div>
+
+            <div class="code-container">
+                <div class="code-header">
+                    <span class="code-file-name"><i class="fa-brands fa-android"></i> activity_main.xml</span>
+                    <button class="copy-btn" onclick="copyCode('code-act-main-xml', this)"><i class="fa-regular fa-copy"></i> Copy XML</button>
+                </div>
+                <pre><code id="code-act-main-xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -1165,7 +1211,7 @@ app
     android:padding="28dp"
     android:background="@color/bg_canvas"&gt;
 
-    &lt;!-- App Graphic Logo --&gt;
+    &lt;!-- App Logo --&gt;
     &lt;ImageView
         android:id="@+id/ivWelcomeLogo"
         android:layout_width="100dp"
@@ -1174,7 +1220,7 @@ app
         android:contentDescription="CampusConnect Logo"
         android:layout_marginBottom="20dp" /&gt;
 
-    &lt;!-- App Title --&gt;
+    &lt;!-- Title --&gt;
     &lt;TextView
         android:id="@+id/tvWelcomeTitle"
         android:layout_width="wrap_content"
@@ -1185,7 +1231,7 @@ app
         android:textColor="@color/text_headline"
         android:layout_marginBottom="8dp" /&gt;
 
-    &lt;!-- Short Description --&gt;
+    &lt;!-- Subtitle --&gt;
     &lt;TextView
         android:id="@+id/tvWelcomeSubtitle"
         android:layout_width="wrap_content"
@@ -1222,29 +1268,18 @@ app
 &lt;/LinearLayout&gt;</code></pre>
             </div>
 
-            <h3>Step 1.2: Edit the Logic (MainActivity.kt)</h3>
-            <p>
-                In the Project panel, open <code>app &gt; java &gt; com.example.campusconnect &gt; MainActivity.kt</code>.
-            </p>
-
-            <div class="placement-card">
-                <div class="placement-header"><i class="fa-solid fa-file-code"></i> FILE PLACEMENT GUIDE</div>
-                <div class="placement-grid">
-                    <span class="placement-label">File to Edit:</span>
-                    <span class="placement-value">MainActivity.kt</span>
-                    <span class="placement-label">Exact Path:</span>
-                    <span class="placement-value">app &gt; src &gt; main &gt; java &gt; com.example.campusconnect &gt; MainActivity.kt</span>
-                    <span class="placement-label">Action:</span>
-                    <span class="placement-value">Replace file contents with the complete Kotlin code below</span>
-                </div>
-                <div class="placement-warning">
-                    <i class="fa-solid fa-triangle-exclamation"></i> Ensure the top line matches your actual package name!
+            <!-- 3.2 MainActivity.kt -->
+            <div class="file-guide-card">
+                <div class="file-guide-header"><i class="fa-brands fa-kickstarter"></i> Step 3.2: Kotlin Navigation Logic</div>
+                <div class="file-guide-row">
+                    <span class="file-guide-label">File to Edit:</span>
+                    <span class="file-guide-path">app &gt; src &gt; main &gt; java &gt; com.example.campusconnect &gt; MainActivity.kt</span>
                 </div>
             </div>
 
             <div class="code-container">
                 <div class="code-header">
-                    <span class="code-file-name"><i class="fa-brands fa-kickstarter"></i> app &gt; src &gt; main &gt; java &gt; com.example.campusconnect &gt; MainActivity.kt</span>
+                    <span class="code-file-name"><i class="fa-brands fa-kickstarter"></i> MainActivity.kt</span>
                     <button class="copy-btn" onclick="copyCode('code-main-kt', this)"><i class="fa-regular fa-copy"></i> Copy Kotlin</button>
                 </div>
                 <pre><code id="code-main-kt">package com.example.campusconnect
@@ -1258,20 +1293,19 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // 1. Inflate the XML visual layout onto this Activity window
         setContentView(R.layout.activity_main)
 
-        // 2. Locate interactive button elements from the XML tree by their IDs
+        // 1. Locate buttons in the XML layout
         val btnLogin = findViewById&lt;Button&gt;(R.id.btnLogin)
         val btnSignUp = findViewById&lt;Button&gt;(R.id.btnSignUp)
 
-        // 3. Set a click listener to navigate to LoginActivity via an Intent
+        // 2. Clicking 'LOG IN' opens LoginActivity
         btnLogin.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
         }
 
-        // 4. Set a click listener to navigate to SignUpActivity via an Intent
+        // 3. Clicking 'CREATE AN ACCOUNT' opens SignUpActivity
         btnSignUp.setOnClickListener {
             val intent = Intent(this, SignUpActivity::class.java)
             startActivity(intent)
@@ -1279,61 +1313,33 @@ class MainActivity : AppCompatActivity() {
     }
 }</code></pre>
             </div>
-
-            <div class="callout callout-info">
-                <i class="fa-solid fa-lightbulb callout-icon"></i>
-                <div class="callout-content">
-                    <strong>Notice the Red Text for <code>LoginActivity</code> and <code>SignUpActivity</code>?</strong>
-                    Don't worry! In Android Studio Arctic Fox, <code>LoginActivity::class.java</code> and <code>SignUpActivity::class.java</code> will temporarily appear in red because we have not created those Activity classes yet. We will create them in Parts 2 and 3 right now.
-                </div>
-            </div>
+            <p style="font-size: 13.5px; color: var(--text-muted);">
+                <i class="fa-solid fa-lightbulb" style="color: #f59e0b;"></i> <strong>Note:</strong> You may see red lines under <code>LoginActivity</code> and <code>SignUpActivity</code> until we create those Activity classes in Steps 4 and 5 below.
+            </p>
         </section>
 
-        <!-- Section 7: Part 2 - Login Activity -->
-        <section id="section-part2" class="lesson-section">
+        <!-- STEP 4: LOGIN SCREEN (LoginActivity) -->
+        <section id="step-4-login" class="lab-section">
             <div class="section-header">
-                <div class="section-number">7</div>
-                <h2 class="section-title">Part 2: Create the Login Screen (LoginActivity)</h2>
+                <div class="section-step-num">4</div>
+                <h2 class="section-title">Screen 2: Login Screen (LoginActivity)</h2>
             </div>
-            
-            <h3>Step 2.1: Creating the Activity in Arctic Fox</h3>
-            <ol>
-                <li>In the Project tool window, expand <code>app &gt; java</code>.</li>
-                <li><strong>Right-click</strong> directly on the package folder: <code>com.example.campusconnect</code>.</li>
-                <li>In the contextual popup menu, hover over <strong>New</strong> &gt; hover over <strong>Activity</strong> &gt; select <strong>Empty Activity</strong>.</li>
-                <li>
-                    In the <strong>New Android Activity</strong> dialog:
-                    <ul>
-                        <li><strong>Activity Name:</strong> Type <code>LoginActivity</code></li>
-                        <li><strong>Layout Name:</strong> Automatically updates to <code>activity_login</code> (leave as is).</li>
-                        <li><strong>Launcher Activity:</strong> <strong>DO NOT CHECK</strong> (only MainActivity is launcher).</li>
-                        <li><strong>Package name:</strong> <code>com.example.campusconnect</code></li>
-                        <li><strong>Source Language:</strong> <strong>Kotlin</strong></li>
-                    </ul>
-                </li>
-                <li>Click <strong>Finish</strong>.</li>
-            </ol>
-            <p>
-                <strong>What Arctic Fox did automatically:</strong>
-                It generated <code>LoginActivity.kt</code> in your java package, generated <code>activity_login.xml</code> in <code>res/layout/</code>, and registered <code>&lt;activity android:name=".LoginActivity" /&gt;</code> inside <code>AndroidManifest.xml</code>!
+            <p class="section-desc">
+                In Android Studio Arctic Fox: Right-click <code>com.example.campusconnect</code> folder &rarr; <strong>New</strong> &rarr; <strong>Activity</strong> &rarr; <strong>Empty Activity</strong>. Set Activity Name: <strong><code>LoginActivity</code></strong>.
             </p>
 
-            <h3>Step 2.2: Paste the Login XML Layout</h3>
-            <div class="placement-card">
-                <div class="placement-header"><i class="fa-solid fa-file-code"></i> FILE PLACEMENT GUIDE</div>
-                <div class="placement-grid">
-                    <span class="placement-label">File to Edit:</span>
-                    <span class="placement-value">activity_login.xml</span>
-                    <span class="placement-label">Exact Path:</span>
-                    <span class="placement-value">app &gt; src &gt; main &gt; res &gt; layout &gt; activity_login.xml</span>
-                    <span class="placement-label">Action:</span>
-                    <span class="placement-value">Replace all contents with the complete code below</span>
+            <!-- 4.1 activity_login.xml -->
+            <div class="file-guide-card">
+                <div class="file-guide-header"><i class="fa-brands fa-android"></i> Step 4.1: Login Layout</div>
+                <div class="file-guide-row">
+                    <span class="file-guide-label">File to Edit:</span>
+                    <span class="file-guide-path">app &gt; src &gt; main &gt; res &gt; layout &gt; activity_login.xml</span>
                 </div>
             </div>
 
             <div class="code-container">
                 <div class="code-header">
-                    <span class="code-file-name"><i class="fa-brands fa-android"></i> app &gt; src &gt; main &gt; res &gt; layout &gt; activity_login.xml</span>
+                    <span class="code-file-name"><i class="fa-brands fa-android"></i> activity_login.xml</span>
                     <button class="copy-btn" onclick="copyCode('code-login-xml', this)"><i class="fa-regular fa-copy"></i> Copy XML</button>
                 </div>
                 <pre><code id="code-login-xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
@@ -1341,11 +1347,10 @@ class MainActivity : AppCompatActivity() {
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:padding="24dp"
     android:gravity="center_vertical"
-    android:padding="28dp"
     android:background="@color/bg_canvas"&gt;
 
-    &lt;!-- Screen Headline --&gt;
     &lt;TextView
         android:id="@+id/tvLoginTitle"
         android:layout_width="wrap_content"
@@ -1357,19 +1362,18 @@ class MainActivity : AppCompatActivity() {
         android:layout_marginBottom="6dp" /&gt;
 
     &lt;TextView
-        android:id="@+id/tvLoginSubtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Enter your classroom credentials to continue"
+        android:text="Enter your credentials to continue"
         android:textSize="14sp"
         android:textColor="@color/text_muted"
         android:layout_marginBottom="32dp" /&gt;
 
-    &lt;!-- Username Input Field --&gt;
+    &lt;!-- Username Field --&gt;
     &lt;TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Username / Email"
+        android:text="Username"
         android:textSize="13sp"
         android:textStyle="bold"
         android:textColor="@color/text_headline"
@@ -1386,7 +1390,7 @@ class MainActivity : AppCompatActivity() {
         android:background="@drawable/edit_text_border"
         android:layout_marginBottom="18dp" /&gt;
 
-    &lt;!-- Password Input Field --&gt;
+    &lt;!-- Password Field --&gt;
     &lt;TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -1407,7 +1411,7 @@ class MainActivity : AppCompatActivity() {
         android:background="@drawable/edit_text_border"
         android:layout_marginBottom="28dp" /&gt;
 
-    &lt;!-- Login Action Button --&gt;
+    &lt;!-- Login Button --&gt;
     &lt;Button
         android:id="@+id/btnPerformLogin"
         android:layout_width="match_parent"
@@ -1416,9 +1420,9 @@ class MainActivity : AppCompatActivity() {
         android:textStyle="bold"
         android:textColor="@color/surface_white"
         android:backgroundTint="@color/primary_blue"
-        android:layout_marginBottom="16dp" /&gt;
+        android:layout_marginBottom="14dp" /&gt;
 
-    &lt;!-- Navigate to Sign Up --&gt;
+    &lt;!-- Go to Sign Up --&gt;
     &lt;Button
         android:id="@+id/btnGoToSignUp"
         android:layout_width="match_parent"
@@ -1429,13 +1433,13 @@ class MainActivity : AppCompatActivity() {
         android:backgroundTint="@color/surface_white"
         android:layout_marginBottom="12dp" /&gt;
 
-    &lt;!-- Back to Welcome Button --&gt;
+    &lt;!-- Back to Welcome --&gt;
     &lt;Button
         android:id="@+id/btnBackToWelcome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="← Back to Welcome"
+        android:text="&larr; Back to Welcome"
         android:textSize="12sp"
         android:textColor="@color/text_muted"
         android:backgroundTint="@android:color/transparent" /&gt;
@@ -1443,48 +1447,18 @@ class MainActivity : AppCompatActivity() {
 &lt;/LinearLayout&gt;</code></pre>
             </div>
 
-            <!-- Optional EditText Border Shape -->
-            <div class="placement-card">
-                <div class="placement-header"><i class="fa-solid fa-shapes"></i> BONUS UI ENHANCEMENT: Rounded Input Borders</div>
-                <div class="placement-grid">
-                    <span class="placement-label">File to Create:</span>
-                    <span class="placement-value">edit_text_border.xml</span>
-                    <span class="placement-label">Location:</span>
-                    <span class="placement-value">app &gt; res &gt; drawable &gt; edit_text_border.xml</span>
-                    <span class="placement-label">Purpose:</span>
-                    <span class="placement-value">Renders modern rounded borders for EditText fields</span>
+            <!-- 4.2 LoginActivity.kt -->
+            <div class="file-guide-card">
+                <div class="file-guide-header"><i class="fa-brands fa-kickstarter"></i> Step 4.2: Login Logic &amp; Auth Check</div>
+                <div class="file-guide-row">
+                    <span class="file-guide-label">File to Edit:</span>
+                    <span class="file-guide-path">app &gt; src &gt; main &gt; java &gt; com.example.campusconnect &gt; LoginActivity.kt</span>
                 </div>
             </div>
 
             <div class="code-container">
                 <div class="code-header">
-                    <span class="code-file-name"><i class="fa-solid fa-draw-polygon"></i> app &gt; src &gt; main &gt; res &gt; drawable &gt; edit_text_border.xml</span>
-                    <button class="copy-btn" onclick="copyCode('code-et-border', this)"><i class="fa-regular fa-copy"></i> Copy XML</button>
-                </div>
-                <pre><code id="code-et-border">&lt;?xml version="1.0" encoding="utf-8"?&gt;
-&lt;shape xmlns:android="http://schemas.android.com/apk/res/android"&gt;
-    &lt;solid android:color="@color/surface_white" /&gt;
-    &lt;stroke android:width="1.5dp" android:color="@color/border_light" /&gt;
-    &lt;corners android:radius="8dp" /&gt;
-&lt;/shape&gt;</code></pre>
-            </div>
-
-            <h3>Step 2.3: Paste Login Kotlin Logic (LoginActivity.kt)</h3>
-            <div class="placement-card">
-                <div class="placement-header"><i class="fa-solid fa-file-code"></i> FILE PLACEMENT GUIDE</div>
-                <div class="placement-grid">
-                    <span class="placement-label">File to Edit:</span>
-                    <span class="placement-value">LoginActivity.kt</span>
-                    <span class="placement-label">Exact Path:</span>
-                    <span class="placement-value">app &gt; src &gt; main &gt; java &gt; com.example.campusconnect &gt; LoginActivity.kt</span>
-                    <span class="placement-label">Action:</span>
-                    <span class="placement-value">Replace all contents with the code below</span>
-                </div>
-            </div>
-
-            <div class="code-container">
-                <div class="code-header">
-                    <span class="code-file-name"><i class="fa-brands fa-kickstarter"></i> app &gt; src &gt; main &gt; java &gt; com.example.campusconnect &gt; LoginActivity.kt</span>
+                    <span class="code-file-name"><i class="fa-brands fa-kickstarter"></i> LoginActivity.kt</span>
                     <button class="copy-btn" onclick="copyCode('code-login-kt', this)"><i class="fa-regular fa-copy"></i> Copy Kotlin</button>
                 </div>
                 <pre><code id="code-login-kt">package com.example.campusconnect
@@ -1502,89 +1476,82 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        // Bind UI input elements
+        // 1. Locate Views
         val etUsername = findViewById&lt;EditText&gt;(R.id.etLoginUsername)
         val etPassword = findViewById&lt;EditText&gt;(R.id.etLoginPassword)
         val btnLogin = findViewById&lt;Button&gt;(R.id.btnPerformLogin)
         val btnGoToSignUp = findViewById&lt;Button&gt;(R.id.btnGoToSignUp)
         val btnBackToWelcome = findViewById&lt;Button&gt;(R.id.btnBackToWelcome)
 
-        // Handle Login Submission
+        // 2. Perform Login with Validation
         btnLogin.setOnClickListener {
             val username = etUsername.text.toString().trim()
             val password = etPassword.text.toString().trim()
 
-            // 1. Validate empty fields
-            if (username.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Please enter both username and password", Toast.LENGTH_SHORT).show()
+            if (username.isEmpty()) {
+                etUsername.error = "Please enter your username"
+                etUsername.requestFocus()
                 return@setOnClickListener
             }
 
-            // 2. Educational Hardcoded Authentication (admin / 1234)
-            // WARNING: FOR CLASSROOM DEMONSTRATION ONLY. NOT PRODUCTION AUTHENTICATION.
+            if (password.isEmpty()) {
+                etPassword.error = "Please enter your password"
+                etPassword.requestFocus()
+                return@setOnClickListener
+            }
+
+            // Demo Credentials Check: admin / 1234
             if (username == "admin" && password == "1234") {
-                Toast.makeText(this, "Authentication successful! Welcome, Admin.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Login successful! Welcome, $username", Toast.LENGTH_SHORT).show()
                 
-                // Create Intent to Dashboard and attach user name
+                // Open Dashboard and pass the username extra!
                 val intent = Intent(this, DashboardActivity::class.java)
-                intent.putExtra("USER_NAME", "System Administrator")
+                intent.putExtra("USER_NAME", username)
                 startActivity(intent)
-                finish() // Remove LoginActivity from back stack so user cannot 'back' into it
+                finish() // Finish login screen so user cannot back into it
             } else {
-                Toast.makeText(this, "Invalid credentials. Use admin / 1234", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Invalid credentials! Use admin / 1234", Toast.LENGTH_LONG).show()
             }
         }
 
-        // Navigate to SignUpActivity
+        // 3. Switch to Sign Up screen
         btnGoToSignUp.setOnClickListener {
             val intent = Intent(this, SignUpActivity::class.java)
             startActivity(intent)
             finish()
         }
 
-        // Back button returns to Welcome Screen
+        // 4. Return to Welcome screen
         btnBackToWelcome.setOnClickListener {
-            finish() // Destroys LoginActivity and reveals MainActivity
+            finish()
         }
     }
 }</code></pre>
             </div>
         </section>
 
-        <!-- Section 8: Part 3 - Sign Up Activity -->
-        <section id="section-part3" class="lesson-section">
+        <!-- STEP 5: SIGN UP SCREEN (SignUpActivity) -->
+        <section id="step-5-signup" class="lab-section">
             <div class="section-header">
-                <div class="section-number">8</div>
-                <h2 class="section-title">Part 3: Build the Registration Screen (SignUpActivity)</h2>
+                <div class="section-step-num">5</div>
+                <h2 class="section-title">Screen 3: Sign Up Screen (SignUpActivity)</h2>
             </div>
-            
-            <h3>Step 3.1: Create the SignUpActivity in Arctic Fox</h3>
-            <ol>
-                <li>Right-click package <code>com.example.campusconnect</code> &gt; <strong>New</strong> &gt; <strong>Activity</strong> &gt; <strong>Empty Activity</strong>.</li>
-                <li>Activity Name: <code>SignUpActivity</code> (Layout name will auto-populate as <code>activity_sign_up</code>).</li>
-                <li>Leave Launcher Activity unchecked. Click <strong>Finish</strong>.</li>
-            </ol>
-
-            <h3>Step 3.2: Paste the Sign Up XML Layout</h3>
-            <p>
-                <em>Note:</em> The entire form is enclosed inside a <code>&lt;ScrollView&gt;</code>. On mobile screens, when students tap on input fields, the on-screen soft keyboard pops up. A <code>ScrollView</code> guarantees that input fields are never squashed or hidden behind the keyboard!
+            <p class="section-desc">
+                In Android Studio Arctic Fox: Right-click <code>com.example.campusconnect</code> folder &rarr; <strong>New</strong> &rarr; <strong>Activity</strong> &rarr; <strong>Empty Activity</strong>. Set Activity Name: <strong><code>SignUpActivity</code></strong>.
             </p>
 
-            <div class="placement-card">
-                <div class="placement-header"><i class="fa-solid fa-file-code"></i> FILE PLACEMENT GUIDE</div>
-                <div class="placement-grid">
-                    <span class="placement-label">File to Edit:</span>
-                    <span class="placement-value">activity_sign_up.xml</span>
-                    <span class="placement-label">Exact Path:</span>
-                    <span class="placement-value">app &gt; src &gt; main &gt; res &gt; layout &gt; activity_sign_up.xml</span>
-                    <span class="placement-label">Action:</span>
-                    <span class="placement-value">Replace file contents with the code below</span>
+            <!-- 5.1 activity_sign_up.xml -->
+            <div class="file-guide-card">
+                <div class="file-guide-header"><i class="fa-brands fa-android"></i> Step 5.1: Sign Up Form Layout</div>
+                <div class="file-guide-row">
+                    <span class="file-guide-label">File to Edit:</span>
+                    <span class="file-guide-path">app &gt; src &gt; main &gt; res &gt; layout &gt; activity_sign_up.xml</span>
                 </div>
             </div>
 
             <div class="code-container">
                 <div class="code-header">
-                    <span class="code-file-name"><i class="fa-brands fa-android"></i> app &gt; src &gt; main &gt; res &gt; layout &gt; activity_sign_up.xml</span>
+                    <span class="code-file-name"><i class="fa-brands fa-android"></i> activity_sign_up.xml</span>
                     <button class="copy-btn" onclick="copyCode('code-signup-xml', this)"><i class="fa-regular fa-copy"></i> Copy XML</button>
                 </div>
                 <pre><code id="code-signup-xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
@@ -1598,11 +1565,10 @@ class LoginActivity : AppCompatActivity() {
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:gravity="center_vertical"
-        android:padding="28dp"&gt;
+        android:padding="24dp"
+        android:gravity="center_vertical"&gt;
 
         &lt;TextView
-            android:id="@+id/tvSignUpTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Create Account"
@@ -1614,12 +1580,12 @@ class LoginActivity : AppCompatActivity() {
         &lt;TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Register to access your student dashboard"
+            android:text="Join the Mob Dev 1 student community"
             android:textSize="14sp"
             android:textColor="@color/text_muted"
             android:layout_marginBottom="28dp" /&gt;
 
-        &lt;!-- Full Name Field --&gt;
+        &lt;!-- Full Name --&gt;
         &lt;TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -1630,17 +1596,17 @@ class LoginActivity : AppCompatActivity() {
             android:layout_marginBottom="6dp" /&gt;
 
         &lt;EditText
-            android:id="@+id/etSignUpFullName"
+            android:id="@+id/etSignUpName"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:hint="e.g. Juan Dela Cruz"
+            android:hint="Maria Santos"
             android:inputType="textPersonName"
             android:textSize="14sp"
             android:paddingHorizontal="14dp"
             android:background="@drawable/edit_text_border"
             android:layout_marginBottom="16dp" /&gt;
 
-        &lt;!-- Email Field --&gt;
+        &lt;!-- Email --&gt;
         &lt;TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -1661,11 +1627,11 @@ class LoginActivity : AppCompatActivity() {
             android:background="@drawable/edit_text_border"
             android:layout_marginBottom="16dp" /&gt;
 
-        &lt;!-- Password Field --&gt;
+        &lt;!-- Password --&gt;
         &lt;TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Password (min. 6 characters)"
+            android:text="Password (min 6 characters)"
             android:textSize="13sp"
             android:textStyle="bold"
             android:textColor="@color/text_headline"
@@ -1675,14 +1641,14 @@ class LoginActivity : AppCompatActivity() {
             android:id="@+id/etSignUpPassword"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:hint="Create a password"
+            android:hint="Create password"
             android:inputType="textPassword"
             android:textSize="14sp"
             android:paddingHorizontal="14dp"
             android:background="@drawable/edit_text_border"
             android:layout_marginBottom="16dp" /&gt;
 
-        &lt;!-- Confirm Password Field --&gt;
+        &lt;!-- Confirm Password --&gt;
         &lt;TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -1703,7 +1669,7 @@ class LoginActivity : AppCompatActivity() {
             android:background="@drawable/edit_text_border"
             android:layout_marginBottom="24dp" /&gt;
 
-        &lt;!-- Submit Button --&gt;
+        &lt;!-- Register Button --&gt;
         &lt;Button
             android:id="@+id/btnPerformSignUp"
             android:layout_width="match_parent"
@@ -1714,7 +1680,7 @@ class LoginActivity : AppCompatActivity() {
             android:backgroundTint="@color/accent_emerald"
             android:layout_marginBottom="14dp" /&gt;
 
-        &lt;!-- Link to Login --&gt;
+        &lt;!-- Back to Login --&gt;
         &lt;Button
             android:id="@+id/btnGoToLogin"
             android:layout_width="match_parent"
@@ -1725,13 +1691,13 @@ class LoginActivity : AppCompatActivity() {
             android:backgroundTint="@color/surface_white"
             android:layout_marginBottom="8dp" /&gt;
 
-        &lt;!-- Back Button --&gt;
+        &lt;!-- Back to Welcome --&gt;
         &lt;Button
             android:id="@+id/btnBackFromSignUp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="← Back to Welcome"
+            android:text="&larr; Back to Welcome"
             android:textSize="12sp"
             android:textColor="@color/text_muted"
             android:backgroundTint="@android:color/transparent" /&gt;
@@ -1740,22 +1706,18 @@ class LoginActivity : AppCompatActivity() {
 &lt;/ScrollView&gt;</code></pre>
             </div>
 
-            <h3>Step 3.3: Paste Sign Up Validation Logic (SignUpActivity.kt)</h3>
-            <div class="placement-card">
-                <div class="placement-header"><i class="fa-solid fa-file-code"></i> FILE PLACEMENT GUIDE</div>
-                <div class="placement-grid">
-                    <span class="placement-label">File to Edit:</span>
-                    <span class="placement-value">SignUpActivity.kt</span>
-                    <span class="placement-label">Exact Path:</span>
-                    <span class="placement-value">app &gt; src &gt; main &gt; java &gt; com.example.campusconnect &gt; SignUpActivity.kt</span>
-                    <span class="placement-label">Action:</span>
-                    <span class="placement-value">Replace all contents with the code below</span>
+            <!-- 5.2 SignUpActivity.kt -->
+            <div class="file-guide-card">
+                <div class="file-guide-header"><i class="fa-brands fa-kickstarter"></i> Step 5.2: Sign Up Validation Logic</div>
+                <div class="file-guide-row">
+                    <span class="file-guide-label">File to Edit:</span>
+                    <span class="file-guide-path">app &gt; src &gt; main &gt; java &gt; com.example.campusconnect &gt; SignUpActivity.kt</span>
                 </div>
             </div>
 
             <div class="code-container">
                 <div class="code-header">
-                    <span class="code-file-name"><i class="fa-brands fa-kickstarter"></i> app &gt; src &gt; main &gt; java &gt; com.example.campusconnect &gt; SignUpActivity.kt</span>
+                    <span class="code-file-name"><i class="fa-brands fa-kickstarter"></i> SignUpActivity.kt</span>
                     <button class="copy-btn" onclick="copyCode('code-signup-kt', this)"><i class="fa-regular fa-copy"></i> Copy Kotlin</button>
                 </div>
                 <pre><code id="code-signup-kt">package com.example.campusconnect
@@ -1773,8 +1735,8 @@ class SignUpActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up)
 
-        // Bind UI input elements
-        val etFullName = findViewById&lt;EditText&gt;(R.id.etSignUpFullName)
+        // 1. Locate Views
+        val etName = findViewById&lt;EditText&gt;(R.id.etSignUpName)
         val etEmail = findViewById&lt;EditText&gt;(R.id.etSignUpEmail)
         val etPassword = findViewById&lt;EditText&gt;(R.id.etSignUpPassword)
         val etConfirmPassword = findViewById&lt;EditText&gt;(R.id.etSignUpConfirmPassword)
@@ -1782,54 +1744,53 @@ class SignUpActivity : AppCompatActivity() {
         val btnGoToLogin = findViewById&lt;Button&gt;(R.id.btnGoToLogin)
         val btnBack = findViewById&lt;Button&gt;(R.id.btnBackFromSignUp)
 
-        // Registration form submission handler
+        // 2. Form Validation & Registration
         btnSignUp.setOnClickListener {
-            val fullName = etFullName.text.toString().trim()
+            val name = etName.text.toString().trim()
             val email = etEmail.text.toString().trim()
             val password = etPassword.text.toString().trim()
             val confirmPassword = etConfirmPassword.text.toString().trim()
 
-            // 1. Check for empty fields
-            if (fullName.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-                Toast.makeText(this, "Error: All fields are required!", Toast.LENGTH_SHORT).show()
+            if (name.isEmpty()) {
+                etName.error = "Please enter your full name"
+                etName.requestFocus()
                 return@setOnClickListener
             }
 
-            // 2. Check for basic email format
-            if (!email.contains("@") || !email.contains(".")) {
-                Toast.makeText(this, "Please enter a valid email address", Toast.LENGTH_SHORT).show()
+            if (email.isEmpty() || !email.contains("@")) {
+                etEmail.error = "Please enter a valid email"
+                etEmail.requestFocus()
                 return@setOnClickListener
             }
 
-            // 3. Password length validation
-            if (password.length &lt; 6) {
-                Toast.makeText(this, "Password must be at least 6 characters", Toast.LENGTH_SHORT).show()
+            if (password.length < 6) {
+                etPassword.error = "Password must be at least 6 characters"
+                etPassword.requestFocus()
                 return@setOnClickListener
             }
 
-            // 4. Password matching validation
             if (password != confirmPassword) {
-                Toast.makeText(this, "Passwords do not match! Please check again.", Toast.LENGTH_SHORT).show()
+                etConfirmPassword.error = "Passwords do not match!"
+                etConfirmPassword.requestFocus()
                 return@setOnClickListener
             }
 
-            // 5. Successful registration: Navigate to Dashboard and pass user's name
-            Toast.makeText(this, "Registration successful! Welcome to CampusConnect.", Toast.LENGTH_SHORT).show()
-
+            // Success! Pass Full Name to DashboardActivity
+            Toast.makeText(this, "Registration Successful!", Toast.LENGTH_SHORT).show()
             val intent = Intent(this, DashboardActivity::class.java)
-            intent.putExtra("USER_NAME", fullName) // Attach the real typed name
+            intent.putExtra("USER_NAME", name)
             startActivity(intent)
             finish()
         }
 
-        // Navigate to Login screen
+        // 3. Switch to Login screen
         btnGoToLogin.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
             finish()
         }
 
-        // Return to Welcome screen
+        // 4. Return to Welcome screen
         btnBack.setOnClickListener {
             finish()
         }
@@ -1838,76 +1799,31 @@ class SignUpActivity : AppCompatActivity() {
             </div>
         </section>
 
-        <!-- Section 9: Part 4 - Passing Data Deep Dive -->
-        <section id="section-part4" class="lesson-section">
+        <!-- STEP 6: DASHBOARD SCREEN (DashboardActivity) -->
+        <section id="step-6-dashboard" class="lab-section">
             <div class="section-header">
-                <div class="section-number">9</div>
-                <h2 class="section-title">Part 4: How Data Passing Works (putExtra vs getStringExtra)</h2>
+                <div class="section-step-num">6</div>
+                <h2 class="section-title">Screen 4: Personalized Dashboard &amp; Logout</h2>
             </div>
-            <p>
-                In Android, Activities are isolated from one another. You cannot directly access variables from another Activity. To transport data (such as a registered student's name), Android provides an <strong>Extras Dictionary (Bundle)</strong> inside the <code>Intent</code>.
+            <p class="section-desc">
+                In Android Studio Arctic Fox: Right-click <code>com.example.campusconnect</code> folder &rarr; <strong>New</strong> &rarr; <strong>Activity</strong> &rarr; <strong>Empty Activity</strong>. Set Activity Name: <strong><code>DashboardActivity</code></strong>.
             </p>
 
-            <div class="flow-diagram">
-+---------------------------------------------------------------------------------+
-|                       HOW INTENT EXTRAS TRANSPORT USER DATA                     |
-+---------------------------------------------------------------------------------+
-
- 1. SENDER ACTIVITY (SignUpActivity.kt)
-    val typedName = "Maria Santos"
-    val intent = Intent(this, DashboardActivity::class.java)
-    intent.putExtra("USER_NAME", typedName)  &lt;--- Stores Key-Value: ("USER_NAME" -&gt; "Maria Santos")
-    startActivity(intent)
-               |
-               |  (Operating System carries the Intent across the screen boundary)
-               v
- 2. RECEIVER ACTIVITY (DashboardActivity.kt)
-    val receivedName = intent.getStringExtra("USER_NAME")  &lt;--- Retrieves "Maria Santos" using exact key!
-    tvGreeting.text = "Welcome, $receivedName!"
-            </div>
-
-            <div class="callout callout-warning">
-                <i class="fa-solid fa-triangle-exclamation callout-icon"></i>
-                <div class="callout-content">
-                    <strong>THE GOLDEN RULE OF INTENT EXTRAS: The Keys Must Match Exactly!</strong>
-                    If you write <code>intent.putExtra("USER_NAME", fullName)</code> in the sender, but write <code>intent.getStringExtra("userName")</code> (lowercase) or <code>intent.getStringExtra("NAME")</code> in the receiver, the extra will return <code>null</code>! The key string is strictly case-sensitive.
-                </div>
-            </div>
-        </section>
-
-        <!-- Section 10: Part 5 - Dashboard Activity -->
-        <section id="section-part5" class="lesson-section">
-            <div class="section-header">
-                <div class="section-number">10</div>
-                <h2 class="section-title">Part 5: Build the Dashboard (DashboardActivity)</h2>
-            </div>
-
-            <h3>Step 5.1: Create DashboardActivity in Arctic Fox</h3>
-            <ol>
-                <li>Right-click package <code>com.example.campusconnect</code> &gt; <strong>New</strong> &gt; <strong>Activity</strong> &gt; <strong>Empty Activity</strong>.</li>
-                <li>Activity Name: <code>DashboardActivity</code> (Layout name will auto-populate as <code>activity_dashboard</code>).</li>
-                <li>Leave Launcher Activity unchecked. Click <strong>Finish</strong>.</li>
-            </ol>
-
-            <h3>Step 5.2: Paste Dashboard XML Layout</h3>
-            <div class="placement-card">
-                <div class="placement-header"><i class="fa-solid fa-file-code"></i> FILE PLACEMENT GUIDE</div>
-                <div class="placement-grid">
-                    <span class="placement-label">File to Edit:</span>
-                    <span class="placement-value">activity_dashboard.xml</span>
-                    <span class="placement-label">Exact Path:</span>
-                    <span class="placement-value">app &gt; src &gt; main &gt; res &gt; layout &gt; activity_dashboard.xml</span>
-                    <span class="placement-label">Action:</span>
-                    <span class="placement-value">Replace all contents with the complete XML below</span>
+            <!-- 6.1 activity_dashboard.xml -->
+            <div class="file-guide-card">
+                <div class="file-guide-header"><i class="fa-brands fa-android"></i> Step 6.1: Dashboard Layout</div>
+                <div class="file-guide-row">
+                    <span class="file-guide-label">File to Edit:</span>
+                    <span class="file-guide-path">app &gt; src &gt; main &gt; res &gt; layout &gt; activity_dashboard.xml</span>
                 </div>
             </div>
 
             <div class="code-container">
                 <div class="code-header">
-                    <span class="code-file-name"><i class="fa-brands fa-android"></i> app &gt; src &gt; main &gt; res &gt; layout &gt; activity_dashboard.xml</span>
-                    <button class="copy-btn" onclick="copyCode('code-dashboard-xml', this)"><i class="fa-regular fa-copy"></i> Copy XML</button>
+                    <span class="code-file-name"><i class="fa-brands fa-android"></i> activity_dashboard.xml</span>
+                    <button class="copy-btn" onclick="copyCode('code-dash-xml', this)"><i class="fa-regular fa-copy"></i> Copy XML</button>
                 </div>
-                <pre><code id="code-dashboard-xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+                <pre><code id="code-dash-xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -1920,45 +1836,40 @@ class SignUpActivity : AppCompatActivity() {
         android:orientation="vertical"
         android:padding="24dp"&gt;
 
-        &lt;!-- Header Banner --&gt;
-        &lt;TextView
-            android:id="@+id/tvDashboardTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Student Portal"
-            android:textSize="13sp"
-            android:textStyle="bold"
-            android:textColor="@color/primary_blue"
-            android:textAllCaps="true"
-            android:letterSpacing="0.08"
-            android:layout_marginBottom="4dp" /&gt;
-
-        &lt;!-- Dynamic Personalized Greeting --&gt;
+        &lt;!-- Personalized Header Greeting --&gt;
         &lt;TextView
             android:id="@+id/tvDashboardGreeting"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Welcome, Student!"
-            android:textSize="26sp"
+            android:textSize="24sp"
             android:textStyle="bold"
             android:textColor="@color/text_headline"
-            android:layout_marginBottom="24dp" /&gt;
+            android:layout_marginBottom="6dp" /&gt;
 
-        &lt;!-- CARD 1: My Profile --&gt;
+        &lt;TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mob Dev 1 Lab &bull; Student Learning Portal"
+            android:textSize="13sp"
+            android:textColor="@color/text_muted"
+            android:layout_marginBottom="28dp" /&gt;
+
+        &lt;!-- CARD 1: Profile --&gt;
         &lt;LinearLayout
             android:id="@+id/cardProfile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:background="@drawable/edit_text_border"
-            android:padding="18dp"
-            android:layout_marginBottom="14dp"&gt;
+            android:padding="16dp"
+            android:layout_marginBottom="12dp"&gt;
 
             &lt;TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="👤 Student Profile"
-                android:textSize="16sp"
+                android:textSize="15sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_headline"
                 android:layout_marginBottom="4dp" /&gt;
@@ -1966,26 +1877,26 @@ class SignUpActivity : AppCompatActivity() {
             &lt;TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="View your academic record, enrollment status, and student credentials."
+                android:text="View your enrolled status and academic student details."
                 android:textSize="13sp"
                 android:textColor="@color/text_muted" /&gt;
         &lt;/LinearLayout&gt;
 
-        &lt;!-- CARD 2: Active Courses --&gt;
+        &lt;!-- CARD 2: Enrolled Courses --&gt;
         &lt;LinearLayout
             android:id="@+id/cardCourses"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:background="@drawable/edit_text_border"
-            android:padding="18dp"
-            android:layout_marginBottom="14dp"&gt;
+            android:padding="16dp"
+            android:layout_marginBottom="12dp"&gt;
 
             &lt;TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="📚 Enrolled Subjects"
-                android:textSize="16sp"
+                android:textSize="15sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_headline"
                 android:layout_marginBottom="4dp" /&gt;
@@ -1993,7 +1904,7 @@ class SignUpActivity : AppCompatActivity() {
             &lt;TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="4 Active Courses: Mobile Dev 3, Event-Driven Prog, Database Sys, Web Dev."
+                android:text="4 Active Courses: Mob Dev 1, Event-Driven Prog, Database, Web Dev."
                 android:textSize="13sp"
                 android:textColor="@color/text_muted" /&gt;
         &lt;/LinearLayout&gt;
@@ -2005,14 +1916,14 @@ class SignUpActivity : AppCompatActivity() {
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:background="@drawable/edit_text_border"
-            android:padding="18dp"
+            android:padding="16dp"
             android:layout_marginBottom="32dp"&gt;
 
             &lt;TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="⚙️ App Settings"
-                android:textSize="16sp"
+                android:textSize="15sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_headline"
                 android:layout_marginBottom="4dp" /&gt;
@@ -2020,7 +1931,7 @@ class SignUpActivity : AppCompatActivity() {
             &lt;TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Configure notification alerts, dark theme, and offline storage."
+                android:text="Configure notification preferences and offline caching."
                 android:textSize="13sp"
                 android:textColor="@color/text_muted" /&gt;
         &lt;/LinearLayout&gt;
@@ -2039,25 +1950,21 @@ class SignUpActivity : AppCompatActivity() {
 &lt;/ScrollView&gt;</code></pre>
             </div>
 
-            <h3>Step 5.3: Paste Dashboard Kotlin Logic (DashboardActivity.kt)</h3>
-            <div class="placement-card">
-                <div class="placement-header"><i class="fa-solid fa-file-code"></i> FILE PLACEMENT GUIDE</div>
-                <div class="placement-grid">
-                    <span class="placement-label">File to Edit:</span>
-                    <span class="placement-value">DashboardActivity.kt</span>
-                    <span class="placement-label">Exact Path:</span>
-                    <span class="placement-value">app &gt; src &gt; main &gt; java &gt; com.example.campusconnect &gt; DashboardActivity.kt</span>
-                    <span class="placement-label">Action:</span>
-                    <span class="placement-value">Replace all contents with the complete Kotlin code below</span>
+            <!-- 6.2 DashboardActivity.kt -->
+            <div class="file-guide-card">
+                <div class="file-guide-header"><i class="fa-brands fa-kickstarter"></i> Step 6.2: Read Extra &amp; Back-Stack Clearance</div>
+                <div class="file-guide-row">
+                    <span class="file-guide-label">File to Edit:</span>
+                    <span class="file-guide-path">app &gt; src &gt; main &gt; java &gt; com.example.campusconnect &gt; DashboardActivity.kt</span>
                 </div>
             </div>
 
             <div class="code-container">
                 <div class="code-header">
-                    <span class="code-file-name"><i class="fa-brands fa-kickstarter"></i> app &gt; src &gt; main &gt; java &gt; com.example.campusconnect &gt; DashboardActivity.kt</span>
-                    <button class="copy-btn" onclick="copyCode('code-dashboard-kt', this)"><i class="fa-regular fa-copy"></i> Copy Kotlin</button>
+                    <span class="code-file-name"><i class="fa-brands fa-kickstarter"></i> DashboardActivity.kt</span>
+                    <button class="copy-btn" onclick="copyCode('code-dash-kt', this)"><i class="fa-regular fa-copy"></i> Copy Kotlin</button>
                 </div>
-                <pre><code id="code-dashboard-kt">package com.example.campusconnect
+                <pre><code id="code-dash-kt">package com.example.campusconnect
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -2082,81 +1989,51 @@ class DashboardActivity : AppCompatActivity() {
 
         // 2. Extract passed user name from Intent extras
         val passedUserName = intent.getStringExtra("USER_NAME")
-
-        // 3. Fallback to "Student" if no name was passed (null safety)
         val displayName = if (!passedUserName.isNullOrEmpty()) passedUserName else "Student"
         tvGreeting.text = "Welcome, $displayName!"
 
-        // 4. Interactive Card Click Listeners (Classroom Feedback)
+        // 3. Interactive card feedback
         cardProfile.setOnClickListener {
             Toast.makeText(this, "Profile: Logged in as $displayName", Toast.LENGTH_SHORT).show()
         }
 
         cardCourses.setOnClickListener {
-            Toast.makeText(this, "Courses: 4 enrolled subjects active", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Courses: 4 enrolled lab subjects active", Toast.LENGTH_SHORT).show()
         }
 
         cardSettings.setOnClickListener {
-            Toast.makeText(this, "Settings: Version 1.0 (Arctic Fox 2020.3.1)", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Settings: CampusConnect v1.0", Toast.LENGTH_SHORT).show()
         }
 
-        // 5. Part 6 Implementation: Logout Navigation
+        // 4. LOGOUT: Clears intermediate activities from the task stack!
         btnLogout.setOnClickListener {
-            Toast.makeText(this, "You have been logged out", Toast.LENGTH_SHORT).show()
-
-            // Return to MainActivity and clear the entire navigation task
             val intent = Intent(this, MainActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+            // Critical: FLAG_ACTIVITY_NEW_TASK | FLAG_ACTIVITY_CLEAR_TASK clears the stack
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
-            finish() // Terminate this dashboard instance
+            finish()
         }
     }
 }</code></pre>
             </div>
         </section>
 
-        <!-- Section 11: Part 6 - Logout Explanation -->
-        <section id="section-part6" class="lesson-section">
+        <!-- STEP 7: ANDROIDMANIFEST -->
+        <section id="step-7-manifest" class="lab-section">
             <div class="section-header">
-                <div class="section-number">11</div>
-                <h2 class="section-title">Part 6: Understanding Android Activity Stack &amp; Logout</h2>
+                <div class="section-step-num">7</div>
+                <h2 class="section-title">Verify AndroidManifest.xml</h2>
             </div>
-            <p>
-                When a user logs out, we do not simply launch <code>MainActivity</code>; we also clear the previous screens from Android's <strong>Task Back Stack</strong>.
-            </p>
-            <p>
-                If we merely called <code>startActivity(Intent(this, MainActivity::class.java))</code> without flags, touching the physical Android <strong>Back Button</strong> on the phone would send the student right back into the private Dashboard without logging in!
-            </p>
-            <div class="flow-diagram">
-Without Task Flags:
-[MainActivity] -&gt; [LoginActivity] -&gt; [Dashboard] -&gt; [Taps Logout] -&gt; [MainActivity]
-                                                                        |
-                                                     (Pressing Back reveals Dashboard!)
-
-WITH FLAG_ACTIVITY_CLEAR_TOP and finish():
-[MainActivity] -&gt; [LoginActivity] -&gt; [Dashboard] -&gt; [Taps Logout]
-                                                              |
-                                                              v
-All intermediate screens are destroyed! Back stack is reset to clean [MainActivity].
-            </div>
-        </section>
-
-        <!-- Section 12: AndroidManifest Deep Dive -->
-        <section id="section-manifest" class="lesson-section">
-            <div class="section-header">
-                <div class="section-number">12</div>
-                <h2 class="section-title">The Gateway: Understanding AndroidManifest.xml</h2>
-            </div>
-            <p>
-                Open <code>app &gt; src &gt; main &gt; AndroidManifest.xml</code>. Every Activity you create in Kotlin <strong>MUST</strong> be registered in this XML document. If you create an Activity in Kotlin but omit its declaration here, Android will crash with an <code>ActivityNotFoundException</code> when you try to open it!
+            <p class="section-desc">
+                In Android, every Activity <strong>MUST</strong> be registered in <code>AndroidManifest.xml</code>. Arctic Fox registers activities automatically when created via the wizard, but you should open <code>app &gt; src &gt; main &gt; AndroidManifest.xml</code> to verify that all 4 screens are declared:
             </p>
 
             <div class="code-container">
                 <div class="code-header">
-                    <span class="code-file-name"><i class="fa-solid fa-file-shield"></i> app &gt; src &gt; main &gt; AndroidManifest.xml</span>
-                    <button class="copy-btn" onclick="copyCode('code-manifest-full', this)"><i class="fa-regular fa-copy"></i> Copy XML</button>
+                    <span class="code-file-name"><i class="fa-solid fa-file-shield"></i> AndroidManifest.xml</span>
+                    <button class="copy-btn" onclick="copyCode('code-manifest', this)"><i class="fa-regular fa-copy"></i> Copy XML</button>
                 </div>
-                <pre><code id="code-manifest-full">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+                <pre><code id="code-manifest">&lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.campusconnect"&gt;
 
@@ -2168,7 +2045,7 @@ All intermediate screens are destroyed! Back stack is reset to clean [MainActivi
         android:supportsRtl="true"
         android:theme="@style/Theme.CampusConnect"&gt;
 
-        &lt;!-- 1. MAIN LAUNCHER: MainActivity launches when user taps app icon --&gt;
+        &lt;!-- 1. MAIN LAUNCHER: MainActivity starts on app tap --&gt;
         &lt;activity
             android:name=".MainActivity"
             android:exported="true"&gt;
@@ -2178,15 +2055,17 @@ All intermediate screens are destroyed! Back stack is reset to clean [MainActivi
             &lt;/intent-filter&gt;
         &lt;/activity&gt;
 
-        &lt;!-- 2. Child Activities: Exported=false ensures external apps cannot launch them --&gt;
+        &lt;!-- 2. Login Screen --&gt;
         &lt;activity
             android:name=".LoginActivity"
             android:exported="false" /&gt;
 
+        &lt;!-- 3. Sign Up Screen --&gt;
         &lt;activity
             android:name=".SignUpActivity"
             android:exported="false" /&gt;
 
+        &lt;!-- 4. Dashboard Screen --&gt;
         &lt;activity
             android:name=".DashboardActivity"
             android:exported="false" /&gt;
@@ -2197,367 +2076,153 @@ All intermediate screens are destroyed! Back stack is reset to clean [MainActivi
             </div>
         </section>
 
-        <!-- Section 13: Top 8 Beginner Errors -->
-        <section id="section-troubleshooting" class="lesson-section">
+        <!-- STEP 8: RUN, TEST & CHECKLIST -->
+        <section id="step-8-test" class="lab-section">
             <div class="section-header">
-                <div class="section-number">13</div>
-                <h2 class="section-title">Troubleshooting: Top 8 Beginner Errors &amp; Fixes</h2>
+                <div class="section-step-num finish"><i class="fa-solid fa-check"></i></div>
+                <h2 class="section-title">Step 8: Run, Test &amp; Submission Checklist</h2>
             </div>
-            
-            <div class="trouble-box">
-                <div class="trouble-title"><i class="fa-solid fa-circle-exclamation"></i> Error 1: Button click does absolutely nothing</div>
-                <p><strong>Cause:</strong> You created the button in XML but forgot to assign a click listener in Kotlin, or your <code>findViewById(R.id.yourButton)</code> points to the wrong ID.</p>
-                <p><strong>Fix:</strong> Verify that the ID in your XML matches the ID in Kotlin exactly: <code>android:id="@+id/btnLogin"</code> &harr; <code>findViewById&lt;Button&gt;(R.id.btnLogin)</code>. Ensure <code>button.setOnClickListener { ... }</code> is written inside <code>onCreate()</code>.</p>
-            </div>
-
-            <div class="trouble-box">
-                <div class="trouble-title"><i class="fa-solid fa-circle-exclamation"></i> Error 2: Application crashes immediately when clicking Login or Sign Up</div>
-                <p><strong>Cause:</strong> <code>android.content.ActivityNotFoundException: Unable to find explicit activity class</code>.</p>
-                <p><strong>Fix:</strong> Open <code>AndroidManifest.xml</code> and confirm the activity is declared inside <code>&lt;application&gt;</code>: <code>&lt;activity android:name=".LoginActivity" /&gt;</code>.</p>
-            </div>
-
-            <div class="trouble-box">
-                <div class="trouble-title"><i class="fa-solid fa-circle-exclamation"></i> Error 3: XML shows red lines: "Unclosed tag" or "Missing namespace"</div>
-                <p><strong>Cause:</strong> Missing closing tag (e.g. <code>/&gt;</code>) or missing <code>xmlns:android="http://schemas.android.com/apk/res/android"</code> on the root layout element.</p>
-                <p><strong>Fix:</strong> Every opened tag like <code>&lt;TextView ...&gt;</code> must end with <code>/&gt;</code> or a corresponding <code>&lt;/TextView&gt;</code>. Ensure the top layout has the <code>xmlns:android</code> namespace.</p>
-            </div>
-
-            <div class="trouble-box">
-                <div class="trouble-title"><i class="fa-solid fa-circle-exclamation"></i> Error 4: "Unresolved reference: R" or "R.id.* cannot be resolved"</div>
-                <p><strong>Cause:</strong> Android Studio imported <code>android.R</code> instead of your local project's R file, or a syntax error in an XML layout prevented R.java from generating.</p>
-                <p><strong>Fix:</strong> Check your imports at the top of your Kotlin file. If you see <code>import android.R</code>, <strong>DELETE IT</strong>. Then select menu: <code>Build &gt; Clean Project</code> followed by <code>Build &gt; Rebuild Project</code>.</p>
-            </div>
-
-            <div class="trouble-box">
-                <div class="trouble-title"><i class="fa-solid fa-circle-exclamation"></i> Error 5: "Activity cannot be found" or red class highlight</div>
-                <p><strong>Cause:</strong> Package mismatch or filename spelling error (e.g., <code>loginactivity</code> vs <code>LoginActivity</code>).</p>
-                <p><strong>Fix:</strong> Kotlin class names are case-sensitive. Check that your file is named <code>LoginActivity.kt</code> and the class declaration reads <code>class LoginActivity : AppCompatActivity()</code>.</p>
-            </div>
-
-            <div class="trouble-box">
-                <div class="trouble-title"><i class="fa-solid fa-circle-exclamation"></i> Error 6: Password appears as normal visible text</div>
-                <p><strong>Cause:</strong> The <code>EditText</code> is missing <code>android:inputType="textPassword"</code>.</p>
-                <p><strong>Fix:</strong> In <code>activity_login.xml</code> and <code>activity_sign_up.xml</code>, add <code>android:inputType="textPassword"</code> to mask characters with dots.</p>
-            </div>
-
-            <div class="trouble-box">
-                <div class="trouble-title"><i class="fa-solid fa-circle-exclamation"></i> Error 7: Dashboard displays "Welcome, Student!" instead of the typed name</div>
-                <p><strong>Cause:</strong> Intent Extra key spelling mismatch between sender and receiver.</p>
-                <p><strong>Fix:</strong> Check the key string in both files: In <code>SignUpActivity.kt</code>: <code>intent.putExtra("USER_NAME", fullName)</code> &harr; In <code>DashboardActivity.kt</code>: <code>intent.getStringExtra("USER_NAME")</code>. The key string must be identical!</p>
-            </div>
-
-            <div class="trouble-box">
-                <div class="trouble-title"><i class="fa-solid fa-circle-exclamation"></i> Error 8: Gradle sync failed or build stuck</div>
-                <p><strong>Cause:</strong> Gradle synchronization interrupted, or offline cache conflict.</p>
-                <p><strong>Fix:</strong> In Arctic Fox, select <code>File &gt; Sync Project with Gradle Files</code>. If issues persist, select <code>File &gt; Invalidate Caches / Restart...</code> and select <strong>Invalidate and Restart</strong>.</p>
-            </div>
-        </section>
-
-        <!-- Section 14: Complete Code Repository & File Map -->
-        <section id="section-full-code" class="lesson-section">
-            <div class="section-header">
-                <div class="section-number">14</div>
-                <h2 class="section-title">Complete Final Project Code Repository</h2>
-            </div>
-            <p>
-                Compare your local project files against this final verified file map to ensure 100% internal naming and ID consistency:
+            <p class="section-desc">
+                Select your Android Virtual Device (AVD Emulator) or connected physical device in the toolbar, then click the green <strong>Run ▶</strong> button (or press <code>Shift + F10</code>). Test all 5 scenarios below:
             </p>
 
-            <div class="flow-diagram">
-CampusConnect (Project Root)
-└── app
-    └── src
-        └── main
-            ├── AndroidManifest.xml
-            │
-            ├── java
-            │   └── com.example.campusconnect
-            │       ├── MainActivity.kt        &lt;-- Welcome Page logic
-            │       ├── LoginActivity.kt       &lt;-- Login auth logic
-            │       ├── SignUpActivity.kt      &lt;-- Registration &amp; validation logic
-            │       └── DashboardActivity.kt   &lt;-- Portal &amp; data display logic
-            │
-            └── res
-                ├── drawable
-                │   ├── ic_app_logo.xml        &lt;-- Graduation cap vector
-                │   └── edit_text_border.xml   &lt;-- Input border shape
-                ├── layout
-                │   ├── activity_main.xml      &lt;-- Welcome screen layout
-                │   ├── activity_login.xml     &lt;-- Login screen layout
-                │   ├── activity_sign_up.xml   &lt;-- Sign Up screen layout
-                │   └── activity_dashboard.xml &lt;-- Dashboard screen layout
-                └── values
-                    ├── colors.xml             &lt;-- Color tokens
-                    ├── strings.xml            &lt;-- String constants
-                    └── themes.xml             &lt;-- App theme
+            <table class="clean-table">
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">Test</th>
+                        <th>User Action</th>
+                        <th>Expected Result</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Test 1</strong></td>
+                        <td>Tap <strong>LOG IN</strong> or <strong>CREATE AN ACCOUNT</strong> on Welcome</td>
+                        <td>Screen transitions smoothly to Login or Sign Up screen.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Test 2</strong></td>
+                        <td>In Login, leave fields blank and tap <strong>LOG IN</strong></td>
+                        <td>Validation error displays: <em>"Please enter your username"</em>.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Test 3</strong></td>
+                        <td>In Login, type <code>admin</code> and <code>1234</code>, then tap <strong>LOG IN</strong></td>
+                        <td>Toast confirms success, and Dashboard opens showing <strong>"Welcome, admin!"</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Test 4</strong></td>
+                        <td>In Sign Up, enter <em>"Maria Santos"</em>, email, password, and submit</td>
+                        <td>Dashboard opens showing <strong>"Welcome, Maria Santos!"</strong> (passed via Intent).</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Test 5</strong></td>
+                        <td>On Dashboard, tap <strong>LOG OUT</strong>, then press the device's physical <strong>Back</strong> button</td>
+                        <td>App returns to Welcome. Pressing Back exits the app instead of reopening the private Dashboard.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 style="font-size: 16px; margin: 24px 0 12px; color: var(--text-title); font-weight: 800;">
+                <i class="fa-solid fa-list-check" style="color: var(--accent-green);"></i> Student Lab Deliverables Checklist
+            </h3>
+
+            <div class="check-list-box">
+                <div class="check-item" onclick="toggleCheck(this)">
+                    <div class="check-box-ui"><i class="fa-solid fa-check" style="font-size: 11px;"></i></div>
+                    <span>Android Studio Arctic Fox project builds cleanly with zero compile errors.</span>
+                </div>
+                <div class="check-item" onclick="toggleCheck(this)">
+                    <div class="check-box-ui"><i class="fa-solid fa-check" style="font-size: 11px;"></i></div>
+                    <span>Welcome screen (MainActivity) navigates correctly to both Login and Sign Up.</span>
+                </div>
+                <div class="check-item" onclick="toggleCheck(this)">
+                    <div class="check-box-ui"><i class="fa-solid fa-check" style="font-size: 11px;"></i></div>
+                    <span>Login authentication verifies credentials (admin / 1234) and rejects invalid attempts.</span>
+                </div>
+                <div class="check-item" onclick="toggleCheck(this)">
+                    <div class="check-box-ui"><i class="fa-solid fa-check" style="font-size: 11px;"></i></div>
+                    <span>Sign Up validates full name, email, password length, and password match.</span>
+                </div>
+                <div class="check-item" onclick="toggleCheck(this)">
+                    <div class="check-box-ui"><i class="fa-solid fa-check" style="font-size: 11px;"></i></div>
+                    <span>Dashboard dynamically renders the student's name using Intent extra data passing.</span>
+                </div>
+                <div class="check-item" onclick="toggleCheck(this)">
+                    <div class="check-box-ui"><i class="fa-solid fa-check" style="font-size: 11px;"></i></div>
+                    <span>Logout button securely wipes the Back Stack and redirects to Welcome screen.</span>
+                </div>
             </div>
         </section>
 
-        <!-- Section 15: Classroom Exercise & Submission Checklist -->
-        <section id="section-exercise" class="lesson-section">
+        <!-- TROUBLESHOOTING -->
+        <section id="troubleshooting" class="lab-section">
             <div class="section-header">
-                <div class="section-number">15</div>
-                <h2 class="section-title">Classroom Exercise: Build Your First Multi-Screen App</h2>
-            </div>
-            
-            <p><strong>Objective:</strong> Create and customize your own 4-screen application using Kotlin and XML in Android Studio Arctic Fox 2020.3.1.</p>
-            
-            <h3>Customization Tasks:</h3>
-            <ul>
-                <li><strong>Brand Identity:</strong> Change the app name from CampusConnect to your team/personal project name (e.g. <em>FitPulse</em>, <em>GameLocker</em>, <em>StudySphere</em>).</li>
-                <li><strong>Color Theme:</strong> Customize <code>colors.xml</code> with your own brand primary and accent colors.</li>
-                <li><strong>Dashboard Cards:</strong> Customize the 3 action cards in <code>activity_dashboard.xml</code> to match your application's domain.</li>
-                <li><strong>Validation:</strong> Ensure empty input fields, password length, and password confirmation are properly validated with informative Toast messages.</li>
-            </ul>
-
-            <div class="checklist-container">
-                <h3 style="margin-top: 0;"><i class="fa-solid fa-camera"></i> Prove It: Demonstrate Your Working Application</h3>
-                <p style="font-size: 13.5px; color: var(--text-muted);">Check off each item as you record your demonstration video or take verification screenshots:</p>
-
-                <label class="check-item">
-                    <input type="checkbox">
-                    <span class="check-label"><strong>Screenshot 1:</strong> Welcome Page running in Android Emulator with logo, title, and buttons.</span>
-                </label>
-                <label class="check-item">
-                    <input type="checkbox">
-                    <span class="check-label"><strong>Screenshot 2:</strong> Login Page showing invalid login attempt ("Invalid credentials" Toast).</span>
-                </label>
-                <label class="check-item">
-                    <input type="checkbox">
-                    <span class="check-label"><strong>Screenshot 3:</strong> Sign Up Page demonstrating empty-field or password mismatch validation.</span>
-                </label>
-                <label class="check-item">
-                    <input type="checkbox">
-                    <span class="check-label"><strong>Screenshot 4:</strong> Successful Sign Up navigation passing the student's real name.</span>
-                </label>
-                <label class="check-item">
-                    <input type="checkbox">
-                    <span class="check-label"><strong>Screenshot 5:</strong> Dashboard displaying personalized <em>"Welcome, [Student Name]!"</em> header.</span>
-                </label>
-                <label class="check-item">
-                    <input type="checkbox">
-                    <span class="check-label"><strong>Screenshot 6:</strong> Tapping LOG OUT successfully terminates the session and returns to Welcome Page.</span>
-                </label>
-            </div>
-        </section>
-
-        <!-- Section 16: Knowledge Check Assessment -->
-        <section id="section-assessment" class="lesson-section">
-            <div class="section-header">
-                <div class="section-number">16</div>
-                <h2 class="section-title">Knowledge Check: Self-Assessment (10 Questions)</h2>
+                <div class="section-step-num"><i class="fa-solid fa-wrench" style="font-size: 14px;"></i></div>
+                <h2 class="section-title">Quick Troubleshooting Guide</h2>
             </div>
 
-            <!-- Q1 -->
-            <div class="quiz-card">
-                <div class="quiz-q">1. What is the primary role of an Activity in a traditional Android application?</div>
-                <div class="quiz-options">
-                    <div class="quiz-opt">A) A local SQLite database table that stores user records.</div>
-                    <div class="quiz-opt">B) A single focused screen or user interaction window in an app.</div>
-                    <div class="quiz-opt">C) A network background worker that downloads images.</div>
-                    <div class="quiz-opt">D) An XML file that compiles Java bytecode into APKs.</div>
+            <div class="trouble-grid">
+                <div class="trouble-card">
+                    <div class="trouble-title"><i class="fa-solid fa-bug" style="color: var(--accent-rose);"></i> ActivityNotFoundException</div>
+                    <p>App crashes when clicking a button.</p>
+                    <div class="trouble-fix">
+                        <strong>Fix:</strong> Open <code>AndroidManifest.xml</code> and confirm the activity is registered inside <code>&lt;application&gt;</code>.
+                    </div>
                 </div>
-                <button class="show-ans-btn" onclick="toggleAns('ans1')"><i class="fa-solid fa-eye"></i> Show Answer</button>
-                <div id="ans1" class="quiz-answer">
-                    <strong>Correct Answer: B.</strong> An Activity represents a single focused task or screen where the user interacts with your application.
-                </div>
-            </div>
 
-            <!-- Q2 -->
-            <div class="quiz-card">
-                <div class="quiz-q">2. Which Android component is responsible for binding XML visual elements to Kotlin variables?</div>
-                <div class="quiz-options">
-                    <div class="quiz-opt">A) <code>findViewById()</code></div>
-                    <div class="quiz-opt">B) <code>startActivity()</code></div>
-                    <div class="quiz-opt">C) <code>putExtra()</code></div>
-                    <div class="quiz-opt">D) <code>setContentView()</code></div>
+                <div class="trouble-card">
+                    <div class="trouble-title"><i class="fa-solid fa-bug" style="color: var(--accent-rose);"></i> "Unresolved reference: R"</div>
+                    <p>Kotlin files highlight <code>R.id...</code> in red.</p>
+                    <div class="trouble-fix">
+                        <strong>Fix:</strong> Check top imports. If you see <code>import android.R</code>, <strong>delete it</strong>! Then click <em>Build &gt; Clean Project</em>.
+                    </div>
                 </div>
-                <button class="show-ans-btn" onclick="toggleAns('ans2')"><i class="fa-solid fa-eye"></i> Show Answer</button>
-                <div id="ans2" class="quiz-answer">
-                    <strong>Correct Answer: A.</strong> <code>findViewById&lt;T&gt;(R.id.*)</code> locates views defined in your XML tree by their unique ID.
-                </div>
-            </div>
 
-            <!-- Q3 -->
-            <div class="quiz-card">
-                <div class="quiz-q">3. Which XML attribute on an &lt;EditText&gt; masks characters with dots for secure password entry?</div>
-                <div class="quiz-options">
-                    <div class="quiz-opt">A) <code>android:security="true"</code></div>
-                    <div class="quiz-opt">B) <code>android:visibility="hidden"</code></div>
-                    <div class="quiz-opt">C) <code>android:inputType="textPassword"</code></div>
-                    <div class="quiz-opt">D) <code>android:passwordMask="dots"</code></div>
+                <div class="trouble-card">
+                    <div class="trouble-title"><i class="fa-solid fa-bug" style="color: var(--accent-rose);"></i> Dashboard says "Welcome, Student!"</div>
+                    <p>Passed name is not displaying.</p>
+                    <div class="trouble-fix">
+                        <strong>Fix:</strong> Keys must match exactly: <code>putExtra("USER_NAME", name)</code> &harr; <code>getStringExtra("USER_NAME")</code>.
+                    </div>
                 </div>
-                <button class="show-ans-btn" onclick="toggleAns('ans3')"><i class="fa-solid fa-eye"></i> Show Answer</button>
-                <div id="ans3" class="quiz-answer">
-                    <strong>Correct Answer: C.</strong> <code>android:inputType="textPassword"</code> instructs the keyboard and text renderer to mask typed characters.
-                </div>
-            </div>
 
-            <!-- Q4 -->
-            <div class="quiz-card">
-                <div class="quiz-q">4. How do you transport the string "Maria" from SignUpActivity to DashboardActivity?</div>
-                <div class="quiz-options">
-                    <div class="quiz-opt">A) <code>intent.saveString("NAME", "Maria")</code></div>
-                    <div class="quiz-opt">B) <code>intent.putExtra("USER_NAME", "Maria")</code></div>
-                    <div class="quiz-opt">C) <code>DashboardActivity.userName = "Maria"</code></div>
-                    <div class="quiz-opt">D) <code>setSharedPreference("NAME", "Maria")</code></div>
-                </div>
-                <button class="show-ans-btn" onclick="toggleAns('ans4')"><i class="fa-solid fa-eye"></i> Show Answer</button>
-                <div id="ans4" class="quiz-answer">
-                    <strong>Correct Answer: B.</strong> <code>intent.putExtra(key, value)</code> attaches key-value pairs to the Intent envelope.
-                </div>
-            </div>
-
-            <!-- Q5 -->
-            <div class="quiz-card">
-                <div class="quiz-q">5. What happens if you navigate to an Activity that is NOT declared in AndroidManifest.xml?</div>
-                <div class="quiz-options">
-                    <div class="quiz-opt">A) The app automatically generates the entry in the background.</div>
-                    <div class="quiz-opt">B) Android displays a blank white screen without crashing.</div>
-                    <div class="quiz-opt">C) The application crashes with an <code>ActivityNotFoundException</code>.</div>
-                    <div class="quiz-opt">D) The app redirects the user to the Google Play Store.</div>
-                </div>
-                <button class="show-ans-btn" onclick="toggleAns('ans5')"><i class="fa-solid fa-eye"></i> Show Answer</button>
-                <div id="ans5" class="quiz-answer">
-                    <strong>Correct Answer: C.</strong> Android requires all Activities to be registered in the Manifest; omitting it throws an <code>ActivityNotFoundException</code>.
-                </div>
-            </div>
-
-            <!-- Q6 -->
-            <div class="quiz-card">
-                <div class="quiz-q">6. In Android Studio Arctic Fox (2020.3.1), what is the correct project template for standard XML + Kotlin apps?</div>
-                <div class="quiz-options">
-                    <div class="quiz-opt">A) Empty Views Activity</div>
-                    <div class="quiz-opt">B) Empty Activity</div>
-                    <div class="quiz-opt">C) Jetpack Compose Activity</div>
-                    <div class="quiz-opt">D) Basic Navigation Drawer</div>
-                </div>
-                <button class="show-ans-btn" onclick="toggleAns('ans6')"><i class="fa-solid fa-eye"></i> Show Answer</button>
-                <div id="ans6" class="quiz-answer">
-                    <strong>Correct Answer: B.</strong> In Arctic Fox 2020.3.1, the template was called <strong>"Empty Activity"</strong>. ("Empty Views Activity" was introduced in newer versions).
-                </div>
-            </div>
-
-            <!-- Q7 -->
-            <div class="quiz-card">
-                <div class="quiz-q">7. Why is &lt;ScrollView&gt; essential when designing forms with multiple input fields?</div>
-                <div class="quiz-options">
-                    <div class="quiz-opt">A) It automatically encrypts entered text.</div>
-                    <div class="quiz-opt">B) It allows users to scroll down when the virtual keyboard pops up and covers lower fields.</div>
-                    <div class="quiz-opt">C) It speeds up Android Gradle build synchronization.</div>
-                    <div class="quiz-opt">D) It enables multi-threading in Kotlin.</div>
-                </div>
-                <button class="show-ans-btn" onclick="toggleAns('ans7')"><i class="fa-solid fa-eye"></i> Show Answer</button>
-                <div id="ans7" class="quiz-answer">
-                    <strong>Correct Answer: B.</strong> Soft keyboards consume up to 50% of the screen; ScrollView ensures users can scroll down to reach Submit buttons.
-                </div>
-            </div>
-
-            <!-- Q8 -->
-            <div class="quiz-card">
-                <div class="quiz-q">8. What is the effect of calling <code>finish()</code> right after <code>startActivity()</code>?</div>
-                <div class="quiz-options">
-                    <div class="quiz-opt">A) It closes the entire Android operating system.</div>
-                    <div class="quiz-opt">B) It destroys the current Activity so it is removed from the Back Stack.</div>
-                    <div class="quiz-opt">C) It restarts the device's WiFi connection.</div>
-                    <div class="quiz-opt">D) It erases the user's password from memory.</div>
-                </div>
-                <button class="show-ans-btn" onclick="toggleAns('ans8')"><i class="fa-solid fa-eye"></i> Show Answer</button>
-                <div id="ans8" class="quiz-answer">
-                    <strong>Correct Answer: B.</strong> <code>finish()</code> terminates the calling activity instance, preventing the user from returning to it via the Back button.
-                </div>
-            </div>
-
-            <!-- Q9 -->
-            <div class="quiz-card">
-                <div class="quiz-q">9. Which mode in Arctic Fox's layout editor allows you to type XML and observe live layout rendering side-by-side?</div>
-                <div class="quiz-options">
-                    <div class="quiz-opt">A) Code mode</div>
-                    <div class="quiz-opt">B) Design mode</div>
-                    <div class="quiz-opt">C) Split mode</div>
-                    <div class="quiz-opt">D) Blueprint mode</div>
-                </div>
-                <button class="show-ans-btn" onclick="toggleAns('ans9')"><i class="fa-solid fa-eye"></i> Show Answer</button>
-                <div id="ans9" class="quiz-answer">
-                    <strong>Correct Answer: C.</strong> The <strong>Split</strong> button at the top right of the editor splits the screen into XML code on the left and visual artboard on the right.
-                </div>
-            </div>
-
-            <!-- Q10 -->
-            <div class="quiz-card">
-                <div class="quiz-q">10. In Kotlin, why do we use <code>.trim()</code> when reading text from an EditText?</div>
-                <div class="quiz-options">
-                    <div class="quiz-opt">A) To remove accidental leading and trailing whitespace characters.</div>
-                    <div class="quiz-opt">B) To convert lowercase letters into uppercase letters.</div>
-                    <div class="quiz-opt">C) To translate foreign languages into English.</div>
-                    <div class="quiz-opt">D) To verify whether the user is connected to the internet.</div>
-                </div>
-                <button class="show-ans-btn" onclick="toggleAns('ans10')"><i class="fa-solid fa-eye"></i> Show Answer</button>
-                <div id="ans10" class="quiz-answer">
-                    <strong>Correct Answer: A.</strong> <code>.trim()</code> eliminates accidental spaces that users often type at the beginning or end of email addresses and names.
+                <div class="trouble-card">
+                    <div class="trouble-title"><i class="fa-solid fa-bug" style="color: var(--accent-rose);"></i> Button clicks do nothing</div>
+                    <p>Touching button does not open screen.</p>
+                    <div class="trouble-fix">
+                        <strong>Fix:</strong> Confirm <code>button.setOnClickListener { ... }</code> is written inside <code>onCreate()</code>, after <code>setContentView()</code>.
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- Fun Fact -->
-        <div class="callout callout-info" style="margin-top: 36px;">
-            <i class="fa-solid fa-star callout-icon"></i>
-            <div class="callout-content">
-                <strong><i class="fa-solid fa-lightbulb"></i> Android Fun Fact: Why "Arctic Fox"?</strong>
-                Starting in 2020 with version 2020.3.1, Google shifted from letter-based dessert code names (Cupcake, Donut, Eclair, Froyo...) to alphabetical wildlife names for Android Studio releases! 
-                <strong>Arctic Fox (A)</strong> was the historic first release under this new scheme, followed by <strong>Bumblebee (B)</strong>, <strong>Chipmunk (C)</strong>, <strong>Dolphin (D)</strong>, and <strong>Electric Eel (E)</strong>.
-            </div>
-        </div>
-
-        <!-- Production Warning -->
-        <div class="callout callout-danger" style="margin-top: 16px;">
-            <i class="fa-solid fa-shield-halved callout-icon"></i>
-            <div class="callout-content">
-                <strong>ACADEMIC NOTICE: Educational Demo vs. Production Security</strong>
-                The authentication logic demonstrated in this lesson (<code>admin / 1234</code>) is crafted strictly for classroom instructional purposes to teach UI event handling, input validation, and screen transitions without requiring external network dependencies.
-                <br><br>
-                In a real-world commercial Android application, passwords must <strong>NEVER</strong> be hardcoded or compared in plain text. Production systems require salted one-way cryptographic hashes (Argon2 / bcrypt), encrypted HTTPS network pipelines, token-based authentication (OAuth2 / JWT), and secure hardware-backed key storage (Android Keystore).
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <footer class="manual-footer">
-            <p>
-                <strong>iamlesson.space</strong> &bull; Higher Education Computing Curriculum &bull; Mob Dev 1 Lab
-            </p>
-            <p style="margin-top: 4px;">
-                Designed for Android Studio Arctic Fox (2020.3.1) &bull; Built with Kotlin &amp; XML
-            </p>
-        </footer>
     </div>
 
-    <!-- Interactive Script for Copying and Quiz -->
     <script>
-        function copyCode(elementId, btn) {
-            const codeEl = document.getElementById(elementId);
-            if (!codeEl) return;
-            const text = codeEl.innerText;
-            navigator.clipboard.writeText(text).then(() => {
-                const originalHtml = btn.innerHTML;
-                btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
-                btn.style.background = '#10b981';
+        // Copy Code to Clipboard
+        function copyCode(codeId, btnElement) {
+            const codeBlock = document.getElementById(codeId);
+            if (!codeBlock) return;
+            
+            const textToCopy = codeBlock.innerText;
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalHtml = btnElement.innerHTML;
+                btnElement.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+                btnElement.classList.add('copied');
+                
                 setTimeout(() => {
-                    btn.innerHTML = originalHtml;
-                    btn.style.background = '';
+                    btnElement.innerHTML = originalHtml;
+                    btnElement.classList.remove('copied');
                 }, 2000);
             }).catch(err => {
-                console.error("Copy failed", err);
+                console.error('Failed to copy text: ', err);
             });
         }
 
-        function toggleAns(id) {
-            const el = document.getElementById(id);
-            if (!el) return;
-            if (el.style.display === 'block') {
-                el.style.display = 'none';
-            } else {
-                el.style.display = 'block';
-            }
+        // Toggle Interactive Checklist
+        function toggleCheck(item) {
+            item.classList.toggle('done');
         }
     </script>
 </body>

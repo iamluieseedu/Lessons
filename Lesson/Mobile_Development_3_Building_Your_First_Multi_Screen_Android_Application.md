@@ -1,4 +1,4 @@
-﻿# Mob Dev 1 Lab: Building Your First Multi-Screen Android Application
+# Mob Dev 1 Lab: Building Your First Multi-Screen Android Application
 **Subtitle:** Welcome Page → Login → Sign Up → Dashboard  
 **Platform:** [iamlesson.space](https://iamlesson.space) → Higher Education Computing Curriculum  
 **Target Environment:** Android Studio Arctic Fox | 2020.3.1 (Official Release 2020.3.1, AGP 7.0.0, Gradle 7.0.2)  
@@ -16,58 +16,28 @@
 
 ---
 
-## 🗺️ Application Architecture & Screen Flow
+## 🗺️ Application Screen Flow Map
 
-In a traditional multi-screen Android application, each distinct user screen is governed by an **Activity** class paired with an **XML layout**. Movement between screens is coordinated by the Android operating system using **Intents**.
+| Screen | Activity & Layout | Purpose & User Actions |
+| :--- | :--- | :--- |
+| **Screen 1: Welcome** | `MainActivity.kt`<br>`activity_main.xml` | App entry point with logo and title.<br>• **[LOG IN]** → Opens `LoginActivity`<br>• **[CREATE AN ACCOUNT]** → Opens `SignUpActivity` |
+| **Screen 2: Login** | `LoginActivity.kt`<br>`activity_login.xml` | Validates credentials (`admin` / `1234`).<br>• **[LOG IN]** → Passes username & opens `DashboardActivity`<br>• **[Sign Up link]** → Jumps to `SignUpActivity` |
+| **Screen 3: Sign Up** | `SignUpActivity.kt`<br>`activity_sign_up.xml` | Captures name, email, and passwords with form validation.<br>• **[COMPLETE REGISTRATION]** → Passes name & opens `DashboardActivity`<br>• **[Log In link]** → Jumps to `LoginActivity` |
+| **Screen 4: Dashboard** | `DashboardActivity.kt`<br>`activity_dashboard.xml` | Displays personalized **"Welcome, [Name]!"** via Intent extras.<br>• **[LOG OUT]** → Clears Back Stack & returns to `MainActivity` |
 
-```
-========================================================================================
-                          CAMPUSCONNECT: 4-SCREEN NAVIGATION FLOW
-========================================================================================
+### How Data Moves Between Screens (Intent Extras)
+1. **Sender (`LoginActivity.kt` or `SignUpActivity.kt`):**
+   ```kotlin
+   val intent = Intent(this, DashboardActivity::class.java)
+   intent.putExtra("USER_NAME", enteredName)
+   startActivity(intent)
+   ```
+2. **Receiver (`DashboardActivity.kt`):**
+   ```kotlin
+   val name = intent.getStringExtra("USER_NAME") ?: "Student"
+   tvGreeting.text = "Welcome, $name!"
+   ```
 
-                 +---------------------------------------------+
-                 |          MainActivity (Welcome Page)        |
-                 |     Logo + Title + Description + 2 Buttons  |
-                 +---------------------------------------------+
-                            |                       |
-          [Click Login Button]            [Click Sign Up Button]
-                            |                       |
-                            v                       v
-     +-------------------------------+     +-------------------------------+
-     |         LoginActivity         |     |        SignUpActivity         |
-     |  Username + Password Form     |     |  Name + Email + Passwords     |
-     +-------------------------------+     +-------------------------------+
-        |                         |           |                         |
-  [Click "Create Acc"]   [Valid: admin/1234]  |                  [Click "Log In"]
-        |                         |     [Valid Form Submission]         |
-        +-------> (To SignUp)     |           |          (To Login) <---+
-                                  |           | (Passes "USER_NAME" extra)
-                                  v           v
-                        +-------------------------------+
-                        |       DashboardActivity       |
-                        |   "Welcome, [USER_NAME]!"     |
-                        |   3 Dashboard Action Cards    |
-                        |   [LOG OUT] Button            |
-                        +-------------------------------+
-                                        |
-                             [Click Logout Button]
-                                        |
-                                        v
-                        +-------------------------------+
-                        | MainActivity (Returns to Home)|
-                        +-------------------------------+
-```
-
-### The Explicit Intent Cycle
-```
-User Taps Button  --->  val intent = Intent(this, LoginActivity::class.java)
-                        startActivity(intent)
-                              |
-                              v (Android OS checks AndroidManifest.xml)
-                        LoginActivity is instantiated
-                        onCreate() fires
-                        setContentView(R.layout.activity_login) renders the screen!
-```
 
 ---
 
