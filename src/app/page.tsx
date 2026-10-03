@@ -169,16 +169,16 @@ const COURSE_FOLDERS: CourseFolderDef[] = [
   },
   {
     id: 'mobdev',
-    code: 'IT-MD3',
-    title: 'Mobile Development 3',
-    courseTrack: 'Native Mobile Engineering',
+    code: 'IT-MD1',
+    title: 'Mob Dev 1 Lab',
+    courseTrack: 'Native Android Studio (Arctic Fox)',
     description: 'Native Android application development using Kotlin, XML layout architecture, Activity lifecycles, and explicit Intents in Android Studio Arctic Fox (2020.3.1).',
     level: 'Mobile Track',
     badgeColor: 'bg-sky-50 text-sky-700 border-sky-200/80',
     gradient: 'from-sky-600 via-blue-600 to-indigo-600',
     glow: 'shadow-sky-500/10',
     borderAccent: 'border-sky-200 hover:border-sky-400',
-    filter: (l) => l.course === 'Mobile Development 3' || l.id.startsWith('mobdev3')
+    filter: (l) => l.course === 'Mob Dev 1 Lab' || l.course === 'Mobile Development 3' || l.course === 'Mobile Development 1' || l.id.startsWith('mobdev')
   }
 ];
 
@@ -188,6 +188,7 @@ export default function Home() {
   const [openFolderId, setOpenFolderId] = useState<string>('webdev3'); // Default to Web Dev 3 folder
   const [viewMode, setViewMode] = useState<'cards' | 'tasks' | 'outline'>('cards'); // Cards vs Tasks vs Compiled Outline
   const [taskLayoutMode, setTaskLayoutMode] = useState<'grid' | 'list'>('grid'); // Grid View vs Detailed List View (Default: Grid)
+  const [taskCourseFilter, setTaskCourseFilter] = useState<string>('all'); // Filter tasks by course track: 'all' or courseFolderId
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'week-asc' | 'week-desc' | 'title-asc'>('week-asc');
   const [taskSortBy, setTaskSortBy] = useState<'default' | 'title-asc' | 'title-desc' | 'difficulty-asc' | 'difficulty-desc' | 'duration-asc'>('default');
@@ -390,13 +391,14 @@ export default function Home() {
   const activeFolder = COURSE_FOLDERS.find((f) => f.id === openFolderId) || COURSE_FOLDERS[0];
   const activeLessons = isAllFolders ? lessons : lessons.filter(activeFolder.filter);
 
-  // Filter tasks based on active folder & search query
-  const activeTasks = isAllFolders 
+  // Filter tasks based on taskCourseFilter:
+  // By default ('all'), all tasks across Mob Dev 1, Laravel, and Godot are visible!
+  const activeTasks = taskCourseFilter === 'all' 
     ? tasks 
-    : tasks.filter((t) => t.courseFolderId === openFolderId);
+    : tasks.filter((t) => t.courseFolderId === taskCourseFilter);
 
   const currentFolderTasks = activeTasks;
-  const currentFolderActiveTasks = currentFolderTasks.filter((t) => t.status === 'active');
+  const currentFolderActiveTasks = tasks.filter((t) => t.status === 'active');
 
   const displayedTasks = activeTasks
     .filter((task) => {
@@ -710,7 +712,16 @@ export default function Home() {
                       <div className="flex items-center gap-1.5 truncate">
                         <span>{folderLessonCount} {folderLessonCount === 1 ? 'Lesson' : 'Lessons'}</span>
                         {folderActiveTasksCount > 0 && (
-                          <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-rose-50 text-rose-600 border border-rose-200/60 font-black">
+                          <span 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setOpenFolderId(folder.id);
+                              setViewMode('tasks');
+                              setTaskCourseFilter(folder.id);
+                            }}
+                            className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-rose-50 text-rose-600 border border-rose-200/60 font-black hover:bg-rose-100 transition cursor-pointer"
+                            title={`View ${folder.title} tasks`}
+                          >
                             {folderActiveTasksCount} {folderActiveTasksCount === 1 ? 'Task' : 'Tasks'}
                           </span>
                         )}
@@ -741,7 +752,10 @@ export default function Home() {
               </button>
 
               <button
-                onClick={() => setViewMode('tasks')}
+                onClick={() => {
+                  setViewMode('tasks');
+                  setTaskCourseFilter('all');
+                }}
                 className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer select-none ${
                   viewMode === 'tasks'
                     ? 'bg-white text-rose-600 shadow-sm'
@@ -751,13 +765,13 @@ export default function Home() {
               >
                 <FileCode className={`w-3.5 h-3.5 ${viewMode === 'tasks' ? 'text-rose-600' : 'text-slate-400'}`} />
                 <span>Tasks</span>
-                {currentFolderActiveTasks.length > 0 && (
+                {tasks.filter(t => t.status === 'active').length > 0 && (
                   <span className={`text-[9px] font-mono font-black px-1.5 py-0.2 rounded-full ${
                     viewMode === 'tasks' 
                       ? 'bg-rose-100 text-rose-700' 
                       : 'bg-rose-600 text-white'
                   }`}>
-                    {currentFolderActiveTasks.length}
+                    {tasks.filter(t => t.status === 'active').length}
                   </span>
                 )}
               </button>
@@ -973,7 +987,9 @@ export default function Home() {
                         Practical Lab Tasks & Manuals
                       </span>
                       <span className="text-[10px] font-mono text-slate-400">
-                        {openFolderId === 'all' ? 'All Course Tracks' : activeFolder?.title}
+                        {taskCourseFilter === 'all' 
+                          ? 'All Course Tracks' 
+                          : COURSE_FOLDERS.find(f => f.id === taskCourseFilter)?.title || taskCourseFilter}
                       </span>
                     </div>
                     <h3 className="text-xl sm:text-2xl font-black font-lexend tracking-tight text-white">
@@ -999,6 +1015,76 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
+              </div>
+
+              {/* Course Track Filter Pills */}
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  onClick={() => setTaskCourseFilter('all')}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer select-none ${
+                    taskCourseFilter === 'all'
+                      ? 'bg-slate-900 text-white shadow-sm'
+                      : 'bg-white border border-slate-200 text-slate-600 hover:border-slate-300 hover:text-slate-900'
+                  }`}
+                >
+                  <span>All Tasks</span>
+                  <span className={`text-[10px] font-mono font-black px-1.5 py-0.2 rounded-full ${
+                    taskCourseFilter === 'all' ? 'bg-slate-700 text-white' : 'bg-slate-100 text-slate-600'
+                  }`}>
+                    {tasks.length}
+                  </span>
+                </button>
+
+                <button
+                  onClick={() => setTaskCourseFilter('mobdev')}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer select-none ${
+                    taskCourseFilter === 'mobdev'
+                      ? 'bg-sky-600 text-white shadow-sm'
+                      : 'bg-white border border-slate-200 text-slate-600 hover:border-sky-300 hover:text-sky-700'
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-sky-400" />
+                  <span>Mob Dev 1 Lab</span>
+                  <span className={`text-[10px] font-mono font-black px-1.5 py-0.2 rounded-full ${
+                    taskCourseFilter === 'mobdev' ? 'bg-sky-800 text-white' : 'bg-sky-50 text-sky-700'
+                  }`}>
+                    {tasks.filter(t => t.courseFolderId === 'mobdev').length}
+                  </span>
+                </button>
+
+                <button
+                  onClick={() => setTaskCourseFilter('webdev3')}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer select-none ${
+                    taskCourseFilter === 'webdev3'
+                      ? 'bg-rose-600 text-white shadow-sm'
+                      : 'bg-white border border-slate-200 text-slate-600 hover:border-rose-300 hover:text-rose-700'
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-rose-400" />
+                  <span>Laravel Framework</span>
+                  <span className={`text-[10px] font-mono font-black px-1.5 py-0.2 rounded-full ${
+                    taskCourseFilter === 'webdev3' ? 'bg-rose-800 text-white' : 'bg-rose-50 text-rose-700'
+                  }`}>
+                    {tasks.filter(t => t.courseFolderId === 'webdev3').length}
+                  </span>
+                </button>
+
+                <button
+                  onClick={() => setTaskCourseFilter('eventprog')}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer select-none ${
+                    taskCourseFilter === 'eventprog'
+                      ? 'bg-teal-600 text-white shadow-sm'
+                      : 'bg-white border border-slate-200 text-slate-600 hover:border-teal-300 hover:text-teal-700'
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-teal-400" />
+                  <span>Godot 4 Mobile</span>
+                  <span className={`text-[10px] font-mono font-black px-1.5 py-0.2 rounded-full ${
+                    taskCourseFilter === 'eventprog' ? 'bg-teal-800 text-white' : 'bg-teal-50 text-teal-700'
+                  }`}>
+                    {tasks.filter(t => t.courseFolderId === 'eventprog').length}
+                  </span>
+                </button>
               </div>
 
               {/* Tasks Content: Grid View or List View */}
@@ -1298,12 +1384,12 @@ export default function Home() {
 
                               <div className="flex items-center gap-3 text-xs text-slate-400">
                                 <a
-                                  href="/laravel/lab_manual_part_2_multi_page_migration.html"
+                                  href={task.launchUrl}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="hover:text-rose-600 transition underline font-medium text-[11px]"
                                 >
-                                  Direct HTML Standalone File
+                                  Direct HTML Manual
                                 </a>
                               </div>
                             </div>
@@ -1314,27 +1400,39 @@ export default function Home() {
                   </div>
                 )
               ) : (
-                /* Empty state when the active folder has no tasks */
+                /* Empty state when no tasks match filter or query */
                 <div className="bg-white border border-slate-200/80 rounded-3xl p-10 sm:p-12 text-center shadow-sm max-w-2xl mx-auto">
                   <div className="w-14 h-14 rounded-2xl bg-slate-100 border border-slate-200 text-slate-400 flex items-center justify-center mx-auto mb-4">
                     <FileCode className="w-7 h-7" />
                   </div>
                   <h4 className="text-base font-bold text-slate-900 font-lexend mb-1">
-                    No Lab Tasks Configured For {activeFolder?.title || 'This Folder'}
+                    No Lab Tasks Found
                   </h4>
                   <p className="text-xs text-slate-500 max-w-md mx-auto mb-6">
-                    Hands-on lab manuals and migration exercises are currently published under the <strong className="text-slate-800">Laravel Framework</strong> course.
+                    No tasks match the active filters or search query. Browse all available hands-on laboratory manuals below.
                   </p>
-                  <button
-                    onClick={() => {
-                      setOpenFolderId('webdev3');
-                      setViewMode('tasks');
-                    }}
-                    className="py-2.5 px-5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-lexend font-bold text-xs shadow-md transition inline-flex items-center gap-2 cursor-pointer"
-                  >
-                    <FolderOpen className="w-4 h-4" />
-                    <span>View Laravel Framework Tasks</span>
-                  </button>
+                  <div className="flex flex-wrap items-center justify-center gap-3">
+                    <button
+                      onClick={() => {
+                        setTaskCourseFilter('all');
+                        setSearchQuery('');
+                      }}
+                      className="py-2.5 px-5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-lexend font-bold text-xs shadow-md transition inline-flex items-center gap-2 cursor-pointer"
+                    >
+                      <LayoutGrid className="w-4 h-4" />
+                      <span>View All Tasks ({tasks.length})</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setTaskCourseFilter('mobdev');
+                        setSearchQuery('');
+                      }}
+                      className="py-2.5 px-5 rounded-2xl bg-sky-600 hover:bg-sky-700 text-white font-lexend font-bold text-xs shadow-md transition inline-flex items-center gap-2 cursor-pointer"
+                    >
+                      <FileCode className="w-4 h-4" />
+                      <span>View Mob Dev 1 Lab Task</span>
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

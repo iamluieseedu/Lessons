@@ -380,12 +380,12 @@ export const DEFAULT_LESSONS: Lesson[] = [
     ]
   },
   // ==========================================
-  // MOBILE DEVELOPMENT 3: ARCTIC FOX TRACK
+  // MOB DEV 1 LAB: ARCTIC FOX TRACK
   // ==========================================
   {
     id: 'mobdev3-w1',
     week: 1,
-    course: 'Mobile Development 3',
+    course: 'Mob Dev 1 Lab',
     title: 'Building Your First Multi-Screen Android Application',
     description: 'Master Android Studio Arctic Fox (2020.3.1), Activity lifecycles, explicit Intents, XML layouts, form input validation, and data passing across Welcome, Login, Sign Up, and Dashboard screens.',
     duration: '45 mins',

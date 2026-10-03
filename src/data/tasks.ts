@@ -115,10 +115,10 @@ export const DEFAULT_TASKS: CourseTask[] = [
   {
     id: 'android-lab-part-1',
     courseFolderId: 'mobdev',
-    courseCode: 'IT-MD3',
-    courseTitle: 'Mobile Development 3',
+    courseCode: 'IT-MD1',
+    courseTitle: 'Mob Dev 1 Lab',
     title: 'Building Your First Multi-Screen Android Application',
-    badge: 'Laboratory Manual • Week 1',
+    badge: 'Laboratory Manual • Mob Dev 1',
     phaseTag: 'Multi-Screen Navigation',
     type: 'Graded Lab Task',
     difficulty: 'Beginner',
@@ -139,8 +139,8 @@ export const DEFAULT_TASKS: CourseTask[] = [
       'Completed submission screenshots of all screens and logout'
     ],
     techStack: ['Android Studio Arctic Fox', 'Kotlin', 'XML Layouts', 'Android Activities', 'Intents'],
-    launchUrl: '/Lesson/mobile_dev_3_first_multi_screen_android_app.html',
-    actionText: 'Launch Android Lab Manual',
+    launchUrl: '/mobdev/',
+    actionText: 'Launch Mob Dev 1 Manual',
     isExternal: true
   }
 ];

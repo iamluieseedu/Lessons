@@ -1,4 +1,4 @@
-# Mobile Development 3: Building Your First Multi-Screen Android Application
+﻿# Mob Dev 1 Lab: Building Your First Multi-Screen Android Application
 **Subtitle:** Welcome Page → Login → Sign Up → Dashboard  
 **Platform:** [iamlesson.space](https://iamlesson.space) → Higher Education Computing Curriculum  
 **Target Environment:** Android Studio Arctic Fox | 2020.3.1 (Official Release 2020.3.1, AGP 7.0.0, Gradle 7.0.2)  
@@ -186,7 +186,7 @@ app
 <resources>
     <string name="app_name">CampusConnect</string>
     <string name="welcome_title">CampusConnect</string>
-    <string name="welcome_subtitle">Mobile Development 3 Multi-Screen Learning Portal</string>
+    <string name="welcome_subtitle">Mob Dev 1 Lab Multi-Screen Learning Portal</string>
     <string name="btn_login_label">LOG IN</string>
     <string name="btn_signup_label">CREATE AN ACCOUNT</string>
 </resources>
@@ -274,7 +274,7 @@ app
         android:id="@+id/tvWelcomeSubtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Mobile Development 3 • Multi-Screen Portal"
+        android:text="Mob Dev 1 Lab • Multi-Screen Portal"
         android:textSize="14sp"
         android:textColor="@color/text_muted"
         android:gravity="center"
