@@ -439,102 +439,6 @@
             color: var(--primary);
         }
 
-        /* Dynamic 3-Step Navigation Pattern Banner */
-        .concept-banner {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            border-radius: 14px;
-            padding: 22px 26px;
-            color: #ffffff;
-            margin: 24px 0;
-            border: 1px solid #334155;
-            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
-        }
-
-        .concept-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 16px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(255,255,255,0.12);
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .concept-header h4 {
-            font-size: 15px;
-            font-weight: 800;
-            color: #38bdf8;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .concept-steps-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 14px;
-        }
-
-        @media (max-width: 800px) {
-            .concept-steps-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .concept-card {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 14px;
-            font-size: 13px;
-            transition: all 0.2s ease;
-        }
-
-        .concept-card:hover {
-            background: rgba(255, 255, 255, 0.07);
-            border-color: rgba(56, 189, 248, 0.4);
-        }
-
-        .concept-num {
-            display: inline-block;
-            width: 22px;
-            height: 22px;
-            border-radius: 6px;
-            background: #38bdf8;
-            color: #0f172a;
-            font-weight: 800;
-            font-size: 12px;
-            text-align: center;
-            line-height: 22px;
-            margin-bottom: 6px;
-        }
-
-        .concept-card strong {
-            display: block;
-            color: #ffffff;
-            margin-bottom: 4px;
-            font-size: 13.5px;
-        }
-
-        .concept-card p {
-            color: #cbd5e1;
-            font-size: 12.5px;
-            line-height: 1.5;
-            margin-bottom: 8px;
-        }
-
-        .concept-card code {
-            font-family: 'Fira Code', monospace;
-            font-size: 11.5px;
-            color: #7dd3fc;
-            display: block;
-            background: rgba(0,0,0,0.35);
-            padding: 6px 8px;
-            border-radius: 6px;
-            overflow-x: auto;
-            white-space: nowrap;
-        }
 
         /* Image Guide Box (Dedicated Step on How to Add Images) */
         .image-guide-container {
@@ -1057,33 +961,6 @@
 
             </div>
 
-            <!-- How Button Navigation Works in Android -->
-            <div class="concept-banner">
-                <div class="concept-header">
-                    <h4><i class="fa-solid fa-bolt"></i> How Button Click Navigation Works in Android</h4>
-                    <span style="font-size: 11.5px; color: #94a3b8; font-family: 'Fira Code', monospace;">The 3-Step Pattern</span>
-                </div>
-                <div class="concept-steps-grid">
-                    <div class="concept-card">
-                        <div class="concept-num">1</div>
-                        <strong>Declare Button in XML</strong>
-                        <p>Give your button an ID in the layout:</p>
-                        <code>android:id="@+id/btnEnterDashboard"</code>
-                    </div>
-                    <div class="concept-card">
-                        <div class="concept-num">2</div>
-                        <strong>Find It in Kotlin</strong>
-                        <p>Locate the button in <code>onCreate()</code>:</p>
-                        <code>val btn = findViewById&lt;Button&gt;(R.id.btnEnterDashboard)</code>
-                    </div>
-                    <div class="concept-card">
-                        <div class="concept-num">3</div>
-                        <strong>Attach Click Event</strong>
-                        <p>Launch target screen on tap:</p>
-                        <code>btn.setOnClickListener {<br>&nbsp;&nbsp;startActivity(Intent(this, DashboardActivity::class.java))<br>}</code>
-                    </div>
-                </div>
-            </div>
         </section>
 
         <!-- STEP 1: CREATE PROJECT -->
