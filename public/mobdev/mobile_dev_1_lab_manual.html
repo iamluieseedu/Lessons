@@ -3,33 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mob Dev 1 Lab — Multi-Screen Android UI & Button Navigation (Arctic Fox 2020.3.1)</title>
+    <title>Mob Dev 1 Lab — Multi-Screen Android App (Super Easy Step-by-Step Guide)</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lexend:wght@600;700;800&display=swap" rel="stylesheet">
     
     <!-- FontAwesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
         :root {
-            --primary: #0284c7;         /* Arctic Fox Cyan / Android Blue */
+            --primary: #0284c7;         /* Sky Blue */
             --primary-dark: #0369a1;
-            --primary-bg: #f0f9ff;
+            --primary-bg: #e0f2fe;
             --primary-border: #bae6fd;
             --accent-green: #10b981;
-            --accent-purple: #6366f1;
+            --accent-green-bg: #dcfce7;
             --accent-amber: #f59e0b;
+            --accent-amber-bg: #fef3c7;
             --accent-rose: #ef4444;
+            --accent-purple: #8b5cf6;
             
             --bg-base: #f8fafc;
             --bg-surface: #ffffff;
             --bg-card: #ffffff;
             --bg-subtle: #f1f5f9;
-            --border: #e2e8f0;
-            --border-hover: #cbd5e1;
+            --border: #cbd5e1;
             
             --text-title: #0f172a;
             --text-body: #334155;
@@ -56,23 +57,23 @@
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
             line-height: 1.7;
             font-size: 15px;
-            padding-bottom: 100px;
+            padding-bottom: 120px;
             overflow-x: hidden;
         }
 
-        /* Top Navigation Bar */
+        /* Top Navbar */
         .top-navbar {
             position: sticky;
             top: 0;
             z-index: 100;
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.96);
             backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--border);
-            padding: 14px 28px;
+            border-bottom: 2px solid var(--border);
+            padding: 12px 24px;
         }
 
         .top-navbar-inner {
-            max-width: 1240px;
+            max-width: 1200px;
             margin: 0 auto;
             display: flex;
             align-items: center;
@@ -84,404 +85,124 @@
         .nav-brand {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             text-decoration: none;
             color: var(--text-title);
             font-weight: 800;
-            font-size: 15px;
+            font-size: 16px;
+            font-family: 'Lexend', sans-serif;
         }
 
         .nav-brand i {
             color: var(--primary);
-            font-size: 20px;
+            font-size: 22px;
         }
 
-        .nav-badge {
+        .nav-badge-pill {
             font-size: 11px;
             font-weight: 800;
-            padding: 3px 9px;
-            border-radius: 6px;
-            background: var(--primary-bg);
-            color: var(--primary);
-            border: 1px solid var(--primary-border);
-            font-family: 'Fira Code', monospace;
+            padding: 3px 10px;
+            border-radius: 999px;
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+            text-transform: uppercase;
         }
 
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .nav-link-btn {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--text-body);
-            text-decoration: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            background: var(--bg-surface);
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-            cursor: pointer;
-        }
-
-        .nav-link-btn:hover {
-            color: var(--primary);
-            border-color: var(--primary-border);
-            background: var(--primary-bg);
-            transform: translateY(-1px);
-        }
-
-        /* Reading Container - Fluid Responsive Max-Width */
-        .manual-wrapper {
-            max-width: 1220px;
+        /* Main Container */
+        .main-container {
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 36px 24px 0;
-            width: 100%;
+            padding: 24px 20px;
         }
 
-        /* Hero Header (Clean, Punchy, No Pill Clutter) */
-        .manual-header {
-            margin-bottom: 32px;
-            padding-bottom: 24px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .header-course-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 12px;
-            font-weight: 800;
-            color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            margin-bottom: 12px;
-            background: var(--primary-bg);
-            padding: 5px 12px;
-            border-radius: 6px;
-            border: 1px solid var(--primary-border);
-        }
-
-        .manual-title {
-            font-size: clamp(26px, 4vw, 36px);
-            font-weight: 800;
-            color: var(--text-title);
-            line-height: 1.25;
-            margin-bottom: 10px;
-            letter-spacing: -0.5px;
-            word-wrap: break-word;
-        }
-
-        .manual-subtitle {
-            font-size: clamp(15px, 2vw, 17px);
-            font-weight: 600;
-            color: var(--primary-dark);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            line-height: 1.5;
-        }
-
-        /* Quick Navigation Bar */
-        .quick-nav-bar {
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 16px 20px;
-            margin-bottom: 36px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.02);
-        }
-
-        .quick-nav-title {
-            font-size: 12px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-            color: var(--text-muted);
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .quick-nav-pills {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .quick-pill {
-            font-size: 12.5px;
-            font-weight: 700;
-            text-decoration: none;
-            color: var(--text-body);
-            background: var(--bg-subtle);
-            border: 1px solid var(--border);
-            padding: 6px 14px;
-            border-radius: 8px;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .quick-pill:hover {
-            background: var(--primary);
-            color: #ffffff;
-            border-color: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: 0 3px 8px rgba(2, 132, 199, 0.25);
-        }
-
-        /* Lab Sections */
-        .lab-section {
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: 16px;
+        /* Super Friendly Hero Banner */
+        .hero-banner {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 50%, #0c4a6e 100%);
+            border-radius: 20px;
             padding: 32px 36px;
-            margin-bottom: 32px;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
-            width: 100%;
+            color: #ffffff;
+            margin-bottom: 28px;
+            box-shadow: 0 10px 25px -5px rgba(2, 132, 199, 0.25);
+            position: relative;
             overflow: hidden;
         }
 
-        @media (max-width: 768px) {
-            .lab-section {
-                padding: 22px 18px;
-            }
-        }
-
-        .section-header {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 20px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid var(--border);
-            flex-wrap: wrap;
-        }
-
-        .section-step-num {
-            width: 38px;
-            height: 38px;
-            border-radius: 10px;
-            background: var(--primary-bg);
-            color: var(--primary);
-            font-weight: 800;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid var(--primary-border);
-            flex-shrink: 0;
-            font-family: 'Fira Code', monospace;
-        }
-
-        .section-step-num.finish {
-            background: #ecfdf5;
-            color: #059669;
-            border-color: #a7f3d0;
-        }
-
-        .section-title {
-            font-size: clamp(19px, 2.5vw, 23px);
-            font-weight: 800;
-            color: var(--text-title);
-            letter-spacing: -0.4px;
-            word-wrap: break-word;
-        }
-
-        .section-desc {
-            font-size: 15px;
-            color: var(--text-body);
-            margin-bottom: 22px;
-            line-height: 1.7;
-            overflow-wrap: break-word;
-        }
-
-        /* DYNAMIC & RESPONSIVE SCREEN FLOW CARDS */
-        .screen-flow-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 22px;
-            margin: 22px 0 28px;
-        }
-
-        @media (max-width: 860px) {
-            .screen-flow-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .flow-card {
-            background: var(--bg-surface);
-            border: 1.5px solid var(--border);
-            border-radius: 14px;
-            padding: 22px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-        }
-
-        .flow-card:hover {
-            border-color: var(--border-hover);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
-        }
-
-        .flow-card.c-welcome { border-top: 5px solid var(--primary); }
-        .flow-card.c-dashboard { border-top: 5px solid #10b981; }
-        .flow-card.c-login { border-top: 5px solid #6366f1; }
-        .flow-card.c-signup { border-top: 5px solid #f59e0b; }
-
-        .flow-card-head {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .flow-badge {
-            font-size: 11px;
-            font-weight: 800;
-            padding: 3px 8px;
-            border-radius: 6px;
-            font-family: 'Fira Code', monospace;
-            text-transform: uppercase;
-        }
-
-        .flow-badge.launcher { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
-        .flow-badge.target { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
-        .flow-badge.screen { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
-
-        .flow-file-name {
-            font-size: 11.5px;
-            font-family: 'Fira Code', monospace;
-            color: var(--text-muted);
-            font-weight: 700;
-            background: #f8fafc;
-            padding: 2px 8px;
-            border-radius: 6px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .flow-title {
-            font-size: 18px;
-            font-weight: 800;
-            color: var(--text-title);
-            margin-bottom: 6px;
-            display: flex;
+        .hero-tag {
+            display: inline-flex;
             align-items: center;
             gap: 8px;
-        }
-
-        .flow-desc {
-            font-size: 13.5px;
-            color: var(--text-body);
-            line-height: 1.6;
-            margin-bottom: 18px;
-        }
-
-        /* Clean Navigation Trigger List */
-        .flow-actions-box {
-            background: #f8fafc;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 12px 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .flow-action-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            flex-wrap: wrap;
-            line-height: 1.5;
-        }
-
-        .flow-btn-mock {
-            font-size: 10.5px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            padding: 5px 14px;
+            border-radius: 999px;
+            font-size: 12px;
             font-weight: 800;
-            padding: 3px 8px;
-            border-radius: 5px;
-            text-transform: uppercase;
-            font-family: 'Fira Code', monospace;
-            white-space: nowrap;
-        }
-
-        .flow-btn-mock.blue { background: #0284c7; color: #ffffff; }
-        .flow-btn-mock.green { background: #10b981; color: #ffffff; }
-        .flow-btn-mock.white { background: #ffffff; color: #0284c7; border: 1px solid #bae6fd; }
-        .flow-btn-mock.red { background: #ef4444; color: #ffffff; }
-
-        .flow-action-dest {
-            color: var(--text-title);
-            font-weight: 600;
-            font-size: 13px;
-        }
-
-        .flow-action-dest strong {
-            color: var(--primary);
-        }
-
-
-        /* Image Guide Box (Dedicated Step on How to Add Images) */
-        .image-guide-container {
-            background: #f0fdf4;
-            border: 1.5px solid #86efac;
-            border-radius: 14px;
-            padding: 22px;
-            margin: 20px 0 24px;
-        }
-
-        .image-guide-head {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 800;
-            font-size: 16px;
-            color: #166534;
+            letter-spacing: 0.5px;
             margin-bottom: 14px;
         }
 
-        .image-guide-steps {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-        }
-
-        .img-step-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            font-size: 14px;
-            line-height: 1.6;
-            color: #14532d;
-        }
-
-        .img-step-badge {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: #16a34a;
-            color: #ffffff;
+        .hero-title {
+            font-family: 'Lexend', sans-serif;
+            font-size: 32px;
             font-weight: 800;
-            font-size: 12px;
+            line-height: 1.25;
+            margin-bottom: 10px;
+        }
+
+        .hero-desc {
+            font-size: 16px;
+            color: #e0f2fe;
+            max-width: 800px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        /* The 3 Golden Rules Bar */
+        .golden-rules-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 30px;
+            border: 2px solid #bae6fd;
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.08);
+        }
+
+        .golden-rules-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Lexend', sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            color: #0369a1;
+            margin-bottom: 14px;
+        }
+
+        .rules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 14px;
+        }
+
+        .rule-box {
+            background: #f8fafc;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 16px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .rule-num {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            font-weight: 800;
+            font-size: 13px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -489,115 +210,226 @@
             margin-top: 2px;
         }
 
-        .img-step-content strong {
-            color: #0f172a;
+        .rule-text strong {
+            display: block;
+            color: var(--text-title);
+            font-size: 14px;
+            margin-bottom: 2px;
         }
 
-        .img-rule-alert {
+        .rule-text p {
+            font-size: 12.5px;
+            color: var(--text-muted);
+            line-height: 1.45;
+        }
+
+        /* Quick Jumper Navigation */
+        .nav-pills-bar {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 4px 0 16px;
+            margin-bottom: 24px;
+            scrollbar-width: thin;
+        }
+
+        .step-pill {
+            background: #ffffff;
+            border: 1.5px solid var(--border);
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--text-body);
+            text-decoration: none;
+            white-space: nowrap;
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            margin-top: 4px;
-            padding: 4px 10px;
-            border-radius: 6px;
-            background: #fef3c7;
-            border: 1px solid #fde68a;
-            color: #92400e;
-            font-size: 12px;
-            font-weight: 600;
+            transition: all 0.2s;
         }
 
-        /* Callout Boxes */
-        .callout {
-            border-radius: 12px;
-            padding: 16px 20px;
-            margin: 20px 0;
+        .step-pill:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-bg);
+            transform: translateY(-2px);
+        }
+
+        /* Section Layout */
+        .lab-step-section {
+            background: var(--bg-surface);
+            border: 2px solid var(--border);
+            border-radius: 18px;
+            padding: 28px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+        }
+
+        .step-header-banner {
             display: flex;
             align-items: flex-start;
-            gap: 14px;
-            font-size: 14px;
-            line-height: 1.65;
+            gap: 16px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 16px;
+            margin-bottom: 20px;
         }
 
-        .callout-icon {
-            font-size: 18px;
-            margin-top: 2px;
+        .step-big-badge {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: var(--primary);
+            color: #ffffff;
+            font-family: 'Lexend', sans-serif;
+            font-size: 22px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);
         }
 
-        .callout-warning {
-            background: #fffbeb;
-            border: 1.5px solid #fde68a;
-            color: #92400e;
+        .step-big-badge.green {
+            background: var(--accent-green);
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
         }
 
-        .callout-warning .callout-icon { color: #d97706; }
-
-        .callout-info {
-            background: var(--primary-bg);
-            border: 1.5px solid var(--primary-border);
-            color: #0369a1;
+        .step-title-group h2 {
+            font-family: 'Lexend', sans-serif;
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-title);
         }
 
-        .callout-info .callout-icon { color: var(--primary); }
+        .step-title-group p {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
 
-        /* File Placement Banner */
-        .file-guide-card {
+        /* 1-2-3 Baby Step Instruction Cards */
+        .action-steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 16px 0 24px;
+        }
+
+        .action-step-card {
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0;
+            border-left: 5px solid var(--primary);
+            border-radius: 12px;
+            padding: 14px 18px;
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+        }
+
+        .action-step-card.success-border {
+            border-left-color: var(--accent-green);
+        }
+
+        .action-step-card.amber-border {
+            border-left-color: var(--accent-amber);
+        }
+
+        .action-num-badge {
+            width: 26px;
+            height: 26px;
+            border-radius: 8px;
+            background: #0284c7;
+            color: white;
+            font-weight: 800;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+            font-family: 'Lexend', sans-serif;
+        }
+
+        .action-details {
+            flex-grow: 1;
+        }
+
+        .action-details strong {
+            display: block;
+            font-size: 14px;
+            color: var(--text-title);
+            margin-bottom: 2px;
+        }
+
+        .action-details p {
+            font-size: 13.5px;
+            color: #334155;
+            line-height: 1.5;
+        }
+
+        /* File Path Breadcrumb Card */
+        .file-location-card {
             background: #f0f9ff;
             border: 1.5px solid #7dd3fc;
             border-radius: 12px;
             padding: 12px 18px;
-            margin: 18px 0 10px;
+            margin: 16px 0 10px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 12px;
             flex-wrap: wrap;
-            gap: 10px;
-            font-size: 13px;
         }
 
-        .file-guide-left {
+        .file-loc-left {
             display: flex;
             align-items: center;
             gap: 10px;
             flex-wrap: wrap;
         }
 
-        .file-guide-label {
+        .file-loc-badge {
+            background: #0284c7;
+            color: white;
+            font-size: 10.5px;
             font-weight: 800;
-            color: #0369a1;
+            padding: 3px 8px;
+            border-radius: 6px;
             text-transform: uppercase;
-            font-size: 11.5px;
-            letter-spacing: 0.5px;
         }
 
-        .file-guide-path {
+        .file-loc-path {
             font-family: 'Fira Code', monospace;
-            color: #0284c7;
+            font-size: 13px;
             font-weight: 700;
-            background: #ffffff;
+            color: #0369a1;
+            background: white;
             padding: 3px 10px;
             border-radius: 6px;
             border: 1px solid #bae6fd;
-            font-size: 12.5px;
             word-break: break-all;
         }
 
-        .file-guide-tag {
-            font-size: 11px;
-            color: #64748b;
-            font-weight: 600;
+        .file-loc-action {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #059669;
+            background: #dcfce7;
+            padding: 3px 10px;
+            border-radius: 6px;
+            border: 1px solid #a7f3d0;
         }
 
-        /* Code Block Container */
+        /* Code Snippet Box */
         .code-container {
             background: var(--code-bg);
             border: 1px solid #1e293b;
-            border-radius: 12px;
+            border-radius: 14px;
             overflow: hidden;
-            margin: 12px 0 24px;
-            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
-            width: 100%;
+            margin: 10px 0 24px;
+            box-shadow: 0 4px 15px rgba(15, 23, 42, 0.08);
         }
 
         .code-header {
@@ -608,8 +440,8 @@
             justify-content: space-between;
             border-bottom: 1px solid #334155;
             font-size: 12.5px;
+            gap: 10px;
             flex-wrap: wrap;
-            gap: 8px;
         }
 
         .code-file-name {
@@ -622,31 +454,30 @@
         }
 
         .copy-btn {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            color: #f1f5f9;
-            font-size: 11.5px;
-            font-weight: 700;
-            padding: 5px 12px;
-            border-radius: 6px;
+            background: #2563eb;
+            border: none;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 800;
+            padding: 6px 14px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s;
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
         }
 
         .copy-btn:hover {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: #ffffff;
+            background: #1d4ed8;
             transform: scale(1.03);
         }
 
         .copy-btn.copied {
-            background: #10b981;
-            border-color: #10b981;
-            color: #ffffff;
+            background: #10b981 !important;
+            box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
         }
 
         pre {
@@ -659,449 +490,436 @@
             color: #f8fafc;
         }
 
-        code {
-            font-family: 'Fira Code', monospace;
-        }
-
-        /* Clean Tables */
-        .clean-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            margin: 16px 0;
-            border: 1px solid var(--border);
+        /* Did You Do It Right Card */
+        .checkpoint-card {
+            background: #f0fdf4;
+            border: 1.5px solid #86efac;
             border-radius: 12px;
-            overflow: hidden;
-            font-size: 13.5px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin: 16px 0 20px;
         }
 
-        .clean-table th {
-            background: var(--bg-subtle);
-            color: var(--text-title);
+        .checkpoint-icon {
+            font-size: 18px;
+            color: #16a34a;
+            margin-top: 2px;
+        }
+
+        .checkpoint-content strong {
+            font-size: 14px;
+            color: #14532d;
+            display: block;
+            margin-bottom: 2px;
+            font-family: 'Lexend', sans-serif;
+        }
+
+        .checkpoint-content p {
+            font-size: 13px;
+            color: #166534;
+            line-height: 1.45;
+        }
+
+        /* Troubleshooting Grid */
+        .trouble-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+            gap: 14px;
+            margin-top: 14px;
+        }
+
+        .trouble-card {
+            background: #fff1f2;
+            border: 1.5px solid #fecdd3;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .trouble-title {
+            font-family: 'Lexend', sans-serif;
+            font-size: 14px;
             font-weight: 800;
-            text-align: left;
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--border);
+            color: #9f1239;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
         }
 
-        .clean-table td {
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--border);
-            color: var(--text-body);
+        .trouble-card p {
+            font-size: 12.5px;
+            color: #881337;
+            margin-bottom: 8px;
         }
 
-        .clean-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .clean-table tr:hover td {
-            background: #f8fafc;
+        .trouble-fix {
+            background: #ffffff;
+            border: 1px solid #fbcfe8;
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 12px;
+            color: #475569;
+            line-height: 1.4;
         }
 
         /* Interactive Checklist */
-        .check-list-box {
-            background: var(--bg-subtle);
-            border: 1px solid var(--border);
-            border-radius: 12px;
+        .checklist-box {
+            background: #f8fafc;
+            border: 2px solid var(--border);
+            border-radius: 14px;
             padding: 20px;
-            margin: 20px 0;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+            margin-top: 16px;
         }
 
         .check-item {
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             gap: 12px;
-            font-size: 14px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 8px;
             cursor: pointer;
-            padding: 6px 0;
+            transition: all 0.2s;
             user-select: none;
-            transition: all 0.15s ease;
+            font-size: 14px;
+            font-weight: 600;
         }
 
         .check-item:hover {
-            opacity: 0.85;
+            border-color: var(--primary);
+            background: #f0f9ff;
+        }
+
+        .check-item.done {
+            background: #f0fdf4;
+            border-color: #86efac;
+            color: #166534;
+        }
+
+        .check-item.done span {
+            text-decoration: line-through;
+            opacity: 0.8;
         }
 
         .check-box-ui {
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
             border-radius: 6px;
-            border: 2px solid #cbd5e1;
-            background: #ffffff;
+            border: 2px solid #94a3b8;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: transparent;
+            font-size: 12px;
             flex-shrink: 0;
-            margin-top: 2px;
             transition: all 0.2s;
         }
 
         .check-item.done .check-box-ui {
             background: var(--accent-green);
             border-color: var(--accent-green);
-            color: #ffffff;
+            color: white;
         }
 
-        .check-item.done span {
-            text-decoration: line-through;
-            color: var(--text-muted);
-        }
-
-        /* Troubleshooting Cards */
-        .trouble-grid {
+        /* Simple Visual Screen Cards */
+        .screens-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
             gap: 16px;
-            margin: 18px 0;
+            margin: 16px 0 24px;
         }
 
-        @media (max-width: 768px) {
-            .trouble-grid {
-                grid-template-columns: 1fr;
-            }
+        .screen-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: all 0.2s;
         }
 
-        .trouble-card {
-            background: #ffffff;
-            border: 1px solid var(--border);
-            border-left: 4px solid var(--accent-rose);
-            border-radius: 12px;
-            padding: 16px 18px;
-            font-size: 13px;
-            transition: all 0.2s ease;
+        .screen-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 6px 16px rgba(2, 132, 199, 0.1);
         }
 
-        .trouble-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
-
-        .trouble-title {
+        .screen-badge {
+            font-size: 11px;
             font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 6px;
+            width: fit-content;
+            font-family: 'Lexend', sans-serif;
+        }
+
+        .screen-badge.blue { background: #dbeafe; color: #1e40af; }
+        .screen-badge.green { background: #dcfce7; color: #166534; }
+        .screen-badge.purple { background: #f3e8ff; color: #6b21a8; }
+        .screen-badge.amber { background: #fef3c7; color: #92400e; }
+
+        .screen-card h3 {
+            font-family: 'Lexend', sans-serif;
+            font-size: 16px;
             color: var(--text-title);
-            margin-bottom: 6px;
+        }
+
+        .screen-card p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.45;
+            flex-grow: 1;
+        }
+
+        .button-flow-tag {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #334155;
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 13.5px;
+            justify-content: space-between;
         }
 
-        .trouble-fix {
-            margin-top: 8px;
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            padding: 8px 10px;
-            border-radius: 6px;
-            color: #0f172a;
-            font-size: 12.5px;
+        .button-flow-tag span.dest {
+            color: #0284c7;
         }
     </style>
 </head>
 <body>
 
-    <!-- Sticky Top Navigation -->
+    <!-- TOP NAVBAR -->
     <header class="top-navbar">
         <div class="top-navbar-inner">
             <a href="/" class="nav-brand">
-                <i class="fa-solid fa-mobile-screen-button"></i>
-                <span>iamlesson.space</span>
-                <span class="nav-badge">MOB DEV 1 LAB</span>
+                <i class="fa-brands fa-android"></i>
+                <span>Mob Dev 1 Lab</span>
+                <span class="nav-badge-pill">Arctic Fox 2020.3.1</span>
             </a>
-
-            <div class="nav-actions">
-                <a href="#quick-steps" class="nav-link-btn">
-                    <i class="fa-solid fa-list-ol"></i> Step Index
-                </a>
-                <a href="/" class="nav-link-btn">
-                    <i class="fa-solid fa-arrow-left"></i> Course Portal
-                </a>
+            <div style="font-size: 13px; font-weight: 700; color: var(--text-muted);">
+                🚀 Super Easy Step-by-Step Guide
             </div>
         </div>
     </header>
 
-    <div class="manual-wrapper">
+    <div class="main-container">
 
-        <!-- Hero Header (Clean, Direct, Zero Pill Clutter) -->
-        <header class="manual-header">
-            <span class="header-course-tag">
-                <i class="fa-solid fa-graduation-cap"></i> Mob Dev 1 Lab &bull; Practical Lab Manual
-            </span>
-            <h1 class="manual-title">Multi-Screen Android UI &amp; Button Navigation</h1>
-            <div class="manual-subtitle">
-                <i class="fa-solid fa-route"></i> Welcome Screen &rarr; Direct Button Click Event &rarr; Dashboard &amp; Screens
-            </div>
-        </header>
-
-        <!-- Quick Steps Index -->
-        <nav id="quick-steps" class="quick-nav-bar">
-            <div class="quick-nav-title">
-                <i class="fa-solid fa-map-location-dot"></i> Step-by-Step Lab Navigation
-            </div>
-            <div class="quick-nav-pills">
-                <a href="#overview-flow" class="quick-pill"><i class="fa-solid fa-diagram-project"></i> Screen Flow Map</a>
-                <a href="#step-1-project" class="quick-pill">1. Project Setup</a>
-                <a href="#step-2-resources" class="quick-pill">2. Colors, Strings &amp; Image</a>
-                <a href="#step-3-welcome" class="quick-pill">3. Welcome Screen (MainActivity)</a>
-                <a href="#step-4-dashboard" class="quick-pill">4. Dashboard Screen (DashboardActivity)</a>
-                <a href="#step-5-login" class="quick-pill">5. Login Design (LoginActivity)</a>
-                <a href="#step-6-signup" class="quick-pill">6. Sign Up Design (SignUpActivity)</a>
-                <a href="#step-7-manifest" class="quick-pill">7. AndroidManifest.xml</a>
-                <a href="#step-8-test" class="quick-pill">8. Run &amp; Test Checklist</a>
-                <a href="#troubleshooting" class="quick-pill">Troubleshooting</a>
-            </div>
-        </nav>
-
-        <!-- Visual Architecture Overview -->
-        <section id="overview-flow" class="lab-section">
-            <div class="section-header">
-                <div class="section-step-num"><i class="fa-solid fa-diagram-project" style="font-size: 14px;"></i></div>
-                <h2 class="section-title">Screen Navigation &amp; Design Architecture</h2>
-            </div>
-            <p class="section-desc">
-                Your application consists of <strong>clean visual screens</strong>. Navigation is 100% event-driven: clicking any action button fires a Kotlin <code>setOnClickListener</code> event that tells the Android OS to open the requested screen. No login credentials, database, or password validation needed!
+        <!-- HERO BANNER -->
+        <div class="hero-banner">
+            <span class="hero-tag"><i class="fa-solid fa-graduation-cap"></i> Student Practical Laboratory Manual</span>
+            <h1 class="hero-title">Build Your First 4-Screen Android App</h1>
+            <p class="hero-desc">
+                Follow these super simple, friendly steps! No scary words, no confusing database setup. 
+                Just click the buttons, copy the code, and paste it into Android Studio!
             </p>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <span style="background: rgba(255,255,255,0.25); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700;">
+                    ✓ Zero Passwords Required
+                </span>
+                <span style="background: rgba(255,255,255,0.25); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700;">
+                    ✓ Direct Button Navigation
+                </span>
+                <span style="background: rgba(255,255,255,0.25); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700;">
+                    ✓ 1-Click Code Copy Buttons
+                </span>
+            </div>
+        </div>
 
-            <!-- 4 Widened, Generously Spaced Visual Cards -->
-            <div class="screen-flow-grid">
-                
-                <!-- Card 1: Welcome -->
-                <div class="flow-card c-welcome">
-                    <div>
-                        <div class="flow-card-head">
-                            <span class="flow-badge launcher">Screen 1 &bull; Entry Screen</span>
-                            <span class="flow-file-name">MainActivity.kt</span>
-                        </div>
-                        <h3 class="flow-title"><i class="fa-solid fa-house" style="color: var(--primary);"></i> Welcome Screen</h3>
-                        <p class="flow-desc">First screen launched by the phone. Displays your custom image logo, app title, and direct navigation buttons.</p>
-                    </div>
-                    <div class="flow-actions-box">
-                        <div class="flow-action-row">
-                            <span class="flow-btn-mock blue">ENTER DASHBOARD</span>
-                            <span class="flow-action-dest">&rarr; Opens <strong>DashboardActivity</strong> directly!</span>
-                        </div>
-                        <div class="flow-action-row">
-                            <span class="flow-btn-mock white">VIEW LOGIN</span>
-                            <span class="flow-action-dest">&rarr; Opens <strong>LoginActivity</strong></span>
-                        </div>
-                        <div class="flow-action-row">
-                            <span class="flow-btn-mock white">VIEW SIGN UP</span>
-                            <span class="flow-action-dest">&rarr; Opens <strong>SignUpActivity</strong></span>
-                        </div>
+        <!-- 3 GOLDEN RULES OF PASTING -->
+        <div class="golden-rules-card">
+            <div class="golden-rules-title">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <span>The 3 Golden Rules (How to Never Get an Error!)</span>
+            </div>
+            <div class="rules-grid">
+                <div class="rule-box">
+                    <div class="rule-num">1</div>
+                    <div class="rule-text">
+                        <strong>Erase Everything First!</strong>
+                        <p>When you open any file, press <b>Ctrl + A</b> (select all), then press <b>Backspace</b>. The file must be totally empty before you paste!</p>
                     </div>
                 </div>
-
-                <!-- Card 2: Dashboard -->
-                <div class="flow-card c-dashboard">
-                    <div>
-                        <div class="flow-card-head">
-                            <span class="flow-badge target">Screen 2 &bull; Main Portal</span>
-                            <span class="flow-file-name">DashboardActivity.kt</span>
-                        </div>
-                        <h3 class="flow-title"><i class="fa-solid fa-gauge-high" style="color: #10b981;"></i> Student Dashboard</h3>
-                        <p class="flow-desc">Rich static student portal UI. Features Student Profile, Enrolled Courses, App Settings cards, and return button.</p>
-                    </div>
-                    <div class="flow-actions-box">
-                        <div class="flow-action-row">
-                            <span class="flow-btn-mock red">RETURN TO HOME</span>
-                            <span class="flow-action-dest">&rarr; Navigates back to <strong>MainActivity</strong></span>
-                        </div>
-                        <div class="flow-action-row">
-                            <span class="flow-btn-mock white">SWITCH TO LOGIN</span>
-                            <span class="flow-action-dest">&rarr; Navigates to <strong>LoginActivity</strong></span>
-                        </div>
+                <div class="rule-box">
+                    <div class="rule-num">2</div>
+                    <div class="rule-text">
+                        <strong>Click "Copy Code"</strong>
+                        <p>Click the blue <b>Copy</b> button in this manual. It automatically copies the complete, 100% working code for you.</p>
                     </div>
                 </div>
-
-                <!-- Card 3: Login Design -->
-                <div class="flow-card c-login">
-                    <div>
-                        <div class="flow-card-head">
-                            <span class="flow-badge screen">Screen 3 &bull; UI Mock</span>
-                            <span class="flow-file-name">LoginActivity.kt</span>
-                        </div>
-                        <h3 class="flow-title"><i class="fa-solid fa-right-to-bracket" style="color: #6366f1;"></i> Login Screen Design</h3>
-                        <p class="flow-desc">Static mock UI with username and password input boxes. Pure design demonstration with button click navigation.</p>
-                    </div>
-                    <div class="flow-actions-box">
-                        <div class="flow-action-row">
-                            <span class="flow-btn-mock blue">LOG IN</span>
-                            <span class="flow-action-dest">&rarr; Clicks straight into <strong>DashboardActivity</strong>!</span>
-                        </div>
-                        <div class="flow-action-row">
-                            <span class="flow-btn-mock white">BACK TO HOME</span>
-                            <span class="flow-action-dest">&rarr; Returns to <strong>MainActivity</strong></span>
-                        </div>
+                <div class="rule-box">
+                    <div class="rule-num">3</div>
+                    <div class="rule-text">
+                        <strong>Press Ctrl + V (Paste)</strong>
+                        <p>Click inside the empty file and press <b>Ctrl + V</b>. That's it! Save with <b>Ctrl + S</b>. You are done!</p>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- Card 4: Sign Up Design -->
-                <div class="flow-card c-signup">
-                    <div>
-                        <div class="flow-card-head">
-                            <span class="flow-badge screen">Screen 4 &bull; UI Mock</span>
-                            <span class="flow-file-name">SignUpActivity.kt</span>
-                        </div>
-                        <h3 class="flow-title"><i class="fa-solid fa-user-plus" style="color: #f59e0b;"></i> Sign Up Screen Design</h3>
-                        <p class="flow-desc">Static registration form design with full name, email, and password fields. No validation errors to worry about.</p>
-                    </div>
-                    <div class="flow-actions-box">
-                        <div class="flow-action-row">
-                            <span class="flow-btn-mock green">SUBMIT</span>
-                            <span class="flow-action-dest">&rarr; Clicks straight into <strong>DashboardActivity</strong>!</span>
-                        </div>
-                        <div class="flow-action-row">
-                            <span class="flow-btn-mock white">BACK TO HOME</span>
-                            <span class="flow-action-dest">&rarr; Returns to <strong>MainActivity</strong></span>
-                        </div>
-                    </div>
+        <!-- QUICK STEP JUMPER -->
+        <div class="nav-pills-bar">
+            <a href="#screens-map" class="step-pill">🗺️ The 4 Screens</a>
+            <a href="#step-1" class="step-pill">1️⃣ New Project</a>
+            <a href="#step-2" class="step-pill">2️⃣ Colors &amp; Logo</a>
+            <a href="#step-3" class="step-pill">3️⃣ Welcome Screen</a>
+            <a href="#step-4" class="step-pill">4️⃣ Dashboard Screen</a>
+            <a href="#step-5" class="step-pill">5️⃣ Login Screen</a>
+            <a href="#step-6" class="step-pill">6️⃣ Sign Up Screen</a>
+            <a href="#step-7" class="step-pill">7️⃣ AndroidManifest</a>
+            <a href="#step-8" class="step-pill">8️⃣ Press Play &amp; Test!</a>
+            <a href="#troubleshooting" class="step-pill">🆘 Help &amp; Fixes</a>
+        </div>
+
+        <!-- THE 4 SCREENS MAP -->
+        <section id="screens-map" class="lab-step-section">
+            <div class="step-header-banner">
+                <div class="step-big-badge">🗺️</div>
+                <div class="step-title-group">
+                    <h2>What We Are Building Today</h2>
+                    <p>Your app has 4 screens that connect to each other with simple button clicks!</p>
                 </div>
-
             </div>
 
+            <div class="screens-grid">
+                <!-- Screen 1 -->
+                <div class="screen-card">
+                    <span class="screen-badge blue">Screen 1</span>
+                    <h3>🏠 Welcome Screen</h3>
+                    <p>The first screen when you open the app. Has your logo and buttons to enter the app.</p>
+                    <div class="button-flow-tag">
+                        <span>Click "ENTER"</span>
+                        <span class="dest">➔ Goes to Dashboard!</span>
+                    </div>
+                </div>
+
+                <!-- Screen 2 -->
+                <div class="screen-card">
+                    <span class="screen-badge green">Screen 2</span>
+                    <h3>📊 Student Dashboard</h3>
+                    <p>The main student hub with Student Profile, Subjects, and Settings cards.</p>
+                    <div class="button-flow-tag">
+                        <span>Click "RETURN"</span>
+                        <span class="dest">➔ Back to Welcome!</span>
+                    </div>
+                </div>
+
+                <!-- Screen 3 -->
+                <div class="screen-card">
+                    <span class="screen-badge purple">Screen 3</span>
+                    <h3>🔑 Login Screen</h3>
+                    <p>A beautiful login form design. Tapping Log In opens Dashboard immediately!</p>
+                    <div class="button-flow-tag">
+                        <span>Click "LOG IN"</span>
+                        <span class="dest">➔ Goes to Dashboard!</span>
+                    </div>
+                </div>
+
+                <!-- Screen 4 -->
+                <div class="screen-card">
+                    <span class="screen-badge amber">Screen 4</span>
+                    <h3>📝 Sign Up Screen</h3>
+                    <p>A registration form design. Tapping Register opens Dashboard immediately!</p>
+                    <div class="button-flow-tag">
+                        <span>Click "REGISTER"</span>
+                        <span class="dest">➔ Goes to Dashboard!</span>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <!-- STEP 1: CREATE PROJECT -->
-        <section id="step-1-project" class="lab-section">
-            <div class="section-header">
-                <div class="section-step-num">1</div>
-                <h2 class="section-title">Create the Project in Android Studio Arctic Fox</h2>
-            </div>
-            <p class="section-desc">
-                Launch <strong>Android Studio Arctic Fox (2020.3.1)</strong> and start a clean project.
-            </p>
-
-            <div class="callout callout-warning">
-                <i class="fa-solid fa-triangle-exclamation callout-icon"></i>
-                <div>
-                    <strong>TEMPLATE REQUIREMENT IN ARCTIC FOX:</strong>
-                    Choose the project template named <strong>"Empty Activity"</strong>. Do NOT look for "Empty Views Activity" (which only exists in newer Android Studio versions).
+        <section id="step-1" class="lab-step-section">
+            <div class="step-header-banner">
+                <div class="step-big-badge">1</div>
+                <div class="step-title-group">
+                    <h2>Step 1: Create a New Project in Android Studio</h2>
+                    <p>Open Android Studio Arctic Fox (2020.3.1) and follow these 4 simple clicks.</p>
                 </div>
             </div>
 
-            <table class="clean-table">
-                <thead>
-                    <tr>
-                        <th style="width: 220px;">Project Wizard Field</th>
-                        <th>Exact Value to Enter / Select</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Template</strong></td>
-                        <td><code>Empty Activity</code> (Phone and Tablet tab)</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Name</strong></td>
-                        <td><code>CampusConnect</code></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Package name</strong></td>
-                        <td><code>com.example.campusconnect</code></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Language</strong></td>
-                        <td><code>Kotlin</code></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Minimum SDK</strong></td>
-                        <td><code>API 21: Android 5.0 (Lollipop)</code></td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="action-steps-list">
+                <div class="action-step-card">
+                    <div class="action-num-badge">1</div>
+                    <div class="action-details">
+                        <strong>Open Android Studio and click "New Project"</strong>
+                        <p>Look at the window that opens. Under the <b>Phone and Tablet</b> tab, click on <b>"Empty Activity"</b>. Then click the blue <b>Next</b> button.</p>
+                    </div>
+                </div>
 
-            <p style="font-size: 14px; color: var(--text-muted); margin-top: 10px;">
-                <i class="fa-solid fa-circle-info" style="color: var(--primary);"></i> Click <strong>Finish</strong>. Wait 1-2 minutes for Gradle to sync. When sync finishes, you will see your project in the left <strong>Project</strong> panel.
-            </p>
+                <div class="action-step-card">
+                    <div class="action-num-badge">2</div>
+                    <div class="action-details">
+                        <strong>Type these exact settings into the boxes:</strong>
+                        <p>
+                            • <b>Name:</b> <code>CampusConnect</code><br>
+                            • <b>Package name:</b> <code>com.example.campusconnect</code><br>
+                            • <b>Language:</b> <code>Kotlin</code> (make sure it says Kotlin, not Java!)<br>
+                            • <b>Minimum SDK:</b> <code>API 21: Android 5.0 (Lollipop)</code>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="action-step-card">
+                    <div class="action-num-badge">3</div>
+                    <div class="action-details">
+                        <strong>Click the blue "Finish" button!</strong>
+                        <p>Now take a sip of water and wait 1 to 2 minutes. Watch the bottom right bar finish loading. When it stops loading, your project is ready!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="checkpoint-card">
+                <i class="fa-solid fa-circle-check checkpoint-icon"></i>
+                <div class="checkpoint-content">
+                    <strong>Check your screen!</strong>
+                    <p>On the left side of your screen, you should now see a folder tree with <code>app</code>. You are ready for Step 2!</p>
+                </div>
+            </div>
         </section>
 
-        <!-- STEP 2: DESIGN RESOURCES & ADDING IMAGE -->
-        <section id="step-2-resources" class="lab-section">
-            <div class="section-header">
-                <div class="section-step-num">2</div>
-                <h2 class="section-title">Setup Colors, Strings &amp; Adding an Image to Drawable</h2>
-            </div>
-            <p class="section-desc">
-                Configure your project's color palette, localized text strings, and learn how to add your own custom image file (PNG / JPG) into Android Studio.
-            </p>
-
-            <!-- DEDICATED HOW TO ADD AN IMAGE GUIDE (NO VECTOR JARGON) -->
-            <div class="image-guide-container">
-                <div class="image-guide-head">
-                    <i class="fa-solid fa-image" style="font-size: 20px;"></i>
-                    <span>How to Add an Image (PNG / JPG) in Android Studio</span>
-                </div>
-                <div class="image-guide-steps">
-                    <div class="img-step-item">
-                        <div class="img-step-badge">1</div>
-                        <div class="img-step-content">
-                            <strong>Prepare your image on your computer:</strong>
-                            <p>Pick any image or logo on your computer and save or rename it as <code>logo.png</code> (or <code>app_logo.png</code>).</p>
-                            <div class="img-rule-alert">
-                                <i class="fa-solid fa-triangle-exclamation"></i>
-                                <span><strong>Android Rule:</strong> File names in <code>res/drawable</code> must be strictly <strong>lowercase</strong> and have <strong>no spaces</strong> (e.g. <code>logo.png</code>, NOT <code>Logo.png</code> or <code>my logo.png</code>).</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="img-step-item">
-                        <div class="img-step-badge">2</div>
-                        <div class="img-step-content">
-                            <strong>Copy the image file:</strong>
-                            <p>In Windows File Explorer, click your image file and press <kbd style="background: #ffffff; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-family: monospace;">Ctrl + C</kbd>.</p>
-                        </div>
-                    </div>
-
-                    <div class="img-step-item">
-                        <div class="img-step-badge">3</div>
-                        <div class="img-step-content">
-                            <strong>Paste into Android Studio:</strong>
-                            <p>In Android Studio's left Project panel, expand <code>app &gt; src &gt; main &gt; res</code>. Right-click the <strong><code>drawable</code></strong> folder and select <strong>Paste</strong> (<kbd style="background: #ffffff; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-family: monospace;">Ctrl + V</kbd>).</p>
-                        </div>
-                    </div>
-
-                    <div class="img-step-item">
-                        <div class="img-step-badge">4</div>
-                        <div class="img-step-content">
-                            <strong>Select Destination Directory:</strong>
-                            <p>If a popup asks to choose a destination, select the standard <code>.../res/drawable</code> folder (do NOT choose <code>drawable-v24</code>) and click <strong>OK</strong>.</p>
-                        </div>
-                    </div>
-
-                    <div class="img-step-item">
-                        <div class="img-step-badge">5</div>
-                        <div class="img-step-content">
-                            <strong>How to display it in XML:</strong>
-                            <p>In any layout file, simply use an <code>&lt;ImageView&gt;</code> tag with <code>android:src="@drawable/logo"</code>!</p>
-                        </div>
-                    </div>
+        <!-- STEP 2: SETUP COLORS & LOGO -->
+        <section id="step-2" class="lab-step-section">
+            <div class="step-header-banner">
+                <div class="step-big-badge">2</div>
+                <div class="step-title-group">
+                    <h2>Step 2: Add Colors, Card Borders &amp; App Logo</h2>
+                    <p>Let's make our app look colorful and add our official logo!</p>
                 </div>
             </div>
 
             <!-- 2.1 colors.xml -->
-            <div class="file-guide-card">
-                <div class="file-guide-left">
-                    <span class="file-guide-label"><i class="fa-solid fa-palette"></i> Colors:</span>
-                    <span class="file-guide-path">app &gt; src &gt; main &gt; res &gt; values &gt; colors.xml</span>
+            <h3 style="font-size: 16px; margin: 18px 0 6px; font-weight: 800; color: var(--text-title);">
+                2.1 The Colors File (colors.xml)
+            </h3>
+            <div class="file-location-card">
+                <div class="file-loc-left">
+                    <span class="file-loc-badge">Where to go</span>
+                    <span class="file-loc-path">📁 app &gt; res &gt; values &gt; colors.xml</span>
                 </div>
-                <span class="file-guide-tag">Paste &amp; Replace File</span>
+                <span class="file-loc-action">Erase All ➔ Paste This</span>
             </div>
 
             <div class="code-container">
                 <div class="code-header">
-                    <span class="code-file-name"><i class="fa-solid fa-file-code"></i> colors.xml</span>
-                    <button class="copy-btn" onclick="copyCode('code-colors', this)"><i class="fa-regular fa-copy"></i> Copy XML</button>
+                    <span class="code-file-name"><i class="fa-solid fa-palette"></i> colors.xml</span>
+                    <button class="copy-btn" onclick="copyCode('code-colors', this)"><i class="fa-regular fa-copy"></i> Copy Colors XML</button>
                 </div>
                 <pre><code id="code-colors">&lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;resources&gt;
-    &lt;!-- Brand &amp; Accent Colors --&gt;
+    &lt;!-- Brand Colors --&gt;
     &lt;color name="primary_blue"&gt;#0284C7&lt;/color&gt;
     &lt;color name="primary_blue_dark"&gt;#0369A1&lt;/color&gt;
     &lt;color name="accent_emerald"&gt;#10B981&lt;/color&gt;
     
-    &lt;!-- Background &amp; Surface Tones --&gt;
+    &lt;!-- Screen Background &amp; Card Colors --&gt;
     &lt;color name="bg_canvas"&gt;#F8FAFC&lt;/color&gt;
     &lt;color name="surface_white"&gt;#FFFFFF&lt;/color&gt;
     &lt;color name="border_light"&gt;#CBD5E1&lt;/color&gt;
@@ -1114,18 +932,21 @@
             </div>
 
             <!-- 2.2 strings.xml -->
-            <div class="file-guide-card">
-                <div class="file-guide-left">
-                    <span class="file-guide-label"><i class="fa-solid fa-font"></i> Strings:</span>
-                    <span class="file-guide-path">app &gt; src &gt; main &gt; res &gt; values &gt; strings.xml</span>
+            <h3 style="font-size: 16px; margin: 24px 0 6px; font-weight: 800; color: var(--text-title);">
+                2.2 The App Title Words (strings.xml)
+            </h3>
+            <div class="file-location-card">
+                <div class="file-loc-left">
+                    <span class="file-loc-badge">Where to go</span>
+                    <span class="file-loc-path">📁 app &gt; res &gt; values &gt; strings.xml</span>
                 </div>
-                <span class="file-guide-tag">Paste &amp; Replace File</span>
+                <span class="file-loc-action">Erase All ➔ Paste This</span>
             </div>
 
             <div class="code-container">
                 <div class="code-header">
-                    <span class="code-file-name"><i class="fa-solid fa-file-code"></i> strings.xml</span>
-                    <button class="copy-btn" onclick="copyCode('code-strings', this)"><i class="fa-regular fa-copy"></i> Copy XML</button>
+                    <span class="code-file-name"><i class="fa-solid fa-font"></i> strings.xml</span>
+                    <button class="copy-btn" onclick="copyCode('code-strings', this)"><i class="fa-regular fa-copy"></i> Copy Strings XML</button>
                 </div>
                 <pre><code id="code-strings">&lt;resources&gt;
     &lt;string name="app_name"&gt;CampusConnect&lt;/string&gt;
@@ -1135,51 +956,142 @@
             </div>
 
             <!-- 2.3 edit_text_border.xml -->
-            <div class="file-guide-card">
-                <div class="file-guide-left">
-                    <span class="file-guide-label"><i class="fa-solid fa-draw-polygon"></i> Rounded Card Border:</span>
-                    <span class="file-guide-path">app &gt; src &gt; main &gt; res &gt; drawable &gt; edit_text_border.xml</span>
+            <h3 style="font-size: 16px; margin: 24px 0 6px; font-weight: 800; color: var(--text-title);">
+                2.3 Make the Card Border File (edit_text_border.xml)
+            </h3>
+            <div class="action-steps-list">
+                <div class="action-step-card">
+                    <div class="action-num-badge">1</div>
+                    <div class="action-details">
+                        <strong>Right-click the "drawable" folder</strong>
+                        <p>In the left panel, find <code>app &gt; res &gt; drawable</code>. Right-click on <b>drawable</b> ➔ hover on <b>New</b> ➔ click <b>Drawable Resource File</b>.</p>
+                    </div>
                 </div>
-                <span class="file-guide-tag">Right click drawable &rarr; New &rarr; Drawable Resource File</span>
+                <div class="action-step-card">
+                    <div class="action-num-badge">2</div>
+                    <div class="action-details">
+                        <strong>Type the file name:</strong>
+                        <p>In the box called File name, type: <code>edit_text_border</code>. Click <b>OK</b>.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="file-location-card">
+                <div class="file-loc-left">
+                    <span class="file-loc-badge">Open this file</span>
+                    <span class="file-loc-path">📁 app &gt; res &gt; drawable &gt; edit_text_border.xml</span>
+                </div>
+                <span class="file-loc-action">Erase All ➔ Paste This</span>
             </div>
 
             <div class="code-container">
                 <div class="code-header">
                     <span class="code-file-name"><i class="fa-solid fa-draw-polygon"></i> edit_text_border.xml</span>
-                    <button class="copy-btn" onclick="copyCode('code-border', this)"><i class="fa-regular fa-copy"></i> Copy XML</button>
+                    <button class="copy-btn" onclick="copyCode('code-border', this)"><i class="fa-regular fa-copy"></i> Copy Border XML</button>
                 </div>
                 <pre><code id="code-border">&lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;shape xmlns:android="http://schemas.android.com/apk/res/android"&gt;
     &lt;solid android:color="@color/surface_white" /&gt;
     &lt;stroke android:width="1.5dp" android:color="@color/border_light" /&gt;
-    &lt;corners android:radius="8dp" /&gt;
+    &lt;corners android:radius="10dp" /&gt;
 &lt;/shape&gt;</code></pre>
+            </div>
+
+            <!-- 2.4 logo.xml (SUPER FAST - NO DOWNLOAD NEEDED!) -->
+            <h3 style="font-size: 16px; margin: 24px 0 6px; font-weight: 800; color: var(--text-title);">
+                2.4 The App Logo (logo.xml) — Super Fast, No Download Needed!
+            </h3>
+            <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 10px;">
+                You don't need to search or download any picture! Just make this vector logo file in 5 seconds and it will never give you an error!
+            </p>
+
+            <div class="action-steps-list">
+                <div class="action-step-card success-border">
+                    <div class="action-num-badge" style="background: var(--accent-green);">1</div>
+                    <div class="action-details">
+                        <strong>Right-click the "drawable" folder again</strong>
+                        <p>Right-click on <b>drawable</b> ➔ click <b>New</b> ➔ click <b>Drawable Resource File</b>.</p>
+                    </div>
+                </div>
+                <div class="action-step-card success-border">
+                    <div class="action-num-badge" style="background: var(--accent-green);">2</div>
+                    <div class="action-details">
+                        <strong>Type the name:</strong>
+                        <p>In the box called File name, type: <code>logo</code>. Click <b>OK</b>.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="file-location-card">
+                <div class="file-loc-left">
+                    <span class="file-loc-badge">Open this file</span>
+                    <span class="file-loc-path">📁 app &gt; res &gt; drawable &gt; logo.xml</span>
+                </div>
+                <span class="file-loc-action">Erase All ➔ Paste This</span>
+            </div>
+
+            <div class="code-container">
+                <div class="code-header">
+                    <span class="code-file-name"><i class="fa-solid fa-shield-cat"></i> logo.xml (Vector Android Badge)</span>
+                    <button class="copy-btn" onclick="copyCode('code-logo-xml', this)"><i class="fa-regular fa-copy"></i> Copy Logo XML</button>
+                </div>
+                <pre><code id="code-logo-xml">&lt;vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="110dp"
+    android:height="110dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100"&gt;
+    &lt;!-- Modern Blue Circle Badge --&gt;
+    &lt;path
+        android:fillColor="#0284C7"
+        android:pathData="M50,4 A46,46 0 1,0 50,96 A46,46 0 1,0 50,4 Z" /&gt;
+    &lt;!-- Inner Graduation / Tech Icon --&gt;
+    &lt;path
+        android:fillColor="#FFFFFF"
+        android:pathData="M50,26 L22,40 L50,54 L78,40 Z" /&gt;
+    &lt;path
+        android:fillColor="#BAE6FD"
+        android:pathData="M32,49 L32,64 C32,73 68,73 68,64 L68,49 L50,58 Z" /&gt;
+    &lt;path
+        android:fillColor="#FFFFFF"
+        android:pathData="M76,42 L76,66 L72,66 L72,44 Z" /&gt;
+&lt;/vector&gt;</code></pre>
+            </div>
+
+            <div class="checkpoint-card">
+                <i class="fa-solid fa-circle-check checkpoint-icon"></i>
+                <div class="checkpoint-content">
+                    <strong>Check your screen!</strong>
+                    <p>Inside <code>res &gt; drawable</code>, you now have <code>logo.xml</code> and <code>edit_text_border.xml</code>. No missing picture errors ever!</p>
+                </div>
             </div>
         </section>
 
         <!-- STEP 3: WELCOME SCREEN (MainActivity) -->
-        <section id="step-3-welcome" class="lab-section">
-            <div class="section-header">
-                <div class="section-step-num">3</div>
-                <h2 class="section-title">Screen 1: Welcome Screen (MainActivity)</h2>
+        <section id="step-3" class="lab-step-section">
+            <div class="step-header-banner">
+                <div class="step-big-badge">3</div>
+                <div class="step-title-group">
+                    <h2>Step 3: Screen 1 — Welcome Screen (MainActivity)</h2>
+                    <p>This is the first screen that opens on the phone. It has our logo and buttons!</p>
+                </div>
             </div>
-            <p class="section-desc">
-                The Welcome screen is the starting point of the app. It displays your custom image logo (<code>@drawable/logo</code>), portal title, and buttons that navigate directly on click.
-            </p>
 
             <!-- 3.1 activity_main.xml -->
-            <div class="file-guide-card">
-                <div class="file-guide-left">
-                    <span class="file-guide-label"><i class="fa-brands fa-android"></i> Layout:</span>
-                    <span class="file-guide-path">app &gt; src &gt; main &gt; res &gt; layout &gt; activity_main.xml</span>
+            <h3 style="font-size: 16px; margin: 18px 0 6px; font-weight: 800; color: var(--text-title);">
+                3.1 The Screen Design (activity_main.xml)
+            </h3>
+            <div class="file-location-card">
+                <div class="file-loc-left">
+                    <span class="file-loc-badge">Where to go</span>
+                    <span class="file-loc-path">📁 app &gt; res &gt; layout &gt; activity_main.xml</span>
                 </div>
-                <span class="file-guide-tag">Paste &amp; Replace File</span>
+                <span class="file-loc-action">Erase All ➔ Paste This</span>
             </div>
 
             <div class="code-container">
                 <div class="code-header">
                     <span class="code-file-name"><i class="fa-brands fa-android"></i> activity_main.xml</span>
-                    <button class="copy-btn" onclick="copyCode('code-act-main-xml', this)"><i class="fa-regular fa-copy"></i> Copy XML</button>
+                    <button class="copy-btn" onclick="copyCode('code-act-main-xml', this)"><i class="fa-regular fa-copy"></i> Copy Screen 1 XML</button>
                 </div>
                 <pre><code id="code-act-main-xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -1190,7 +1102,7 @@
     android:padding="28dp"
     android:background="@color/bg_canvas"&gt;
 
-    &lt;!-- App Image Logo (Paste your 'logo.png' into res/drawable) --&gt;
+    &lt;!-- App Logo --&gt;
     &lt;ImageView
         android:id="@+id/ivLogo"
         android:layout_width="110dp"
@@ -1221,7 +1133,7 @@
         android:gravity="center"
         android:layout_marginBottom="44dp" /&gt;
 
-    &lt;!-- Button 1: Direct to Dashboard --&gt;
+    &lt;!-- Button 1: Opens Dashboard --&gt;
     &lt;Button
         android:id="@+id/btnEnterDashboard"
         android:layout_width="match_parent"
@@ -1233,7 +1145,7 @@
         android:backgroundTint="@color/primary_blue"
         android:layout_marginBottom="12dp" /&gt;
 
-    &lt;!-- Button 2: Go to Login Screen --&gt;
+    &lt;!-- Button 2: Opens Login Screen --&gt;
     &lt;Button
         android:id="@+id/btnLogin"
         android:layout_width="match_parent"
@@ -1245,7 +1157,7 @@
         android:backgroundTint="@color/surface_white"
         android:layout_marginBottom="12dp" /&gt;
 
-    &lt;!-- Button 3: Go to Sign Up Screen --&gt;
+    &lt;!-- Button 3: Opens Sign Up Screen --&gt;
     &lt;Button
         android:id="@+id/btnSignUp"
         android:layout_width="match_parent"
@@ -1259,18 +1171,21 @@
             </div>
 
             <!-- 3.2 MainActivity.kt -->
-            <div class="file-guide-card">
-                <div class="file-guide-left">
-                    <span class="file-guide-label"><i class="fa-brands fa-kickstarter"></i> Kotlin Logic:</span>
-                    <span class="file-guide-path">app &gt; src &gt; main &gt; java &gt; com.example.campusconnect &gt; MainActivity.kt</span>
+            <h3 style="font-size: 16px; margin: 24px 0 6px; font-weight: 800; color: var(--text-title);">
+                3.2 The Button Click Magic (MainActivity.kt)
+            </h3>
+            <div class="file-location-card">
+                <div class="file-loc-left">
+                    <span class="file-loc-badge">Where to go</span>
+                    <span class="file-loc-path">📁 app &gt; java &gt; com.example.campusconnect &gt; MainActivity.kt</span>
                 </div>
-                <span class="file-guide-tag">Paste &amp; Replace File</span>
+                <span class="file-loc-action">Erase All ➔ Paste This</span>
             </div>
 
             <div class="code-container">
                 <div class="code-header">
                     <span class="code-file-name"><i class="fa-brands fa-kickstarter"></i> MainActivity.kt</span>
-                    <button class="copy-btn" onclick="copyCode('code-main-kt', this)"><i class="fa-regular fa-copy"></i> Copy Kotlin</button>
+                    <button class="copy-btn" onclick="copyCode('code-main-kt', this)"><i class="fa-regular fa-copy"></i> Copy Screen 1 Kotlin</button>
                 </div>
                 <pre><code id="code-main-kt">package com.example.campusconnect
 
@@ -1285,24 +1200,24 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // 1. Locate buttons in the XML layout
+        // 1. Find the 3 buttons
         val btnEnterDashboard = findViewById&lt;Button&gt;(R.id.btnEnterDashboard)
         val btnLogin = findViewById&lt;Button&gt;(R.id.btnLogin)
         val btnSignUp = findViewById&lt;Button&gt;(R.id.btnSignUp)
 
-        // 2. Direct button navigation to Dashboard!
+        // 2. Click button ➔ Open Dashboard!
         btnEnterDashboard.setOnClickListener {
             val intent = Intent(this, DashboardActivity::class.java)
             startActivity(intent)
         }
 
-        // 3. Navigation to Login Screen
+        // 3. Click button ➔ Open Login Screen!
         btnLogin.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
         }
 
-        // 4. Navigation to Sign Up Screen
+        // 4. Click button ➔ Open Sign Up Screen!
         btnSignUp.setOnClickListener {
             val intent = Intent(this, SignUpActivity::class.java)
             startActivity(intent)
@@ -1310,31 +1225,68 @@ class MainActivity : AppCompatActivity() {
     }
 }</code></pre>
             </div>
+
+            <div class="checkpoint-card">
+                <i class="fa-solid fa-circle-info checkpoint-icon" style="color: #0284c7;"></i>
+                <div class="checkpoint-content">
+                    <strong style="color: #0369a1;">Don't worry if you see a red line right now!</strong>
+                    <p style="color: #075985;">If Android Studio shows a red underline on <code>DashboardActivity</code>, that is 100% normal! We haven't created Screen 2 yet. Let's make Screen 2 in Step 4 and watch the red line vanish!</p>
+                </div>
+            </div>
         </section>
 
-        <!-- STEP 4: DASHBOARD SCREEN (DashboardActivity) -->
-        <section id="step-4-dashboard" class="lab-section">
-            <div class="section-header">
-                <div class="section-step-num">4</div>
-                <h2 class="section-title">Screen 2: Student Dashboard (DashboardActivity)</h2>
+        <!-- STEP 4: DASHBOARD SCREEN -->
+        <section id="step-4" class="lab-step-section">
+            <div class="step-header-banner">
+                <div class="step-big-badge green">4</div>
+                <div class="step-title-group">
+                    <h2>Step 4: Screen 2 — Student Dashboard (DashboardActivity)</h2>
+                    <p>Now let's create the second screen! Follow the 4 easy clicks below.</p>
+                </div>
             </div>
-            <p class="section-desc">
-                In Android Studio: Right-click <code>com.example.campusconnect</code> package &rarr; <strong>New</strong> &rarr; <strong>Activity</strong> &rarr; <strong>Empty Activity</strong>. Name: <strong><code>DashboardActivity</code></strong>.
-            </p>
+
+            <div class="action-steps-list">
+                <div class="action-step-card success-border">
+                    <div class="action-num-badge" style="background: var(--accent-green);">1</div>
+                    <div class="action-details">
+                        <strong>Find your package folder on the left:</strong>
+                        <p>Look at the left panel: click <code>app</code> ➔ click <code>java</code> ➔ find the folder called <b><code>com.example.campusconnect</code></b>.</p>
+                    </div>
+                </div>
+
+                <div class="action-step-card success-border">
+                    <div class="action-num-badge" style="background: var(--accent-green);">2</div>
+                    <div class="action-details">
+                        <strong>Right-click on "com.example.campusconnect":</strong>
+                        <p>Hover your mouse on <b>New</b> ➔ hover on <b>Activity</b> ➔ click <b>Empty Activity</b>.</p>
+                    </div>
+                </div>
+
+                <div class="action-step-card success-border">
+                    <div class="action-num-badge" style="background: var(--accent-green);">3</div>
+                    <div class="action-details">
+                        <strong>Type the Activity Name:</strong>
+                        <p>In the box called Activity Name, type: <b><code>DashboardActivity</code></b> (Make sure D and A are capital letters!). Click the blue <b>Finish</b> button.</p>
+                    </div>
+                </div>
+            </div>
 
             <!-- 4.1 activity_dashboard.xml -->
-            <div class="file-guide-card">
-                <div class="file-guide-left">
-                    <span class="file-guide-label"><i class="fa-brands fa-android"></i> Layout:</span>
-                    <span class="file-guide-path">app &gt; src &gt; main &gt; res &gt; layout &gt; activity_dashboard.xml</span>
+            <h3 style="font-size: 16px; margin: 24px 0 6px; font-weight: 800; color: var(--text-title);">
+                4.1 The Dashboard Design (activity_dashboard.xml)
+            </h3>
+            <div class="file-location-card">
+                <div class="file-loc-left">
+                    <span class="file-loc-badge">Where to go</span>
+                    <span class="file-loc-path">📁 app &gt; res &gt; layout &gt; activity_dashboard.xml</span>
                 </div>
-                <span class="file-guide-tag">Paste &amp; Replace File</span>
+                <span class="file-loc-action">Erase All ➔ Paste This</span>
             </div>
 
             <div class="code-container">
                 <div class="code-header">
                     <span class="code-file-name"><i class="fa-brands fa-android"></i> activity_dashboard.xml</span>
-                    <button class="copy-btn" onclick="copyCode('code-dash-xml', this)"><i class="fa-regular fa-copy"></i> Copy XML</button>
+                    <button class="copy-btn" onclick="copyCode('code-dash-xml', this)"><i class="fa-regular fa-copy"></i> Copy Dashboard XML</button>
                 </div>
                 <pre><code id="code-dash-xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -1395,7 +1347,7 @@ class MainActivity : AppCompatActivity() {
                 android:textColor="@color/text_muted" /&gt;
         &lt;/LinearLayout&gt;
 
-        &lt;!-- CARD 2: Enrolled Courses --&gt;
+        &lt;!-- CARD 2: Enrolled Subjects --&gt;
         &lt;LinearLayout
             android:id="@+id/cardCourses"
             android:layout_width="match_parent"
@@ -1449,7 +1401,7 @@ class MainActivity : AppCompatActivity() {
                 android:textColor="@color/text_muted" /&gt;
         &lt;/LinearLayout&gt;
 
-        &lt;!-- Return to Welcome Button --&gt;
+        &lt;!-- Button: Return to Welcome --&gt;
         &lt;Button
             android:id="@+id/btnReturnHome"
             android:layout_width="match_parent"
@@ -1460,7 +1412,7 @@ class MainActivity : AppCompatActivity() {
             android:backgroundTint="@color/text_danger"
             android:layout_marginBottom="12dp" /&gt;
 
-        &lt;!-- Switch to Login --&gt;
+        &lt;!-- Button: Go to Login --&gt;
         &lt;Button
             android:id="@+id/btnSwitchToLogin"
             android:layout_width="match_parent"
@@ -1475,18 +1427,21 @@ class MainActivity : AppCompatActivity() {
             </div>
 
             <!-- 4.2 DashboardActivity.kt -->
-            <div class="file-guide-card">
-                <div class="file-guide-left">
-                    <span class="file-guide-label"><i class="fa-brands fa-kickstarter"></i> Kotlin Logic:</span>
-                    <span class="file-guide-path">app &gt; src &gt; main &gt; java &gt; com.example.campusconnect &gt; DashboardActivity.kt</span>
+            <h3 style="font-size: 16px; margin: 24px 0 6px; font-weight: 800; color: var(--text-title);">
+                4.2 The Dashboard Buttons Logic (DashboardActivity.kt)
+            </h3>
+            <div class="file-location-card">
+                <div class="file-loc-left">
+                    <span class="file-loc-badge">Where to go</span>
+                    <span class="file-loc-path">📁 app &gt; java &gt; com.example.campusconnect &gt; DashboardActivity.kt</span>
                 </div>
-                <span class="file-guide-tag">Paste &amp; Replace File</span>
+                <span class="file-loc-action">Erase All ➔ Paste This</span>
             </div>
 
             <div class="code-container">
                 <div class="code-header">
                     <span class="code-file-name"><i class="fa-brands fa-kickstarter"></i> DashboardActivity.kt</span>
-                    <button class="copy-btn" onclick="copyCode('code-dash-kt', this)"><i class="fa-regular fa-copy"></i> Copy Kotlin</button>
+                    <button class="copy-btn" onclick="copyCode('code-dash-kt', this)"><i class="fa-regular fa-copy"></i> Copy Dashboard Kotlin</button>
                 </div>
                 <pre><code id="code-dash-kt">package com.example.campusconnect
 
@@ -1503,14 +1458,14 @@ class DashboardActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
 
-        // 1. Locate UI elements
+        // 1. Find cards and buttons
         val cardProfile = findViewById&lt;LinearLayout&gt;(R.id.cardProfile)
         val cardCourses = findViewById&lt;LinearLayout&gt;(R.id.cardCourses)
         val cardSettings = findViewById&lt;LinearLayout&gt;(R.id.cardSettings)
         val btnReturnHome = findViewById&lt;Button&gt;(R.id.btnReturnHome)
         val btnSwitchToLogin = findViewById&lt;Button&gt;(R.id.btnSwitchToLogin)
 
-        // 2. Card click feedback events
+        // 2. Card click toasts (little popup messages!)
         cardProfile.setOnClickListener {
             Toast.makeText(this, "Profile: IT Student", Toast.LENGTH_SHORT).show()
         }
@@ -1537,32 +1492,60 @@ class DashboardActivity : AppCompatActivity() {
     }
 }</code></pre>
             </div>
+
+            <div class="checkpoint-card">
+                <i class="fa-solid fa-circle-check checkpoint-icon"></i>
+                <div class="checkpoint-content">
+                    <strong>Check your screen!</strong>
+                    <p>Open <code>MainActivity.kt</code> again. Notice how the red underline on <code>DashboardActivity</code> is completely GONE! You now have 2 working screens!</p>
+                </div>
+            </div>
         </section>
 
-        <!-- STEP 5: LOGIN SCREEN (LoginActivity) -->
-        <section id="step-5-login" class="lab-section">
-            <div class="section-header">
-                <div class="section-step-num">5</div>
-                <h2 class="section-title">Screen 3: Login Screen Design (LoginActivity)</h2>
+        <!-- STEP 5: LOGIN SCREEN -->
+        <section id="step-5" class="lab-step-section">
+            <div class="step-header-banner">
+                <div class="step-big-badge">5</div>
+                <div class="step-title-group">
+                    <h2>Step 5: Screen 3 — Login Screen Design (LoginActivity)</h2>
+                    <p>Now let's add the Login Screen! Same 3 clicks as before.</p>
+                </div>
             </div>
-            <p class="section-desc">
-                In Android Studio: Right-click <code>com.example.campusconnect</code> package &rarr; <strong>New</strong> &rarr; <strong>Activity</strong> &rarr; <strong>Empty Activity</strong>. Name: <strong><code>LoginActivity</code></strong>.
-                <br><em>Note: This is static design only—clicking the button immediately navigates to Dashboard! No credentials or typing required.</em>
-            </p>
+
+            <div class="action-steps-list">
+                <div class="action-step-card">
+                    <div class="action-num-badge">1</div>
+                    <div class="action-details">
+                        <strong>Right-click "com.example.campusconnect":</strong>
+                        <p>Hover on <b>New</b> ➔ hover on <b>Activity</b> ➔ click <b>Empty Activity</b>.</p>
+                    </div>
+                </div>
+
+                <div class="action-step-card">
+                    <div class="action-num-badge">2</div>
+                    <div class="action-details">
+                        <strong>Type the Activity Name:</strong>
+                        <p>In the box called Activity Name, type: <b><code>LoginActivity</code></b> (Big L and Big A). Click the blue <b>Finish</b> button.</p>
+                    </div>
+                </div>
+            </div>
 
             <!-- 5.1 activity_login.xml -->
-            <div class="file-guide-card">
-                <div class="file-guide-left">
-                    <span class="file-guide-label"><i class="fa-brands fa-android"></i> Layout:</span>
-                    <span class="file-guide-path">app &gt; src &gt; main &gt; res &gt; layout &gt; activity_login.xml</span>
+            <h3 style="font-size: 16px; margin: 24px 0 6px; font-weight: 800; color: var(--text-title);">
+                5.1 The Login Design (activity_login.xml)
+            </h3>
+            <div class="file-location-card">
+                <div class="file-loc-left">
+                    <span class="file-loc-badge">Where to go</span>
+                    <span class="file-loc-path">📁 app &gt; res &gt; layout &gt; activity_login.xml</span>
                 </div>
-                <span class="file-guide-tag">Paste &amp; Replace File</span>
+                <span class="file-loc-action">Erase All ➔ Paste This</span>
             </div>
 
             <div class="code-container">
                 <div class="code-header">
                     <span class="code-file-name"><i class="fa-brands fa-android"></i> activity_login.xml</span>
-                    <button class="copy-btn" onclick="copyCode('code-login-xml', this)"><i class="fa-regular fa-copy"></i> Copy XML</button>
+                    <button class="copy-btn" onclick="copyCode('code-login-xml', this)"><i class="fa-regular fa-copy"></i> Copy Login XML</button>
                 </div>
                 <pre><code id="code-login-xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -1590,7 +1573,7 @@ class DashboardActivity : AppCompatActivity() {
         android:textColor="@color/text_muted"
         android:layout_marginBottom="32dp" /&gt;
 
-    &lt;!-- Username Field Design --&gt;
+    &lt;!-- Username Field --&gt;
     &lt;TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -1611,7 +1594,7 @@ class DashboardActivity : AppCompatActivity() {
         android:background="@drawable/edit_text_border"
         android:layout_marginBottom="18dp" /&gt;
 
-    &lt;!-- Password Field Design --&gt;
+    &lt;!-- Password Field --&gt;
     &lt;TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -1632,7 +1615,7 @@ class DashboardActivity : AppCompatActivity() {
         android:background="@drawable/edit_text_border"
         android:layout_marginBottom="28dp" /&gt;
 
-    &lt;!-- Direct Action Button --&gt;
+    &lt;!-- Button: Log In Directly --&gt;
     &lt;Button
         android:id="@+id/btnPerformLogin"
         android:layout_width="match_parent"
@@ -1643,7 +1626,7 @@ class DashboardActivity : AppCompatActivity() {
         android:backgroundTint="@color/primary_blue"
         android:layout_marginBottom="14dp" /&gt;
 
-    &lt;!-- Go to Sign Up Screen --&gt;
+    &lt;!-- Button: Go to Sign Up --&gt;
     &lt;Button
         android:id="@+id/btnGoToSignUp"
         android:layout_width="match_parent"
@@ -1654,7 +1637,7 @@ class DashboardActivity : AppCompatActivity() {
         android:backgroundTint="@color/surface_white"
         android:layout_marginBottom="12dp" /&gt;
 
-    &lt;!-- Return to Welcome --&gt;
+    &lt;!-- Button: Back to Home --&gt;
     &lt;Button
         android:id="@+id/btnBackToWelcome"
         android:layout_width="wrap_content"
@@ -1669,18 +1652,21 @@ class DashboardActivity : AppCompatActivity() {
             </div>
 
             <!-- 5.2 LoginActivity.kt -->
-            <div class="file-guide-card">
-                <div class="file-guide-left">
-                    <span class="file-guide-label"><i class="fa-brands fa-kickstarter"></i> Kotlin Logic:</span>
-                    <span class="file-guide-path">app &gt; src &gt; main &gt; java &gt; com.example.campusconnect &gt; LoginActivity.kt</span>
+            <h3 style="font-size: 16px; margin: 24px 0 6px; font-weight: 800; color: var(--text-title);">
+                5.2 The Login Click Logic (LoginActivity.kt)
+            </h3>
+            <div class="file-location-card">
+                <div class="file-loc-left">
+                    <span class="file-loc-badge">Where to go</span>
+                    <span class="file-loc-path">📁 app &gt; java &gt; com.example.campusconnect &gt; LoginActivity.kt</span>
                 </div>
-                <span class="file-guide-tag">Paste &amp; Replace File</span>
+                <span class="file-loc-action">Erase All ➔ Paste This</span>
             </div>
 
             <div class="code-container">
                 <div class="code-header">
                     <span class="code-file-name"><i class="fa-brands fa-kickstarter"></i> LoginActivity.kt</span>
-                    <button class="copy-btn" onclick="copyCode('code-login-kt', this)"><i class="fa-regular fa-copy"></i> Copy Kotlin</button>
+                    <button class="copy-btn" onclick="copyCode('code-login-kt', this)"><i class="fa-regular fa-copy"></i> Copy Login Kotlin</button>
                 </div>
                 <pre><code id="code-login-kt">package com.example.campusconnect
 
@@ -1700,20 +1686,20 @@ class LoginActivity : AppCompatActivity() {
         val btnGoToSignUp = findViewById&lt;Button&gt;(R.id.btnGoToSignUp)
         val btnBackToWelcome = findViewById&lt;Button&gt;(R.id.btnBackToWelcome)
 
-        // 1. Tapping Log In navigates directly to Dashboard!
+        // 1. Tapping Log In opens Dashboard immediately!
         btnLogin.setOnClickListener {
             Toast.makeText(this, "Navigating to Dashboard...", Toast.LENGTH_SHORT).show()
             val intent = Intent(this, DashboardActivity::class.java)
             startActivity(intent)
         }
 
-        // 2. Navigation to Sign Up screen
+        // 2. Tapping Sign Up opens Sign Up screen
         btnGoToSignUp.setOnClickListener {
             val intent = Intent(this, SignUpActivity::class.java)
             startActivity(intent)
         }
 
-        // 3. Return to Welcome screen
+        // 3. Tapping Back returns to Welcome
         btnBackToWelcome.setOnClickListener {
             finish()
         }
@@ -1722,30 +1708,50 @@ class LoginActivity : AppCompatActivity() {
             </div>
         </section>
 
-        <!-- STEP 6: SIGN UP SCREEN (SignUpActivity) -->
-        <section id="step-6-signup" class="lab-section">
-            <div class="section-header">
-                <div class="section-step-num">6</div>
-                <h2 class="section-title">Screen 4: Sign Up Screen Design (SignUpActivity)</h2>
+        <!-- STEP 6: SIGN UP SCREEN -->
+        <section id="step-6" class="lab-step-section">
+            <div class="step-header-banner">
+                <div class="step-big-badge">6</div>
+                <div class="step-title-group">
+                    <h2>Step 6: Screen 4 — Sign Up Screen Design (SignUpActivity)</h2>
+                    <p>Last screen to create! Same 3 clicks as before.</p>
+                </div>
             </div>
-            <p class="section-desc">
-                In Android Studio: Right-click <code>com.example.campusconnect</code> package &rarr; <strong>New</strong> &rarr; <strong>Activity</strong> &rarr; <strong>Empty Activity</strong>. Name: <strong><code>SignUpActivity</code></strong>.
-                <br><em>Note: Clicking the Register button navigates directly to the Dashboard! No form validation required.</em>
-            </p>
+
+            <div class="action-steps-list">
+                <div class="action-step-card">
+                    <div class="action-num-badge">1</div>
+                    <div class="action-details">
+                        <strong>Right-click "com.example.campusconnect":</strong>
+                        <p>Hover on <b>New</b> ➔ hover on <b>Activity</b> ➔ click <b>Empty Activity</b>.</p>
+                    </div>
+                </div>
+
+                <div class="action-step-card">
+                    <div class="action-num-badge">2</div>
+                    <div class="action-details">
+                        <strong>Type the Activity Name:</strong>
+                        <p>In the box called Activity Name, type: <b><code>SignUpActivity</code></b> (Big S, Big U, Big A). Click the blue <b>Finish</b> button.</p>
+                    </div>
+                </div>
+            </div>
 
             <!-- 6.1 activity_sign_up.xml -->
-            <div class="file-guide-card">
-                <div class="file-guide-left">
-                    <span class="file-guide-label"><i class="fa-brands fa-android"></i> Layout:</span>
-                    <span class="file-guide-path">app &gt; src &gt; main &gt; res &gt; layout &gt; activity_sign_up.xml</span>
+            <h3 style="font-size: 16px; margin: 24px 0 6px; font-weight: 800; color: var(--text-title);">
+                6.1 The Sign Up Design (activity_sign_up.xml)
+            </h3>
+            <div class="file-location-card">
+                <div class="file-loc-left">
+                    <span class="file-loc-badge">Where to go</span>
+                    <span class="file-loc-path">📁 app &gt; res &gt; layout &gt; activity_sign_up.xml</span>
                 </div>
-                <span class="file-guide-tag">Paste &amp; Replace File</span>
+                <span class="file-loc-action">Erase All ➔ Paste This</span>
             </div>
 
             <div class="code-container">
                 <div class="code-header">
                     <span class="code-file-name"><i class="fa-brands fa-android"></i> activity_sign_up.xml</span>
-                    <button class="copy-btn" onclick="copyCode('code-signup-xml', this)"><i class="fa-regular fa-copy"></i> Copy XML</button>
+                    <button class="copy-btn" onclick="copyCode('code-signup-xml', this)"><i class="fa-regular fa-copy"></i> Copy Sign Up XML</button>
                 </div>
                 <pre><code id="code-signup-xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -1778,7 +1784,7 @@ class LoginActivity : AppCompatActivity() {
             android:textColor="@color/text_muted"
             android:layout_marginBottom="28dp" /&gt;
 
-        &lt;!-- Name Field Design --&gt;
+        &lt;!-- Name Field --&gt;
         &lt;TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -1799,7 +1805,7 @@ class LoginActivity : AppCompatActivity() {
             android:background="@drawable/edit_text_border"
             android:layout_marginBottom="16dp" /&gt;
 
-        &lt;!-- Email Field Design --&gt;
+        &lt;!-- Email Field --&gt;
         &lt;TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -1820,7 +1826,7 @@ class LoginActivity : AppCompatActivity() {
             android:background="@drawable/edit_text_border"
             android:layout_marginBottom="16dp" /&gt;
 
-        &lt;!-- Password Field Design --&gt;
+        &lt;!-- Password Field --&gt;
         &lt;TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -1841,7 +1847,7 @@ class LoginActivity : AppCompatActivity() {
             android:background="@drawable/edit_text_border"
             android:layout_marginBottom="24dp" /&gt;
 
-        &lt;!-- Direct Action Button --&gt;
+        &lt;!-- Button: Register Directly --&gt;
         &lt;Button
             android:id="@+id/btnPerformSignUp"
             android:layout_width="match_parent"
@@ -1852,7 +1858,7 @@ class LoginActivity : AppCompatActivity() {
             android:backgroundTint="@color/accent_emerald"
             android:layout_marginBottom="14dp" /&gt;
 
-        &lt;!-- Switch to Login --&gt;
+        &lt;!-- Button: Go to Login --&gt;
         &lt;Button
             android:id="@+id/btnGoToLogin"
             android:layout_width="match_parent"
@@ -1863,7 +1869,7 @@ class LoginActivity : AppCompatActivity() {
             android:backgroundTint="@color/surface_white"
             android:layout_marginBottom="8dp" /&gt;
 
-        &lt;!-- Return to Welcome --&gt;
+        &lt;!-- Button: Back to Home --&gt;
         &lt;Button
             android:id="@+id/btnBackFromSignUp"
             android:layout_width="wrap_content"
@@ -1879,18 +1885,21 @@ class LoginActivity : AppCompatActivity() {
             </div>
 
             <!-- 6.2 SignUpActivity.kt -->
-            <div class="file-guide-card">
-                <div class="file-guide-left">
-                    <span class="file-guide-label"><i class="fa-brands fa-kickstarter"></i> Kotlin Logic:</span>
-                    <span class="file-guide-path">app &gt; src &gt; main &gt; java &gt; com.example.campusconnect &gt; SignUpActivity.kt</span>
+            <h3 style="font-size: 16px; margin: 24px 0 6px; font-weight: 800; color: var(--text-title);">
+                6.2 The Sign Up Click Logic (SignUpActivity.kt)
+            </h3>
+            <div class="file-location-card">
+                <div class="file-loc-left">
+                    <span class="file-loc-badge">Where to go</span>
+                    <span class="file-loc-path">📁 app &gt; java &gt; com.example.campusconnect &gt; SignUpActivity.kt</span>
                 </div>
-                <span class="file-guide-tag">Paste &amp; Replace File</span>
+                <span class="file-loc-action">Erase All ➔ Paste This</span>
             </div>
 
             <div class="code-container">
                 <div class="code-header">
                     <span class="code-file-name"><i class="fa-brands fa-kickstarter"></i> SignUpActivity.kt</span>
-                    <button class="copy-btn" onclick="copyCode('code-signup-kt', this)"><i class="fa-regular fa-copy"></i> Copy Kotlin</button>
+                    <button class="copy-btn" onclick="copyCode('code-signup-kt', this)"><i class="fa-regular fa-copy"></i> Copy Sign Up Kotlin</button>
                 </div>
                 <pre><code id="code-signup-kt">package com.example.campusconnect
 
@@ -1910,20 +1919,20 @@ class SignUpActivity : AppCompatActivity() {
         val btnGoToLogin = findViewById&lt;Button&gt;(R.id.btnGoToLogin)
         val btnBack = findViewById&lt;Button&gt;(R.id.btnBackFromSignUp)
 
-        // 1. Tapping Register navigates directly to Dashboard!
+        // 1. Tapping Register opens Dashboard immediately!
         btnSignUp.setOnClickListener {
             Toast.makeText(this, "Registration Complete! Welcome!", Toast.LENGTH_SHORT).show()
             val intent = Intent(this, DashboardActivity::class.java)
             startActivity(intent)
         }
 
-        // 2. Navigation to Login screen
+        // 2. Tapping Log In opens Login screen
         btnGoToLogin.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
         }
 
-        // 3. Return to Welcome screen
+        // 3. Tapping Back returns to Welcome
         btnBack.setOnClickListener {
             finish()
         }
@@ -1933,27 +1942,27 @@ class SignUpActivity : AppCompatActivity() {
         </section>
 
         <!-- STEP 7: ANDROIDMANIFEST -->
-        <section id="step-7-manifest" class="lab-section">
-            <div class="section-header">
-                <div class="section-step-num">7</div>
-                <h2 class="section-title">Verify AndroidManifest.xml</h2>
-            </div>
-            <p class="section-desc">
-                In Android, every screen Activity must be registered in <code>AndroidManifest.xml</code>. Confirm that all 4 activities are declared:
-            </p>
-
-            <div class="file-guide-card">
-                <div class="file-guide-left">
-                    <span class="file-guide-label"><i class="fa-solid fa-file-shield"></i> Manifest:</span>
-                    <span class="file-guide-path">app &gt; src &gt; main &gt; AndroidManifest.xml</span>
+        <section id="step-7" class="lab-step-section">
+            <div class="step-header-banner">
+                <div class="step-big-badge">7</div>
+                <div class="step-title-group">
+                    <h2>Step 7: Check the Master Manifest (AndroidManifest.xml)</h2>
+                    <p>Android needs to know all 4 screens exist so the app doesn't crash when you tap a button.</p>
                 </div>
-                <span class="file-guide-tag">Paste &amp; Replace File</span>
+            </div>
+
+            <div class="file-location-card">
+                <div class="file-loc-left">
+                    <span class="file-loc-badge">Where to go</span>
+                    <span class="file-loc-path">📁 app &gt; manifests &gt; AndroidManifest.xml</span>
+                </div>
+                <span class="file-loc-action">Erase All ➔ Paste This</span>
             </div>
 
             <div class="code-container">
                 <div class="code-header">
                     <span class="code-file-name"><i class="fa-solid fa-file-shield"></i> AndroidManifest.xml</span>
-                    <button class="copy-btn" onclick="copyCode('code-manifest', this)"><i class="fa-regular fa-copy"></i> Copy XML</button>
+                    <button class="copy-btn" onclick="copyCode('code-manifest', this)"><i class="fa-regular fa-copy"></i> Copy Manifest XML</button>
                 </div>
                 <pre><code id="code-manifest">&lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;manifest xmlns:android="http://schemas.android.com/apk/res/android"
@@ -1967,7 +1976,7 @@ class SignUpActivity : AppCompatActivity() {
         android:supportsRtl="true"
         android:theme="@style/Theme.CampusConnect"&gt;
 
-        &lt;!-- 1. MAIN LAUNCHER: MainActivity starts on app tap --&gt;
+        &lt;!-- 1. MAIN LAUNCHER: MainActivity starts first --&gt;
         &lt;activity
             android:name=".MainActivity"
             android:exported="true"&gt;
@@ -1998,118 +2007,112 @@ class SignUpActivity : AppCompatActivity() {
             </div>
         </section>
 
-        <!-- STEP 8: RUN, TEST & CHECKLIST -->
-        <section id="step-8-test" class="lab-section">
-            <div class="section-header">
-                <div class="section-step-num finish"><i class="fa-solid fa-check"></i></div>
-                <h2 class="section-title">Step 8: Run, Test &amp; Submission Checklist</h2>
+        <!-- STEP 8: PRESS PLAY & TEST! -->
+        <section id="step-8" class="lab-step-section">
+            <div class="step-header-banner">
+                <div class="step-big-badge green">8</div>
+                <div class="step-title-group">
+                    <h2>Step 8: Press Play ▶ and Test Your App!</h2>
+                    <p>You did it! Now let's run the app on the phone emulator.</p>
+                </div>
             </div>
-            <p class="section-desc">
-                Select your Android Virtual Device (AVD Emulator) in the toolbar and click the green <strong>Run ▶</strong> button (or press <code>Shift + F10</code>). Test all navigation click events:
-            </p>
 
-            <table class="clean-table">
-                <thead>
-                    <tr>
-                        <th style="width: 100px;">Test</th>
-                        <th>User Action</th>
-                        <th>Expected Result</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Test 1</strong></td>
-                        <td>On Welcome Screen, tap <strong>ENTER DASHBOARD</strong></td>
-                        <td>Transitions immediately to the Student Dashboard!</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Test 2</strong></td>
-                        <td>On Welcome Screen, tap <strong>VIEW LOGIN SCREEN</strong></td>
-                        <td>Opens the Login UI design.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Test 3</strong></td>
-                        <td>On Login Screen, tap <strong>LOG IN TO DASHBOARD</strong></td>
-                        <td>Transitions immediately to the Student Dashboard without requiring username/password!</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Test 4</strong></td>
-                        <td>On Sign Up Screen, tap <strong>COMPLETE REGISTRATION</strong></td>
-                        <td>Transitions immediately to the Student Dashboard!</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Test 5</strong></td>
-                        <td>On Dashboard, tap <strong>RETURN TO WELCOME SCREEN</strong></td>
-                        <td>Returns cleanly to the Welcome Screen.</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="action-steps-list">
+                <div class="action-step-card success-border">
+                    <div class="action-num-badge" style="background: var(--accent-green);">1</div>
+                    <div class="action-details">
+                        <strong>Look at the top toolbar in Android Studio:</strong>
+                        <p>Look near the top center. You will see a green triangle <b>Play button ▶</b> (or press <code>Shift + F10</code> on your keyboard).</p>
+                    </div>
+                </div>
 
-            <h3 style="font-size: 16px; margin: 24px 0 12px; color: var(--text-title); font-weight: 800;">
-                <i class="fa-solid fa-list-check" style="color: var(--accent-green);"></i> Student Lab Deliverables Checklist
+                <div class="action-step-card success-border">
+                    <div class="action-num-badge" style="background: var(--accent-green);">2</div>
+                    <div class="action-details">
+                        <strong>Click the Play button ▶!</strong>
+                        <p>Wait for the phone emulator to start up. When the app opens, tap the buttons to see them work!</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="font-size: 16px; margin: 24px 0 10px; font-weight: 800; color: var(--text-title);">
+                🎯 Tap Through Your 5 Victory Tests:
             </h3>
 
-            <div class="check-list-box">
+            <div class="checklist-box">
                 <div class="check-item" onclick="toggleCheck(this)">
-                    <div class="check-box-ui"><i class="fa-solid fa-check" style="font-size: 11px;"></i></div>
-                    <span>Android Studio Arctic Fox project builds cleanly with zero compile errors.</span>
+                    <div class="check-box-ui"><i class="fa-solid fa-check"></i></div>
+                    <span><b>Test 1:</b> Tap "ENTER DASHBOARD" ➔ Screen jumps to Student Dashboard!</span>
                 </div>
                 <div class="check-item" onclick="toggleCheck(this)">
-                    <div class="check-box-ui"><i class="fa-solid fa-check" style="font-size: 11px;"></i></div>
-                    <span>Welcome screen (MainActivity) displays custom image logo and navigates directly to DashboardActivity on button click.</span>
+                    <div class="check-box-ui"><i class="fa-solid fa-check"></i></div>
+                    <span><b>Test 2:</b> Tap "RETURN TO WELCOME SCREEN" ➔ Screen jumps back to Welcome!</span>
                 </div>
                 <div class="check-item" onclick="toggleCheck(this)">
-                    <div class="check-box-ui"><i class="fa-solid fa-check" style="font-size: 11px;"></i></div>
-                    <span>Login screen UI design displays properly and navigates to Dashboard on button click.</span>
+                    <div class="check-box-ui"><i class="fa-solid fa-check"></i></div>
+                    <span><b>Test 3:</b> Tap "VIEW LOGIN SCREEN" ➔ Login form appears!</span>
                 </div>
                 <div class="check-item" onclick="toggleCheck(this)">
-                    <div class="check-box-ui"><i class="fa-solid fa-check" style="font-size: 11px;"></i></div>
-                    <span>Sign Up screen UI design displays properly and navigates to Dashboard on button click.</span>
+                    <div class="check-box-ui"><i class="fa-solid fa-check"></i></div>
+                    <span><b>Test 4:</b> Tap "LOG IN TO DASHBOARD" ➔ Screen jumps directly into Dashboard!</span>
                 </div>
                 <div class="check-item" onclick="toggleCheck(this)">
-                    <div class="check-box-ui"><i class="fa-solid fa-check" style="font-size: 11px;"></i></div>
-                    <span>Dashboard displays interactive profile &amp; subject cards, with return button back to Welcome.</span>
+                    <div class="check-box-ui"><i class="fa-solid fa-check"></i></div>
+                    <span><b>Test 5:</b> Tap "VIEW SIGN UP SCREEN" ➔ Tap "COMPLETE REGISTRATION" ➔ Jumps to Dashboard!</span>
                 </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 24px; padding: 20px; background: #ecfdf5; border: 2px solid #a7f3d0; border-radius: 14px;">
+                <span style="font-size: 32px;">🎉 🏆 🌟</span>
+                <h3 style="font-family: 'Lexend', sans-serif; font-size: 20px; color: #065f46; margin-top: 6px;">
+                    CONGRATULATIONS! YOU ARE DONE!
+                </h3>
+                <p style="font-size: 14px; color: #047857;">
+                    Take screenshots of your 4 screens and submit your laboratory work to your teacher!
+                </p>
             </div>
         </section>
 
         <!-- TROUBLESHOOTING -->
-        <section id="troubleshooting" class="lab-section">
-            <div class="section-header">
-                <div class="section-step-num"><i class="fa-solid fa-wrench" style="font-size: 14px;"></i></div>
-                <h2 class="section-title">Quick Troubleshooting Guide</h2>
+        <section id="troubleshooting" class="lab-step-section">
+            <div class="step-header-banner">
+                <div class="step-big-badge" style="background: var(--accent-rose);">🆘</div>
+                <div class="step-title-group">
+                    <h2>Oops! Got a Red Line? (5-Second Fixes!)</h2>
+                    <p>Here are the easiest fixes for the most common little accidents.</p>
+                </div>
             </div>
 
             <div class="trouble-grid">
                 <div class="trouble-card">
-                    <div class="trouble-title"><i class="fa-solid fa-bug" style="color: var(--accent-rose);"></i> ActivityNotFoundException</div>
-                    <p>App crashes when clicking a button.</p>
+                    <div class="trouble-title"><i class="fa-solid fa-circle-exclamation"></i> Red line on the letter "R"?</div>
+                    <p>Happens when Android Studio gets confused.</p>
                     <div class="trouble-fix">
-                        <strong>Fix:</strong> Open <code>AndroidManifest.xml</code> and confirm the activity is registered inside <code>&lt;application&gt;</code>.
+                        <b>Easy Fix:</b> Look at the very top menu of Android Studio. Click <b>Build</b> ➔ click <b>Clean Project</b>. Wait 10 seconds. Done!
                     </div>
                 </div>
 
                 <div class="trouble-card">
-                    <div class="trouble-title"><i class="fa-solid fa-bug" style="color: var(--accent-rose);"></i> Image Won't Show or Build Error</div>
-                    <p>Error: "Resource entry ... is not a valid resource name".</p>
+                    <div class="trouble-title"><i class="fa-solid fa-circle-exclamation"></i> App crashes when clicking a button?</div>
+                    <p>Usually means an Activity was not registered.</p>
                     <div class="trouble-fix">
-                        <strong>Fix:</strong> Ensure your image file name is strictly <strong>lowercase</strong> with NO spaces (e.g. <code>logo.png</code>, NOT <code>Logo.png</code>).
+                        <b>Easy Fix:</b> Go to Step 7. Copy the <code>AndroidManifest.xml</code> code again and paste it. That fixes 100% of crashes!
                     </div>
                 </div>
 
                 <div class="trouble-card">
-                    <div class="trouble-title"><i class="fa-solid fa-bug" style="color: var(--accent-rose);"></i> "Unresolved reference: R"</div>
-                    <p>Kotlin files highlight <code>R.id...</code> in red.</p>
+                    <div class="trouble-title"><i class="fa-solid fa-circle-exclamation"></i> Red line on "logo"?</div>
+                    <p>Means the logo file is missing in drawable.</p>
                     <div class="trouble-fix">
-                        <strong>Fix:</strong> Check top imports. If you see <code>import android.R</code>, <strong>delete it</strong>! Then click <em>Build &gt; Clean Project</em>.
+                        <b>Easy Fix:</b> Go to Step 2.4. Right-click <code>drawable</code> ➔ New ➔ Drawable Resource File ➔ name it <code>logo</code> ➔ paste our code!
                     </div>
                 </div>
 
                 <div class="trouble-card">
-                    <div class="trouble-title"><i class="fa-solid fa-bug" style="color: var(--accent-rose);"></i> Button clicks do nothing</div>
-                    <p>Touching button does not open screen.</p>
+                    <div class="trouble-title"><i class="fa-solid fa-circle-exclamation"></i> I see code instead of design preview?</div>
+                    <p>You are in "Code only" view.</p>
                     <div class="trouble-fix">
-                        <strong>Fix:</strong> Confirm <code>button.setOnClickListener { ... }</code> is written inside <code>onCreate()</code>, after <code>setContentView()</code>.
+                        <b>Easy Fix:</b> Look at the top right of the code window. Click the icon that says <b>Split</b> or <b>Design</b> to see the phone screen!
                     </div>
                 </div>
             </div>
@@ -2117,8 +2120,8 @@ class SignUpActivity : AppCompatActivity() {
 
     </div>
 
+    <!-- SCRIPT FOR COPY AND CHECKLIST -->
     <script>
-        // Copy Code to Clipboard with feedback
         function copyCode(codeId, btnElement) {
             const codeBlock = document.getElementById(codeId);
             if (!codeBlock) return;
@@ -2126,7 +2129,7 @@ class SignUpActivity : AppCompatActivity() {
             const textToCopy = codeBlock.innerText;
             navigator.clipboard.writeText(textToCopy).then(() => {
                 const originalHtml = btnElement.innerHTML;
-                btnElement.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+                btnElement.innerHTML = '<i class="fa-solid fa-check"></i> Copied to Clipboard!';
                 btnElement.classList.add('copied');
                 
                 setTimeout(() => {
@@ -2134,11 +2137,10 @@ class SignUpActivity : AppCompatActivity() {
                     btnElement.classList.remove('copied');
                 }, 2000);
             }).catch(err => {
-                console.error('Failed to copy text: ', err);
+                console.error('Failed to copy: ', err);
             });
         }
 
-        // Toggle Interactive Checklist
         function toggleCheck(item) {
             item.classList.toggle('done');
         }
