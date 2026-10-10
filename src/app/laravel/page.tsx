@@ -42,13 +42,21 @@ export default function LaravelLabManualPage() {
             </span>
           </div>
 
-          <Link
-            href="/"
-            className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition flex items-center gap-1.5 shadow-sm"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Back to Portal</span>
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/laravel/eloquent"
+              className="text-xs font-semibold text-rose-600 hover:text-rose-700 px-3 py-1.5 rounded-lg border border-rose-200 bg-rose-50 hover:bg-rose-100 transition hidden sm:flex items-center gap-1.5 shadow-2xs"
+            >
+              <span>Next: Part 3 (Eloquent) &rarr;</span>
+            </Link>
+            <Link
+              href="/"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition flex items-center gap-1.5 shadow-sm"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Back to Portal</span>
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -590,6 +598,28 @@ Route::get('/contact', function () {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Next Lab Module Banner */}
+          <div className="rounded-2xl bg-gradient-to-r from-slate-900 to-rose-950 p-6 text-white border border-slate-800 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-rose-400 bg-rose-500/20 px-2.5 py-0.5 rounded-full border border-rose-500/30">
+                Next Laboratory Phase
+              </span>
+              <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                Ready for Database &amp; Eloquent ORM? (Part 3)
+              </h3>
+              <p className="text-xs text-slate-300 max-w-xl">
+                Continue to Part 3 where you will configure database migrations, create Eloquent models, seed mock data, and render dynamic database records with Blade.
+              </p>
+            </div>
+            <Link
+              href="/laravel/eloquent"
+              className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs tracking-tight transition flex items-center justify-center gap-1.5 shadow-md shadow-rose-600/30 shrink-0"
+            >
+              <span>Launch Part 3 Manual</span>
+              <ChevronRight className="w-4 h-4" />
+            </Link>
           </div>
         </section>
 

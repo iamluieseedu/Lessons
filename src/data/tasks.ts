@@ -22,6 +22,39 @@ export interface CourseTask {
 
 export const DEFAULT_TASKS: CourseTask[] = [
   {
+    id: 'laravel-lab-part-3-eloquent',
+    courseFolderId: 'webdev3',
+    courseCode: 'IT-WD3',
+    courseTitle: 'Web Dev 3: Laravel Framework',
+    title: 'Eloquent ORM: Migrations, Models & Dynamic CRUD',
+    badge: 'Laboratory Manual • Part 3',
+    phaseTag: 'Phase 3: Database & Eloquent',
+    type: 'Graded Lab Task',
+    difficulty: 'Intermediate',
+    status: 'active',
+    duration: '60 - 90 mins',
+    weekAlignment: 'Week 6 - 7 Practical Lab',
+    description: 'Master database persistence in Laravel 11: configure schema migrations, define Eloquent Models with mass-assignment protection, seed sample data, execute expressive queries, and render dynamic records in Blade.',
+    objectives: [
+      'Configure database connection in .env (SQLite / MySQL) and run baseline migrations',
+      'Generate structured migration schemas with typed columns (string, decimal, boolean, text)',
+      'Create Eloquent Models with protected $fillable attributes and model casts',
+      'Populate sample records with Database Seeders and verify queries in php artisan tinker',
+      'Build Controller methods for Eloquent CRUD queries (all, findOrFail, where, create)',
+      'Render dynamic database records in Blade views using @forelse loops and status badges'
+    ],
+    deliverables: [
+      'Working database migration files and Eloquent Model classes in app/Models',
+      'Database seeder script populated with realistic sample dataset',
+      'Dynamic Blade templates rendering query records on php artisan serve',
+      'Submission report with screenshots of migrations, Tinker outputs, and GitHub repository'
+    ],
+    techStack: ['Laravel 11', 'Eloquent ORM', 'Artisan CLI', 'SQLite / MySQL', 'Blade Engine'],
+    launchUrl: '/laravel/eloquent',
+    actionText: 'Launch Eloquent Manual',
+    isExternal: true
+  },
+  {
     id: 'laravel-lab-part-2',
     courseFolderId: 'webdev3',
     courseCode: 'IT-WD3',
