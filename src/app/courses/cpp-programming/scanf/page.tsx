@@ -192,33 +192,91 @@ const STORY_STEPS: StoryStep[] = [
   },
 
   // ==========================================
-  // ACT 2: NUMBERS & THE ADDRESS-OF (&) OPERATOR
+  // TOPIC 1: EXTRA EXAMPLE (FAVORITE CITY)
   // ==========================================
   {
     id: 8,
-    actTitle: 'Act 2: Numbers & The & Operator',
-    actBadge: 'Part 2 • Why & is Required',
+    actTitle: 'Topic 1: Extra String Example',
+    actBadge: 'Topic 1 • Reinforcement Example',
     mentorSpeech:
-      'Great work! You now understand natural strings without extra imports or ampersands. But what happens with numbers, such as age (int) and allowance (float)? Here is where the essential "&" address-of operator comes into play!',
-    actionButtonLabel: 'Proceed to Numbers & The & Rule 👉',
+      'Great work with your nickname! To solidify natural C strings, let us do a second practical example: reading your favorite city. Notice once again: only <stdio.h> is needed, and NO ampersand (&) is used!',
+    actionButtonLabel: '✍️ Write City String Code',
+    actionType: 'type-code',
+    highlightLine: 4,
+    codeSnapshot: [
+      '#include <stdio.h>',
+      '',
+      'int main() {',
+      '    char city[50]; // Second string example: char array',
+      '',
+      '    printf("Enter your favorite city: ");',
+      '    scanf("%s", city); // Look closely: NO "&" symbol!',
+      '',
+      '    printf("Exploring %s! Stored into memory without &.\\n", city);',
+      '    return 0;',
+      '}'
+    ],
+    keyTakeaway: 'Both nickname and city are char arrays, so neither requires "&" in scanf().'
+  },
+  {
+    id: 9,
+    actTitle: 'Topic 1: Run City Example',
+    actBadge: 'Topic 1 • Live Terminal Test',
+    mentorSpeech:
+      'Now let us execute this second string program in the virtual terminal. Click the button below and type your favorite city!',
+    actionButtonLabel: '▶ Run City Example in Terminal!',
+    actionType: 'run-terminal',
+    highlightLine: 7,
+    codeSnapshot: [
+      '#include <stdio.h>',
+      '',
+      'int main() {',
+      '    char city[50]; // Second string example: char array',
+      '',
+      '    printf("Enter your favorite city: ");',
+      '    scanf("%s", city); // Look closely: NO "&" symbol!',
+      '',
+      '    printf("Exploring %s! Stored into memory without &.\\n", city);',
+      '    return 0;',
+      '}'
+    ],
+    terminalPrompt: {
+      promptLabel: 'Enter your favorite city: ',
+      placeholder: 'Type city (e.g. Tokyo)...',
+      defaultOption1: 'Tokyo',
+      defaultOption2: 'Manila'
+    },
+    keyTakeaway: 'Terminal captures string input directly into the city char array.'
+  },
+
+  // ==========================================
+  // TOPIC 2: NUMBERS & THE ADDRESS-OF (&) OPERATOR
+  // ==========================================
+  {
+    id: 10,
+    actTitle: 'Topic 2: Numbers & The & Operator',
+    actBadge: 'Topic 2 • Why & is Required',
+    mentorSpeech:
+      'Now that you have seen two string examples without ampersands, let us move to Topic 2: NUMBERS. Primitive types like int and float behave differently in scanf() — they strictly require the "&" address-of operator!',
+    actionButtonLabel: 'Proceed to Topic 2: Numbers 👉',
     actionType: 'next-dialog',
     codeSnapshot: [
       '#include <stdio.h>',
       '',
       'int main() {',
-      '    // Act 2: Numbers & The Address-of (&) Operator',
+      '    // Topic 2: Numbers & The Address-of (&) Operator',
       '    // Click the button to declare int and float variables...',
       '    return 0;',
       '}'
     ],
-    keyTakeaway: 'Numbers behave differently than strings in scanf(). Let us discover why!'
+    keyTakeaway: 'Unlike array strings, primitive numbers must have "&" to pass memory addresses.'
   },
   {
-    id: 9,
-    actTitle: 'Act 2: Numbers & The & Operator',
-    actBadge: 'Part 2 • Declaring int & float',
+    id: 11,
+    actTitle: 'Topic 2: Numbers & The & Operator',
+    actBadge: 'Topic 2 • Declaring int & float',
     mentorSpeech:
-      'Let us declare two primitive variables: `int age;` for integers and `float allowance;` for decimals. Unlike arrays, primitive variables do not evaluate to addresses automatically.',
+      'Let us declare two primitive variables: `int age;` for whole numbers and `float allowance;` for decimals. Primitive numbers do not evaluate to addresses automatically.',
     actionButtonLabel: '✍️ Declare int age; and float allowance;',
     actionType: 'type-code',
     highlightLine: 4,
@@ -235,11 +293,11 @@ const STORY_STEPS: StoryStep[] = [
     keyTakeaway: 'int = whole numbers (%d), float = decimal numbers (%f).'
   },
   {
-    id: 10,
-    actTitle: 'Act 2: Numbers & The & Operator',
-    actBadge: 'Part 2 • The "&" Address Rule',
+    id: 12,
+    actTitle: 'Topic 2: Numbers & The & Operator',
+    actBadge: 'Topic 2 • The "&" Address Rule',
     mentorSpeech:
-      'Here is the critical memory rule: for numeric variables, you MUST prefix the variable name with "&" (e.g. `scanf("%d", &age);`). The ampersand passes the memory address of the variable so scanf() knows where in RAM to store the value. Omitting "&" causes a Segmentation Fault!',
+      'Here is the critical rule: for numeric variables, you MUST write `&age` and `&allowance`. The ampersand passes the memory address of the variable so scanf() knows where in RAM to store the value!',
     actionButtonLabel: '✍️ Write scanf with &age and &allowance',
     actionType: 'type-code',
     highlightLine: 8,
@@ -259,14 +317,14 @@ const STORY_STEPS: StoryStep[] = [
       '    return 0;',
       '}'
     ],
-    keyTakeaway: 'Memory Rule: Primitive variables MUST have "&" in scanf() to locate their storage.'
+    keyTakeaway: 'Memory Rule: Primitive variables MUST have "&" in scanf() to locate storage in RAM.'
   },
   {
-    id: 11,
-    actTitle: 'Act 2: Numbers & The & Operator',
-    actBadge: 'Part 2 • Formatted Output',
+    id: 13,
+    actTitle: 'Topic 2: Numbers & The & Operator',
+    actBadge: 'Topic 2 • Formatted Output',
     mentorSpeech:
-      'Next, let us print the numbers cleanly. We use `%d` for age and `%.2f` for allowance to round and display exactly two decimal places.',
+      'Next, let us print both values. We use `%d` for age and `%.2f` for allowance to round and display cleanly to two decimal places.',
     actionButtonLabel: '✍️ Add Summary Printf (%.2f formatting)',
     actionType: 'type-code',
     highlightLine: 13,
@@ -289,14 +347,14 @@ const STORY_STEPS: StoryStep[] = [
       '    return 0;',
       '}'
     ],
-    keyTakeaway: '%.2f formats floating-point values to two decimal digits.'
+    keyTakeaway: '%.2f formats floating-point values to exactly two decimal digits.'
   },
   {
-    id: 12,
-    actTitle: 'Act 2: Numbers & The & Operator',
-    actBadge: 'Part 2 • Live Numbers Test',
+    id: 14,
+    actTitle: 'Topic 2: Live Numbers Test',
+    actBadge: 'Topic 2 • Live Terminal Test',
     mentorSpeech:
-      'Awesome! Let us test this in our virtual terminal. Click Run and enter your age and allowance when prompted.',
+      'Let us run Example 1 of numbers in the terminal! Click Run and enter your age and allowance when prompted.',
     actionButtonLabel: '▶ Run Numbers Code in Terminal!',
     actionType: 'run-terminal',
     highlightLine: 8,
@@ -325,25 +383,95 @@ const STORY_STEPS: StoryStep[] = [
       defaultOption1: '19',
       defaultOption2: '21'
     },
-    keyTakeaway: 'Both integer and float values are stored safely using &age and &allowance.'
+    keyTakeaway: 'Both integer and float values are safely stored using &age and &allowance.'
   },
 
   // ==========================================
-  // ACT 3: THE 4 BASIC MATH OPERATORS (+, -, *, /)
+  // TOPIC 2: EXTRA EXAMPLE (STORE CHECKOUT)
   // ==========================================
   {
-    id: 13,
-    actTitle: 'Act 3: The 4 Basic Math Operators',
-    actBadge: 'Part 3 • Basic Math in C',
+    id: 15,
+    actTitle: 'Topic 2: Extra Numbers Example',
+    actBadge: 'Topic 2 • Reinforcement Example',
     mentorSpeech:
-      'Outstanding! You have mastered strings (no &) and numbers (with &). Now let us build a 4-Operator Calculator in C to calculate Sum (+), Difference (-), Product (*), and Quotient (/) from user inputs!',
-    actionButtonLabel: 'Build 4-Operator Calculator! 🧮',
+      'Now let us reinforce numbers with a second real-world scenario: an Item Checkout. We have `int quantity;` and `float unitPrice;`. Both require & in scanf() because they are primitive values in RAM!',
+    actionButtonLabel: '✍️ Write Store Checkout Code',
+    actionType: 'type-code',
+    highlightLine: 4,
+    codeSnapshot: [
+      '#include <stdio.h>',
+      '',
+      'int main() {',
+      '    int quantity;',
+      '    float unitPrice;',
+      '',
+      '    printf("Enter item quantity: ");',
+      '    scanf("%d", &quantity); // Primitive int requires &',
+      '',
+      '    printf("Enter unit price ($): ");',
+      '    scanf("%f", &unitPrice); // Primitive float requires &',
+      '',
+      '    printf("\\n[Checkout Summary]\\n");',
+      '    printf("Units: %d | Unit Price: $%.2f\\n", quantity, unitPrice);',
+      '    printf("Total Cost: $%.2f\\n", quantity * unitPrice);',
+      '    return 0;',
+      '}'
+    ],
+    keyTakeaway: 'Every numeric variable (int, float) requires & in scanf() without exception.'
+  },
+  {
+    id: 16,
+    actTitle: 'Topic 2: Run Checkout Example',
+    actBadge: 'Topic 2 • Live Terminal Test',
+    mentorSpeech:
+      'Run the store checkout program! Enter an item quantity (e.g. 3) and unit price (e.g. 12.50) to watch C read the values and calculate the total cost.',
+    actionButtonLabel: '▶ Run Checkout in Terminal!',
+    actionType: 'run-terminal',
+    highlightLine: 8,
+    codeSnapshot: [
+      '#include <stdio.h>',
+      '',
+      'int main() {',
+      '    int quantity;',
+      '    float unitPrice;',
+      '',
+      '    printf("Enter item quantity: ");',
+      '    scanf("%d", &quantity); // Primitive int requires &',
+      '',
+      '    printf("Enter unit price ($): ");',
+      '    scanf("%f", &unitPrice); // Primitive float requires &',
+      '',
+      '    printf("\\n[Checkout Summary]\\n");',
+      '    printf("Units: %d | Unit Price: $%.2f\\n", quantity, unitPrice);',
+      '    printf("Total Cost: $%.2f\\n", quantity * unitPrice);',
+      '    return 0;',
+      '}'
+    ],
+    terminalPrompt: {
+      promptLabel: 'Enter item quantity: ',
+      placeholder: 'Type quantity (e.g. 3)...',
+      defaultOption1: '3',
+      defaultOption2: '5'
+    },
+    keyTakeaway: 'Terminal reads multiple primitive numbers in sequence using &.'
+  },
+
+  // ==========================================
+  // TOPIC 3: THE 4 BASIC MATH OPERATORS (+, -, *, /)
+  // ==========================================
+  {
+    id: 17,
+    actTitle: 'Topic 3: The 4 Basic Math Operators',
+    actBadge: 'Topic 3 • Basic Math in C',
+    mentorSpeech:
+      'Excellent! You now know strings (no &) and numbers (with &). Now let us enter Topic 3: The 4 Basic Math Operators in C (+, -, *, /). We will prompt the user for two numbers and calculate all four operations!',
+    actionButtonLabel: 'Proceed to Topic 3: Math Operators 👉',
     actionType: 'next-dialog',
     codeSnapshot: [
       '#include <stdio.h>',
       '',
       'int main() {',
-      '    // Act 3: 4 Basic Math Operators in C (+, -, *, /)',
+      '    // Topic 3: 4 Basic Math Operators in C (+, -, *, /)',
       '    // Click the button to set up the calculator variables...',
       '    return 0;',
       '}'
@@ -351,11 +479,11 @@ const STORY_STEPS: StoryStep[] = [
     keyTakeaway: 'We will prompt for two numbers and calculate +, -, *, and / simultaneously.'
   },
   {
-    id: 14,
-    actTitle: 'Act 3: The 4 Basic Math Operators',
-    actBadge: 'Part 3 • Operand Declarations',
+    id: 18,
+    actTitle: 'Topic 3: The 4 Basic Math Operators',
+    actBadge: 'Topic 3 • Operand Declarations',
     mentorSpeech:
-      'Let us declare two inputs: `float num1, num2;` and four variables for results: `float sum, diff, prod, quot;`. We choose float so division retains its decimal values instead of truncating!',
+      'Let us declare two inputs: `float num1, num2;` and four variables for results: `float sum, diff, prod, quot;`. We choose float so division retains decimal precision instead of truncating.',
     actionButtonLabel: '✍️ Declare Operands & Results (float)',
     actionType: 'type-code',
     highlightLine: 4,
@@ -372,9 +500,9 @@ const STORY_STEPS: StoryStep[] = [
     keyTakeaway: 'Using float for arithmetic avoids integer division truncation.'
   },
   {
-    id: 15,
-    actTitle: 'Act 3: The 4 Basic Math Operators',
-    actBadge: 'Part 3 • Capturing Operands',
+    id: 19,
+    actTitle: 'Topic 3: The 4 Basic Math Operators',
+    actBadge: 'Topic 3 • Capturing Operands',
     mentorSpeech:
       'Let us ask the user for both numbers using `scanf("%f", &num1);` and `scanf("%f", &num2);`. Remember: because they are float numbers, the ampersand (&) is strictly required!',
     actionButtonLabel: '✍️ Prompt & Scan Both Numbers',
@@ -399,9 +527,9 @@ const STORY_STEPS: StoryStep[] = [
     keyTakeaway: 'Both numbers are captured into memory using &num1 and &num2.'
   },
   {
-    id: 16,
-    actTitle: 'Act 3: The 4 Basic Math Operators',
-    actBadge: 'Part 3 • Computing Formulas',
+    id: 20,
+    actTitle: 'Topic 3: The 4 Basic Math Operators',
+    actBadge: 'Topic 3 • Computing Formulas',
     mentorSpeech:
       'Here are the 4 fundamental arithmetic operators in C: + (Addition), - (Subtraction), * (Multiplication using asterisk), and / (Division using forward slash). Let us compute all four expressions!',
     actionButtonLabel: '✍️ Compute +, -, *, and / Formulas',
@@ -432,9 +560,9 @@ const STORY_STEPS: StoryStep[] = [
     keyTakeaway: '+ adds, - subtracts, * multiplies, and / divides in C arithmetic expressions.'
   },
   {
-    id: 17,
-    actTitle: 'Act 3: The 4 Basic Math Operators',
-    actBadge: 'Part 3 • Formatting Results',
+    id: 21,
+    actTitle: 'Topic 3: The 4 Basic Math Operators',
+    actBadge: 'Topic 3 • Formatting Results',
     mentorSpeech:
       'Finally, let us print all four answers using formatted `%.2f` for a neat and professional output table!',
     actionButtonLabel: '✍️ Add Results Printf Display',
@@ -470,9 +598,9 @@ const STORY_STEPS: StoryStep[] = [
     keyTakeaway: 'The calculator handles all 4 operations simultaneously and prints rounded results.'
   },
   {
-    id: 18,
-    actTitle: 'Act 3: The 4 Basic Math Operators',
-    actBadge: 'Part 3 • Live Calculator Run',
+    id: 22,
+    actTitle: 'Topic 3: Live Calculator Run',
+    actBadge: 'Topic 3 • Live Terminal Test',
     mentorSpeech:
       'Your C calculator is ready! Click the Run button below, type two numbers (e.g. 20 and 4), and observe C arithmetic in action.',
     actionButtonLabel: '▶ Run Calculator in Terminal!',
@@ -515,23 +643,97 @@ const STORY_STEPS: StoryStep[] = [
   },
 
   // ==========================================
+  // TOPIC 3: EXTRA EXAMPLE (RECTANGLE DIMENSIONS)
+  // ==========================================
+  {
+    id: 23,
+    actTitle: 'Topic 3: Extra Math Example',
+    actBadge: 'Topic 3 • Reinforcement Example',
+    mentorSpeech:
+      'To reinforce your math mastery, let us do a second practical application: calculating Rectangle Dimensions! We prompt for length and width, then apply all 4 operators: Perimeter (+), Difference (-), Area (*), and Ratio (/)!',
+    actionButtonLabel: '✍️ Write Rectangle Math Code',
+    actionType: 'type-code',
+    highlightLine: 4,
+    codeSnapshot: [
+      '#include <stdio.h>',
+      '',
+      'int main() {',
+      '    float length, width;',
+      '',
+      '    printf("Enter rectangle length: ");',
+      '    scanf("%f", &length);',
+      '',
+      '    printf("Enter rectangle width: ");',
+      '    scanf("%f", &width);',
+      '',
+      '    // Applying all 4 operators to dimensions',
+      '    printf("\\n--- Rectangle Dimensions & Arithmetic ---\\n");',
+      '    printf("Perimeter  (+) : %.2f\\n", 2 * (length + width)); // Addition',
+      '    printf("Difference (-) : %.2f\\n", length - width);        // Subtraction',
+      '    printf("Area       (*) : %.2f\\n", length * width);         // Multiplication',
+      '    printf("Ratio      (/) : %.2f\\n", length / width);         // Division',
+      '    return 0;',
+      '}'
+    ],
+    keyTakeaway: 'Real-world geometric formulas directly utilize +, -, *, and /.'
+  },
+  {
+    id: 24,
+    actTitle: 'Topic 3: Run Rectangle Math',
+    actBadge: 'Topic 3 • Live Terminal Test',
+    mentorSpeech:
+      'Run the rectangle dimensions program! Enter a length (e.g. 10) and width (e.g. 4) to watch all 4 arithmetic operators calculate simultaneously.',
+    actionButtonLabel: '▶ Run Rectangle Math in Terminal!',
+    actionType: 'run-terminal',
+    highlightLine: 8,
+    codeSnapshot: [
+      '#include <stdio.h>',
+      '',
+      'int main() {',
+      '    float length, width;',
+      '',
+      '    printf("Enter rectangle length: ");',
+      '    scanf("%f", &length);',
+      '',
+      '    printf("Enter rectangle width: ");',
+      '    scanf("%f", &width);',
+      '',
+      '    // Applying all 4 operators to dimensions',
+      '    printf("\\n--- Rectangle Dimensions & Arithmetic ---\\n");',
+      '    printf("Perimeter  (+) : %.2f\\n", 2 * (length + width)); // Addition',
+      '    printf("Difference (-) : %.2f\\n", length - width);        // Subtraction',
+      '    printf("Area       (*) : %.2f\\n", length * width);         // Multiplication',
+      '    printf("Ratio      (/) : %.2f\\n", length / width);         // Division',
+      '    return 0;',
+      '}'
+    ],
+    terminalPrompt: {
+      promptLabel: 'Enter rectangle length: ',
+      placeholder: 'Type length (e.g. 10)...',
+      defaultOption1: '10',
+      defaultOption2: '12'
+    },
+    keyTakeaway: 'All 4 arithmetic operators work in tandem on practical float dimensions.'
+  },
+
+  // ==========================================
   // COMPLETION & FINISH
   // ==========================================
   {
-    id: 19,
+    id: 25,
     actTitle: 'Lesson Completed',
-    actBadge: 'Finished • C scanf & Math',
+    actBadge: 'Finished • All 3 Topics & Examples',
     mentorSpeech:
-      'You have finished all 3 parts of this lesson: 1) Natural C strings using char arrays (no extra imports, and no & operator), 2) Numbers using the address-of & operator (int and float), and 3) The 4 basic math operators (+, -, *, /). You are all set to move on to next C projects.',
+      'You have finished all 3 topics along with their practical reinforcement examples: 1) Natural C strings without & (Nickname & City), 2) Numbers requiring & (Profile & Checkout), and 3) All 4 Math operators (Calculator & Rectangle Dimensions). You are ready to move on to next C projects!',
     actionButtonLabel: 'Finish Lesson',
     actionType: 'next-dialog',
     codeSnapshot: [
       '// Lesson Summary: C scanf() & Basic Operators',
-      '// 1. Strings:  char name[50]; scanf("%s", name);   -> No & operator',
-      '// 2. Numbers:  int age; scanf("%d", &age);          -> Requires &',
-      '// 3. Math:     float x; scanf("%f", &x);            -> +, -, *, /'
+      '// 1. Strings:  char text[50]; scanf("%s", text);    -> No & operator',
+      '// 2. Numbers:  int qty; float pr; scanf("%d", &qty); -> Requires &',
+      '// 3. Math:     +, -, *, / with %.2f formatting      -> Expressions'
     ],
-    keyTakeaway: 'Lesson completed. You have mastered standard input and memory addressing rules in C.'
+    keyTakeaway: 'Lesson completed. You have mastered standard input, memory addressing rules, and arithmetic in C.'
   }
 ];
 
@@ -693,23 +895,17 @@ export default function LinearCScanfInteractivePage() {
       setInputBuffer('');
 
       if (currentStep.id === 7) {
-        // Act 1: String input
-        setTerminalLines([
-          '$ gcc main.c -o app && ./app',
-          'Enter your nickname: '
-        ]);
-      } else if (currentStep.id === 12) {
-        // Act 2: Numbers input
-        setTerminalLines([
-          '$ gcc main.c -o app && ./app',
-          'Enter your age: '
-        ]);
-      } else if (currentStep.id === 18) {
-        // Act 3: Math Calculator input
-        setTerminalLines([
-          '$ gcc main.c -o app && ./app',
-          'Enter first number: '
-        ]);
+        setTerminalLines(['$ gcc main.c -o app && ./app', 'Enter your nickname: ']);
+      } else if (currentStep.id === 9) {
+        setTerminalLines(['$ gcc main.c -o app && ./app', 'Enter your favorite city: ']);
+      } else if (currentStep.id === 14) {
+        setTerminalLines(['$ gcc main.c -o app && ./app', 'Enter your age: ']);
+      } else if (currentStep.id === 16) {
+        setTerminalLines(['$ gcc main.c -o app && ./app', 'Enter item quantity: ']);
+      } else if (currentStep.id === 22) {
+        setTerminalLines(['$ gcc main.c -o app && ./app', 'Enter first number: ']);
+      } else if (currentStep.id === 24) {
+        setTerminalLines(['$ gcc main.c -o app && ./app', 'Enter rectangle length: ']);
       }
 
       setTimeout(() => {
@@ -725,7 +921,7 @@ export default function LinearCScanfInteractivePage() {
           setDisplayedCode(nextStep.codeSnapshot);
         }
       } else {
-        // Step 19 completed -> mark as finished
+        // Step 25 completed -> mark as finished
         setIsFinished(true);
       }
     }
@@ -740,7 +936,7 @@ export default function LinearCScanfInteractivePage() {
     setInputBuffer('');
 
     if (currentStep.id === 7) {
-      // String run complete
+      // Topic 1 Ex 1: String run complete
       setTerminalLines([
         '$ gcc main.c -o app && ./app',
         `Enter your nickname: ${val}`,
@@ -748,13 +944,25 @@ export default function LinearCScanfInteractivePage() {
         '[Process exited with code 0]'
       ]);
       setIsWaitingInput(false);
-      // Advance to Act 2 intro step
       setTimeout(() => {
         setCurrentStepId(8);
         setDisplayedCode(STORY_STEPS.find((s) => s.id === 8)?.codeSnapshot || []);
       }, 1200);
-    } else if (currentStep.id === 12) {
-      // Number input: requires age then allowance
+    } else if (currentStep.id === 9) {
+      // Topic 1 Ex 2: City run complete
+      setTerminalLines([
+        '$ gcc main.c -o app && ./app',
+        `Enter your favorite city: ${val}`,
+        `Exploring ${val}! Stored into memory without &.`,
+        '[Process exited with code 0]'
+      ]);
+      setIsWaitingInput(false);
+      setTimeout(() => {
+        setCurrentStepId(10);
+        setDisplayedCode(STORY_STEPS.find((s) => s.id === 10)?.codeSnapshot || []);
+      }, 1200);
+    } else if (currentStep.id === 14) {
+      // Topic 2 Ex 1: Numbers (age then allowance)
       if (newInputs.length === 1) {
         setTerminalLines([
           '$ gcc main.c -o app && ./app',
@@ -775,14 +983,41 @@ export default function LinearCScanfInteractivePage() {
           '[Process exited with code 0]'
         ]);
         setIsWaitingInput(false);
-        // Advance to Act 3 intro step
         setTimeout(() => {
-          setCurrentStepId(13);
-          setDisplayedCode(STORY_STEPS.find((s) => s.id === 13)?.codeSnapshot || []);
+          setCurrentStepId(15);
+          setDisplayedCode(STORY_STEPS.find((s) => s.id === 15)?.codeSnapshot || []);
         }, 1200);
       }
-    } else if (currentStep.id === 18) {
-      // Math Calculator: requires num1 then num2
+    } else if (currentStep.id === 16) {
+      // Topic 2 Ex 2: Store Checkout (quantity then price)
+      if (newInputs.length === 1) {
+        setTerminalLines([
+          '$ gcc main.c -o app && ./app',
+          `Enter item quantity: ${val}`,
+          'Enter unit price ($): '
+        ]);
+      } else {
+        const qtyVal = parseInt(newInputs[0] || '3');
+        const priceVal = parseFloat(newInputs[1] || '12.50');
+        const total = qtyVal * priceVal;
+        setTerminalLines([
+          '$ gcc main.c -o app && ./app',
+          `Enter item quantity: ${qtyVal}`,
+          `Enter unit price ($): $${priceVal.toFixed(2)}`,
+          '',
+          '[Checkout Summary]',
+          `Units: ${qtyVal} | Unit Price: $${priceVal.toFixed(2)}`,
+          `Total Cost: $${total.toFixed(2)}`,
+          '[Process exited with code 0]'
+        ]);
+        setIsWaitingInput(false);
+        setTimeout(() => {
+          setCurrentStepId(17);
+          setDisplayedCode(STORY_STEPS.find((s) => s.id === 17)?.codeSnapshot || []);
+        }, 1200);
+      }
+    } else if (currentStep.id === 22) {
+      // Topic 3 Ex 1: Calculator (num1 then num2)
       if (newInputs.length === 1) {
         setTerminalLines([
           '$ gcc main.c -o app && ./app',
@@ -812,10 +1047,45 @@ export default function LinearCScanfInteractivePage() {
           '[Process exited with code 0]'
         ]);
         setIsWaitingInput(false);
-        // Advance to final celebration step
         setTimeout(() => {
-          setCurrentStepId(19);
-          setDisplayedCode(STORY_STEPS.find((s) => s.id === 19)?.codeSnapshot || []);
+          setCurrentStepId(23);
+          setDisplayedCode(STORY_STEPS.find((s) => s.id === 23)?.codeSnapshot || []);
+        }, 1200);
+      }
+    } else if (currentStep.id === 24) {
+      // Topic 3 Ex 2: Rectangle Dimensions (length then width)
+      if (newInputs.length === 1) {
+        setTerminalLines([
+          '$ gcc main.c -o app && ./app',
+          `Enter rectangle length: ${val}`,
+          'Enter rectangle width: '
+        ]);
+      } else {
+        const len = parseFloat(newInputs[0] || '10');
+        const wid = parseFloat(newInputs[1] || '4');
+        const perim = 2 * (len + wid);
+        const diff = len - wid;
+        const area = len * wid;
+        const ratio = wid !== 0 ? len / wid : 0;
+
+        setTerminalLines([
+          '$ gcc main.c -o app && ./app',
+          `Enter rectangle length: ${len}`,
+          `Enter rectangle width: ${wid}`,
+          '',
+          '--- Rectangle Dimensions & Arithmetic ---',
+          `Perimeter  (+) : ${perim.toFixed(2)}`,
+          `Difference (-) : ${diff.toFixed(2)}`,
+          `Area       (*) : ${area.toFixed(2)}`,
+          wid !== 0
+            ? `Ratio      (/) : ${ratio.toFixed(2)}`
+            : 'Ratio      (/) : Error (Division by Zero)',
+          '[Process exited with code 0]'
+        ]);
+        setIsWaitingInput(false);
+        setTimeout(() => {
+          setCurrentStepId(25);
+          setDisplayedCode(STORY_STEPS.find((s) => s.id === 25)?.codeSnapshot || []);
         }, 1200);
       }
     }
@@ -961,7 +1231,7 @@ export default function LinearCScanfInteractivePage() {
                 <div className="space-y-2.5 pt-1">
                   <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800 flex items-center gap-2">
                     <Check className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span className="font-medium">Lesson finished! You have completed all 19 steps.</span>
+                    <span className="font-medium">Lesson finished! You have completed all 25 steps across 3 topics &amp; practical examples.</span>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-0.5">
@@ -1006,7 +1276,7 @@ export default function LinearCScanfInteractivePage() {
                     onClick={handleStepAction}
                     disabled={isTyping}
                     className={`w-full py-3 px-4 rounded-xl font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 shadow-md cursor-pointer ${
-                      currentStepId === 19
+                      currentStepId === 25
                         ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-200'
                         : currentStep.actionType === 'run-terminal'
                         ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-200 ring-2 ring-emerald-400 ring-offset-2'
@@ -1016,11 +1286,11 @@ export default function LinearCScanfInteractivePage() {
                     <span>
                       {isTyping
                         ? 'Typing into Editor...'
-                        : currentStepId === 19
+                        : currentStepId === 25
                         ? 'Finish Lesson'
                         : currentStep.actionButtonLabel}
                     </span>
-                    {currentStepId === 19 ? (
+                    {currentStepId === 25 ? (
                       <Check className="w-4 h-4" />
                     ) : currentStep.actionType === 'run-terminal' ? (
                       <CornerDownRight className="w-4 h-4 animate-bounce text-emerald-100" />
