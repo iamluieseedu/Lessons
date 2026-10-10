@@ -26,7 +26,7 @@ export const DEFAULT_TASKS: CourseTask[] = [
     courseFolderId: 'webdev3',
     courseCode: 'IT-WD3',
     courseTitle: 'Web Dev 3: Laravel Framework',
-    title: 'Eloquent ORM: Migrations, Models & Dynamic CRUD',
+    title: 'Eloquent ORM: Models, Table Schemas & Dynamic CRUD',
     badge: 'Laboratory Manual • Part 3',
     phaseTag: 'Phase 3: Database & Eloquent',
     type: 'Graded Lab Task',
@@ -34,20 +34,21 @@ export const DEFAULT_TASKS: CourseTask[] = [
     status: 'active',
     duration: '60 - 90 mins',
     weekAlignment: 'Week 6 - 7 Practical Lab',
-    description: 'Master database persistence in Laravel 11: configure schema migrations, define Eloquent Models with mass-assignment protection, seed sample data, execute expressive queries, and render dynamic records in Blade.',
+    description: 'Create a brand-new Laravel 11 project for this activity. Master database persistence: configure SQLite / MySQL, build table schemas with Artisan, define Eloquent Models with mass-assignment protection, seed sample data, execute expressive queries, and render dynamic records in Blade.',
     objectives: [
-      'Configure database connection in .env (SQLite / MySQL) and run baseline migrations',
-      'Generate structured migration schemas with typed columns (string, decimal, boolean, text)',
+      'Create a brand-new Laravel 11 project using Composer (composer create-project laravel/laravel campus-gear)',
+      'Configure database connection in .env (SQLite / MySQL) and initialize table schemas',
+      'Generate structured table schemas with typed columns (string, decimal, boolean, text)',
       'Create Eloquent Models with protected $fillable attributes and model casts',
       'Populate sample records with Database Seeders and verify queries in php artisan tinker',
       'Build Controller methods for Eloquent CRUD queries (all, findOrFail, where, create)',
       'Render dynamic database records in Blade views using @forelse loops and status badges'
     ],
     deliverables: [
-      'Working database migration files and Eloquent Model classes in app/Models',
+      'Brand-new Laravel 11 project repository with database schema files and Eloquent Model classes in app/Models',
       'Database seeder script populated with realistic sample dataset',
       'Dynamic Blade templates rendering query records on php artisan serve',
-      'Submission report with screenshots of migrations, Tinker outputs, and GitHub repository'
+      'Submission report with screenshots of table schemas, Tinker outputs, and GitHub repository'
     ],
     techStack: ['Laravel 11', 'Eloquent ORM', 'Artisan CLI', 'SQLite / MySQL', 'Blade Engine'],
     launchUrl: '/laravel/eloquent',
@@ -174,6 +175,36 @@ export const DEFAULT_TASKS: CourseTask[] = [
     techStack: ['Android Studio Arctic Fox', 'Kotlin', 'XML Layouts', 'Android Activities', 'Intents'],
     launchUrl: '/mobdev/',
     actionText: 'Launch Mob Dev 1 Manual',
+    isExternal: true
+  },
+  {
+    id: 'c-scanf-interactive-lab',
+    courseFolderId: 'cpp',
+    courseCode: 'CS-CPP1',
+    courseTitle: 'C / C++ Systems Programming',
+    title: 'Interactive C Lab: User Input with scanf() & Math Operators',
+    badge: 'Interactive Lab • C Fundamentals',
+    phaseTag: 'Input/Output & Arithmetic',
+    type: 'Practice Lab',
+    difficulty: 'Beginner',
+    status: 'active',
+    duration: '45 - 60 mins',
+    weekAlignment: 'Week 2 - 3 Practical Lab',
+    description: 'Master keyboard input and memory addressing with scanf() in C: natural strings (char arrays without string.h), reading numbers with the & address-of operator, and implementing arithmetic formulas with the 4 basic math operators (+, -, *, /).',
+    objectives: [
+      'Understand how standard input (stdin) and scanf() pause execution until the Enter key is pressed',
+      'Read natural strings using char arrays without importing extra libraries (char name[50];)',
+      'Learn why strings do NOT need the & operator while primitive integers and floats strictly require &',
+      'Prompt and read multiple numeric inputs from the user in a simulated C IDE and terminal',
+      'Compute Addition, Subtraction, Multiplication, and Division using formatted printf output (%.2f)'
+    ],
+    deliverables: [
+      'Completion of the 3 interactive guided stages (Strings, Numbers, 4 Math Operators)',
+      'Working execution of simulated C programs inside the virtual terminal'
+    ],
+    techStack: ['C11 Standard', 'Standard I/O (stdio.h)', 'Interactive Terminal', 'Simulated C IDE'],
+    launchUrl: '/courses/cpp-programming/scanf',
+    actionText: 'Launch Interactive Lab',
     isExternal: true
   }
 ];

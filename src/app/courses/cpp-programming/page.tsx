@@ -5,6 +5,7 @@ import Link from 'next/link';
 import {
   Terminal,
   ArrowLeft,
+  ArrowRight,
   BookOpen,
   CheckCircle2,
   Layers,
@@ -24,13 +25,23 @@ export default function CppProgrammingPage() {
             <span>All Courses</span>
           </Link>
 
-          <Link
-            href="/lesson/?id=cpp1"
-            className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100 transition flex items-center gap-1.5"
-          >
-            <Play className="w-3 h-3 fill-current" />
-            <span>C++ Slides</span>
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/courses/cpp-programming/scanf"
+              className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 transition flex items-center gap-1.5 shadow-2xs"
+            >
+              <Terminal className="w-3 h-3 text-rose-600" />
+              <span>Interactive scanf Lab</span>
+            </Link>
+
+            <Link
+              href="/lesson/?id=cpp1"
+              className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100 transition flex items-center gap-1.5"
+            >
+              <Play className="w-3 h-3 fill-current" />
+              <span>C++ Slides</span>
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -52,6 +63,32 @@ export default function CppProgrammingPage() {
             A comprehensive collegiate curriculum on memory architecture, pointer arithmetic, manual heap allocation, object-oriented encapsulation, polymorphism, and stream I/O formatting in modern C++.
           </p>
         </header>
+
+        {/* Interactive Lab Callout */}
+        <div className="bg-gradient-to-r from-slate-900 via-slate-900 to-rose-950 border border-slate-800 text-white rounded-3xl p-6 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1 max-w-xl">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30 flex items-center gap-1">
+                <Terminal className="w-3 h-3" />
+                Interactive Simulated Lab
+              </span>
+              <span className="text-[11px] text-slate-400 font-mono">C11 Standard</span>
+            </div>
+            <h3 className="text-lg font-bold text-white">
+              C Programming: User Input with scanf()
+            </h3>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              Step-by-step simulated editor with typewriter auto-typing, virtual terminal, and floating tour guide: natural C strings, numbers with the &amp; operator, and the 4 basic arithmetic operators (+, -, *, /).
+            </p>
+          </div>
+          <Link
+            href="/courses/cpp-programming/scanf"
+            className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition shrink-0 flex items-center gap-1.5 shadow-md self-start sm:self-auto cursor-pointer"
+          >
+            <span>Launch scanf Lab</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
 
         {/* Overview Section */}
         <section className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-5">

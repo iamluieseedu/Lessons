@@ -313,10 +313,14 @@
     <main class="container">
         <header class="header-section">
             <span class="eyebrow">Laboratory Manual: Web Development 3 (Part 3 • Week 6 - 7)</span>
-            <h1>Eloquent ORM: Migrations, Models, Database Seeding &amp; Dynamic Blade Queries</h1>
+            <h1>Eloquent ORM: Fresh Project, Table Schemas, Models &amp; Dynamic Blade Queries</h1>
             <p class="lead">
-                In this laboratory phase, transition your application from static templates to full persistent database operations. Master Laravel 11's Eloquent ORM (ActiveRecord pattern), schema migrations, mass-assignment safety with <code>$fillable</code>, test data seeding, and dynamic Blade rendering.
+                In this laboratory phase, build a persistent, dynamic database application in a <strong>brand-new Laravel 11 project</strong>. Master Laravel's Eloquent ORM, table schemas with Artisan, mass-assignment safety with <code>$fillable</code>, test data seeding, and dynamic Blade rendering.
             </p>
+            <div style="background: #fffbeb; border: 1px solid #fef3c7; border-left: 4px solid #f59e0b; padding: 14px 18px; border-radius: 8px; margin-top: 18px; color: #92400e; font-size: 0.9rem;">
+                <strong><i class="fa-solid fa-triangle-exclamation"></i> Fresh Project Notice:</strong>
+                You will create a <strong>brand-new, independent Laravel 11 project</strong> (<code>campus-gear</code>) for this activity. You do <strong>not</strong> need to migrate or carry over code from your previous laboratory tasks.
+            </div>
         </header>
 
         <!-- Objectives -->
@@ -326,7 +330,13 @@
                 <div class="obj-card">
                     <i class="fa-solid fa-circle-check"></i>
                     <div>
-                        <strong>Schema Migrations:</strong> Design structured table schemas using Artisan migrations with typed columns.
+                        <strong>Fresh Project Setup:</strong> Scaffold a brand-new Laravel 11 application (<code>composer create-project</code>) dedicated solely to database operations.
+                    </div>
+                </div>
+                <div class="obj-card">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <div>
+                        <strong>Table Schemas:</strong> Design structured database tables using Artisan schema files with typed columns.
                     </div>
                 </div>
                 <div class="obj-card">
@@ -341,18 +351,29 @@
                         <strong>Database Seeders:</strong> Populate mock datasets and verify queries inside the <code>php artisan tinker</code> REPL.
                     </div>
                 </div>
-                <div class="obj-card">
-                    <i class="fa-solid fa-circle-check"></i>
-                    <div>
-                        <strong>Dynamic Blade CRUD:</strong> Query database records with Eloquent methods and render them dynamically in Blade.
-                    </div>
-                </div>
             </div>
         </section>
 
         <!-- Step 1 -->
         <section class="section-block">
-            <h2 class="section-title"><i class="fa-solid fa-terminal"></i> Step 1: Environment &amp; Database Config</h2>
+            <h2 class="section-title"><i class="fa-solid fa-rocket"></i> Step 1: Scaffold a Brand-New Laravel 11 Project</h2>
+            <p>In your terminal or command prompt, generate a fresh Laravel 11 project named <code>campus-gear</code>:</p>
+            <div class="code-container">
+                <div class="code-header">
+                    <span>Terminal</span>
+                    <button class="copy-btn" onclick="navigator.clipboard.writeText('composer create-project laravel/laravel campus-gear\ncd campus-gear'); this.innerText='Copied!'; setTimeout(()=>this.innerText='Copy', 2000);">
+                        <i class="fa-regular fa-copy"></i> Copy
+                    </button>
+                </div>
+                <pre>composer create-project laravel/laravel campus-gear
+cd campus-gear</pre>
+            </div>
+            <p>Open this new folder in VS Code (<code>code .</code>) to begin.</p>
+        </section>
+
+        <!-- Step 2 -->
+        <section class="section-block">
+            <h2 class="section-title"><i class="fa-solid fa-terminal"></i> Step 2: Environment &amp; Database Config</h2>
             <p>Ensure your <code>.env</code> file specifies SQLite (zero setup) or MySQL:</p>
             <div class="code-container">
                 <div class="code-header">
@@ -365,9 +386,9 @@
             </div>
         </section>
 
-        <!-- Step 2 -->
+        <!-- Step 3 -->
         <section class="section-block">
-            <h2 class="section-title"><i class="fa-solid fa-file-code"></i> Step 2: Creating the Products Migration</h2>
+            <h2 class="section-title"><i class="fa-solid fa-file-code"></i> Step 3: Creating the Products Table Schema</h2>
             <div class="code-container">
                 <div class="code-header">
                     <span>Terminal</span>
@@ -409,9 +430,9 @@
             </div>
         </section>
 
-        <!-- Step 3 -->
+        <!-- Step 4 -->
         <section class="section-block">
-            <h2 class="section-title"><i class="fa-solid fa-play"></i> Step 3: Running Migrations &amp; Generating Model</h2>
+            <h2 class="section-title"><i class="fa-solid fa-play"></i> Step 4: Running Table Schemas &amp; Generating Model</h2>
             <div class="code-container">
                 <div class="code-header">
                     <span>Terminal</span>
@@ -448,6 +469,42 @@ php artisan make:model Product</pre>
     'is_available'
 ];</pre>
             </div>
+        </section>
+
+        <!-- Step 5 -->
+        <section class="section-block">
+            <h2 class="section-title"><i class="fa-solid fa-code"></i> Step 5: Master Layout &amp; Dynamic Blade View</h2>
+            <p>In your new project, create <code>resources/views/layouts/app.blade.php</code>:</p>
+            <div class="code-container">
+                <div class="code-header">
+                    <span>resources/views/layouts/app.blade.php</span>
+                    <button class="copy-btn" onclick="navigator.clipboard.writeText(`<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>@yield('title', 'Campus Gear')</title>
+</head>
+<body style='font-family: sans-serif; padding: 24px; background: #f8fafc;'>
+    <div style='max-width: 900px; margin: 0 auto;'>
+        @yield('content')
+    </div>
+</body>
+</html>`); this.innerText='Copied!'; setTimeout(()=>this.innerText='Copy', 2000);">
+                        <i class="fa-regular fa-copy"></i> Copy
+                    </button>
+                </div>
+                <pre>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;title&gt;@yield('title', 'Campus Gear')&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div class="container"&gt;@yield('content')&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+            </div>
+            <p>Then create <code>resources/views/products/index.blade.php</code> extending <code>layouts.app</code> and looping over <code>@forelse($products as $product)</code>.</p>
         </section>
 
         <!-- Deliverables -->

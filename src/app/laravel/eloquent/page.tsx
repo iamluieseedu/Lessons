@@ -84,11 +84,22 @@ export default function LaravelEloquentLabManualPage() {
           </div>
 
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight mb-3">
-            Eloquent ORM: Migrations, Models, Database Seeding &amp; Dynamic Blade Queries
+            Eloquent ORM: Fresh Project, Table Schemas, Models &amp; Dynamic Blade Queries
           </h1>
-          <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-            In this third laboratory phase of Web Development 3, you will transition from static template views to fully persistent, dynamic database applications. Rather than writing repetitive and error-prone raw SQL strings (<code className="font-mono text-xs bg-slate-100 text-rose-600 px-1 py-0.5 rounded border border-slate-200">SELECT * FROM products</code>), you will master Laravel&apos;s <strong>Eloquent Object-Relational Mapper (ORM)</strong>, the ActiveRecord pattern, schema migrations, mass-assignment protection, and database seeders.
+          <p className="text-sm sm:text-base text-slate-600 leading-relaxed mb-4">
+            In this third laboratory phase of Web Development 3, you will build a persistent, dynamic database application in a <strong>brand-new Laravel 11 project</strong>. Rather than writing repetitive and error-prone raw SQL strings (<code className="font-mono text-xs bg-slate-100 text-rose-600 px-1 py-0.5 rounded border border-slate-200">SELECT * FROM products</code>), you will master Laravel&apos;s <strong>Eloquent Object-Relational Mapper (ORM)</strong>, table schema design with Artisan, mass-assignment protection, and database seeders.
           </p>
+
+          {/* Fresh Project Setup Banner */}
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3 text-sm text-amber-900 shadow-2xs">
+            <Sparkles className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+            <div>
+              <strong className="font-bold text-amber-950">Important Notice — Fresh Project Setup:</strong>
+              <p className="mt-1 text-xs sm:text-sm text-amber-800 leading-relaxed">
+                For this activity, you are <strong>creating a brand-new Laravel 11 project from scratch</strong> (<code className="font-mono text-xs bg-amber-100 text-amber-950 px-1.5 py-0.5 rounded border border-amber-300">campus-gear</code>). You do <strong>not</strong> need to migrate or carry over code from your previous laboratory tasks.
+              </p>
+            </div>
+          </div>
         </header>
 
         {/* Module Overview & Learning Objectives */}
@@ -102,7 +113,14 @@ export default function LaravelEloquentLabManualPage() {
             <div className="bg-white border border-slate-200 rounded-xl p-4 flex items-start gap-3 text-sm shadow-2xs">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
               <div>
-                <strong className="text-slate-900 font-semibold">Schema Migrations:</strong> Design structured table schemas using Artisan migrations with typed columns (<code className="font-mono text-xs text-rose-600 bg-slate-50 px-1 py-0.5 rounded">string</code>, <code className="font-mono text-xs text-rose-600 bg-slate-50 px-1 py-0.5 rounded">decimal</code>, <code className="font-mono text-xs text-rose-600 bg-slate-50 px-1 py-0.5 rounded">boolean</code>).
+                <strong className="text-slate-900 font-semibold">Fresh Project Setup:</strong> Scaffold a brand-new Laravel 11 application (<code className="font-mono text-xs text-rose-600 bg-slate-50 px-1 py-0.5 rounded">composer create-project</code>) dedicated solely to database operations.
+              </div>
+            </div>
+
+            <div className="bg-white border border-slate-200 rounded-xl p-4 flex items-start gap-3 text-sm shadow-2xs">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+              <div>
+                <strong className="text-slate-900 font-semibold">Table Schemas:</strong> Design structured database tables using Artisan schema files with typed columns (<code className="font-mono text-xs text-rose-600 bg-slate-50 px-1 py-0.5 rounded">string</code>, <code className="font-mono text-xs text-rose-600 bg-slate-50 px-1 py-0.5 rounded">decimal</code>, <code className="font-mono text-xs text-rose-600 bg-slate-50 px-1 py-0.5 rounded">boolean</code>).
               </div>
             </div>
 
@@ -117,13 +135,6 @@ export default function LaravelEloquentLabManualPage() {
               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
               <div>
                 <strong className="text-slate-900 font-semibold">Database Seeders:</strong> Populate realistic mock data with Seeders and verify queries interactively inside the <code className="font-mono text-xs text-rose-600 bg-slate-50 px-1 py-0.5 rounded">php artisan tinker</code> REPL.
-              </div>
-            </div>
-
-            <div className="bg-white border border-slate-200 rounded-xl p-4 flex items-start gap-3 text-sm shadow-2xs">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-              <div>
-                <strong className="text-slate-900 font-semibold">Dynamic Blade CRUD:</strong> Query records using fluent Eloquent methods (<code className="font-mono text-xs text-rose-600 bg-slate-50 px-1 py-0.5 rounded">Product::latest()-&gt;get()</code>) and render them dynamically with <code className="font-mono text-xs text-rose-600 bg-slate-50 px-1 py-0.5 rounded">@forelse</code>.
               </div>
             </div>
           </div>
@@ -185,7 +196,7 @@ export default function LaravelEloquentLabManualPage() {
               Step-by-Step Lab Guide: The Campus Gear Catalog
             </h2>
             <span className="text-xs font-mono font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md">
-              8 Milestones
+              10 Milestones
             </span>
           </div>
 
@@ -196,11 +207,50 @@ export default function LaravelEloquentLabManualPage() {
                 1
               </span>
               <h3 className="text-base font-bold text-slate-900">
+                Scaffold a Brand-New Laravel 11 Project (composer create-project)
+              </h3>
+            </div>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              Open your terminal or command prompt in your projects folder (e.g., <code className="font-mono text-xs text-rose-600">Documents/Programming</code>) and generate a fresh Laravel 11 project named <code className="font-mono text-xs text-rose-600 font-bold">campus-gear</code>:
+            </p>
+
+            <div className="bg-[#0f172a] border border-slate-800 rounded-xl overflow-hidden shadow-md">
+              <div className="bg-[#1e293b] px-4 py-2 border-b border-slate-700/60 flex items-center justify-between text-xs font-mono text-slate-400">
+                <span className="flex items-center gap-1.5"><Terminal className="w-3.5 h-3.5 text-rose-400" /> Terminal</span>
+                <button
+                  onClick={() => copyCode('composer create-project laravel/laravel campus-gear\ncd campus-gear', 'scaffold_proj')}
+                  className="px-2.5 py-1 rounded bg-white/10 hover:bg-white/20 text-white font-sans text-xs flex items-center gap-1 transition"
+                >
+                  {copiedKey === 'scaffold_proj' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span>{copiedKey === 'scaffold_proj' ? 'Copied' : 'Copy'}</span>
+                </button>
+              </div>
+              <pre className="p-4 font-mono text-xs sm:text-sm text-emerald-400 overflow-x-auto leading-relaxed">
+{`composer create-project laravel/laravel campus-gear
+cd campus-gear`}
+              </pre>
+            </div>
+
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-xs text-slate-700 flex items-center gap-2.5">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>
+                <strong>Fresh Directory:</strong> Open the newly created <code className="font-mono font-bold text-slate-900">campus-gear</code> folder in Visual Studio Code (<code className="font-mono bg-white px-1.5 py-0.5 rounded border border-slate-300">code .</code>). All subsequent commands in this guide will be run inside this folder.
+              </span>
+            </div>
+          </div>
+
+          {/* STEP 2 */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2.5">
+              <span className="w-6 h-6 rounded-full bg-rose-600 text-white font-mono text-xs font-bold flex items-center justify-center shrink-0">
+                2
+              </span>
+              <h3 className="text-base font-bold text-slate-900">
                 Database Environment Configuration (.env &amp; SQLite / MySQL)
               </h3>
             </div>
             <p className="text-sm text-slate-600 leading-relaxed">
-              Laravel 11 defaults to zero-configuration <strong>SQLite</strong>, which stores your database in a lightweight local file inside <code className="font-mono text-xs text-rose-600">database/database.sqlite</code>. You can also connect to MySQL (e.g., via XAMPP).
+              Inside your new <code className="font-mono text-xs text-rose-600">campus-gear</code> project, Laravel 11 defaults to zero-configuration <strong>SQLite</strong>, which stores your database in a lightweight local file inside <code className="font-mono text-xs text-rose-600">database/database.sqlite</code>. You can also connect to MySQL (e.g., via XAMPP).
             </p>
 
             {/* DB Tabs */}
@@ -274,14 +324,14 @@ DB_PASSWORD=`}
             )}
           </div>
 
-          {/* STEP 2 */}
+          {/* STEP 3 */}
           <div className="space-y-3">
             <div className="flex items-center gap-2.5">
               <span className="w-6 h-6 rounded-full bg-rose-600 text-white font-mono text-xs font-bold flex items-center justify-center shrink-0">
-                2
+                3
               </span>
               <h3 className="text-base font-bold text-slate-900">
-                Generating the Migration with Artisan
+                Generating the Table Schema with Artisan
               </h3>
             </div>
             <p className="text-sm text-slate-600 leading-relaxed">
@@ -386,14 +436,14 @@ return new class extends Migration
             </div>
           </div>
 
-          {/* STEP 3 */}
+          {/* STEP 4 */}
           <div className="space-y-3">
             <div className="flex items-center gap-2.5">
               <span className="w-6 h-6 rounded-full bg-rose-600 text-white font-mono text-xs font-bold flex items-center justify-center shrink-0">
-                3
+                4
               </span>
               <h3 className="text-base font-bold text-slate-900">
-                Running the Migration with Artisan
+                Running Table Schemas with Artisan
               </h3>
             </div>
             <p className="text-sm text-slate-600 leading-relaxed">
@@ -424,11 +474,11 @@ return new class extends Migration
             </div>
           </div>
 
-          {/* STEP 4 */}
+          {/* STEP 5 */}
           <div className="space-y-3">
             <div className="flex items-center gap-2.5">
               <span className="w-6 h-6 rounded-full bg-rose-600 text-white font-mono text-xs font-bold flex items-center justify-center shrink-0">
-                4
+                5
               </span>
               <h3 className="text-base font-bold text-slate-900">
                 Creating the Eloquent Model &amp; Mass-Assignment Protection
@@ -541,11 +591,11 @@ class Product extends Model
             </div>
           </div>
 
-          {/* STEP 5 */}
+          {/* STEP 6 */}
           <div className="space-y-3">
             <div className="flex items-center gap-2.5">
               <span className="w-6 h-6 rounded-full bg-rose-600 text-white font-mono text-xs font-bold flex items-center justify-center shrink-0">
-                5
+                6
               </span>
               <h3 className="text-base font-bold text-slate-900">
                 Database Seeding &amp; Interactive Tinker CLI Playground
@@ -716,11 +766,11 @@ php artisan tinker
             </div>
           </div>
 
-          {/* STEP 6 */}
+          {/* STEP 7 */}
           <div className="space-y-3">
             <div className="flex items-center gap-2.5">
               <span className="w-6 h-6 rounded-full bg-rose-600 text-white font-mono text-xs font-bold flex items-center justify-center shrink-0">
-                6
+                7
               </span>
               <h3 className="text-base font-bold text-slate-900">
                 Creating the Controller with Eloquent Queries
@@ -851,11 +901,11 @@ class ProductController extends Controller
             </div>
           </div>
 
-          {/* STEP 7 */}
+          {/* STEP 8 */}
           <div className="space-y-3">
             <div className="flex items-center gap-2.5">
               <span className="w-6 h-6 rounded-full bg-rose-600 text-white font-mono text-xs font-bold flex items-center justify-center shrink-0">
-                7
+                8
               </span>
               <h3 className="text-base font-bold text-slate-900">
                 Configuring Routes in routes/web.php
@@ -896,18 +946,73 @@ Route::post('/products', [ProductController::class, 'store'])->name('products.st
             </div>
           </div>
 
-          {/* STEP 8 */}
-          <div className="space-y-3">
+          {/* STEP 9 */}
+          <div className="space-y-4">
             <div className="flex items-center gap-2.5">
               <span className="w-6 h-6 rounded-full bg-rose-600 text-white font-mono text-xs font-bold flex items-center justify-center shrink-0">
-                8
+                9
               </span>
               <h3 className="text-base font-bold text-slate-900">
-                Designing the Dynamic Blade View (resources/views/products/index.blade.php)
+                Designing the Master Layout &amp; Dynamic Blade View
               </h3>
             </div>
             <p className="text-sm text-slate-600 leading-relaxed">
-              Create the folder <code className="font-mono text-xs text-rose-600">resources/views/products/</code> and save <code className="font-mono text-xs text-rose-600">index.blade.php</code>. This view inherits the master shell from Part 2 (<code className="font-mono text-xs text-rose-600">layouts/app.blade.php</code>) and renders the Eloquent records using <code className="font-mono text-xs text-rose-600">@forelse</code>:
+              First, establish a clean master layout shell inside your new project at <code className="font-mono text-xs text-rose-600">resources/views/layouts/app.blade.php</code>:
+            </p>
+
+            {/* Master Layout Code */}
+            <div className="bg-[#0f172a] border border-slate-800 rounded-xl overflow-hidden shadow-md">
+              <div className="bg-[#1e293b] px-4 py-2 border-b border-slate-700/60 flex items-center justify-between text-xs font-mono text-slate-400">
+                <span>resources/views/layouts/app.blade.php</span>
+                <button
+                  onClick={() => copyCode(`<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@yield('title', 'Campus Gear')</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; background: #f8fafc; color: #1e293b; margin: 0; padding: 30px 16px; }
+        .container { max-width: 920px; margin: 0 auto; }
+        .badge-success { color: #16a34a; font-weight: bold; font-size: 12px; background: #f0fdf4; padding: 4px 8px; border-radius: 4px; }
+        .badge-danger { color: #dc2626; font-weight: bold; font-size: 12px; background: #fef2f2; padding: 4px 8px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        @yield('content')
+    </div>
+</body>
+</html>`, 'layout_code')}
+                  className="px-2.5 py-1 rounded bg-white/10 hover:bg-white/20 text-white font-sans text-xs flex items-center gap-1 transition"
+                >
+                  {copiedKey === 'layout_code' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span>{copiedKey === 'layout_code' ? 'Copied' : 'Copy'}</span>
+                </button>
+              </div>
+              <pre className="p-4 font-mono text-xs sm:text-sm text-slate-200 overflow-x-auto leading-relaxed">
+{`<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@yield('title', 'Campus Gear')</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; background: #f8fafc; color: #1e293b; margin: 0; padding: 30px 16px; }
+        .container { max-width: 920px; margin: 0 auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        @yield('content')
+    </div>
+</body>
+</html>`}
+              </pre>
+            </div>
+
+            <p className="text-sm text-slate-600 leading-relaxed pt-2">
+              Next, create the folder <code className="font-mono text-xs text-rose-600">resources/views/products/</code> and save <code className="font-mono text-xs text-rose-600">index.blade.php</code>. It extends <code className="font-mono text-xs text-rose-600">layouts.app</code> and loops over the Eloquent records using <code className="font-mono text-xs text-rose-600">@forelse</code>:
             </p>
 
             <div className="bg-[#0f172a] border border-slate-800 rounded-xl overflow-hidden shadow-md">
@@ -1035,6 +1140,44 @@ Route::post('/products', [ProductController::class, 'store'])->name('products.st
 </div>
 @endsection`}
               </pre>
+            </div>
+          </div>
+
+          {/* STEP 10 */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2.5">
+              <span className="w-6 h-6 rounded-full bg-rose-600 text-white font-mono text-xs font-bold flex items-center justify-center shrink-0">
+                10
+              </span>
+              <h3 className="text-base font-bold text-slate-900">
+                Launch Local Dev Server &amp; Live Browser Verification
+              </h3>
+            </div>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              Start your local Laravel development server and open the live product catalog in your browser:
+            </p>
+
+            <div className="bg-[#0f172a] border border-slate-800 rounded-xl overflow-hidden shadow-md">
+              <div className="bg-[#1e293b] px-4 py-2 border-b border-slate-700/60 flex items-center justify-between text-xs font-mono text-slate-400">
+                <span className="flex items-center gap-1.5"><Terminal className="w-3.5 h-3.5 text-rose-400" /> Terminal: Dev Server</span>
+                <button
+                  onClick={() => copyCode('php artisan serve', 'artisan_serve')}
+                  className="px-2.5 py-1 rounded bg-white/10 hover:bg-white/20 text-white font-sans text-xs flex items-center gap-1 transition"
+                >
+                  {copiedKey === 'artisan_serve' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span>{copiedKey === 'artisan_serve' ? 'Copied' : 'Copy'}</span>
+                </button>
+              </div>
+              <pre className="p-4 font-mono text-xs sm:text-sm text-emerald-400 overflow-x-auto leading-relaxed">
+{`php artisan serve`}
+              </pre>
+            </div>
+
+            <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 text-xs text-emerald-900 flex items-center gap-2.5">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>
+                <strong>Live Check:</strong> Open <a href="http://127.0.0.1:8000/products" target="_blank" rel="noreferrer" className="font-bold underline text-emerald-800">http://127.0.0.1:8000/products</a> in Chrome or Edge to confirm that your seeded items are rendering dynamically from the database!
+              </span>
             </div>
           </div>
         </section>
