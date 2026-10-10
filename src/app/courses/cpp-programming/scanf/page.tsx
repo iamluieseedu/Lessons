@@ -12,7 +12,8 @@ import {
   Sparkles,
   Info,
   RotateCcw,
-  Bot
+  Bot,
+  Check
 } from 'lucide-react';
 
 interface StoryStep {
@@ -514,28 +515,29 @@ const STORY_STEPS: StoryStep[] = [
   },
 
   // ==========================================
-  // COMPLETION & CELEBRATION
+  // COMPLETION & FINISH
   // ==========================================
   {
     id: 19,
-    actTitle: 'Course Complete! 🎉',
-    actBadge: 'Mastery • C scanf & Math',
+    actTitle: 'Lesson Completed',
+    actBadge: 'Finished • C scanf & Math',
     mentorSpeech:
-      'Congratulations! You have completed the entire interactive lesson: 1) Natural C strings using char arrays (no extra imports, and NO &), 2) Numbers using the address-of & operator (%d and %f), and 3) The 4 basic math operators (+, -, *, /)! You are now equipped for advanced C development!',
-    actionButtonLabel: '🏆 Complete & Review Takeaways',
+      'You have finished all 3 parts of this lesson: 1) Natural C strings using char arrays (no extra imports, and no & operator), 2) Numbers using the address-of & operator (int and float), and 3) The 4 basic math operators (+, -, *, /). You are all set to move on to next C projects.',
+    actionButtonLabel: 'Finish Lesson',
     actionType: 'next-dialog',
     codeSnapshot: [
-      '// 🎉 CONGRATULATIONS! C scanf() Mastery Achieved!',
-      '// 1. Natural Strings: char name[50]; scanf("%s", name);  --> NO & needed!',
-      '// 2. Numbers:        int age; scanf("%d", &age);          --> MUST have &!',
-      '// 3. Float Math:     float x; scanf("%f", &x);            --> +, -, *, /'
+      '// Lesson Summary: C scanf() & Basic Operators',
+      '// 1. Strings:  char name[50]; scanf("%s", name);   -> No & operator',
+      '// 2. Numbers:  int age; scanf("%d", &age);          -> Requires &',
+      '// 3. Math:     float x; scanf("%f", &x);            -> +, -, *, /'
     ],
-    keyTakeaway: 'You have mastered standard input, memory addressing rules, and arithmetic in C!'
+    keyTakeaway: 'Lesson completed. You have mastered standard input and memory addressing rules in C.'
   }
 ];
 
 export default function LinearCScanfInteractivePage() {
   const [currentStepId, setCurrentStepId] = useState(1);
+  const [isFinished, setIsFinished] = useState(false);
   const currentStep = STORY_STEPS.find((s) => s.id === currentStepId) || STORY_STEPS[0];
 
   // Editor typing state
@@ -723,19 +725,8 @@ export default function LinearCScanfInteractivePage() {
           setDisplayedCode(nextStep.codeSnapshot);
         }
       } else {
-        // Restart from step 1
-        if (typingTimerRef.current) {
-          clearInterval(typingTimerRef.current);
-          typingTimerRef.current = null;
-        }
-        setIsTyping(false);
-        setActiveTypingLineIndex(null);
-        setCurrentStepId(1);
-        setDisplayedCode(STORY_STEPS[0].codeSnapshot);
-        setTerminalLines([
-          '$ gcc main.c -o app && ./app',
-          'Follow the discussion dialog on the left to begin your lesson!'
-        ]);
+        // Step 19 completed -> mark as finished
+        setIsFinished(true);
       }
     }
   };
@@ -913,6 +904,7 @@ export default function LinearCScanfInteractivePage() {
                   clearInterval(typingTimerRef.current);
                   typingTimerRef.current = null;
                 }
+                setIsFinished(false);
                 setIsTyping(false);
                 setActiveTypingLineIndex(null);
                 setCurrentStepId(1);
@@ -964,48 +956,99 @@ export default function LinearCScanfInteractivePage() {
                 )}
               </div>
 
-              {/* Guided Action Button */}
-              <div className="space-y-2 pt-1">
-                <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 font-bold block">
-                  Your Next Action:
-                </span>
-
-                <button
-                  onClick={handleStepAction}
-                  disabled={isTyping}
-                  className={`w-full py-3 px-4 rounded-xl font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 shadow-md cursor-pointer ${
-                    currentStep.actionType === 'run-terminal'
-                      ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-200 ring-2 ring-emerald-400 ring-offset-2'
-                      : 'bg-rose-600 hover:bg-rose-700 text-white shadow-rose-200'
-                  } disabled:opacity-50`}
-                >
-                  <span>{isTyping ? 'Typing into Editor...' : currentStep.actionButtonLabel}</span>
-                  {currentStep.actionType === 'run-terminal' ? (
-                    <CornerDownRight className="w-4 h-4 animate-bounce text-emerald-100" />
-                  ) : (
-                    <ArrowRight className="w-4 h-4" />
-                  )}
-                </button>
-
-                {/* Direct Visual Guide to Terminal when running */}
-                {(currentStep.actionType === 'run-terminal' || isWaitingInput) && (
-                  <div className="bg-emerald-50 border-2 border-emerald-300 rounded-xl p-3 text-xs text-emerald-900 flex items-start gap-2.5 shadow-sm">
-                    <div className="p-1.5 rounded-lg bg-emerald-500 text-white shrink-0 mt-0.5">
-                      <CornerDownRight className="w-4 h-4 animate-bounce" />
-                    </div>
-                    <div>
-                      <span className="font-extrabold text-emerald-950 block">
-                        Direct Attention: Look at the Terminal ↘
-                      </span>
-                      <span className="text-[11px] text-emerald-800 leading-snug">
-                        {isWaitingInput
-                          ? 'The program is paused waiting for you! Click the input box in the terminal below to type.'
-                          : 'Click the green button above, then interact with the Virtual Terminal below on the right.'}
-                      </span>
-                    </div>
+              {/* Guided Action Button or Finish Options */}
+              {isFinished ? (
+                <div className="space-y-2.5 pt-1">
+                  <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800 flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span className="font-medium">Lesson finished! You have completed all 19 steps.</span>
                   </div>
-                )}
-              </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-0.5">
+                    <Link
+                      href="/courses/cpp-programming"
+                      className="py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs text-center transition flex items-center justify-center gap-1.5 shadow-xs"
+                    >
+                      <ArrowLeft className="w-3.5 h-3.5" />
+                      <span>Back to C Course</span>
+                    </Link>
+
+                    <button
+                      onClick={() => {
+                        if (typingTimerRef.current) {
+                          clearInterval(typingTimerRef.current);
+                          typingTimerRef.current = null;
+                        }
+                        setIsFinished(false);
+                        setIsTyping(false);
+                        setActiveTypingLineIndex(null);
+                        setCurrentStepId(1);
+                        setDisplayedCode(STORY_STEPS[0].codeSnapshot);
+                        setTerminalLines([
+                          '$ gcc main.c -o app && ./app',
+                          'Follow the discussion dialog on the left to begin your lesson!'
+                        ]);
+                      }}
+                      className="py-2.5 px-3 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 font-medium text-xs text-center transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
+                      <span>Restart Lesson</span>
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-2 pt-1">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 font-bold block">
+                    Your Next Action:
+                  </span>
+
+                  <button
+                    onClick={handleStepAction}
+                    disabled={isTyping}
+                    className={`w-full py-3 px-4 rounded-xl font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 shadow-md cursor-pointer ${
+                      currentStepId === 19
+                        ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-200'
+                        : currentStep.actionType === 'run-terminal'
+                        ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-200 ring-2 ring-emerald-400 ring-offset-2'
+                        : 'bg-rose-600 hover:bg-rose-700 text-white shadow-rose-200'
+                    } disabled:opacity-50`}
+                  >
+                    <span>
+                      {isTyping
+                        ? 'Typing into Editor...'
+                        : currentStepId === 19
+                        ? 'Finish Lesson'
+                        : currentStep.actionButtonLabel}
+                    </span>
+                    {currentStepId === 19 ? (
+                      <Check className="w-4 h-4" />
+                    ) : currentStep.actionType === 'run-terminal' ? (
+                      <CornerDownRight className="w-4 h-4 animate-bounce text-emerald-100" />
+                    ) : (
+                      <ArrowRight className="w-4 h-4" />
+                    )}
+                  </button>
+
+                  {/* Direct Visual Guide to Terminal when running */}
+                  {(currentStep.actionType === 'run-terminal' || isWaitingInput) && (
+                    <div className="bg-emerald-50 border-2 border-emerald-300 rounded-xl p-3 text-xs text-emerald-900 flex items-start gap-2.5 shadow-sm">
+                      <div className="p-1.5 rounded-lg bg-emerald-500 text-white shrink-0 mt-0.5">
+                        <CornerDownRight className="w-4 h-4 animate-bounce" />
+                      </div>
+                      <div>
+                        <span className="font-extrabold text-emerald-950 block">
+                          Direct Attention: Look at the Terminal ↘
+                        </span>
+                        <span className="text-[11px] text-emerald-800 leading-snug">
+                          {isWaitingInput
+                            ? 'The program is paused waiting for you! Click the input box in the terminal below to type.'
+                            : 'Click the green button above, then interact with the Virtual Terminal below on the right.'}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Step dots */}
               <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-[11px] text-slate-500">
