@@ -60,7 +60,7 @@ export const NavigationControls: React.FC<NavigationControlsProps> = ({
   };
 
   return (
-    <div className="w-full max-w-7xl 2xl:max-w-[1440px] mx-auto px-2 sm:px-4 mt-3 flex flex-col gap-2 relative z-10">
+    <div className="w-full max-w-[1920px] 2xl:max-w-[2400px] mx-auto px-1 sm:px-2 mt-2 flex flex-col gap-1.5 relative z-10 shrink-0">
       {/* Progress Bar */}
       <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden border border-slate-350/20">
         <div 

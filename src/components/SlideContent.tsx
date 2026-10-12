@@ -89,6 +89,17 @@ import {
   UserJourneyMapSimulator,
   UxHeuristicsAudit
 } from './InteractiveMediaDsnWeek2Simulations';
+import {
+  MultimediaElementsMixer,
+  GraphicRasterVectorInspector,
+  AudioSoundDesignVisualizer,
+  AnimationFpsMotionPlayer,
+  VideoBitrateStorageCalculator,
+  LinearVsNonLinearBranchingLab,
+  MultimediaAuthoringStudio,
+  MultimediaProductsInteractiveMatrix,
+  DeliveryBandwidthSpeedRace
+} from './InteractiveMultimediaIntroSimulations';
 
 interface SlideContentProps {
   slide: SlideData;
@@ -4320,6 +4331,33 @@ export const SlideContent: React.FC<SlideContentProps> = ({ slide }) => {
   }
   if (slide.type === 'ux_heuristics_audit') {
     return <UxHeuristicsAudit slide={slide} />;
+  }
+  if (slide.type === 'multimedia_elements_mixer') {
+    return <MultimediaElementsMixer slide={slide} />;
+  }
+  if (slide.type === 'graphic_raster_vector_inspector') {
+    return <GraphicRasterVectorInspector slide={slide} />;
+  }
+  if (slide.type === 'audio_sound_design_visualizer') {
+    return <AudioSoundDesignVisualizer slide={slide} />;
+  }
+  if (slide.type === 'animation_fps_motion_player') {
+    return <AnimationFpsMotionPlayer slide={slide} />;
+  }
+  if (slide.type === 'video_bitrate_storage_calculator') {
+    return <VideoBitrateStorageCalculator slide={slide} />;
+  }
+  if (slide.type === 'linear_vs_nonlinear_branching_lab') {
+    return <LinearVsNonLinearBranchingLab slide={slide} />;
+  }
+  if (slide.type === 'multimedia_authoring_studio') {
+    return <MultimediaAuthoringStudio slide={slide} />;
+  }
+  if (slide.type === 'multimedia_products_interactive_matrix') {
+    return <MultimediaProductsInteractiveMatrix slide={slide} />;
+  }
+  if (slide.type === 'delivery_bandwidth_speed_race') {
+    return <DeliveryBandwidthSpeedRace slide={slide} />;
   }
   if (slide.type === 'versus' || slide.type === 'comparison') {
     return (

@@ -54,7 +54,7 @@ export default function CoursesDirectoryPage() {
       desc: 'Principles of Human-Computer Interaction (HCI), Donald Norman affordances and signifiers, visual hierarchy, 8-point grid systems, and WCAG accessibility standards.',
       topics: ['Human-Computer Interaction Feedback Loops', 'Norman Affordances & Cultural Signifiers', '8-Point Grid & Visual Layout Balance', 'WCAG 2.1 AA Color Contrast Ratios', 'User-Centered Design (UCD) Frameworks'],
       labUrl: '/#tasks',
-      slidesUrl: '/lesson/?id=mediadsn1'
+      slidesUrl: '/lesson/?id=multimedia1'
     },
     {
       code: 'IT-DB1',

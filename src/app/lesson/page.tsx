@@ -7,6 +7,7 @@ import { slidesData } from '@/data/slidesData';
 import { laravelSlidesData } from '@/data/laravelSlidesData';
 import { mediaDsnSlidesData } from '@/data/mediaDsnSlidesData';
 import { mediaDsnWeek2SlidesData } from '@/data/mediaDsnWeek2SlidesData';
+import { multimediaIntroSlidesData } from '@/data/multimediaIntroSlidesData';
 import { webdevSlidesData } from '@/data/webdevSlidesData';
 import { cppSlidesData } from '@/data/cppSlidesData';
 import { databaseSlidesData } from '@/data/databaseSlidesData';
@@ -132,6 +133,8 @@ function SlidePageContent() {
           setSlides(slidesData);
         } else if (found.id === 'laravel11') {
           setSlides(laravelSlidesData);
+        } else if (found.id === 'multimedia1') {
+          setSlides(multimediaIntroSlidesData);
         } else if (found.id === 'mediadsn1') {
           setSlides(mediaDsnSlidesData);
         } else if (found.id === 'mediadsn2') {
@@ -367,23 +370,23 @@ function SlidePageContent() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900 flex flex-col justify-between p-2 sm:p-4 lg:p-6 overflow-x-hidden font-sans">
-      <div className="w-full max-w-7xl 2xl:max-w-[1440px] mx-auto flex flex-col lg:flex-row gap-4 items-start justify-center flex-grow">
+    <main className="min-h-screen bg-slate-900 text-slate-100 flex flex-col justify-between p-2 sm:p-3 overflow-x-hidden font-sans">
+      <div className="w-full max-w-[1920px] 2xl:max-w-[2400px] mx-auto flex flex-col lg:flex-row gap-3 items-start justify-center flex-grow">
         <div className="w-full flex-grow flex flex-col">
           {/* Top Bar / Header */}
-          <header className="flex items-center justify-between py-2 border-b border-slate-200 mb-2">
+          <header className="flex items-center justify-between py-1.5 px-2 border-b border-slate-800 bg-slate-950/70 rounded-xl mb-1 shrink-0 backdrop-blur-md">
             <div className="flex items-center gap-2">
-              <span className="p-1.5 rounded-lg bg-sky-500/10 text-sky-600 border border-sky-500/20">
+              <span className="p-1.5 rounded-lg bg-sky-500/10 text-sky-400 border border-sky-500/20">
                 <BookOpen className="w-4 h-4" />
               </span>
-              <h1 className="text-xs sm:text-sm font-extrabold text-slate-800 font-lexend tracking-tight">
+              <h1 className="text-xs sm:text-sm font-extrabold text-slate-100 font-lexend tracking-tight">
                 {lesson.title} • Week {lesson.week}
               </h1>
             </div>
 
             <Link
               href="/"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 hover:text-sky-700 text-xs font-bold shadow-sm transition"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-bold shadow-sm transition"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               Back to Library
@@ -391,7 +394,7 @@ function SlidePageContent() {
           </header>
 
           {/* Main Slide Viewer Frame */}
-          <div className="flex-grow flex items-center justify-center py-2 min-h-[50vh]">
+          <div className="flex-grow flex items-center justify-center py-1 w-full">
             {currentSlide && <SlideViewer slide={currentSlide} />}
           </div>
 

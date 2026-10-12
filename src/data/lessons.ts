@@ -314,6 +314,27 @@ export const DEFAULT_LESSONS: Lesson[] = [
     competencies: ['Relational Schema & Keys', 'SQL Queries & JOIN Operations', '1NF-3NF Normalization', 'ACID Transactions & Integrity']
   },
   {
+    id: 'multimedia1',
+    week: 1,
+    course: 'Interactive Media Design',
+    title: 'Introduction to Multimedia: Fundamentals & 5 Elements',
+    description: 'A dynamic, visual interactive slide presentation crafted for BS Multimedia students. Covers the definition of multimedia, the 5 core elements (Text, Graphic, Audio, Animation, Video), interactive hypermedia, linear vs non-linear systems, authoring tools, application domains, and the 6 multimedia products with 9 live interactive studio simulators.',
+    duration: '25 mins',
+    slidesCount: 26,
+    difficulty: 'Beginner',
+    thumbnail: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80',
+    isActive: true,
+    quizEnabled: true,
+    competencies: [
+      'Define Multimedia (Multi + Media) and its 5 fundamental elements.',
+      'Differentiate between Raster Bitmaps and Scalable Vector Graphics.',
+      'Analyze the 3 forms of multimedia audio: Speech, SFX, and Music.',
+      'Understand Persistence of Vision, frame rates (12, 24, 60 FPS), and video compression.',
+      'Compare Linear broadcasting with Non-Linear interactive hypermedia systems.',
+      'Categorize and evaluate the 6 commercial multimedia product archetypes.'
+    ]
+  },
+  {
     id: 'mediadsn1',
     week: 1,
     course: 'Interactive Media Design',

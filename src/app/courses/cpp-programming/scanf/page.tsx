@@ -754,6 +754,7 @@ export default function LinearCScanfInteractivePage() {
     'Follow the discussion dialog on the left to begin your lesson!'
   ]);
   const [isWaitingInput, setIsWaitingInput] = useState(false);
+  const [isTerminalRunFinished, setIsTerminalRunFinished] = useState(false);
   const [inputBuffer, setInputBuffer] = useState('');
   const [collectedInputs, setCollectedInputs] = useState<string[]>([]);
   const terminalInputRef = useRef<HTMLInputElement>(null);
@@ -768,6 +769,134 @@ export default function LinearCScanfInteractivePage() {
       }
     };
   }, []);
+
+  // Helper to dynamically get prompt details (handles multi-input steps)
+  const getTerminalPromptDetails = () => {
+    if (!currentStep.terminalPrompt) return null;
+    if (currentStep.id === 14 && collectedInputs.length === 1) {
+      return {
+        promptLabel: 'Enter your allowance ($): ',
+        placeholder: 'Type allowance (e.g. 150.50)...',
+        option1: '150.50',
+        option2: '200.00'
+      };
+    }
+    if (currentStep.id === 16 && collectedInputs.length === 1) {
+      return {
+        promptLabel: 'Enter unit price ($): ',
+        placeholder: 'Type unit price (e.g. 12.50)...',
+        option1: '12.50',
+        option2: '25.00'
+      };
+    }
+    if (currentStep.id === 22 && collectedInputs.length === 1) {
+      return {
+        promptLabel: 'Enter second number: ',
+        placeholder: 'Type second number (e.g. 4)...',
+        option1: '4',
+        option2: '5'
+      };
+    }
+    if (currentStep.id === 24 && collectedInputs.length === 1) {
+      return {
+        promptLabel: 'Enter rectangle width: ',
+        placeholder: 'Type rectangle width (e.g. 4)...',
+        option1: '4',
+        option2: '6'
+      };
+    }
+    return {
+      promptLabel: currentStep.terminalPrompt.promptLabel,
+      placeholder: currentStep.terminalPrompt.placeholder,
+      option1: currentStep.terminalPrompt.defaultOption1,
+      option2: currentStep.terminalPrompt.defaultOption2
+    };
+  };
+
+  const getTerminalFinishedNextLabel = () => {
+    switch (currentStep.id) {
+      case 7:
+        return 'Proceed to Topic 1 Extra Example 👉';
+      case 9:
+        return 'Proceed to Topic 2: Numbers 👉';
+      case 14:
+        return 'Proceed to Topic 2 Extra Example 👉';
+      case 16:
+        return 'Proceed to Topic 3: Math Operators 👉';
+      case 22:
+        return 'Proceed to Topic 3 Extra Example 👉';
+      case 24:
+        return 'Proceed to Lesson Summary 👉';
+      default:
+        return 'Proceed to Next Step 👉';
+    }
+  };
+
+  const handleRerunTerminal = () => {
+    setIsTerminalRunFinished(false);
+    setIsWaitingInput(true);
+    setCollectedInputs([]);
+    setInputBuffer('');
+    if (currentStep.id === 7) {
+      setTerminalLines(['$ gcc main.c -o app && ./app', 'Enter your nickname: ']);
+    } else if (currentStep.id === 9) {
+      setTerminalLines(['$ gcc main.c -o app && ./app', 'Enter your favorite city: ']);
+    } else if (currentStep.id === 14) {
+      setTerminalLines(['$ gcc main.c -o app && ./app', 'Enter your age: ']);
+    } else if (currentStep.id === 16) {
+      setTerminalLines(['$ gcc main.c -o app && ./app', 'Enter item quantity: ']);
+    } else if (currentStep.id === 22) {
+      setTerminalLines(['$ gcc main.c -o app && ./app', 'Enter first number: ']);
+    } else if (currentStep.id === 24) {
+      setTerminalLines(['$ gcc main.c -o app && ./app', 'Enter rectangle length: ']);
+    }
+    setTimeout(() => {
+      terminalInputRef.current?.focus();
+    }, 100);
+  };
+
+  const handleProceedAfterTerminal = () => {
+    setIsTerminalRunFinished(false);
+    setIsWaitingInput(false);
+    setCollectedInputs([]);
+    setInputBuffer('');
+
+    if (currentStepId < STORY_STEPS.length) {
+      const nextStepId = currentStepId + 1;
+      setCurrentStepId(nextStepId);
+
+      const nextStep = STORY_STEPS.find((s) => s.id === nextStepId);
+      // Only set code snapshot if next step is NOT a type-code action (so typing animation can run)
+      if (nextStep && nextStep.actionType !== 'type-code') {
+        setDisplayedCode(nextStep.codeSnapshot);
+      }
+
+      setTerminalLines([
+        '$ gcc main.c -o app',
+        'Terminal standby. Follow the guide on the left to write and run code.'
+      ]);
+    }
+  };
+
+  const restartStory = () => {
+    if (typingTimerRef.current) {
+      clearInterval(typingTimerRef.current);
+      typingTimerRef.current = null;
+    }
+    setIsFinished(false);
+    setIsTyping(false);
+    setActiveTypingLineIndex(null);
+    setIsWaitingInput(false);
+    setIsTerminalRunFinished(false);
+    setCollectedInputs([]);
+    setInputBuffer('');
+    setCurrentStepId(1);
+    setDisplayedCode(STORY_STEPS[0].codeSnapshot);
+    setTerminalLines([
+      '$ gcc main.c -o app && ./app',
+      'Follow the discussion dialog on the left to begin your lesson!'
+    ]);
+  };
 
   // Incremental code typing animation: keeps existing lines intact and only writes new code where it belongs
   const animateIncrementalTyping = (
@@ -889,10 +1018,16 @@ export default function LinearCScanfInteractivePage() {
         }
       });
     } else if (currentStep.actionType === 'run-terminal') {
+      if (isTerminalRunFinished) {
+        handleProceedAfterTerminal();
+        return;
+      }
+
       // Launch terminal simulation
       setIsWaitingInput(true);
       setCollectedInputs([]);
       setInputBuffer('');
+      setIsTerminalRunFinished(false);
 
       if (currentStep.id === 7) {
         setTerminalLines(['$ gcc main.c -o app && ./app', 'Enter your nickname: ']);
@@ -915,9 +1050,11 @@ export default function LinearCScanfInteractivePage() {
     } else {
       // Normal next dialog step
       if (currentStepId < STORY_STEPS.length) {
-        setCurrentStepId((prev) => prev + 1);
-        const nextStep = STORY_STEPS.find((s) => s.id === currentStepId + 1);
-        if (nextStep) {
+        const nextStepId = currentStepId + 1;
+        setCurrentStepId(nextStepId);
+        const nextStep = STORY_STEPS.find((s) => s.id === nextStepId);
+        // Do not prematurely set displayed code if next step is type-code
+        if (nextStep && nextStep.actionType !== 'type-code') {
           setDisplayedCode(nextStep.codeSnapshot);
         }
       } else {
@@ -930,7 +1067,8 @@ export default function LinearCScanfInteractivePage() {
   // Handle Terminal User Input Submission
   const handleTerminalSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const val = inputBuffer.trim() || currentStep.terminalPrompt?.defaultOption1 || 'Test';
+    const promptDetails = getTerminalPromptDetails();
+    const val = inputBuffer.trim() || promptDetails?.option1 || 'Test';
     const newInputs = [...collectedInputs, val];
     setCollectedInputs(newInputs);
     setInputBuffer('');
@@ -944,10 +1082,7 @@ export default function LinearCScanfInteractivePage() {
         '[Process exited with code 0]'
       ]);
       setIsWaitingInput(false);
-      setTimeout(() => {
-        setCurrentStepId(8);
-        setDisplayedCode(STORY_STEPS.find((s) => s.id === 8)?.codeSnapshot || []);
-      }, 1200);
+      setIsTerminalRunFinished(true);
     } else if (currentStep.id === 9) {
       // Topic 1 Ex 2: City run complete
       setTerminalLines([
@@ -957,10 +1092,7 @@ export default function LinearCScanfInteractivePage() {
         '[Process exited with code 0]'
       ]);
       setIsWaitingInput(false);
-      setTimeout(() => {
-        setCurrentStepId(10);
-        setDisplayedCode(STORY_STEPS.find((s) => s.id === 10)?.codeSnapshot || []);
-      }, 1200);
+      setIsTerminalRunFinished(true);
     } else if (currentStep.id === 14) {
       // Topic 2 Ex 1: Numbers (age then allowance)
       if (newInputs.length === 1) {
@@ -969,6 +1101,7 @@ export default function LinearCScanfInteractivePage() {
           `Enter your age: ${val}`,
           'Enter your allowance ($): '
         ]);
+        setTimeout(() => terminalInputRef.current?.focus(), 60);
       } else {
         const ageVal = newInputs[0];
         const allowVal = parseFloat(newInputs[1] || '150.50').toFixed(2);
@@ -983,10 +1116,7 @@ export default function LinearCScanfInteractivePage() {
           '[Process exited with code 0]'
         ]);
         setIsWaitingInput(false);
-        setTimeout(() => {
-          setCurrentStepId(15);
-          setDisplayedCode(STORY_STEPS.find((s) => s.id === 15)?.codeSnapshot || []);
-        }, 1200);
+        setIsTerminalRunFinished(true);
       }
     } else if (currentStep.id === 16) {
       // Topic 2 Ex 2: Store Checkout (quantity then price)
@@ -996,6 +1126,7 @@ export default function LinearCScanfInteractivePage() {
           `Enter item quantity: ${val}`,
           'Enter unit price ($): '
         ]);
+        setTimeout(() => terminalInputRef.current?.focus(), 60);
       } else {
         const qtyVal = parseInt(newInputs[0] || '3');
         const priceVal = parseFloat(newInputs[1] || '12.50');
@@ -1011,10 +1142,7 @@ export default function LinearCScanfInteractivePage() {
           '[Process exited with code 0]'
         ]);
         setIsWaitingInput(false);
-        setTimeout(() => {
-          setCurrentStepId(17);
-          setDisplayedCode(STORY_STEPS.find((s) => s.id === 17)?.codeSnapshot || []);
-        }, 1200);
+        setIsTerminalRunFinished(true);
       }
     } else if (currentStep.id === 22) {
       // Topic 3 Ex 1: Calculator (num1 then num2)
@@ -1024,6 +1152,7 @@ export default function LinearCScanfInteractivePage() {
           `Enter first number: ${val}`,
           'Enter second number: '
         ]);
+        setTimeout(() => terminalInputRef.current?.focus(), 60);
       } else {
         const n1 = parseFloat(newInputs[0] || '20');
         const n2 = parseFloat(newInputs[1] || '4');
@@ -1047,10 +1176,7 @@ export default function LinearCScanfInteractivePage() {
           '[Process exited with code 0]'
         ]);
         setIsWaitingInput(false);
-        setTimeout(() => {
-          setCurrentStepId(23);
-          setDisplayedCode(STORY_STEPS.find((s) => s.id === 23)?.codeSnapshot || []);
-        }, 1200);
+        setIsTerminalRunFinished(true);
       }
     } else if (currentStep.id === 24) {
       // Topic 3 Ex 2: Rectangle Dimensions (length then width)
@@ -1060,6 +1186,7 @@ export default function LinearCScanfInteractivePage() {
           `Enter rectangle length: ${val}`,
           'Enter rectangle width: '
         ]);
+        setTimeout(() => terminalInputRef.current?.focus(), 60);
       } else {
         const len = parseFloat(newInputs[0] || '10');
         const wid = parseFloat(newInputs[1] || '4');
@@ -1083,10 +1210,7 @@ export default function LinearCScanfInteractivePage() {
           '[Process exited with code 0]'
         ]);
         setIsWaitingInput(false);
-        setTimeout(() => {
-          setCurrentStepId(25);
-          setDisplayedCode(STORY_STEPS.find((s) => s.id === 25)?.codeSnapshot || []);
-        }, 1200);
+        setIsTerminalRunFinished(true);
       }
     }
   };
@@ -1169,17 +1293,7 @@ export default function LinearCScanfInteractivePage() {
             <span>Step {currentStep.id} of {STORY_STEPS.length}</span>
             <span className="text-slate-300">&bull;</span>
             <button
-              onClick={() => {
-                if (typingTimerRef.current) {
-                  clearInterval(typingTimerRef.current);
-                  typingTimerRef.current = null;
-                }
-                setIsFinished(false);
-                setIsTyping(false);
-                setActiveTypingLineIndex(null);
-                setCurrentStepId(1);
-                setDisplayedCode(STORY_STEPS[0].codeSnapshot);
-              }}
+              onClick={restartStory}
               className="hover:text-rose-600 transition cursor-pointer flex items-center gap-1 text-[11px] font-semibold text-slate-600"
             >
               <RotateCcw className="w-3 h-3" />
@@ -1209,7 +1323,11 @@ export default function LinearCScanfInteractivePage() {
                   </h3>
                   <span className="text-[11px] text-emerald-600 font-mono flex items-center gap-1 font-medium">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    Active Discussion &bull; Waiting for your action
+                    {isTerminalRunFinished
+                      ? 'Execution Complete • Ready to Proceed'
+                      : isWaitingInput
+                      ? 'Terminal Running • Awaiting Input'
+                      : 'Active Discussion • Waiting for your action'}
                   </span>
                 </div>
               </div>
@@ -1244,27 +1362,47 @@ export default function LinearCScanfInteractivePage() {
                     </Link>
 
                     <button
-                      onClick={() => {
-                        if (typingTimerRef.current) {
-                          clearInterval(typingTimerRef.current);
-                          typingTimerRef.current = null;
-                        }
-                        setIsFinished(false);
-                        setIsTyping(false);
-                        setActiveTypingLineIndex(null);
-                        setCurrentStepId(1);
-                        setDisplayedCode(STORY_STEPS[0].codeSnapshot);
-                        setTerminalLines([
-                          '$ gcc main.c -o app && ./app',
-                          'Follow the discussion dialog on the left to begin your lesson!'
-                        ]);
-                      }}
+                      onClick={restartStory}
                       className="py-2.5 px-3 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 font-medium text-xs text-center transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
                     >
                       <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
                       <span>Restart Lesson</span>
                     </button>
                   </div>
+                </div>
+              ) : currentStep.actionType === 'run-terminal' && isTerminalRunFinished ? (
+                /* Terminal execution complete: Stay with matching output and let user decide when to proceed */
+                <div className="space-y-3 pt-1">
+                  <div className="p-3 bg-emerald-50 border-2 border-emerald-300 rounded-xl text-xs text-emerald-900 flex items-start gap-2.5 shadow-xs">
+                    <div className="p-1 rounded-lg bg-emerald-500 text-white shrink-0 mt-0.5">
+                      <Check className="w-3.5 h-3.5" />
+                    </div>
+                    <div>
+                      <span className="font-extrabold text-emerald-950 block">
+                        Terminal Execution Complete!
+                      </span>
+                      <span className="text-[11px] text-emerald-800 leading-snug">
+                        The code in the editor ran successfully and the terminal matches the output. Review the results, then click below when you are ready to proceed.
+                      </span>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handleProceedAfterTerminal}
+                    className="w-full py-3 px-4 rounded-xl font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 shadow-md cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-200 ring-2 ring-emerald-400 ring-offset-2"
+                  >
+                    <span>{getTerminalFinishedNextLabel()}</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleRerunTerminal}
+                    className="w-full py-2 px-3 rounded-lg text-[11px] font-semibold text-slate-600 hover:text-slate-800 hover:bg-slate-100 transition flex items-center justify-center gap-1.5 cursor-pointer border border-slate-200"
+                  >
+                    <RotateCcw className="w-3 h-3 text-slate-500" />
+                    <span>Re-run Test with Different Input ↺</span>
+                  </button>
                 </div>
               ) : (
                 <div className="space-y-2 pt-1">
@@ -1274,7 +1412,7 @@ export default function LinearCScanfInteractivePage() {
 
                   <button
                     onClick={handleStepAction}
-                    disabled={isTyping}
+                    disabled={isTyping || isWaitingInput}
                     className={`w-full py-3 px-4 rounded-xl font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 shadow-md cursor-pointer ${
                       currentStepId === 25
                         ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-200'
@@ -1286,6 +1424,8 @@ export default function LinearCScanfInteractivePage() {
                     <span>
                       {isTyping
                         ? 'Typing into Editor...'
+                        : isWaitingInput
+                        ? 'Waiting for Terminal Input (Type below ↘)'
                         : currentStepId === 25
                         ? 'Finish Lesson'
                         : currentStep.actionButtonLabel}
@@ -1449,8 +1589,18 @@ export default function LinearCScanfInteractivePage() {
                   : 'border border-slate-800'
               }`}
             >
-              {/* Eye-catching Banner Pointer when Terminal is Active */}
-              {(currentStep.actionType === 'run-terminal' || isWaitingInput) && (
+              {/* Eye-catching Banner Pointer when Terminal is Active or Finished */}
+              {isTerminalRunFinished ? (
+                <div className="bg-emerald-950/90 border-b border-emerald-800 text-emerald-100 px-4 py-2 text-xs font-semibold flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-400" />
+                    <span>PROGRAM FINISHED: Output matches code editor above. Ready for next step!</span>
+                  </span>
+                  <span className="text-[10px] bg-emerald-900 border border-emerald-700 px-2 py-0.5 rounded font-mono text-emerald-300">
+                    exit 0 &bull; in sync
+                  </span>
+                </div>
+              ) : (currentStep.actionType === 'run-terminal' || isWaitingInput) && (
                 <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600 text-white px-4 py-2 text-xs font-bold flex items-center justify-between shadow-inner">
                   <span className="flex items-center gap-1.5">
                     <ArrowDown className="w-4 h-4 animate-bounce text-emerald-100" />
@@ -1469,9 +1619,20 @@ export default function LinearCScanfInteractivePage() {
                   <span className="text-slate-100 font-semibold">Virtual Terminal (GCC Execution)</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded">
-                    stdin active
-                  </span>
+                  {isTerminalRunFinished ? (
+                    <span className="text-[10px] text-emerald-300 bg-emerald-500/20 border border-emerald-500/40 px-2 py-0.5 rounded flex items-center gap-1">
+                      <Check className="w-3 h-3 text-emerald-400" />
+                      Execution Finished
+                    </span>
+                  ) : isWaitingInput ? (
+                    <span className="text-[10px] text-amber-300 bg-amber-500/20 border border-amber-500/40 px-2 py-0.5 rounded animate-pulse">
+                      stdin active
+                    </span>
+                  ) : (
+                    <span className="text-[10px] text-slate-400 bg-slate-800 px-2 py-0.5 rounded">
+                      ready
+                    </span>
+                  )}
                 </div>
               </div>
 
@@ -1495,7 +1656,7 @@ export default function LinearCScanfInteractivePage() {
                 ))}
 
                 {/* Waiting Input Form */}
-                {isWaitingInput && currentStep.terminalPrompt && (
+                {isWaitingInput && (
                   <div className="pt-2 border-t border-slate-800 space-y-2">
                     <div className="flex items-center gap-1.5 text-[11px] text-emerald-300 font-mono font-semibold animate-pulse">
                       <ArrowDown className="w-3 h-3 animate-bounce" />
@@ -1512,7 +1673,7 @@ export default function LinearCScanfInteractivePage() {
                         type="text"
                         value={inputBuffer}
                         onChange={(e) => setInputBuffer(e.target.value)}
-                        placeholder={currentStep.terminalPrompt.placeholder}
+                        placeholder={getTerminalPromptDetails()?.placeholder || 'Type input here...'}
                         className="bg-[#1e293b] border-2 border-emerald-500 px-3 py-1.5 rounded-lg text-xs font-mono text-white placeholder:text-slate-500 flex-1 outline-none focus:border-emerald-400 shadow-inner ring-2 ring-emerald-500/20"
                       />
                       <button
@@ -1527,22 +1688,22 @@ export default function LinearCScanfInteractivePage() {
                     {/* Quick Choice Buttons for Convenience */}
                     <div className="flex items-center gap-2 text-[11px] text-slate-400">
                       <span>Quick suggestions:</span>
-                      {currentStep.terminalPrompt.defaultOption1 && (
+                      {getTerminalPromptDetails()?.option1 && (
                         <button
                           type="button"
-                          onClick={() => handleQuickInput(currentStep.terminalPrompt!.defaultOption1!)}
+                          onClick={() => handleQuickInput(getTerminalPromptDetails()!.option1!)}
                           className="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-[11px] font-mono transition cursor-pointer"
                         >
-                          &quot;{currentStep.terminalPrompt.defaultOption1}&quot;
+                          &quot;{getTerminalPromptDetails()!.option1}&quot;
                         </button>
                       )}
-                      {currentStep.terminalPrompt.defaultOption2 && (
+                      {getTerminalPromptDetails()?.option2 && (
                         <button
                           type="button"
-                          onClick={() => handleQuickInput(currentStep.terminalPrompt!.defaultOption2!)}
+                          onClick={() => handleQuickInput(getTerminalPromptDetails()!.option2!)}
                           className="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-[11px] font-mono transition cursor-pointer"
                         >
-                          &quot;{currentStep.terminalPrompt.defaultOption2}&quot;
+                          &quot;{getTerminalPromptDetails()!.option2}&quot;
                         </button>
                       )}
                     </div>

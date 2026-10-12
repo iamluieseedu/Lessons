@@ -37,7 +37,16 @@ export type SlideType =
   | 'typography_scale_playground'
   | 'ux_persona_empathy_studio'
   | 'user_journey_map_simulator'
-  | 'ux_heuristics_audit';
+  | 'ux_heuristics_audit'
+  | 'multimedia_elements_mixer'
+  | 'graphic_raster_vector_inspector'
+  | 'audio_sound_design_visualizer'
+  | 'animation_fps_motion_player'
+  | 'video_bitrate_storage_calculator'
+  | 'linear_vs_nonlinear_branching_lab'
+  | 'multimedia_authoring_studio'
+  | 'multimedia_products_interactive_matrix'
+  | 'delivery_bandwidth_speed_race';
 
 export interface CalloutBox {
   title?: string;

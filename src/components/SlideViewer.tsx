@@ -10,14 +10,29 @@ interface SlideViewerProps {
 }
 
 export const SlideViewer: React.FC<SlideViewerProps> = ({ slide }) => {
-  const isLaravel = slide.id?.startsWith('laravel') || slide.id?.startsWith('webdev3');
+  const isSimulatorSlide = 
+    slide.type === 'multimedia_elements_mixer' ||
+    slide.type === 'graphic_raster_vector_inspector' ||
+    slide.type === 'audio_sound_design_visualizer' ||
+    slide.type === 'animation_fps_motion_player' ||
+    slide.type === 'video_bitrate_storage_calculator' ||
+    slide.type === 'linear_vs_nonlinear_branching_lab' ||
+    slide.type === 'multimedia_authoring_studio' ||
+    slide.type === 'multimedia_products_interactive_matrix' ||
+    slide.type === 'delivery_bandwidth_speed_race' ||
+    slide.type === 'cpp_compiler' ||
+    slide.type === 'cpp_exercise';
 
   return (
-    <div className="w-full max-w-7xl 2xl:max-w-[1440px] mx-auto px-1 sm:px-3 py-1 flex items-center justify-center transition-all duration-300">
-      <div className="w-full min-h-[620px] lg:min-h-[670px] xl:min-h-[710px] bg-white rounded-3xl shadow-2xl border border-slate-200/90 overflow-hidden relative group flex flex-col justify-between transition-all duration-300">
+    <div className="w-full max-w-[1920px] 2xl:max-w-[2400px] mx-auto px-1 sm:px-2 flex items-center justify-center transition-all duration-300 flex-grow">
+      <div className={`w-full h-[calc(100vh-140px)] min-h-[660px] ${
+        isSimulatorSlide
+          ? 'bg-slate-950 border-slate-800 text-slate-100 shadow-indigo-950/40'
+          : 'bg-white border-slate-200/90 text-slate-900 shadow-slate-300/40'
+      } rounded-2xl sm:rounded-3xl shadow-2xl border overflow-hidden relative group flex flex-col justify-between transition-all duration-300`}>
         
         {/* Top Deck Presentation Bar */}
-        <div className="w-full bg-slate-900 text-white px-4 py-2.5 flex items-center justify-between text-xs font-lexend border-b border-slate-800 select-none z-20">
+        <div className="w-full bg-slate-900 text-white px-4 sm:px-6 py-2.5 flex items-center justify-between text-xs font-lexend border-b border-slate-800 select-none z-20 shrink-0">
           <div className="flex items-center gap-2">
             <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-[11px] font-bold">
               <MonitorPlay className="w-3.5 h-3.5 text-indigo-400" />
@@ -43,7 +58,7 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({ slide }) => {
         <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-rose-500/[0.04] rounded-full blur-3xl pointer-events-none" />
 
         {/* Render Slide Content */}
-        <div className="flex-grow w-full h-full flex flex-col justify-between overflow-y-auto relative z-10">
+        <div className="flex-grow w-full h-[calc(100%-44px)] flex flex-col justify-between overflow-y-auto relative z-10">
           <SlideContent slide={slide} />
         </div>
       </div>

@@ -50,6 +50,119 @@ function QuizPageContent() {
         const webdev3Questions = getWebDev3QuizQuestions(found.id);
         if (webdev3Questions) {
           setCustomQuestions(webdev3Questions);
+        } else if (found.id === 'multimedia1') {
+          setCustomQuestions([
+            {
+              question: "The term 'Multimedia' originates from 'Multi' (many) and 'Media' (distribution tools). In digital computing, how is multimedia officially defined?",
+              options: [
+                "Text-only printed newspapers distributed to readers.",
+                "The interactive combination of text, graphic, sound, animation, and video delivered by electronic or digital means.",
+                "Any static image file saved on an external optical disc.",
+                "A single analog radio audio transmission without images."
+              ],
+              answer: 1,
+              explanation: "Multimedia fuses multiple modalities (text, graphics, audio, animation, video) into an interactive digital experience."
+            },
+            {
+              question: "Which element serves as the most fundamental building block of digital multimedia menus, navigation, and core keywords?",
+              options: [
+                "Video",
+                "Animation",
+                "Text",
+                "Audio"
+              ],
+              answer: 2,
+              explanation: "Text is the most basic element in multimedia, providing critical semantic clarity, labels, and navigation anchors."
+            },
+            {
+              question: "Why are Vector graphics (like SVG, AI, fonts) preferred for scalable UI icons and typography compared to Raster bitmaps (JPEG, PNG)?",
+              options: [
+                "Vector graphics use pixels that blur heavily when zoomed in.",
+                "Vector graphics are defined by mathematical formulas (points, curves) allowing infinite scaling without resolution loss or pixelation.",
+                "Vector graphics require 100x more storage memory than bitmaps.",
+                "Vector graphics cannot be rendered on modern computer displays."
+              ],
+              answer: 1,
+              explanation: "Vectors calculate coordinates and Bézier curves dynamically, retaining razor-sharp precision at any screen resolution."
+            },
+            {
+              question: "In professional multimedia production, audio typically consists of three primary functional forms. What are they?",
+              options: [
+                "Speech (Voiceover), Sound Effects (SFX), and Musical Score / BGM",
+                "Low-frequency hum, static buzz, and echo",
+                "Monochrome, RGB, and CMYK",
+                "Keyboard clicks, mouse clicks, and fan noise"
+              ],
+              answer: 0,
+              explanation: "Multimedia audio encompasses narrative Speech (dialogue/voiceover), responsive Sound Effects (auditory signifiers), and emotive Music."
+            },
+            {
+              question: "Animation creates the optical illusion of continuous motion by rapidly sequencing static frames. What physiological phenomenon enables our brains to perceive fluid movement rather than separate flashing still photos?",
+              options: [
+                "Sub-pixel anti-aliasing",
+                "Persistence of Vision & The Phi Phenomenon",
+                "Lossy compression artifacting",
+                "Bézier vector interpolation"
+              ],
+              answer: 1,
+              explanation: "Persistence of vision causes the retina to retain an afterimage for a fraction of a second, blending rapid frames into continuous movement."
+            },
+            {
+              question: "What is a primary technical characteristic that distinguishes digital Video from synthetic Animation in multimedia production?",
+              options: [
+                "Video is always black-and-white while animation is full color.",
+                "Video captures continuous real-world optical recordings (photorealistic image sequences) and demands substantially higher storage space and bitrate planning.",
+                "Video never requires audio tracks, while animation always does.",
+                "Video cannot be compressed using modern codecs."
+              ],
+              answer: 1,
+              explanation: "Video records photorealistic live-action reality at millions of color variations per frame, demanding strategic compression and bandwidth budgets."
+            },
+            {
+              question: "A digital interactive CD courseware or 3D video game gives users navigational control and agency to choose their own branching paths. Which classification does this belong to?",
+              options: [
+                "Linear Multimedia",
+                "Non-Linear Multimedia",
+                "Static Print Media",
+                "Analog Broadcast"
+              ],
+              answer: 1,
+              explanation: "Non-linear multimedia gives the user bidirectional agency, branching navigation, and interactive control over content sequence."
+            },
+            {
+              question: "What is the primary role of Multimedia Authoring Tools (such as historically Macromedia Flash/Director, or modern engines like Godot and Web platforms)?",
+              options: [
+                "To manufacture physical computer motherboards in factories.",
+                "To assemble, sequence, and manage disparate media elements (text, graphics, audio, animation, video) and program interactive user logic into a cohesive application.",
+                "To format hard drives and wipe operating system caches.",
+                "To print high-speed color paper brochures."
+              ],
+              answer: 1,
+              explanation: "Authoring tools provide the timeline, canvas, and scripting engines that unite diverse media assets into interactive applications."
+            },
+            {
+              question: "An airport flight board, bank ATM, or museum touch terminal located in public spaces for fast, self-service transactions is an example of which multimedia product type?",
+              options: [
+                "Kiosk Products",
+                "Briefing Products",
+                "Database Products",
+                "Reference Products"
+              ],
+              answer: 0,
+              explanation: "Kiosks are public-facing, ruggedized, touch-based interactive terminals designed for rapid information retrieval or transaction processing."
+            },
+            {
+              question: "When distributing rich multimedia, what trade-off must digital media engineers constantly calculate between local physical storage (CD/DVD/Flash) and networked streaming (Broadband Internet)?",
+              options: [
+                "Physical media has no file size limit, while the internet cannot play audio.",
+                "Network streaming requires calculating bitrate throughput against user connection bandwidth, while physical media is constrained by fixed disc/drive capacity.",
+                "Physical discs do not require electricity to spin.",
+                "Broadband internet only supports monochrome text files."
+              ],
+              answer: 1,
+              explanation: "Streaming media requires balancing bitrate (Mbps) against network latency and throughput, while physical discs have fixed capacity and transfer speeds."
+            }
+          ]);
         } else if (found.id === 'mediadsn1') {
           setCustomQuestions([
             {
