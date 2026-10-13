@@ -7,7 +7,7 @@ export const DEFAULT_LIBRARY_CONFIG: LibraryConfig = {
   libraryLongitude: 121.090423, // Exact library longitude
   geofenceRadiusMeters: 60,     // 60m radius around library location
   enforceGeofence: false,       // Default false (warns and tags as unverified instead of blocking)
-  webhookUrl: 'https://script.google.com/macros/s/AKfycbxsXk0_2OnQ_7cy7keJhQBIstZ3YzNPQ0zNVvIXo7tHEZo_OKEdTQaVs4eXtWPXrkHkQA/exec',
+  webhookUrl: 'https://script.google.com/macros/s/AKfycbytQ5WO61njDl6sBu3T-6VPtzWuTKsLC_ztmpW4klXNvhPnoKY33_K5nMQBknSmQQO40Q/exec',
   adminPin: 'admin123',
   librarianDefaultName: 'Head Librarian',
 };

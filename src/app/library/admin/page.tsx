@@ -22,8 +22,11 @@ import {
   ArrowLeft,
   RefreshCw,
   Filter,
+  FileText,
+  FolderOpen,
 } from 'lucide-react';
 
+import { CONFIG } from '@/config';
 import { LibraryAttendanceRecord, LibraryConfig, LibraryVisitorSession } from '@/types/library';
 import {
   getLibraryConfig,
@@ -233,7 +236,33 @@ export default function LibraryAdminPortal() {
           </p>
         </div>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 flex-wrap justify-end">
+          {/* Direct Link to Google Sheets */}
+          <a
+            href={(CONFIG as any).librarySheetUrl || 'https://docs.google.com/spreadsheets/d/16ntBPPdctHxaBggT3iK2lZDAVIz63C_hobln0vwkv78/edit'}
+            target="_blank"
+            rel="noreferrer"
+            className="px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition flex items-center gap-1.5 shadow-xs"
+            title="Open Live Google Sheets Attendance Log"
+          >
+            <FileText className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Google Sheet</span>
+            <ExternalLink className="w-3 h-3 opacity-80" />
+          </a>
+
+          {/* Direct Link to Google Drive Media Folder */}
+          <a
+            href={(CONFIG as any).libraryDriveFolderUrl || 'https://drive.google.com/drive/folders/1qgy2Dyr_yUFTdNoqzXAsFPQIqXUznUr7'}
+            target="_blank"
+            rel="noreferrer"
+            className="px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition flex items-center gap-1.5 shadow-xs"
+            title="Open Google Drive Media Folder (Selfies, Books, Signatures)"
+          >
+            <FolderOpen className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Google Drive</span>
+            <ExternalLink className="w-3 h-3 opacity-80" />
+          </a>
+
           <button
             onClick={() => setIsSettingsOpen(true)}
             className="p-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition"
@@ -245,10 +274,11 @@ export default function LibraryAdminPortal() {
           <button
             onClick={() => exportAttendanceToCSV(records)}
             disabled={records.length === 0}
-            className="px-3 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition flex items-center gap-1 disabled:opacity-50 shadow-xs"
+            className="px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold transition flex items-center gap-1 disabled:opacity-50 shadow-xs"
+            title="Download CSV Backup"
           >
             <Download className="w-3.5 h-3.5" />
-            CSV
+            <span className="hidden sm:inline">CSV</span>
           </button>
         </div>
       </div>
@@ -504,9 +534,20 @@ export default function LibraryAdminPortal() {
                         {r.locationIn.isWithinGeofence ? '✓ At Library' : 'Off-Site'}
                       </span>
                     </div>
-                    <p className="text-[11px] text-slate-500 font-mono truncate">
-                      {r.studentId} • {r.gradeSection}
-                    </p>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <span className="text-[11px] text-slate-500 font-mono truncate">
+                        ID: {r.studentId} • Section: {r.gradeSection}
+                      </span>
+                      <span
+                        className={`text-[9px] font-bold px-1.5 py-0.2 rounded ${
+                          r.status === 'completed'
+                            ? 'bg-slate-100 text-slate-600'
+                            : 'bg-blue-50 text-blue-700'
+                        }`}
+                      >
+                        {r.status === 'completed' ? 'Checked Out' : 'Active Pass'}
+                      </span>
+                    </div>
                     <p className="text-[11px] text-slate-700 truncate mt-0.5">
                       📖 {r.bookTitle}
                     </p>
@@ -520,7 +561,16 @@ export default function LibraryAdminPortal() {
 
                 {/* Bottom strip: Date & Actions */}
                 <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-                  <span>{new Date(r.timeIn).toLocaleDateString()}</span>
+                  <div className="flex items-center gap-1.5 truncate">
+                    <span>{new Date(r.timeIn).toLocaleDateString()}</span>
+                    <span>•</span>
+                    <span className="font-mono text-[10px]">
+                      In: {new Date(r.timeIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {r.timeOut && r.status === 'completed'
+                        ? ` → Out: ${new Date(r.timeOut).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} (${r.durationMinutes || 0}m)`
+                        : ' (Active Inside)'}
+                    </span>
+                  </div>
 
                   <div className="flex items-center gap-2">
                     <button
@@ -645,6 +695,41 @@ export default function LibraryAdminPortal() {
                 {testWebhookStatus && (
                   <p className="text-[11px] text-slate-600 mt-1">{testWebhookStatus}</p>
                 )}
+              </div>
+
+              {/* Connected Cloud Storage Info */}
+              <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2">
+                <span className="font-bold text-slate-800 block text-[11px]">Connected Cloud Storage</span>
+                
+                <div className="flex items-center justify-between gap-2 p-2 bg-white rounded-lg border border-slate-200">
+                  <div className="min-w-0">
+                    <span className="text-[10px] text-slate-500 font-semibold block">Google Sheet Log</span>
+                    <span className="text-[10px] font-mono text-slate-700 truncate block">16ntBPPdctHxaBggT3iK2lZDAVIz63C_hobln0vwkv78</span>
+                  </div>
+                  <a
+                    href={(CONFIG as any).librarySheetUrl || 'https://docs.google.com/spreadsheets/d/16ntBPPdctHxaBggT3iK2lZDAVIz63C_hobln0vwkv78/edit'}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-2 py-1 rounded bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-semibold text-[10px] flex items-center gap-1 shrink-0"
+                  >
+                    Open <ExternalLink className="w-2.5 h-2.5" />
+                  </a>
+                </div>
+
+                <div className="flex items-center justify-between gap-2 p-2 bg-white rounded-lg border border-slate-200">
+                  <div className="min-w-0">
+                    <span className="text-[10px] text-slate-500 font-semibold block">Google Drive Media Folder</span>
+                    <span className="text-[10px] font-mono text-slate-700 truncate block">1qgy2Dyr_yUFTdNoqzXAsFPQIqXUznUr7</span>
+                  </div>
+                  <a
+                    href={(CONFIG as any).libraryDriveFolderUrl || 'https://drive.google.com/drive/folders/1qgy2Dyr_yUFTdNoqzXAsFPQIqXUznUr7'}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-2 py-1 rounded bg-blue-50 text-blue-700 hover:bg-blue-100 font-semibold text-[10px] flex items-center gap-1 shrink-0"
+                  >
+                    Open <ExternalLink className="w-2.5 h-2.5" />
+                  </a>
+                </div>
               </div>
 
               {/* Admin Pin */}

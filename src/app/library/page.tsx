@@ -12,6 +12,10 @@ import {
   ChevronDown,
   ChevronUp,
   CheckCircle2,
+  LogIn,
+  LogOut,
+  Clock,
+  Search,
 } from 'lucide-react';
 
 import {
@@ -108,6 +112,12 @@ export default function MobileLibraryAttendancePage() {
   // Generated Card Modal
   const [viewCardRecord, setViewCardRecord] = useState<LibraryAttendanceRecord | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Time In / Time Out Mode State
+  const [attendanceMode, setAttendanceMode] = useState<'time_in' | 'time_out'>('time_in');
+  const [timeOutSearchQuery, setTimeOutSearchQuery] = useState('');
+  const [selectedActiveRecord, setSelectedActiveRecord] = useState<LibraryAttendanceRecord | null>(null);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   const handleSelfieFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -335,13 +345,13 @@ export default function MobileLibraryAttendancePage() {
       selfiePhotoBase64: selfiePhoto,
       bookPhotoBase64: bookPhoto,
       timeIn: nowIso,
-      timeOut: nowIso,
-      durationMinutes: 30, // Default session pass
+      timeOut: '',
+      durationMinutes: 0,
       locationIn: currentLocation,
       ipAddress: clientIp || 'Protected',
       librarianSignatureBase64: librarianSignature,
       librarianName: librarianName.trim() || 'Librarian In-Charge',
-      status: 'completed',
+      status: 'active',
     };
 
     // Update visitor session with student details
@@ -361,13 +371,13 @@ export default function MobileLibraryAttendancePage() {
     try {
       const syncRes = await syncRecordToGoogleDriveAndSheets(newRecord, config);
       if (syncRes.success) {
-        setToastMessage(`✓ Library Pass & photos uploaded to Google Drive & Sheets!`);
+        setToastMessage(`✓ Time In recorded! Pass & photos uploaded to Google Drive & Sheets.`);
       } else {
         setToastMessage(`⚠️ Pass saved locally, but Google Drive sync failed: ${syncRes.message}`);
       }
     } catch (syncErr) {
       console.warn('Sync attempt finished with local save:', syncErr);
-      setToastMessage(`✓ Library Card generated for ${newRecord.studentName}!`);
+      setToastMessage(`✓ Time In Library Card generated for ${newRecord.studentName}!`);
     } finally {
       setIsSubmitting(false);
     }
@@ -388,6 +398,50 @@ export default function MobileLibraryAttendancePage() {
     setTimeout(() => setToastMessage(null), 6000);
   };
 
+  // Handle Checkout / Time Out
+  const handleConfirmTimeOut = async (recordToTimeOut: LibraryAttendanceRecord) => {
+    setIsCheckingOut(true);
+    try {
+      const nowIso = new Date().toISOString();
+      const diffMs = new Date(nowIso).getTime() - new Date(recordToTimeOut.timeIn).getTime();
+      const durationMinutes = Math.max(1, Math.round(diffMs / (1000 * 60)));
+
+      const updatedRecord: LibraryAttendanceRecord = {
+        ...recordToTimeOut,
+        timeOut: nowIso,
+        durationMinutes,
+        status: 'completed',
+      };
+
+      // Regenerate digital card with Time Out and Completed Status
+      const cardDataUrl = await generateDigitalCardCanvas(updatedRecord, config);
+      updatedRecord.digitalCardBase64 = cardDataUrl;
+
+      // Update local storage
+      saveAttendanceRecord(updatedRecord);
+      refreshRecords();
+
+      // Sync to Google Apps Script (updates row in Google Sheets)
+      try {
+        await syncRecordToGoogleDriveAndSheets(updatedRecord, config);
+        setToastMessage(`✓ Time Out recorded for ${updatedRecord.studentName}! Total stay: ${durationMinutes} mins`);
+      } catch (err) {
+        setToastMessage(`✓ Time Out saved locally for ${updatedRecord.studentName} (${durationMinutes} mins)`);
+      }
+
+      // Display the final checked out card pass
+      setSelectedActiveRecord(null);
+      setTimeOutSearchQuery('');
+      setViewCardRecord(updatedRecord);
+      setTimeout(() => setToastMessage(null), 6000);
+    } catch (err) {
+      console.error('Error during checkout:', err);
+      alert('Failed to process checkout. Please try again.');
+    } finally {
+      setIsCheckingOut(false);
+    }
+  };
+
   return (
     <div className="max-w-md mx-auto w-full px-4 py-4 space-y-4">
       {/* Toast */}
@@ -403,9 +457,46 @@ export default function MobileLibraryAttendancePage() {
         </div>
       )}
 
-      {/* VERIFIED FILL-UP FORM */}
-      <form onSubmit={handleSubmit} className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-4 animate-fade-in">
+      {/* TIME IN / TIME OUT MODE TABS */}
+      <div className="flex bg-slate-100 p-1 rounded-2xl border border-slate-200 shadow-xs">
+        <button
+          type="button"
+          onClick={() => {
+            setAttendanceMode('time_in');
+            setSelectedActiveRecord(null);
+          }}
+          className={`flex-1 py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5 ${
+            attendanceMode === 'time_in'
+              ? 'bg-blue-600 text-white shadow-xs'
+              : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <LogIn className="w-4 h-4" />
+          <span>TIME IN (Entry)</span>
+        </button>
 
+        <button
+          type="button"
+          onClick={() => setAttendanceMode('time_out')}
+          className={`flex-1 py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5 ${
+            attendanceMode === 'time_out'
+              ? 'bg-amber-600 text-white shadow-xs'
+              : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <LogOut className="w-4 h-4" />
+          <span>TIME OUT (Exit)</span>
+          {records.filter((r) => r.status === 'active').length > 0 && (
+            <span className="px-1.5 py-0.5 rounded-full bg-white/20 text-white text-[10px] font-mono">
+              {records.filter((r) => r.status === 'active').length}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* MODE 1: TIME IN (ENTRY FORM) */}
+      {attendanceMode === 'time_in' && (
+        <form onSubmit={handleSubmit} className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-4 animate-fade-in">
           {/* Student Fields */}
           <div className="space-y-3">
             <div>
@@ -439,7 +530,7 @@ export default function MobileLibraryAttendancePage() {
             <div className="grid grid-cols-2 gap-2.5">
               <div>
                 <label className="block text-xs font-bold text-slate-800 mb-1">
-                  Grade / Section <span className="text-rose-500">*</span>
+                  Section <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -678,12 +769,189 @@ export default function MobileLibraryAttendancePage() {
               </>
             ) : (
               <>
-                <Sparkles className="w-4 h-4" />
-                Submit &amp; Generate Library Card
+                <LogIn className="w-4 h-4" />
+                Confirm Time In &amp; Generate Pass
               </>
             )}
           </button>
         </form>
+      )}
+
+      {/* MODE 2: TIME OUT (CHECKOUT & EXIT) */}
+      {attendanceMode === 'time_out' && (
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-4 animate-fade-in">
+          <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+            <div>
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+                <LogOut className="w-4 h-4 text-amber-600" />
+                Library Exit &amp; Checkout
+              </h3>
+              <p className="text-[11px] text-slate-500">
+                Log your departure and record total reading time
+              </p>
+            </div>
+            <span className="px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 text-[10px] font-bold border border-amber-200">
+              {records.filter((r) => r.status === 'active').length} Active
+            </span>
+          </div>
+
+          {/* Quick Search */}
+          <div className="relative">
+            <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search active student by ID or Name..."
+              value={timeOutSearchQuery}
+              onChange={(e) => setTimeOutSearchQuery(e.target.value)}
+              className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white"
+            />
+          </div>
+
+          {/* Checkout Details if a student record is selected */}
+          {selectedActiveRecord ? (
+            <div className="bg-amber-50/70 border border-amber-200 rounded-xl p-3.5 space-y-3 animate-fade-in">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-amber-900 uppercase tracking-wider">
+                  Selected for Time Out
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedActiveRecord(null)}
+                  className="text-xs text-amber-700 hover:underline font-semibold"
+                >
+                  Change Student
+                </button>
+              </div>
+
+              <div className="bg-white rounded-lg p-3 border border-amber-200 space-y-2 text-xs">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h4 className="font-bold text-slate-900 text-sm">
+                      {selectedActiveRecord.studentName}
+                    </h4>
+                    <p className="text-[11px] text-slate-500 font-mono">
+                      ID: {selectedActiveRecord.studentId} • Section: {selectedActiveRecord.gradeSection}
+                    </p>
+                  </div>
+                  <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold">
+                    Active
+                  </span>
+                </div>
+
+                <div className="text-[11px] text-slate-700 pt-1 border-t border-slate-100">
+                  <span className="text-slate-400">Material:</span> {selectedActiveRecord.bookTitle}
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 pt-1 text-[11px]">
+                  <div className="bg-slate-50 p-2 rounded border border-slate-100">
+                    <span className="text-slate-400 block text-[10px]">TIME IN</span>
+                    <span className="font-bold text-blue-600 font-mono">
+                      {new Date(selectedActiveRecord.timeIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </div>
+                  <div className="bg-slate-50 p-2 rounded border border-slate-100">
+                    <span className="text-slate-400 block text-[10px]">ESTIMATED DURATION</span>
+                    <span className="font-bold text-amber-600 font-mono">
+                      ~{Math.max(1, Math.round((Date.now() - new Date(selectedActiveRecord.timeIn).getTime()) / 60000))} mins
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                disabled={isCheckingOut}
+                onClick={() => handleConfirmTimeOut(selectedActiveRecord)}
+                className="w-full py-3 rounded-xl bg-amber-600 hover:bg-amber-700 active:scale-[0.99] text-white font-bold text-xs transition shadow flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                {isCheckingOut ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    Recording Time Out...
+                  </>
+                ) : (
+                  <>
+                    <LogOut className="w-4 h-4" />
+                    Confirm Time Out &amp; Checkout
+                  </>
+                )}
+              </button>
+            </div>
+          ) : (
+            /* Active Students List */
+            <div className="space-y-2">
+              <span className="text-[11px] font-bold text-slate-700 block">
+                Students Currently Inside Library:
+              </span>
+
+              {(() => {
+                const query = timeOutSearchQuery.toLowerCase().trim();
+                const matched = records.filter(
+                  (r) =>
+                    r.status === 'active' &&
+                    (!query ||
+                      r.studentName.toLowerCase().includes(query) ||
+                      r.studentId.toLowerCase().includes(query) ||
+                      r.gradeSection.toLowerCase().includes(query))
+                );
+
+                if (matched.length === 0) {
+                  return (
+                    <div className="p-6 text-center text-xs text-slate-500 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                      {records.some((r) => r.status === 'active')
+                        ? 'No active students match your search.'
+                        : 'No students currently checked in. All library sessions are checked out.'}
+                    </div>
+                  );
+                }
+
+                return matched.map((rec) => {
+                  const elapsedMins = Math.max(
+                    1,
+                    Math.round((Date.now() - new Date(rec.timeIn).getTime()) / 60000)
+                  );
+                  return (
+                    <div
+                      key={rec.id}
+                      onClick={() => setSelectedActiveRecord(rec)}
+                      className="p-3 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-amber-50/50 hover:border-amber-300 transition cursor-pointer flex items-center justify-between gap-2.5"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-xs text-slate-900 truncate">
+                            {rec.studentName}
+                          </span>
+                          <span className="text-[10px] text-slate-500 font-mono bg-white px-1.5 py-0.5 rounded border border-slate-200">
+                            {rec.gradeSection}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-600 truncate mt-0.5">
+                          📖 {rec.bookTitle}
+                        </p>
+                        <p className="text-[10px] text-slate-400 mt-0.5">
+                          Time In: {new Date(rec.timeIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • Inside for {elapsedMins}m
+                        </p>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedActiveRecord(rec);
+                        }}
+                        className="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-semibold text-[11px] transition shrink-0 flex items-center gap-1 shadow-xs"
+                      >
+                        <LogOut className="w-3 h-3" />
+                        Time Out
+                      </button>
+                    </div>
+                  );
+                });
+              })()}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Generated Digital Library Card Modal */}
       {viewCardRecord && (

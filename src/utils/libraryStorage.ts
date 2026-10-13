@@ -21,10 +21,12 @@ export function getLibraryConfig(): LibraryConfig {
     if (raw) {
       const parsed = JSON.parse(raw);
       // Auto-update if old outdated webhook was cached
-      const effectiveWebhook =
-        !parsed.webhookUrl || parsed.webhookUrl.includes('AKfycbxDqFEe9zV720wrMho')
-          ? DEFAULT_WEBHOOK
-          : parsed.webhookUrl;
+      const isOutdated =
+        !parsed.webhookUrl ||
+        parsed.webhookUrl.includes('AKfycbxDqFEe9zV720wrMho') ||
+        parsed.webhookUrl.includes('AKfycbxsXk0_2OnQ_7cy7keJhQBIstZ3YzNPQ0zNVvIXo7tHEZo_OKEdTQaVs4eXtWPXrkHkQA') ||
+        parsed.webhookUrl.includes('AKfycbxELtqYLe');
+      const effectiveWebhook = isOutdated ? DEFAULT_WEBHOOK : parsed.webhookUrl;
       return {
         ...DEFAULT_LIBRARY_CONFIG,
         ...parsed,
@@ -238,11 +240,12 @@ export async function syncRecordToGoogleDriveAndSheets(
   }
 
   const payload = {
-    action: 'library_attendance_sync',
+    action: record.status === 'completed' && record.timeOut ? 'time_out' : 'library_attendance_sync',
     id: record.id,
     studentId: record.studentId,
     studentName: record.studentName,
     gradeSection: record.gradeSection,
+    section: record.gradeSection,
     purpose: record.purpose,
     bookTitle: record.bookTitle,
     bookAuthorOrCallNo: record.bookAuthorOrCallNo || '',
@@ -298,7 +301,7 @@ export function exportAttendanceToCSV(records: LibraryAttendanceRecord[]): void 
     'Record ID',
     'Student ID',
     'Student Name',
-    'Grade & Section',
+    'Section',
     'Purpose',
     'Book Title / Material',
     'Book Call No',
@@ -536,23 +539,29 @@ export async function generateDigitalCardCanvas(
       ctx.fillStyle = '#0f172a';
       ctx.font = 'bold 16px sans-serif';
       ctx.fillText(
-        record.timeOut
+        record.timeOut && record.status === 'completed'
           ? new Date(record.timeOut).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          : new Date(record.timeIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          : 'Active (Inside)',
         260,
         615
       );
       ctx.font = '12px sans-serif';
       ctx.fillStyle = '#64748b';
-      ctx.fillText(new Date(record.timeIn).toLocaleDateString(), 260, 635);
+      ctx.fillText(
+        record.timeOut && record.status === 'completed'
+          ? `${record.durationMinutes || 0} mins logged`
+          : 'In Progress',
+        260,
+        635
+      );
 
       // Status
-      ctx.fillStyle = '#10b981';
+      ctx.fillStyle = record.status === 'completed' ? '#10b981' : '#2563eb';
       ctx.font = 'bold 12px sans-serif';
       ctx.fillText('STATUS', 460, 590);
       ctx.fillStyle = '#0f172a';
       ctx.font = 'bold 18px sans-serif';
-      ctx.fillText('VERIFIED', 460, 618);
+      ctx.fillText(record.status === 'completed' ? 'CHECKED OUT' : 'ACTIVE PASS', 460, 618);
 
       // Location Details
       ctx.fillStyle = '#64748b';
