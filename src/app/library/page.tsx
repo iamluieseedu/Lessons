@@ -358,9 +358,19 @@ export default function MobileLibraryAttendancePage() {
     refreshRecords();
 
     // Compile and push directly to Google Sheets & Google Drive
-    syncRecordToGoogleDriveAndSheets(newRecord, config).then((res) => {
-      console.log('Google Sheets & Drive sync status:', res);
-    });
+    try {
+      const syncRes = await syncRecordToGoogleDriveAndSheets(newRecord, config);
+      if (syncRes.success) {
+        setToastMessage(`✓ Library Pass & photos uploaded to Google Drive & Sheets!`);
+      } else {
+        setToastMessage(`⚠️ Pass saved locally, but Google Drive sync failed: ${syncRes.message}`);
+      }
+    } catch (syncErr) {
+      console.warn('Sync attempt finished with local save:', syncErr);
+      setToastMessage(`✓ Library Card generated for ${newRecord.studentName}!`);
+    } finally {
+      setIsSubmitting(false);
+    }
 
     // Reset Form
     setStudentId('');
@@ -372,12 +382,10 @@ export default function MobileLibraryAttendancePage() {
     setLibrarianSignature('');
     setHasDrawnOnCanvas(false);
     setIsSignatureExpanded(false);
-    setIsSubmitting(false);
 
     // Open card view for student / librarian
     setViewCardRecord(newRecord);
-    setToastMessage(`✓ Library Card generated for ${newRecord.studentName}!`);
-    setTimeout(() => setToastMessage(null), 5000);
+    setTimeout(() => setToastMessage(null), 6000);
   };
 
   return (
@@ -666,7 +674,7 @@ export default function MobileLibraryAttendancePage() {
             {isSubmitting ? (
               <>
                 <RefreshCw className="w-4 h-4 animate-spin" />
-                Generating Student Card...
+                Saving to Google Drive &amp; Sheets...
               </>
             ) : (
               <>
