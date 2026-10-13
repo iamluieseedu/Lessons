@@ -4,6 +4,9 @@ export const CONFIG = {
   // Paste your Google Sheets Webhook URL here:
   webhookUrl: 'https://script.google.com/a/macros/faculty.trimexcolleges.edu.ph/s/AKfycbyCoQCeJzEjCuYFKARWqCFC7jGLFujyHutn0gmLebrElOk8nzIPx3Begv-VaiOKWnrpIg/exec',
   
+  // Dedicated Library Attendance Google Apps Script Webhook:
+  libraryWebhookUrl: 'https://script.google.com/macros/s/AKfycbxsXk0_2OnQ_7cy7keJhQBIstZ3YzNPQ0zNVvIXo7tHEZo_OKEdTQaVs4eXtWPXrkHkQA/exec',
+  
   // Paste your Google Cloud Client ID here:
   googleClientId: '1033435332000-dn7dhr38rlpe1e9itgcf48qhdlu4dkck.apps.googleusercontent.com',
   

@@ -141,8 +141,11 @@ export default function AdminPage() {
       const fetchScores = async () => {
         setIsLoadingScores(true);
         try {
-          const response = await fetch(webhookUrl);
-          if (response.ok) {
+          const response = await fetch(webhookUrl).catch((fetchErr) => {
+            console.warn("Unable to fetch online grades from webhook (network/CORS):", fetchErr);
+            return null;
+          });
+          if (response && response.ok) {
             const data = await response.json();
             if (Array.isArray(data)) {
               setStudentScores(data);
@@ -150,7 +153,7 @@ export default function AdminPage() {
             }
           }
         } catch (err) {
-          console.error("Error loading online grades from Google Sheets:", err);
+          console.warn("Handled grade fetch fallback:", err);
           let storedScores = [];
           try {
             storedScores = JSON.parse(localStorage.getItem('vid_student_scores') || '[]');

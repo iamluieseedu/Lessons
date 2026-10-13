@@ -77,6 +77,9 @@ export default function RootLayout({
                     str.includes('adsbygoogle') ||
                     str.includes("All 'ins' elements in the DOM with class=adsbygoogle already have ads in them") ||
                     str.includes('TagError') ||
+                    str.includes('quota') ||
+                    str.includes('Quota') ||
+                    str.includes('QuotaExceeded') ||
                     str === '[object Event]'
                   );
                 }
