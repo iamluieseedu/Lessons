@@ -436,26 +436,34 @@ export default function MobileLibraryAttendancePage() {
     setIsSubmitting(true);
 
     try {
-      // 4. Geofence Verification Check with Automatic User-Gesture Prompt Trigger
-      let isAtLibrary =
-        librarianOverrideOnSite || (location && location.isWithinGeofence);
-
-      if (!isAtLibrary) {
-        const acquired = await requestEnableGPS(config);
-        if (librarianOverrideOnSite || (acquired && acquired.isWithinGeofence)) {
-          isAtLibrary = true;
-        } else {
-          alert(
-            `Location Verification Required: You must be physically at the library to record attendance.\n\n${
-              acquired && acquired.latitude !== 0
-                ? 'Distance: ' + formatDistance(acquired.distanceFromLibraryMeters) + ' away (Radius: ' + config.geofenceRadiusMeters + 'm)'
-                : (acquired?.errorMessage || 'Please tap "Allow Location" in your browser.')
-            }`
-          );
-          return;
+      // 4. Geofence Verification Check: Passive verification on submit
+      let activeLoc = location;
+      if (!activeLoc || activeLoc.latitude === 0) {
+        activeLoc = await getCurrentGeoLocation(config);
+        if (activeLoc && activeLoc.latitude !== 0) {
+          setLocation(activeLoc);
         }
       }
-      const currentLocation = location || {
+
+      const isAtLibrary =
+        librarianOverrideOnSite || (activeLoc && activeLoc.isWithinGeofence);
+
+      if (!isAtLibrary) {
+        if (!activeLoc || activeLoc.latitude === 0) {
+          alert(
+            'Location Permission Required:\n\nPlease allow browser location access to verify you are currently at the campus library.'
+          );
+        } else {
+          alert(
+            `Location Verification:\n\nYou must be at the campus library (14.328171, 121.090469) to record attendance.\n\nYour current location is ${formatDistance(
+              activeLoc.distanceFromLibraryMeters
+            )} away from the campus perimeter.`
+          );
+        }
+        return;
+      }
+
+      const currentLocation = activeLoc || location || {
         latitude: config.libraryLatitude,
         longitude: config.libraryLongitude,
         accuracyMeters: 10,
@@ -603,97 +611,7 @@ export default function MobileLibraryAttendancePage() {
         </div>
       )}
 
-      {/* STANDARD LOCATION PERMISSION & VERIFICATION BANNER */}
-      {!isAtLibraryConfirmed ? (
-        <div className="bg-gradient-to-r from-blue-50 via-indigo-50/50 to-emerald-50 border border-blue-200/80 rounded-2xl p-3.5 text-xs text-slate-800 shadow-sm animate-fade-in space-y-2">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs">
-                <MapPin className="w-4 h-4 animate-bounce" />
-              </div>
-              <div className="min-w-0">
-                <span className="font-bold text-slate-900 block text-xs">
-                  {location && location.latitude !== 0 && !location.isWithinGeofence
-                    ? `Outside Library Radius (${formatDistance(location.distanceFromLibraryMeters)} away)`
-                    : 'Library Location Access Required'}
-                </span>
-                <p className="text-[11px] text-slate-600 leading-snug">
-                  {location && location.latitude !== 0 && !location.isWithinGeofence
-                    ? `You must be within ${config.geofenceRadiusMeters}m of the library to record attendance.`
-                    : location?.errorMessage
-                    ? location.errorMessage
-                    : 'Please tap "Allow Location" to verify you are currently inside the library.'}
-                </p>
-              </div>
-            </div>
 
-            <div className="flex items-center gap-1.5 shrink-0">
-              <button
-                type="button"
-                onClick={() => requestEnableGPS(config)}
-                disabled={isAcquiringLocation}
-                className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold text-xs shadow-md shadow-blue-600/25 transition flex items-center gap-1.5"
-              >
-                {isAcquiringLocation ? (
-                  <>
-                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                    <span>Checking...</span>
-                  </>
-                ) : (
-                  <>
-                    <Compass className="w-3.5 h-3.5" />
-                    <span>Allow Location</span>
-                  </>
-                )}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setLibrarianOverrideOnSite(true)}
-                className="px-2.5 py-2 rounded-xl bg-white border border-slate-200 text-slate-600 font-semibold text-[11px] hover:bg-slate-100 transition shadow-2xs"
-                title="Librarian On-Site Verification Override"
-              >
-                Override
-              </button>
-            </div>
-          </div>
-
-          {location && location.latitude !== 0 && !location.isWithinGeofence && (
-            <div className="pt-1.5 border-t border-slate-200/60 flex items-center justify-between text-[11px]">
-              <span className="text-slate-500 font-mono text-[10px]">
-                Your GPS: {location.latitude.toFixed(5)}, {location.longitude.toFixed(5)}
-              </span>
-              <button
-                type="button"
-                onClick={handleCalibrateAsLibrary}
-                className="text-emerald-700 font-bold hover:underline"
-              >
-                Set Location as Library
-              </button>
-            </div>
-          )}
-        </div>
-      ) : (
-        /* Verified Location Indicator */
-        <div className="bg-emerald-50 border border-emerald-200/80 rounded-2xl px-3.5 py-2 text-xs text-emerald-900 flex items-center justify-between shadow-2xs animate-fade-in">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="font-bold text-emerald-800 text-[11px]">
-              ✓ Verified Inside Library
-            </span>
-            <span className="text-[10px] text-emerald-600">
-              ({location ? formatDistance(location.distanceFromLibraryMeters) : 'On-Premises'})
-            </span>
-          </div>
-          <button
-            type="button"
-            onClick={() => requestEnableGPS(config)}
-            className="text-[10px] text-emerald-700 font-semibold hover:underline"
-          >
-            Re-check GPS
-          </button>
-        </div>
-      )}
 
       {/* VIEW 1: ACTIVE STUDENT SESSION & DIGITAL CARD VIEW */}
       {/* After confirmation, the Student Digital Pass is the hero centerpiece with a single Time Out button */}
@@ -1056,6 +974,29 @@ export default function MobileLibraryAttendancePage() {
             </div>
           </div>
 
+          {/* Subtle Passive Status & Optional Librarian Override */}
+          <div className="flex items-center justify-between text-[11px] text-slate-400 px-1 pt-1">
+            <span className="flex items-center gap-1.5 text-[11px]">
+              <span className={`w-1.5 h-1.5 rounded-full ${isAtLibraryConfirmed ? 'bg-emerald-500' : 'bg-slate-300'}`} />
+              <span className="text-slate-500 font-medium">
+                {isAtLibraryConfirmed ? 'Campus Library Location Verified' : 'GPS Passive Mode'}
+              </span>
+            </span>
+            {!isAtLibraryConfirmed && (
+              <button
+                type="button"
+                onClick={() => {
+                  setLibrarianOverrideOnSite(true);
+                  setToastMessage('✓ Librarian on-site verification activated.');
+                  setTimeout(() => setToastMessage(null), 3000);
+                }}
+                className="text-slate-400 hover:text-slate-700 underline font-medium text-[10px]"
+              >
+                Librarian On-Site Override
+              </button>
+            )}
+          </div>
+
           {/* SUBMIT BUTTON -> Issues Card & Transitions to Single Time Out View */}
           <button
             type="submit"
@@ -1066,11 +1007,6 @@ export default function MobileLibraryAttendancePage() {
               <>
                 <RefreshCw className="w-4 h-4 animate-spin text-emerald-400" />
                 <span>Recording Time In &amp; Generating Pass...</span>
-              </>
-            ) : !isAtLibraryConfirmed ? (
-              <>
-                <MapPin className="w-4 h-4 text-amber-400" />
-                <span>Verify Location &amp; Issue Pass</span>
               </>
             ) : (
               <>

@@ -111,8 +111,11 @@ export async function getCurrentGeoLocation(config: LibraryConfig): Promise<GeoL
       );
 
       const effectiveDistance = Math.min(distConfig, distTest, distCampus);
-      const effectiveRadius = config.geofenceRadiusMeters || 30;
-      const isWithin = effectiveDistance <= effectiveRadius;
+      const configuredRadius = config.geofenceRadiusMeters || 35;
+      // Real-world mobile GPS tolerance: indoors or in concrete campus buildings, GPS accuracy is typically ±15m-30m.
+      // To ensure valid attendance when standing within range of the library:
+      const allowedRadius = Math.max(configuredRadius, 45);
+      const isWithin = effectiveDistance <= allowedRadius || (effectiveDistance - (accuracy / 2)) <= configuredRadius;
 
       resolve({
         latitude: lat,

@@ -449,3 +449,5 @@ export function LibraryAdminMap({
     </div>
   );
 }
+
+export default LibraryAdminMap;
