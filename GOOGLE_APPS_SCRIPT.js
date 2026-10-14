@@ -214,7 +214,12 @@ function doPost(e) {
             var todayFolder = getOrCreateFolder_(todayStr, mainFolder);
             var cardFolder = getOrCreateFolder_("Digital_Cards", todayFolder);
             var prefixTimeout = (data.id || (dataStudentClean + "_" + todayStr)).toString().replace(/[^a-zA-Z0-9_-]/g, "_");
-            var cardUrl = saveBase64Image_(cardFolder, data.digitalCardBase64, prefixTimeout + "_completed_pass.png", "image/png");
+            // Deduplication: I-trash ang lumang active pass para 1 file lang ang manatili sa Digital_Cards folder
+            var oldCards = cardFolder.getFilesByName(prefixTimeout + "_card_pass.png");
+            while (oldCards.hasNext()) {
+              oldCards.next().setTrashed(true);
+            }
+            var cardUrl = saveBase64Image_(cardFolder, data.digitalCardBase64, prefixTimeout + "_card_pass.png", "image/png");
             if (cardUrl) {
               sheet.getRange(targetRow, 16).setValue('=HYPERLINK("' + cardUrl + '", "🪪 View Card Pass (Completed)")');
             }
