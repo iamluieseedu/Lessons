@@ -321,8 +321,9 @@ export async function syncRecordToGoogleDriveAndSheets(
     return { success: false, message: 'Google Apps Script Webhook URL is not configured.' };
   }
 
+  const isTimeOut = record.status === 'completed' && Boolean(record.timeOut);
   const payload = {
-    action: record.status === 'completed' && record.timeOut ? 'time_out' : 'library_attendance_sync',
+    action: isTimeOut ? 'time_out' : 'library_attendance_sync',
     id: record.id,
     studentId: record.studentId,
     studentName: record.studentName,
@@ -345,10 +346,11 @@ export async function syncRecordToGoogleDriveAndSheets(
       record.librarianName && record.librarianName !== 'Head Librarian'
         ? record.librarianName
         : '',
-    // Base64 Images for Google Drive saving
-    selfiePhotoBase64: record.selfiePhotoBase64 || '',
-    bookPhotoBase64: record.bookPhotoBase64 || '',
-    librarianSignatureBase64: record.librarianSignatureBase64 || '',
+    // Base64 Images: Only upload selfie, book, and signature during initial Time In
+    // During Time Out, these are already stored in Google Drive; omitting them prevents duplicate uploads!
+    selfiePhotoBase64: isTimeOut ? '' : (record.selfiePhotoBase64 || ''),
+    bookPhotoBase64: isTimeOut ? '' : (record.bookPhotoBase64 || ''),
+    librarianSignatureBase64: isTimeOut ? '' : (record.librarianSignatureBase64 || ''),
     digitalCardBase64: record.digitalCardBase64 || '',
   };
 

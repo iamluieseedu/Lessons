@@ -133,38 +133,80 @@ function doPost(e) {
     var sheet = ss.getSheetByName("Library_Logs");
 
     // Check if this is a TIME OUT action
-    if (data && data.action === "time_out") {
-      if (sheet) {
+    var isTimeOutAction = data && (data.action === "time_out" || (data.status && data.status.toString().toLowerCase() === "completed" && data.timeOut));
+    if (isTimeOutAction) {
+      if (!sheet) {
+        return ContentService.createTextOutput(JSON.stringify({
+          status: "error",
+          message: "Library_Logs sheet not found for Time Out."
+        })).setMimeType(ContentService.MimeType.JSON);
+      }
+
+      var targetRow = -1;
+      var dataIdClean = (data.id || "").toString().trim().toLowerCase();
+      var dataStudentClean = (data.studentId || "").toString().trim().toLowerCase();
+
+      // Scan up to 3 attempts with brief pauses in case Time In was still writing to sheet
+      for (var attempt = 0; attempt < 3; attempt++) {
         var lastRow = sheet.getLastRow();
-        var targetRow = -1;
         if (lastRow > 1) {
-          // Hanapin ang Record ID (col 2) o Student ID (col 3)
-          var values = sheet.getRange(2, 2, lastRow - 1, 2).getValues();
+          // Col 2 (Record ID), Col 3 (Student ID), ..., Col 8 (Status)
+          var values = sheet.getRange(2, 2, lastRow - 1, 7).getValues();
           for (var i = values.length - 1; i >= 0; i--) {
-            var recId = values[i][0];
-            var sId = values[i][1];
-            if ((data.id && recId === data.id) || (data.studentId && sId === data.studentId)) {
+            var recId = (values[i][0] || "").toString().trim().toLowerCase();
+            var sId = (values[i][1] || "").toString().trim().toLowerCase();
+            var rowStat = (values[i][6] || "").toString().trim().toUpperCase();
+
+            // Match by exact Record ID OR match by student ID where record was not completed
+            if ((dataIdClean && recId === dataIdClean) ||
+                (dataStudentClean && sId === dataStudentClean && rowStat !== "COMPLETED")) {
               targetRow = i + 2;
               break;
             }
           }
         }
+        if (targetRow > 0) break;
+        Utilities.sleep(1000);
+      }
 
-        var timeOutFormatted = data.timeOut ? new Date(data.timeOut).toLocaleString() : new Date().toLocaleString();
-        var durationFormatted = (data.durationMinutes || 0) + " mins";
+      var timeOutFormatted = data.timeOut ? new Date(data.timeOut).toLocaleString() : new Date().toLocaleString();
+      var durationFormatted = (data.durationMinutes || 0) + " mins";
 
-        if (targetRow > 0) {
-          // I-update ang Status (col 8), Time Out (col 10), Duration (col 11)
-          sheet.getRange(targetRow, 8).setValue("COMPLETED");
-          sheet.getRange(targetRow, 10).setValue(timeOutFormatted);
-          sheet.getRange(targetRow, 11).setValue(durationFormatted);
+      if (targetRow > 0) {
+        // Update Status (col 8), Time Out (col 10), Duration (col 11)
+        sheet.getRange(targetRow, 8).setValue("COMPLETED");
+        sheet.getRange(targetRow, 10).setValue(timeOutFormatted);
+        sheet.getRange(targetRow, 11).setValue(durationFormatted);
 
-          return ContentService.createTextOutput(JSON.stringify({
-            status: "success",
-            message: "Student Time Out successfully recorded in Google Sheets!",
-            updatedRow: targetRow
-          })).setMimeType(ContentService.MimeType.JSON);
+        // If updated digital card pass is provided, update Drive pass and Col 16 hyperlink
+        if (data.digitalCardBase64) {
+          try {
+            var mainFolder = getMainDriveFolder_();
+            var todayStr = Utilities.formatDate(new Date(), Session.getScriptTimeZone() || "GMT+8", "yyyy-MM-dd");
+            var todayFolder = getOrCreateFolder_(todayStr, mainFolder);
+            var cardFolder = getOrCreateFolder_("Digital_Cards", todayFolder);
+            var studentClean = (data.studentId || "student").toString().replace(/[^a-zA-Z0-9_-]/g, "_");
+            var prefix = studentClean + "_completed_" + Utilities.formatDate(new Date(), Session.getScriptTimeZone() || "GMT+8", "HHmmss");
+            var cardUrl = saveBase64Image_(cardFolder, data.digitalCardBase64, prefix + "_card_pass.png", "image/png");
+            if (cardUrl) {
+              sheet.getRange(targetRow, 16).setValue('=HYPERLINK("' + cardUrl + '", "🪪 View Card Pass (Completed)")');
+            }
+          } catch (cardErr) {
+            console.error("Card update error during timeout: " + cardErr);
+          }
         }
+
+        return ContentService.createTextOutput(JSON.stringify({
+          status: "success",
+          message: "Student Time Out successfully recorded in Google Sheets!",
+          updatedRow: targetRow
+        })).setMimeType(ContentService.MimeType.JSON);
+      } else {
+        // STRICT SAFETY GUARD: Time Out MUST NEVER create a new row or re-upload files!
+        return ContentService.createTextOutput(JSON.stringify({
+          status: "warning",
+          message: "Time Out record not found in Google Sheets. Duplicate row creation prevented."
+        })).setMimeType(ContentService.MimeType.JSON);
       }
     }
 
@@ -173,12 +215,15 @@ function doPost(e) {
       var lastRowCheck = sheet.getLastRow();
       if (lastRowCheck > 1) {
         var existingData = sheet.getRange(2, 2, lastRowCheck - 1, 7).getValues(); // col 2 (ID) to col 8 (Status)
+        var checkId = (data.id || "").toString().trim().toLowerCase();
+        var checkStudent = (data.studentId || "").toString().trim().toLowerCase();
+
         for (var k = 0; k < existingData.length; k++) {
-          var rowRecordId = existingData[k][0]; // Col 2: Record ID
+          var rowRecordId = (existingData[k][0] || "").toString().trim().toLowerCase(); // Col 2: Record ID
           var rowStudentId = (existingData[k][1] || "").toString().trim().toLowerCase(); // Col 3: Student ID
           var rowStatus = (existingData[k][6] || "").toString().trim().toUpperCase(); // Col 8: Status
 
-          if (data.id && rowRecordId === data.id) {
+          if (checkId && rowRecordId === checkId) {
             return ContentService.createTextOutput(JSON.stringify({
               status: "success",
               message: "Record already logged in Google Sheets (Double entry prevented).",
@@ -186,7 +231,7 @@ function doPost(e) {
             })).setMimeType(ContentService.MimeType.JSON);
           }
 
-          if (data.action !== "time_out" && data.studentId && rowStudentId === data.studentId.toString().trim().toLowerCase() && rowStatus === "ACTIVE") {
+          if (checkStudent && rowStudentId === checkStudent && rowStatus === "ACTIVE") {
             return ContentService.createTextOutput(JSON.stringify({
               status: "warning",
               message: "Student already has an ACTIVE session in Google Sheets. Double entry prevented.",

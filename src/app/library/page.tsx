@@ -148,6 +148,7 @@ export default function MobileLibraryAttendancePage() {
   // Synchronous double-click / double-submission locks
   const isSubmittingRef = useRef(false);
   const isCheckingOutRef = useRef(false);
+  const timeInSyncPromiseRef = useRef<Promise<any> | null>(null);
 
   const handleSelfieFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -519,8 +520,11 @@ export default function MobileLibraryAttendancePage() {
       setHasDrawnOnCanvas(false);
       setIsSignatureExpanded(false);
 
-      // Push to Google Sheets & Drive in background
-      syncRecordToGoogleDriveAndSheets(newRecord, config)
+      // Push to Google Sheets & Drive in background and store sync promise
+      const syncPromise = syncRecordToGoogleDriveAndSheets(newRecord, config);
+      timeInSyncPromiseRef.current = syncPromise;
+
+      syncPromise
         .then((res) => {
           if (res.success) {
             setToastMessage('✓ Time In logged & backed up to Google Cloud.');
@@ -545,13 +549,18 @@ export default function MobileLibraryAttendancePage() {
     }
   };
 
-  // Confirm Time Out (When student leaves - with double click lock)
+  // Confirm Time Out (When student leaves - with double click lock & sync sequencing)
   const handleConfirmTimeOut = async () => {
     if (!activeSessionRecord || isCheckingOutRef.current || isCheckingOut) return;
 
     isCheckingOutRef.current = true;
     setIsCheckingOut(true);
     try {
+      // If initial Time In is still syncing in background, wait for it so the row exists before checkout!
+      if (timeInSyncPromiseRef.current) {
+        await timeInSyncPromiseRef.current.catch(() => {});
+      }
+
       const nowIso = new Date().toISOString();
       const diffMs = new Date(nowIso).getTime() - new Date(activeSessionRecord.timeIn).getTime();
       const durationMinutes = Math.max(1, Math.round(diffMs / (1000 * 60)));
@@ -573,7 +582,8 @@ export default function MobileLibraryAttendancePage() {
       setActiveSessionRecord(updatedRecord);
 
       // Sync updated checkout to Google Apps Script
-      syncRecordToGoogleDriveAndSheets(updatedRecord, config).catch(() => {});
+      await syncRecordToGoogleDriveAndSheets(updatedRecord, config).catch(() => {});
+      timeInSyncPromiseRef.current = null;
 
       setToastMessage(
         `✓ Time Out recorded for ${updatedRecord.studentName}! Total stay: ${durationMinutes} mins.`
