@@ -578,7 +578,7 @@ export default function LibraryAdminPortal() {
                     </div>
                     <div className="flex items-center gap-1.5 mt-0.5">
                       <span className="text-[11px] text-slate-500 font-mono truncate">
-                        ID: {r.studentId} • Section: {r.gradeSection}
+                        ID: {r.studentId} • Section: {r.gradeSection ? r.gradeSection.toUpperCase() : ''}
                       </span>
                       <span
                         className={`text-[9px] font-bold px-1.5 py-0.2 rounded ${r.status === 'completed'

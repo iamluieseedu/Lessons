@@ -94,6 +94,9 @@ export function getAttendanceRecords(): LibraryAttendanceRecord[] {
 export function saveAttendanceRecord(record: LibraryAttendanceRecord): LibraryAttendanceRecord[] {
   if (typeof window === 'undefined') return [];
   try {
+    if (record.gradeSection) {
+      record.gradeSection = record.gradeSection.trim().toUpperCase();
+    }
     const current = getAttendanceRecords();
     const existingIndex = current.findIndex((r) => r.id === record.id);
     let updated: LibraryAttendanceRecord[];
@@ -363,8 +366,8 @@ export async function syncRecordToGoogleDriveAndSheets(
     id: record.id,
     studentId: record.studentId,
     studentName: record.studentName,
-    gradeSection: record.gradeSection,
-    section: record.gradeSection,
+    gradeSection: (record.gradeSection || '').trim().toUpperCase(),
+    section: (record.gradeSection || '').trim().toUpperCase(),
     purpose: record.purpose,
     bookTitle: record.bookTitle,
     bookAuthorOrCallNo: record.bookAuthorOrCallNo || '',

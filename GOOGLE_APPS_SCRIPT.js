@@ -52,7 +52,7 @@ function doGet(e) {
         var recordId = row[1];
         var studentId = row[2];
         var studentName = row[3];
-        var section = row[4];
+        var section = (row[4] || "").toString().trim().toUpperCase();
         var purpose = row[5];
         var bookTitle = row[6];
         var status = (row[7] || "ACTIVE").toString().toLowerCase();
@@ -368,7 +368,7 @@ function doPost(e) {
       data.id || ("CARD-" + timestampId),
       data.studentId || "",
       data.studentName || "",
-      data.gradeSection || data.section || "",
+      (data.gradeSection || data.section || "").toString().trim().toUpperCase(),
       (data.purpose || "borrow").toString().toUpperCase(),
       data.bookTitle || "",
       currentStatus,

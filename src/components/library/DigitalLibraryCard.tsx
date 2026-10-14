@@ -296,7 +296,7 @@ export function DigitalLibraryCard({
                     {record.studentId}
                   </span>
                   <span className="text-[11px] font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
-                    Sec: {record.gradeSection}
+                    Sec: {record.gradeSection ? record.gradeSection.toUpperCase() : ''}
                   </span>
                 </div>
 

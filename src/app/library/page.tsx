@@ -859,9 +859,26 @@ export default function MobileLibraryAttendancePage() {
                 <input
                   type="text"
                   required
+                  placeholder="E.G. ITMWD5M1"
+                  autoCapitalize="characters"
+                  autoCorrect="off"
+                  spellCheck={false}
                   value={gradeSection}
                   onChange={(e) => setGradeSection(e.target.value.toUpperCase())}
-                  className="w-full px-3.5 py-2.5 bg-slate-50/80 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition shadow-2xs uppercase"
+                  onInput={(e) => {
+                    const target = e.currentTarget;
+                    const start = target.selectionStart;
+                    const end = target.selectionEnd;
+                    const upper = target.value.toUpperCase();
+                    if (target.value !== upper) {
+                      target.value = upper;
+                      if (start !== null && end !== null) {
+                        target.setSelectionRange(start, end);
+                      }
+                    }
+                    setGradeSection(upper);
+                  }}
+                  className="w-full px-3.5 py-2.5 bg-slate-50/80 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 tracking-wider focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition shadow-2xs uppercase"
                   style={{ textTransform: 'uppercase' }}
                 />
               </div>
