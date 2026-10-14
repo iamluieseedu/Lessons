@@ -158,10 +158,44 @@ function doPost(e) {
     var ss = getSpreadsheet_();
     var sheet = ss.getSheetByName("Library_Logs");
 
+    var isTimeOutAction = data && (data.action === "time_out" || (data.status && data.status.toString().toLowerCase() === "completed" && data.timeOut));
+    var dataIdClean = (data.id || "").toString().trim().toLowerCase();
+    var dataStudentClean = (data.studentId || "").toString().trim().toLowerCase();
+
+    // =========================================================================
+    // LEVEL 1: DISTRIBUTED SERVER CACHE ATOMIC DEDUPLICATION (0ms LATENCY)
+    // =========================================================================
+    var cache = CacheService.getScriptCache();
+    var actionKey = isTimeOutAction ? "timeout" : "timein";
+    var cacheKeyStudent = dataStudentClean ? ("STUDENT_ACTION_" + dataStudentClean + "_" + actionKey) : "";
+    var cacheKeyRecord = dataIdClean ? ("RECORD_" + dataIdClean) : "";
+
+    // If this student or record was already received within the last 60 seconds, drop it immediately!
+    if (cacheKeyStudent && cache.get(cacheKeyStudent)) {
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        message: "Duplicate student request blocked by Server Cache (Already processed).",
+        alreadyExists: true
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+    if (cacheKeyRecord && cache.get(cacheKeyRecord)) {
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        message: "Duplicate record ID blocked by Server Cache (Already processed).",
+        alreadyExists: true
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // Reserve cache keys for 60 seconds (or 300 seconds for record ID)
+    if (cacheKeyStudent) cache.put(cacheKeyStudent, "ACTIVE", 60);
+    if (cacheKeyRecord) cache.put(cacheKeyRecord, "ACTIVE", 300);
+
+    // Force flush any pending spreadsheet operations immediately
+    SpreadsheetApp.flush();
+
     // =========================================================================
     // ACTION 1: TIME OUT (I-update ang umiiral na row, HUWAG GUMAWA NG BAGONG ROW)
     // =========================================================================
-    var isTimeOutAction = data && (data.action === "time_out" || (data.status && data.status.toString().toLowerCase() === "completed" && data.timeOut));
     if (isTimeOutAction) {
       if (!sheet) {
         return ContentService.createTextOutput(JSON.stringify({
@@ -171,11 +205,10 @@ function doPost(e) {
       }
 
       var targetRow = -1;
-      var dataIdClean = (data.id || "").toString().trim().toLowerCase();
-      var dataStudentClean = (data.studentId || "").toString().trim().toLowerCase();
 
       // Scan up to 3 attempts with brief pauses in case Time In was still writing to sheet
       for (var attempt = 0; attempt < 3; attempt++) {
+        SpreadsheetApp.flush();
         var lastRow = sheet.getLastRow();
         if (lastRow > 1) {
           // Col 2 (Record ID), Col 3 (Student ID), ..., Col 8 (Status)
@@ -205,6 +238,7 @@ function doPost(e) {
         sheet.getRange(targetRow, 8).setValue("COMPLETED");
         sheet.getRange(targetRow, 10).setValue(timeOutFormatted);
         sheet.getRange(targetRow, 11).setValue(durationFormatted);
+        SpreadsheetApp.flush();
 
         // If updated digital card pass is provided, update Drive pass and Col 16 hyperlink
         if (data.digitalCardBase64) {
@@ -228,6 +262,7 @@ function doPost(e) {
           }
         }
 
+        SpreadsheetApp.flush();
         return ContentService.createTextOutput(JSON.stringify({
           status: "success",
           message: "Student Time Out successfully recorded in Google Sheets!",
@@ -243,24 +278,21 @@ function doPost(e) {
     }
 
     // =========================================================================
-    // ACTION 2: TIME IN (DEDUPLICATION CHECK - HUWAG MAG-UPLOAD KUNG NANDOON NA)
+    // LEVEL 2: SPREADSHEET HISTORICAL DEDUPLICATION CHECK
     // =========================================================================
-    if (sheet && data) {
+    if (sheet && dataStudentClean) {
+      SpreadsheetApp.flush();
       var lastRowCheck = sheet.getLastRow();
       if (lastRowCheck > 1) {
         var existingData = sheet.getRange(2, 1, lastRowCheck - 1, 8).getValues(); // col 1 (Timestamp) to col 8 (Status)
-        var checkId = (data.id || "").toString().trim().toLowerCase();
-        var checkStudent = (data.studentId || "").toString().trim().toLowerCase();
-        var nowMs = new Date().getTime();
 
         for (var k = existingData.length - 1; k >= 0; k--) {
-          var rowTs = new Date(existingData[k][0]).getTime();
           var rowRecordId = (existingData[k][1] || "").toString().trim().toLowerCase(); // Col 2: Record ID
           var rowStudentId = (existingData[k][2] || "").toString().trim().toLowerCase(); // Col 3: Student ID
           var rowStatus = (existingData[k][7] || "").toString().trim().toUpperCase(); // Col 8: Status
 
           // 1. Exact Record ID match -> ALREADY LOGGED!
-          if (checkId && rowRecordId === checkId) {
+          if (dataIdClean && rowRecordId === dataIdClean) {
             return ContentService.createTextOutput(JSON.stringify({
               status: "success",
               message: "Record already logged in Google Sheets (Double entry prevented).",
@@ -270,7 +302,7 @@ function doPost(e) {
           }
 
           // 2. Student already ACTIVE in library -> ALREADY LOGGED!
-          if (checkStudent && rowStudentId === checkStudent && rowStatus === "ACTIVE") {
+          if (rowStudentId === dataStudentClean && rowStatus.indexOf("ACTIVE") >= 0) {
             return ContentService.createTextOutput(JSON.stringify({
               status: "warning",
               message: "Student already has an ACTIVE session in Google Sheets. Double entry prevented.",
@@ -279,11 +311,11 @@ function doPost(e) {
             })).setMimeType(ContentService.MimeType.JSON);
           }
 
-          // 3. Same student submitted within the last 45 seconds (Rapid double-click / network retry guard)
-          if (checkStudent && rowStudentId === checkStudent && !isNaN(rowTs) && (nowMs - rowTs < 45000)) {
+          // 3. Immediate consecutive row guard: If the last row in the entire sheet is already for this student -> ALREADY LOGGED!
+          if (k === existingData.length - 1 && rowStudentId === dataStudentClean) {
             return ContentService.createTextOutput(JSON.stringify({
               status: "success",
-              message: "Duplicate entry within 45s prevented for student.",
+              message: "Student attendance was just recorded in the previous row. Double entry prevented.",
               alreadyExists: true,
               existingRow: k + 2
             })).setMimeType(ContentService.MimeType.JSON);
@@ -385,12 +417,14 @@ function doPost(e) {
     ];
 
     sheet.appendRow(newRow);
+    SpreadsheetApp.flush(); // CRITICAL: Commit immediately to sheet storage so race conditions are impossible
 
     // I-format ang bagong row
     var lastRow = sheet.getLastRow();
     var rowRange = sheet.getRange(lastRow, 1, 1, newRow.length);
     rowRange.setVerticalAlignment("middle").setFontSize(9);
     sheet.setRowHeight(lastRow, 28);
+    SpreadsheetApp.flush();
 
     return ContentService.createTextOutput(JSON.stringify({
       status: "success",
@@ -609,6 +643,7 @@ function cleanAllDriveAndSheet() {
         .setVerticalAlignment("middle");
       sheet.setRowHeight(1, 35);
       sheet.setFrozenRows(1);
+      SpreadsheetApp.flush();
       Logger.log("✓ Google Sheet: Cleared and refreshed with clean headers (Section & Time In/Out).");
     }
   } catch (sheetErr) {
