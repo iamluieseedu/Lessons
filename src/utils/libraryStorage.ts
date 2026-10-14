@@ -27,10 +27,32 @@ export function getLibraryConfig(): LibraryConfig {
         parsed.webhookUrl.includes('AKfycbxsXk0_2OnQ_7cy7keJhQBIstZ3YzNPQ0zNVvIXo7tHEZo_OKEdTQaVs4eXtWPXrkHkQA') ||
         parsed.webhookUrl.includes('AKfycbxELtqYLe');
       const effectiveWebhook = isOutdated ? DEFAULT_WEBHOOK : parsed.webhookUrl;
+      const effectiveLat =
+        parsed.libraryLatitude === 14.328227
+          ? DEFAULT_LIBRARY_CONFIG.libraryLatitude
+          : parsed.libraryLatitude || DEFAULT_LIBRARY_CONFIG.libraryLatitude;
+      const effectiveLon =
+        parsed.libraryLongitude === 121.090423
+          ? DEFAULT_LIBRARY_CONFIG.libraryLongitude
+          : parsed.libraryLongitude || DEFAULT_LIBRARY_CONFIG.libraryLongitude;
+      const effectiveRadius =
+        parsed.geofenceRadiusMeters === 60
+          ? DEFAULT_LIBRARY_CONFIG.geofenceRadiusMeters
+          : parsed.geofenceRadiusMeters || 30;
+
+      const effectiveLibrarianName =
+        parsed.librarianDefaultName === 'Head Librarian'
+          ? ''
+          : parsed.librarianDefaultName || '';
+
       return {
         ...DEFAULT_LIBRARY_CONFIG,
         ...parsed,
+        libraryLatitude: effectiveLat,
+        libraryLongitude: effectiveLon,
+        geofenceRadiusMeters: effectiveRadius,
         webhookUrl: effectiveWebhook,
+        librarianDefaultName: effectiveLibrarianName,
       };
     }
   } catch (e) {
@@ -102,9 +124,7 @@ export function saveAttendanceRecord(record: LibraryAttendanceRecord): LibraryAt
       }));
       try {
         localStorage.setItem(STORAGE_KEY_RECORDS, JSON.stringify(lightRecords));
-      } catch (e2) {
-        // Safe fallback - avoid crashing Next.js
-      }
+      } catch (e2) {}
     }
 
     return updated;
@@ -211,6 +231,7 @@ export function recordVisitorSession(
         localStorage.setItem(STORAGE_KEY_SESSIONS, JSON.stringify(sessions.slice(0, 10)));
       } catch (e2) {}
     }
+
     return sessions;
   } catch (e) {
     return [];
@@ -224,6 +245,52 @@ export function getVisitorSessions(): any[] {
     if (raw) return JSON.parse(raw);
   } catch (e) {}
   return [];
+}
+
+/**
+ * Fetches live synchronized records from Google Sheets Cloud or local cache
+ */
+export async function fetchLiveAttendanceRecords(config?: LibraryConfig): Promise<{
+  records: LibraryAttendanceRecord[];
+  visitorSessions: any[];
+  pageViews: number;
+}> {
+  const currentConfig = config || getLibraryConfig();
+  const localRecords = getAttendanceRecords();
+  const localSessions = getVisitorSessions();
+  const pageViews = getTotalPageViews();
+
+  if (currentConfig.webhookUrl) {
+    try {
+      const separator = currentConfig.webhookUrl.includes('?') ? '&' : '?';
+      const fetchUrl = `${currentConfig.webhookUrl}${separator}action=get_records`;
+      const res = await fetch(fetchUrl);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.status === 'success' && Array.isArray(data.records)) {
+          const combined = [...data.records];
+          for (const locRec of localRecords) {
+            if (!combined.some((r) => r.id === locRec.id)) {
+              combined.push(locRec);
+            }
+          }
+          return {
+            records: combined,
+            visitorSessions: localSessions,
+            pageViews,
+          };
+        }
+      }
+    } catch (err) {
+      // Offline fallback
+    }
+  }
+
+  return {
+    records: localRecords,
+    visitorSessions: localSessions,
+    pageViews,
+  };
 }
 
 
@@ -259,7 +326,10 @@ export async function syncRecordToGoogleDriveAndSheets(
     coordinatesIn: `${record.locationIn.latitude.toFixed(6)}, ${record.locationIn.longitude.toFixed(6)}`,
     gpsAccuracy: `±${record.locationIn.accuracyMeters}m`,
     ipAddress: record.ipAddress || '',
-    librarianName: record.librarianName || config.librarianDefaultName,
+    librarianName:
+      record.librarianName && record.librarianName !== 'Head Librarian'
+        ? record.librarianName
+        : '',
     // Base64 Images for Google Drive saving
     selfiePhotoBase64: record.selfiePhotoBase64 || '',
     bookPhotoBase64: record.bookPhotoBase64 || '',
@@ -376,48 +446,60 @@ export async function generateDigitalCardCanvas(
     ctx.strokeStyle = '#e2e8f0';
     ctx.stroke();
 
-    // Top Header Banner (Royal Blue)
+    // Top Header Banner (Formal Institutional Deep Slate / Navy)
     const bannerGrad = ctx.createLinearGradient(0, 0, 800, 140);
-    bannerGrad.addColorStop(0, '#2563eb');
-    bannerGrad.addColorStop(1, '#1d4ed8');
+    bannerGrad.addColorStop(0, '#0f172a'); // Deep Slate
+    bannerGrad.addColorStop(1, '#1e293b'); // Navy Slate
     ctx.fillStyle = bannerGrad;
     ctx.beginPath();
-    ctx.roundRect(16, 16, 768, 120, [16, 16, 8, 8]);
+    ctx.roundRect(16, 16, 768, 125, [16, 16, 8, 8]);
     ctx.fill();
+
+    // Formal Emerald Accent Line
+    ctx.fillStyle = '#059669';
+    ctx.fillRect(16, 137, 768, 4);
 
     // School / Library Title
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 26px sans-serif';
-    ctx.fillText(config.libraryName.toUpperCase(), 40, 65);
+    ctx.font = 'bold 22px "Times New Roman", Georgia, serif';
+    ctx.fillText(`${config.libraryName.toUpperCase()}`, 40, 62);
 
-    ctx.font = '600 15px sans-serif';
-    ctx.fillStyle = '#dbeafe';
-    ctx.fillText('OFFICIAL DIGITAL LIBRARY CARD & BORROWING PASS', 40, 95);
+    ctx.font = 'bold 12px sans-serif';
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillText('STUDENT LIBRARY ATTENDANCE & BORROWING RECORD', 40, 92);
 
-    // Verified Stamp Chip
-    const isVerified = record.locationIn.isWithinGeofence;
-    ctx.fillStyle = isVerified ? '#10b981' : '#f59e0b';
+    // Formal Pass Identification Strip (Right header - NO GPS approved)
+    ctx.fillStyle = '#1e293b';
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.roundRect(580, 50, 170, 36, 18);
+    ctx.roundRect(550, 40, 210, 68, 8);
     ctx.fill();
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 13px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(isVerified ? '✓ GPS VERIFIED' : '⚠ OFF-CAMPUS', 665, 73);
+    ctx.stroke();
+
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = 'bold 11px monospace';
+    ctx.textAlign = 'right';
+    ctx.fillText(`PASS ID: #${record.id.slice(-7).toUpperCase()}`, 745, 65);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.font = '11px sans-serif';
+    ctx.fillText(`DATE: ${new Date(record.timeIn).toLocaleDateString()}`, 745, 88);
     ctx.textAlign = 'left';
 
     // Helper to draw an image safely onto canvas
-    const drawImageAsync = (dataUrl: string, x: number, y: number, w: number, h: number, radius = 12) => {
+    const drawImageAsync = (dataUrl: string, x: number, y: number, w: number, h: number, radius = 8) => {
       return new Promise<void>((imgResolve) => {
         if (!dataUrl) {
-          ctx.fillStyle = '#f1f5f9';
+          ctx.fillStyle = '#f8fafc';
+          ctx.strokeStyle = '#e2e8f0';
           ctx.beginPath();
           ctx.roundRect(x, y, w, h, radius);
           ctx.fill();
+          ctx.stroke();
           ctx.fillStyle = '#94a3b8';
-          ctx.font = '14px sans-serif';
+          ctx.font = '13px sans-serif';
           ctx.textAlign = 'center';
-          ctx.fillText('No Image', x + w / 2, y + h / 2);
+          ctx.fillText('No Image Provided', x + w / 2, y + h / 2);
           ctx.textAlign = 'left';
           imgResolve();
           return;
@@ -431,10 +513,16 @@ export async function generateDigitalCardCanvas(
           ctx.clip();
           ctx.drawImage(img, x, y, w, h);
           ctx.restore();
+          // Frame border
+          ctx.strokeStyle = '#cbd5e1';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.roundRect(x, y, w, h, radius);
+          ctx.stroke();
           imgResolve();
         };
         img.onerror = () => {
-          ctx.fillStyle = '#f1f5f9';
+          ctx.fillStyle = '#f8fafc';
           ctx.beginPath();
           ctx.roundRect(x, y, w, h, radius);
           ctx.fill();
@@ -444,169 +532,187 @@ export async function generateDigitalCardCanvas(
       });
     };
 
-    // Card Body Cards (Selfie and Book)
+    // Photos: Framed Formally
     Promise.all([
-      // Student Selfie
-      drawImageAsync(record.selfiePhotoBase64, 40, 160, 200, 240, 14),
-      // Book Photo
-      drawImageAsync(record.bookPhotoBase64, 260, 160, 200, 240, 14),
+      // Student Portrait
+      drawImageAsync(record.selfiePhotoBase64, 40, 165, 200, 235, 8),
+      // Book Cover
+      drawImageAsync(record.bookPhotoBase64, 260, 165, 200, 235, 8),
     ]).then(() => {
-      // Photo Labels
-      ctx.fillStyle = '#64748b';
-      ctx.font = 'bold 12px sans-serif';
-      ctx.fillText('STUDENT SELFIE PHOTO', 40, 420);
-      ctx.fillText('BORROWED BOOK COVER', 260, 420);
+      // Photo Labels (Clean formal institutional tags)
+      ctx.fillStyle = '#475569';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.fillText('STUDENT IDENTIFICATION', 40, 420);
+      ctx.fillText('BORROWED MATERIAL / BOOK', 260, 420);
 
       // Student Info Panel (Right side)
       ctx.fillStyle = '#f8fafc';
       ctx.beginPath();
-      ctx.roundRect(480, 160, 280, 240, 14);
+      ctx.roundRect(480, 165, 280, 235, 8);
       ctx.fill();
       ctx.lineWidth = 1;
       ctx.strokeStyle = '#e2e8f0';
       ctx.stroke();
 
-      ctx.fillStyle = '#2563eb';
-      ctx.font = 'bold 12px sans-serif';
-      ctx.fillText('STUDENT DETAILS', 500, 190);
+      ctx.fillStyle = '#0f172a';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.fillText('STUDENT RECORD', 500, 195);
 
       ctx.fillStyle = '#0f172a';
-      ctx.font = 'bold 20px sans-serif';
-      ctx.fillText(record.studentName, 500, 225);
+      ctx.font = 'bold 18px "Times New Roman", Georgia, serif';
+      ctx.fillText(record.studentName, 500, 230);
 
-      ctx.fillStyle = '#475569';
-      ctx.font = '14px sans-serif';
-      ctx.fillText(`ID: ${record.studentId}`, 500, 255);
-      ctx.fillText(`Section: ${record.gradeSection}`, 500, 285);
-      ctx.fillText(`Purpose: ${record.purpose.toUpperCase()}`, 500, 315);
+      ctx.fillStyle = '#334155';
+      ctx.font = '13px sans-serif';
+      ctx.fillText(`Student No: ${record.studentId}`, 500, 265);
+      ctx.fillText(`Section / Yr: ${record.gradeSection}`, 500, 295);
+      ctx.fillText(`Purpose: ${record.purpose.toUpperCase()}`, 500, 325);
 
-      // Status Pill
-      ctx.fillStyle = record.status === 'completed' ? '#10b981' : '#3b82f6';
+      // Formal Status Badge
+      const isComplete = record.status === 'completed';
+      ctx.fillStyle = isComplete ? '#065f46' : '#1e3a8a';
       ctx.beginPath();
-      ctx.roundRect(500, 340, 150, 30, 6);
+      ctx.roundRect(500, 350, 220, 28, 4);
       ctx.fill();
       ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 12px sans-serif';
+      ctx.font = 'bold 11px sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('VERIFIED ATTENDANCE', 575, 360);
+      ctx.fillText(isComplete ? 'STATUS: SESSION COMPLETED' : 'STATUS: ACTIVE IN LIBRARY', 610, 368);
       ctx.textAlign = 'left';
 
-      // Book Details Strip
+      // Book Details Section
       ctx.fillStyle = '#f8fafc';
       ctx.beginPath();
-      ctx.roundRect(40, 450, 720, 90, 12);
+      ctx.roundRect(40, 450, 720, 85, 8);
       ctx.fill();
       ctx.strokeStyle = '#e2e8f0';
       ctx.stroke();
 
-      ctx.fillStyle = '#2563eb';
-      ctx.font = 'bold 12px sans-serif';
-      ctx.fillText('READING MATERIAL / BOOK', 60, 478);
+      ctx.fillStyle = '#475569';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.fillText('READING MATERIAL & RESOURCE DETAILS', 60, 475);
 
       ctx.fillStyle = '#0f172a';
-      ctx.font = 'bold 18px sans-serif';
-      ctx.fillText(`📖 ${record.bookTitle}`, 60, 508);
+      ctx.font = 'bold 17px sans-serif';
+      ctx.fillText(record.bookTitle, 60, 505);
 
       if (record.bookAuthorOrCallNo) {
         ctx.fillStyle = '#64748b';
-        ctx.font = '13px sans-serif';
-        ctx.fillText(`Call No: ${record.bookAuthorOrCallNo}`, 500, 508);
+        ctx.font = '12px monospace';
+        ctx.fillText(`Call No: ${record.bookAuthorOrCallNo}`, 500, 505);
       }
 
-      // Timestamps & GPS Panel
+      // Attendance Timestamps (Formal Academic Layout - NO GPS TEXT)
       ctx.fillStyle = '#f8fafc';
       ctx.beginPath();
-      ctx.roundRect(40, 560, 720, 160, 14);
+      ctx.roundRect(40, 555, 720, 150, 8);
       ctx.fill();
       ctx.strokeStyle = '#e2e8f0';
       ctx.stroke();
 
       // Time In
-      ctx.fillStyle = '#2563eb';
-      ctx.font = 'bold 12px sans-serif';
-      ctx.fillText('TIME IN', 60, 590);
+      ctx.fillStyle = '#475569';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.fillText('TIME IN', 60, 585);
       ctx.fillStyle = '#0f172a';
-      ctx.font = 'bold 16px sans-serif';
-      ctx.fillText(new Date(record.timeIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), 60, 615);
+      ctx.font = 'bold 17px sans-serif';
+      ctx.fillText(new Date(record.timeIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), 60, 612);
       ctx.font = '12px sans-serif';
       ctx.fillStyle = '#64748b';
-      ctx.fillText(new Date(record.timeIn).toLocaleDateString(), 60, 635);
+      ctx.fillText(new Date(record.timeIn).toLocaleDateString(), 60, 634);
 
       // Time Out
-      ctx.fillStyle = '#d97706';
-      ctx.font = 'bold 12px sans-serif';
-      ctx.fillText('TIME OUT', 260, 590);
+      ctx.fillStyle = '#475569';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.fillText('TIME OUT', 310, 585);
       ctx.fillStyle = '#0f172a';
-      ctx.font = 'bold 16px sans-serif';
+      ctx.font = 'bold 17px sans-serif';
       ctx.fillText(
         record.timeOut && record.status === 'completed'
           ? new Date(record.timeOut).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          : 'Active (Inside)',
-        260,
-        615
+          : 'Pending Time Out',
+        310,
+        612
       );
       ctx.font = '12px sans-serif';
       ctx.fillStyle = '#64748b';
       ctx.fillText(
         record.timeOut && record.status === 'completed'
-          ? `${record.durationMinutes || 0} mins logged`
-          : 'In Progress',
-        260,
-        635
+          ? `${record.durationMinutes || 0} minutes logged`
+          : 'Active Session',
+        310,
+        634
       );
 
-      // Status
-      ctx.fillStyle = record.status === 'completed' ? '#10b981' : '#2563eb';
-      ctx.font = 'bold 12px sans-serif';
-      ctx.fillText('STATUS', 460, 590);
+      // Session Duration & Verification
+      ctx.fillStyle = '#475569';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.fillText('TOTAL DURATION', 540, 585);
       ctx.fillStyle = '#0f172a';
-      ctx.font = 'bold 18px sans-serif';
-      ctx.fillText(record.status === 'completed' ? 'CHECKED OUT' : 'ACTIVE PASS', 460, 618);
-
-      // Location Details
-      ctx.fillStyle = '#64748b';
-      ctx.font = '12px sans-serif';
+      ctx.font = 'bold 17px sans-serif';
       ctx.fillText(
-        `📍 GPS: ${record.locationIn.latitude.toFixed(5)}° N, ${record.locationIn.longitude.toFixed(5)}° E (${record.locationIn.distanceFromLibraryMeters}m from library, accuracy ±${record.locationIn.accuracyMeters}m)`,
-        60,
-        695
+        record.status === 'completed'
+          ? `${record.durationMinutes || 0} Mins`
+          : 'In Progress',
+        540,
+        612
       );
+      ctx.font = '12px sans-serif';
+      ctx.fillStyle = '#059669';
+      ctx.fillText('✓ On-Premises Attendance', 540, 634);
 
-      // Librarian Touch Signature Box
+      // Facility line (Clean formal facility note, NO GPS coordinates)
+      ctx.fillStyle = '#64748b';
+      ctx.font = '11px sans-serif';
+      ctx.fillText('Facility: Campus Library Reading & Circulation Hall • Verified Attendance', 60, 685);
+
+      // Librarian Endorsement Box
       ctx.fillStyle = '#f8fafc';
       ctx.beginPath();
-      ctx.roundRect(40, 740, 720, 180, 14);
+      ctx.roundRect(40, 725, 720, 195, 8);
       ctx.fill();
       ctx.strokeStyle = '#cbd5e1';
       ctx.stroke();
 
-      ctx.fillStyle = '#2563eb';
-      ctx.font = 'bold 13px sans-serif';
-      ctx.fillText('LIBRARIAN VERIFICATION & TOUCH E-SIGNATURE', 60, 770);
+      ctx.fillStyle = '#0f172a';
+      ctx.font = 'bold 12px sans-serif';
+      ctx.fillText('LIBRARIAN VERIFICATION & ENDORSEMENT', 60, 755);
 
       if (record.librarianSignatureBase64) {
         const sigImg = new Image();
         sigImg.onload = () => {
-          ctx.drawImage(sigImg, 60, 785, 300, 100);
-
+          // Draw clean dashed baseline directly on endorsement background
+          ctx.save();
           ctx.strokeStyle = '#94a3b8';
+          ctx.lineWidth = 1.5;
+          ctx.setLineDash([5, 5]);
           ctx.beginPath();
-          ctx.moveTo(60, 895);
-          ctx.lineTo(400, 895);
+          ctx.moveTo(60, 865);
+          ctx.lineTo(360, 865);
           ctx.stroke();
+          ctx.restore();
 
-          ctx.fillStyle = '#0f172a';
-          ctx.font = 'bold 14px sans-serif';
-          ctx.fillText(`Verified by: ${record.librarianName || config.librarianDefaultName}`, 60, 915);
+          ctx.fillStyle = '#94a3b8';
+          ctx.font = '10px sans-serif';
+          ctx.fillText('Authorized Signature Line', 60, 882);
+
+          // Draw transparent ink signature directly over baseline
+          ctx.drawImage(sigImg, 60, 770, 300, 92);
+
+          const verifiedByText =
+            record.librarianName && record.librarianName !== 'Head Librarian'
+              ? `Verified by: ${record.librarianName}`
+              : 'Verified: Authorized Librarian';
+          ctx.fillText(verifiedByText, 60, 902);
 
           ctx.fillStyle = '#64748b';
           ctx.font = '11px monospace';
-          ctx.fillText(`CARD ID: ${record.id}`, 500, 915);
+          ctx.fillText(`TRANSACTION REF: ${record.id}`, 460, 902);
 
-          ctx.fillStyle = '#64748b';
+          ctx.fillStyle = '#94a3b8';
           ctx.font = '11px sans-serif';
           ctx.textAlign = 'center';
-          ctx.fillText('Official School Library Attendance & Borrowing Card Pass', 400, 965);
+          ctx.fillText('Student Library Attendance Card Pass • Valid for Campus Records', 400, 965);
 
           resolve(canvas.toDataURL('image/png'));
         };
@@ -616,13 +722,23 @@ export async function generateDigitalCardCanvas(
         sigImg.src = record.librarianSignatureBase64;
       } else {
         ctx.fillStyle = '#94a3b8';
-        ctx.font = 'italic 16px sans-serif';
-        ctx.fillText('[ Signed by Librarian ]', 60, 830);
+        ctx.font = 'italic 14px sans-serif';
+        ctx.fillText('[ Signed by Librarian In-Charge ]', 60, 810);
+
+        const verifiedByText =
+          record.librarianName && record.librarianName !== 'Head Librarian'
+            ? `Verified by: ${record.librarianName}`
+            : 'Verified: Authorized Librarian';
+        ctx.fillText(verifiedByText, 60, 902);
 
         ctx.fillStyle = '#64748b';
+        ctx.font = '11px monospace';
+        ctx.fillText(`TRANSACTION REF: ${record.id}`, 460, 902);
+
+        ctx.fillStyle = '#94a3b8';
         ctx.font = '11px sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('Official School Library Attendance & Borrowing Card Pass', 400, 965);
+        ctx.fillText('Student Library Attendance Card Pass • Valid for Campus Records', 400, 965);
 
         resolve(canvas.toDataURL('image/png'));
       }

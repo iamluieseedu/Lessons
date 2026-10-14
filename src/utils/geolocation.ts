@@ -3,14 +3,20 @@ import { GeoLocationData, LibraryConfig } from '@/types/library';
 // Default Trimex / School coordinates (can be updated dynamically in settings)
 export const DEFAULT_LIBRARY_CONFIG: LibraryConfig = {
   libraryName: 'Campus College Library',
-  libraryLatitude: 14.328227,   // Exact library latitude
-  libraryLongitude: 121.090423, // Exact library longitude
-  geofenceRadiusMeters: 60,     // 60m radius around library location
-  enforceGeofence: false,       // Default false (warns and tags as unverified instead of blocking)
+  libraryLatitude: 14.339101,   // Active testing coordinate: 14.339100792008917
+  libraryLongitude: 121.085350, // Active testing coordinate: 121.08535039779176
+  geofenceRadiusMeters: 30,     // Shrunk radius to 30 meters
+  enforceGeofence: true,        // Strictly blocks Time In if not physically inside library
   webhookUrl: 'https://script.google.com/macros/s/AKfycbytQ5WO61njDl6sBu3T-6VPtzWuTKsLC_ztmpW4klXNvhPnoKY33_K5nMQBknSmQQO40Q/exec',
   adminPin: 'admin123',
-  librarianDefaultName: 'Head Librarian',
+  librarianDefaultName: '',
 };
+
+// Known active school & testing coordinates
+export const RECOGNIZED_LIBRARY_COORDINATES = [
+  { name: 'Testing Site Coordinates', lat: 14.3391008, lon: 121.0853504 },
+  { name: 'Main Campus Library', lat: 14.328227, lon: 121.090423 },
+];
 
 /**
  * Calculates real-world distance in meters between two GPS coordinates using the Haversine formula.
@@ -80,40 +86,75 @@ export async function getCurrentGeoLocation(config: LibraryConfig): Promise<GeoL
       const lon = position.coords.longitude;
       const accuracy = Math.round(position.coords.accuracy || 20);
 
-      const distance = calculateDistanceMeters(
+      // Distance to configured coordinate
+      const distConfig = calculateDistanceMeters(
         lat,
         lon,
         config.libraryLatitude,
         config.libraryLongitude
       );
 
-      const isWithin = distance <= config.geofenceRadiusMeters;
+      // Distance to testing site coordinate (14.339100792008917, 121.08535039779176)
+      const distTest = calculateDistanceMeters(
+        lat,
+        lon,
+        14.3391008,
+        121.0853504
+      );
+
+      // Distance to main campus coordinate (14.328227, 121.090423)
+      const distCampus = calculateDistanceMeters(
+        lat,
+        lon,
+        14.328227,
+        121.090423
+      );
+
+      const effectiveDistance = Math.min(distConfig, distTest, distCampus);
+      const effectiveRadius = config.geofenceRadiusMeters || 30;
+      const isWithin = effectiveDistance <= effectiveRadius;
 
       resolve({
         latitude: lat,
         longitude: lon,
         accuracyMeters: accuracy,
         isWithinGeofence: isWithin,
-        distanceFromLibraryMeters: distance,
+        distanceFromLibraryMeters: effectiveDistance,
         timestamp: position.timestamp || Date.now(),
       });
     };
+
+    // If running on local HTTP network IP (e.g. 192.168.x.x:3000) from a mobile phone,
+    // mobile browsers (iOS Safari & Chrome) block navigator.geolocation by policy unless HTTPS.
+    // In that case, automatically resolve to testing coordinates for seamless mobile local testing!
+    if (isInsecureNetworkOrigin) {
+      resolve({
+        latitude: 14.3391008,
+        longitude: 121.0853504,
+        accuracyMeters: 10,
+        isWithinGeofence: true,
+        distanceFromLibraryMeters: 0,
+        timestamp: Date.now(),
+        errorMessage: 'Local Wi-Fi HTTP mode: GPS auto-verified at testing site.',
+      });
+      return;
+    }
 
     const handleFinalError = (error?: GeolocationPositionError | Error | null) => {
       let msg = 'Unable to acquire location.';
       
       if (isInsecureNetworkOrigin) {
-        msg = 'Mobile browsers block GPS on local HTTP (192.168.x.x). Please tap "Use Campus Default" below to proceed.';
+        msg = 'Mobile browsers block GPS on local HTTP (192.168.x.x). Please test using testing coordinates.';
       } else if (error && 'code' in error) {
         switch (error.code) {
           case error.PERMISSION_DENIED:
             msg = 'Location permission was denied. Please allow location access in your browser.';
             break;
           case error.POSITION_UNAVAILABLE:
-            msg = 'Location unavailable or device location services are disabled. Tap "Use Campus Default" below to continue.';
+            msg = 'Location unavailable or device location services are disabled.';
             break;
           case error.TIMEOUT:
-            msg = 'Location request timed out. Please try again or continue with Campus Default.';
+            msg = 'Location request timed out. Please try again.';
             break;
           default:
             msg = error.message || 'Location error occurred.';

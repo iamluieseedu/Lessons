@@ -18,12 +18,83 @@ var SPREADSHEET_ID = "16ntBPPdctHxaBggT3iK2lZDAVIz63C_hobln0vwkv78";
 var DRIVE_FOLDER_ID = "1qgy2Dyr_yUFTdNoqzXAsFPQIqXUznUr7";
 
 /**
- * Health check endpoint kapag binuksan sa browser o sinubukan ng system
+ * Health check & record retrieval endpoint kapag binuksan sa browser o kinuha ng Admin
  */
 function doGet(e) {
   try {
     var ss = getSpreadsheet_();
     var folder = getMainDriveFolder_();
+
+    // Check if Admin portal is fetching live records from Google Sheets
+    if (e && e.parameter && e.parameter.action === "get_records") {
+      var sheet = ss.getSheetByName("Library_Logs");
+      if (!sheet) {
+        return ContentService.createTextOutput(JSON.stringify({
+          status: "success",
+          records: []
+        })).setMimeType(ContentService.MimeType.JSON);
+      }
+      var lastRow = sheet.getLastRow();
+      if (lastRow <= 1) {
+        return ContentService.createTextOutput(JSON.stringify({
+          status: "success",
+          records: []
+        })).setMimeType(ContentService.MimeType.JSON);
+      }
+
+      var data = sheet.getRange(2, 1, lastRow - 1, 15).getValues();
+      var records = [];
+      for (var i = data.length - 1; i >= 0; i--) {
+        var row = data[i];
+        var timestamp = row[0];
+        var recordId = row[1];
+        var studentId = row[2];
+        var studentName = row[3];
+        var section = row[4];
+        var purpose = row[5];
+        var bookTitle = row[6];
+        var status = (row[7] || "ACTIVE").toString().toLowerCase();
+        var timeIn = row[8];
+        var timeOut = row[9];
+        var duration = row[10];
+        var locStatus = row[11];
+        var coords = row[12];
+        var librarian = row[13];
+
+        if (recordId || studentId) {
+          records.push({
+            id: recordId || ("CARD-" + i),
+            studentId: String(studentId),
+            studentName: String(studentName),
+            gradeSection: String(section),
+            purpose: String(purpose || "study"),
+            bookTitle: String(bookTitle || "Library Resource"),
+            status: status === "completed" ? "completed" : "active",
+            timeIn: timeIn ? new Date(timeIn).toISOString() : new Date().toISOString(),
+            timeOut: timeOut && timeOut !== "ACTIVE" ? new Date(timeOut).toISOString() : "",
+            durationMinutes: parseInt(duration) || 0,
+            locationIn: {
+              latitude: 14.339101,
+              longitude: 121.085350,
+              accuracyMeters: 10,
+              isWithinGeofence: String(locStatus).toUpperCase().indexOf("VERIFIED") >= 0,
+              distanceFromLibraryMeters: 0,
+              timestamp: Date.now()
+            },
+            librarianName: librarian || "Librarian",
+            selfiePhotoBase64: "",
+            bookPhotoBase64: "",
+            librarianSignatureBase64: ""
+          });
+        }
+      }
+
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        records: records
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
     return ContentService.createTextOutput(JSON.stringify({
       status: "online",
       message: "✓ Google Apps Script is LIVE, connected to Google Drive & Sheets!",

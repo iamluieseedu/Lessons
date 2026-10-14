@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import {
   Lock,
   Unlock,
@@ -15,13 +16,9 @@ import {
   Users,
   Activity,
   Globe,
-  Smartphone,
   CheckCircle2,
-  XCircle,
   ExternalLink,
-  ArrowLeft,
   RefreshCw,
-  Filter,
   FileText,
   FolderOpen,
 } from 'lucide-react';
@@ -36,9 +33,24 @@ import {
   exportAttendanceToCSV,
   getTotalPageViews,
   getVisitorSessions,
+  fetchLiveAttendanceRecords,
 } from '@/utils/libraryStorage';
 import { getCurrentGeoLocation } from '@/utils/geolocation';
 import { DigitalLibraryCard } from '@/components/library/DigitalLibraryCard';
+
+// Dynamically import Leaflet Google Map component with no SSR to prevent window errors
+const LibraryAdminMap = dynamic(
+  () => import('@/components/library/LibraryAdminMap').then((m) => m.LibraryAdminMap),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-80 w-full bg-slate-100 rounded-2xl flex flex-col items-center justify-center text-xs text-slate-500 gap-2 border border-slate-200">
+        <RefreshCw className="w-5 h-5 animate-spin text-emerald-600" />
+        <span>Loading Live Google Map &amp; Student Coordinates...</span>
+      </div>
+    ),
+  }
+);
 
 export default function LibraryAdminPortal() {
   const [config, setConfig] = useState<LibraryConfig>(getLibraryConfig());
@@ -51,10 +63,7 @@ export default function LibraryAdminPortal() {
   const [pinError, setPinError] = useState('');
 
   // Active Admin Tab
-  const [adminTab, setAdminTab] = useState<'visitors' | 'logs'>('visitors');
-
-  // Exact Location Filter: Only show students who are at 14.328227, 121.090423
-  const [onlyExactLocation, setOnlyExactLocation] = useState(false);
+  const [adminTab, setAdminTab] = useState<'map' | 'visitors' | 'logs'>('map');
 
   // Search & Modals
   const [searchQuery, setSearchQuery] = useState('');
@@ -63,18 +72,20 @@ export default function LibraryAdminPortal() {
   const [isCalibratingGps, setIsCalibratingGps] = useState(false);
   const [testWebhookStatus, setTestWebhookStatus] = useState<string | null>(null);
 
-  const loadData = () => {
+  const loadData = async () => {
     const loadedConfig = getLibraryConfig();
     setConfig(loadedConfig);
-    setRecords(getAttendanceRecords());
-    setVisitorSessions(getVisitorSessions());
-    setTotalPageViews(getTotalPageViews());
+    // Fetch real-time cross-device records and sessions from server API
+    const live = await fetchLiveAttendanceRecords();
+    setRecords(live.records);
+    setVisitorSessions(live.visitorSessions);
+    setTotalPageViews(live.pageViews);
   };
 
   useEffect(() => {
     loadData();
-    // Auto-refresh active sessions every 10 seconds
-    const interval = setInterval(loadData, 10000);
+    // Auto-refresh active sessions every 3.5 seconds so admin sees students live
+    const interval = setInterval(loadData, 3500);
     return () => clearInterval(interval);
   }, []);
 
@@ -144,11 +155,13 @@ export default function LibraryAdminPortal() {
   // Active visitors within last 15 minutes
   const activeCutoff = Date.now() - 15 * 60 * 1000;
   const activeVisitors = visitorSessions.filter((s) => s.lastActive >= activeCutoff);
-  const studentsAtExactLocationCount = activeVisitors.filter((s) => s.isAtLibrary).length;
 
-  // Filtered Visitors
-  const filteredVisitors = visitorSessions.filter((s) => {
-    if (onlyExactLocation && !s.isAtLibrary) return false;
+  // ONLY students verified standing on the coordinates (at the library)
+  const onSiteAttendanceRecords = records.filter((r) => r.locationIn?.isWithinGeofence);
+  const onSiteVisitors = visitorSessions.filter((s) => s.isAtLibrary);
+
+  // Filtered On-Site Visitors (Exclusively standing on coordinates)
+  const filteredVisitors = onSiteVisitors.filter((s) => {
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       return (
@@ -160,9 +173,8 @@ export default function LibraryAdminPortal() {
     return true;
   });
 
-  // Filtered Attendance Records
-  const filteredRecords = records.filter((r) => {
-    if (onlyExactLocation && !r.locationIn.isWithinGeofence) return false;
+  // Filtered On-Site Attendance Records (Exclusively standing on coordinates)
+  const filteredRecords = onSiteAttendanceRecords.filter((r) => {
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       return (
@@ -178,40 +190,39 @@ export default function LibraryAdminPortal() {
   // Render PIN Unlock screen if not authenticated
   if (!isAuthorized) {
     return (
-      <div className="flex-1 flex items-center justify-center p-4">
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 max-w-sm w-full shadow-lg text-center">
-          <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 mx-auto mb-3">
+      <div className="flex-1 flex items-center justify-center p-4 min-h-[60vh]">
+        <div className="bg-white border border-emerald-100 rounded-3xl p-6 max-w-sm w-full shadow-2xl text-center ring-4 ring-emerald-50 animate-fade-in">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-blue-600 flex items-center justify-center text-white mx-auto mb-3 shadow-md shadow-emerald-500/20">
             <Lock className="w-6 h-6" />
           </div>
-          <h2 className="text-base font-bold text-slate-900">Library Admin Portal</h2>
-          <p className="text-xs text-slate-500 mt-0.5 mb-5">
-            Monitor page visits, IP addresses, and GPS on-site presence.
-          </p>
+          <h2 className="text-base font-extrabold text-slate-900">Library Admin</h2>
 
-          <form onSubmit={handleUnlock} className="space-y-3">
+          <form onSubmit={handleUnlock} className="space-y-4 mt-4">
             <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1.5 text-center">
+                Admin Passcode
+              </label>
               <input
                 type="password"
                 autoFocus
-                placeholder="PIN (Default: admin123)"
                 value={pinInput}
                 onChange={(e) => setPinInput(e.target.value)}
-                className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-center text-base font-mono tracking-widest text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white"
+                className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-center text-lg font-mono tracking-widest text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white"
               />
-              {pinError && <p className="text-xs text-rose-500 mt-1">{pinError}</p>}
+              {pinError && <p className="text-xs text-rose-500 mt-1.5 text-center font-semibold">{pinError}</p>}
             </div>
 
             <button
               type="submit"
-              className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs transition flex items-center justify-center gap-1.5"
+              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-blue-600 hover:from-emerald-500 hover:to-blue-500 text-white font-bold text-xs shadow-md shadow-emerald-600/20 transition flex items-center justify-center gap-1.5 active:scale-[0.99]"
             >
               <Unlock className="w-4 h-4" />
-              Unlock Admin Portal
+              Unlock
             </button>
           </form>
 
           <div className="mt-4 pt-3 border-t border-slate-100 text-xs">
-            <Link href="/library" className="text-slate-500 hover:text-blue-600 font-medium transition">
+            <Link href="/library" className="text-emerald-700 hover:text-emerald-900 font-semibold transition">
               ← Return to Student Attendance
             </Link>
           </div>
@@ -221,18 +232,18 @@ export default function LibraryAdminPortal() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-4 w-full space-y-4">
+    <div className="max-w-3xl mx-auto px-4 py-4 w-full space-y-4">
       {/* Top Title & Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <div>
           <div className="flex items-center gap-1.5">
-            <h2 className="text-base font-bold text-slate-900">
-              Library Monitoring &amp; IP Tracking
+            <h2 className="text-base font-bold bg-gradient-to-r from-emerald-800 to-blue-800 bg-clip-text text-transparent">
+              Library GPS Coordinate Radar &amp; Attendance
             </h2>
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="Live Monitoring" />
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="Coordinate Radar Active" />
           </div>
           <p className="text-xs text-slate-500">
-            Real-time tracking for {config.libraryName}
+            Attendance assurance: Students standing at {config.libraryLatitude}, {config.libraryLongitude}
           </p>
         </div>
 
@@ -242,8 +253,8 @@ export default function LibraryAdminPortal() {
             href={(CONFIG as any).librarySheetUrl || 'https://docs.google.com/spreadsheets/d/16ntBPPdctHxaBggT3iK2lZDAVIz63C_hobln0vwkv78/edit'}
             target="_blank"
             rel="noreferrer"
-            className="px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition flex items-center gap-1.5 shadow-xs"
-            title="Open Live Google Sheets Attendance Log"
+            className="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition flex items-center gap-1.5 shadow-xs"
+            title="Open Google Sheets Attendance Database"
           >
             <FileText className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Google Sheet</span>
@@ -255,8 +266,8 @@ export default function LibraryAdminPortal() {
             href={(CONFIG as any).libraryDriveFolderUrl || 'https://drive.google.com/drive/folders/1qgy2Dyr_yUFTdNoqzXAsFPQIqXUznUr7'}
             target="_blank"
             rel="noreferrer"
-            className="px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition flex items-center gap-1.5 shadow-xs"
-            title="Open Google Drive Media Folder (Selfies, Books, Signatures)"
+            className="px-2.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition flex items-center gap-1.5 shadow-xs"
+            title="Open Google Drive Media Folder"
           >
             <FolderOpen className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Google Drive</span>
@@ -265,17 +276,17 @@ export default function LibraryAdminPortal() {
 
           <button
             onClick={() => setIsSettingsOpen(true)}
-            className="p-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition"
-            title="Settings"
+            className="p-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition shadow-xs"
+            title="Settings & Calibration"
           >
             <Settings className="w-4 h-4" />
           </button>
 
           <button
-            onClick={() => exportAttendanceToCSV(records)}
-            disabled={records.length === 0}
-            className="px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold transition flex items-center gap-1 disabled:opacity-50 shadow-xs"
-            title="Download CSV Backup"
+            onClick={() => exportAttendanceToCSV(onSiteAttendanceRecords)}
+            disabled={onSiteAttendanceRecords.length === 0}
+            className="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold transition flex items-center gap-1 disabled:opacity-50 shadow-xs"
+            title="Download CSV of On-Site Students"
           >
             <Download className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">CSV</span>
@@ -284,14 +295,14 @@ export default function LibraryAdminPortal() {
       </div>
 
       {/* Target Location Alert Banner */}
-      <div className="bg-blue-50/80 border border-blue-200 rounded-2xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs text-blue-900">
+      <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-blue-50 border border-emerald-200 rounded-2xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs text-slate-800 shadow-xs">
         <div className="flex items-center gap-2 min-w-0">
-          <MapPin className="w-4 h-4 text-blue-600 flex-shrink-0" />
+          <MapPin className="w-4 h-4 text-emerald-600 flex-shrink-0" />
           <div className="truncate">
-            <span className="font-bold">Monitored Library Location:</span>{' '}
-            <span className="font-mono">{config.libraryLatitude}, {config.libraryLongitude}</span>
-            <span className="text-blue-700/80 text-[11px] block sm:inline sm:ml-2">
-              (Allowed radius: {config.geofenceRadiusMeters}m)
+            <span className="font-bold text-slate-900">Monitored Library Coordinates:</span>{' '}
+            <span className="font-mono text-emerald-800 font-bold">{config.libraryLatitude}, {config.libraryLongitude}</span>
+            <span className="text-slate-500 text-[11px] block sm:inline sm:ml-2">
+              (Radius: <b>{config.geofenceRadiusMeters}m</b>)
             </span>
           </div>
         </div>
@@ -300,127 +311,162 @@ export default function LibraryAdminPortal() {
           href={`https://www.google.com/maps?q=${config.libraryLatitude},${config.libraryLongitude}`}
           target="_blank"
           rel="noreferrer"
-          className="px-2.5 py-1 rounded-lg bg-blue-600 text-white font-semibold text-[11px] hover:bg-blue-700 transition flex items-center gap-1 self-start sm:self-auto flex-shrink-0"
+          className="px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-semibold text-[11px] hover:bg-emerald-700 transition flex items-center gap-1 self-start sm:self-auto flex-shrink-0 shadow-xs"
         >
           <ExternalLink className="w-3 h-3" />
-          View on Map
+          Open on Google Maps
         </a>
       </div>
 
-      {/* 4 Analytics Metrics */}
+      {/* 4 Analytics Metrics Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-        <div className="bg-white border border-slate-200 p-3 rounded-2xl shadow-xs">
+        <div className="bg-white border border-emerald-100 p-3 rounded-2xl shadow-xs">
           <div className="text-[11px] font-semibold text-slate-500 flex items-center gap-1">
-            <Eye className="w-3.5 h-3.5 text-blue-600" />
-            Page Visits
+            <Users className="w-3.5 h-3.5 text-emerald-600" />
+            Standing On-Site
           </div>
-          <div className="text-xl font-extrabold text-slate-900 mt-0.5">{totalPageViews}</div>
-          <div className="text-[10px] text-slate-400">Total visits logged</div>
+          <div className="text-xl font-extrabold text-emerald-600 mt-0.5">
+            {onSiteVisitors.length}
+          </div>
+          <div className="text-[10px] text-slate-400">At library coordinates</div>
         </div>
 
-        <div className="bg-white border border-slate-200 p-3 rounded-2xl shadow-xs">
+        <div className="bg-white border border-emerald-100 p-3 rounded-2xl shadow-xs">
           <div className="text-[11px] font-semibold text-slate-500 flex items-center gap-1">
-            <Activity className="w-3.5 h-3.5 text-emerald-600" />
+            <Activity className="w-3.5 h-3.5 text-teal-600" />
             Active Online
           </div>
-          <div className="text-xl font-extrabold text-emerald-600 mt-0.5">{activeVisitors.length}</div>
-          <div className="text-[10px] text-slate-400">In last 15 mins</div>
+          <div className="text-xl font-extrabold text-teal-600 mt-0.5">
+            {activeVisitors.filter((s) => s.isAtLibrary).length}
+          </div>
+          <div className="text-[10px] text-slate-400">Present in last 15m</div>
         </div>
 
-        <div className="bg-white border border-slate-200 p-3 rounded-2xl shadow-xs">
+        <div className="bg-white border border-emerald-100 p-3 rounded-2xl shadow-xs">
           <div className="text-[11px] font-semibold text-slate-500 flex items-center gap-1">
-            <MapPin className="w-3.5 h-3.5 text-purple-600" />
-            At Library
+            <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
+            Verified Passes
           </div>
-          <div className="text-xl font-extrabold text-purple-600 mt-0.5">
-            {studentsAtExactLocationCount}
+          <div className="text-xl font-extrabold text-blue-600 mt-0.5">
+            {onSiteAttendanceRecords.length}
           </div>
-          <div className="text-[10px] text-slate-400">On-site GPS match</div>
+          <div className="text-[10px] text-slate-400">Time In on coordinates</div>
         </div>
 
-        <div className="bg-white border border-slate-200 p-3 rounded-2xl shadow-xs">
+        <div className="bg-white border border-emerald-100 p-3 rounded-2xl shadow-xs">
           <div className="text-[11px] font-semibold text-slate-500 flex items-center gap-1">
-            <ShieldCheck className="w-3.5 h-3.5 text-indigo-600" />
-            Cards Issued
+            <Eye className="w-3.5 h-3.5 text-slate-600" />
+            Total Visits
           </div>
-          <div className="text-xl font-extrabold text-indigo-600 mt-0.5">{records.length}</div>
-          <div className="text-[10px] text-slate-400">Touch signed</div>
+          <div className="text-xl font-extrabold text-slate-900 mt-0.5">{totalPageViews}</div>
+          <div className="text-[10px] text-slate-400">Library portal visits</div>
         </div>
       </div>
 
-      {/* Strict Exact Location Filter Button */}
-      <div className="flex items-center justify-between bg-white border border-slate-200 p-2.5 rounded-2xl shadow-xs">
+      {/* PROMINENT GOOGLE MAP: STUDENTS STANDING ON COORDINATES */}
+      <LibraryAdminMap
+        config={config}
+        records={records}
+        visitorSessions={visitorSessions}
+      />
+
+      {/* Tabs Strip */}
+      <div className="flex bg-slate-200/80 p-1 rounded-xl text-xs font-semibold">
         <button
-          type="button"
-          onClick={() => setOnlyExactLocation(!onlyExactLocation)}
-          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
-            onlyExactLocation
-              ? 'bg-purple-600 text-white shadow-xs'
-              : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-          }`}
+          onClick={() => setAdminTab('map')}
+          className={`flex-1 py-2 rounded-lg transition flex items-center justify-center gap-1.5 ${adminTab === 'map'
+            ? 'bg-white text-slate-900 shadow-xs'
+            : 'text-slate-600 hover:text-slate-900'
+            }`}
         >
-          <Filter className="w-3.5 h-3.5" />
-          {onlyExactLocation
-            ? '✓ Only Showing Students at Library (14.328227, 121.090423)'
-            : 'Filter: Only Show Students at Exact Library Location'}
+          <MapPin className="w-3.5 h-3.5 text-emerald-600" />
+          Coordinates Info
         </button>
 
-        <button
-          onClick={loadData}
-          className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 transition"
-          title="Refresh Data"
-        >
-          <RefreshCw className="w-4 h-4" />
-        </button>
-      </div>
-
-      {/* Tabs */}
-      <div className="flex bg-slate-200/70 p-1 rounded-xl text-xs font-semibold">
         <button
           onClick={() => setAdminTab('visitors')}
-          className={`flex-1 py-2 rounded-lg transition flex items-center justify-center gap-1.5 ${
-            adminTab === 'visitors'
-              ? 'bg-white text-slate-900 shadow-xs'
-              : 'text-slate-600 hover:text-slate-900'
-          }`}
+          className={`flex-1 py-2 rounded-lg transition flex items-center justify-center gap-1.5 ${adminTab === 'visitors'
+            ? 'bg-white text-slate-900 shadow-xs'
+            : 'text-slate-600 hover:text-slate-900'
+            }`}
         >
           <Globe className="w-3.5 h-3.5 text-blue-600" />
-          Active IP &amp; Location Monitor ({filteredVisitors.length})
+          On-Site Students ({filteredVisitors.length})
         </button>
 
         <button
           onClick={() => setAdminTab('logs')}
-          className={`flex-1 py-2 rounded-lg transition flex items-center justify-center gap-1.5 ${
-            adminTab === 'logs'
-              ? 'bg-white text-slate-900 shadow-xs'
-              : 'text-slate-600 hover:text-slate-900'
-          }`}
+          className={`flex-1 py-2 rounded-lg transition flex items-center justify-center gap-1.5 ${adminTab === 'logs'
+            ? 'bg-white text-slate-900 shadow-xs'
+            : 'text-slate-600 hover:text-slate-900'
+            }`}
         >
-          <Users className="w-3.5 h-3.5 text-blue-600" />
-          Student Attendance Cards ({filteredRecords.length})
+          <Users className="w-3.5 h-3.5 text-teal-600" />
+          Attendance Passes ({filteredRecords.length})
         </button>
       </div>
 
-      {/* Search Input */}
-      <div className="relative">
-        <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
-        <input
-          type="text"
-          placeholder="Search by IP address, student name, ID..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600"
-        />
+      {/* Search Input (NO PLACEHOLDER) */}
+      <div className="space-y-1">
+        <label className="block text-xs font-bold text-slate-700">
+          Search On-Site Students (By Name, ID, or IP Address)
+        </label>
+        <div className="relative">
+          <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-600"
+          />
+        </div>
       </div>
 
-      {/* TAB 1: ACTIVE IP & LOCATION MONITOR */}
+      {/* TAB 1: COORDINATES ASSURANCE INFO */}
+      {adminTab === 'map' && (
+        <div className="bg-white border border-emerald-100 p-4 rounded-2xl shadow-xs space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                Attendance Assurance: On-Site Coordinate Policy
+              </h4>
+              <p className="text-[11px] text-slate-500">
+                Only students who are physically standing within the {config.geofenceRadiusMeters}m library coordinates are plotted.
+              </p>
+            </div>
+            <button
+              onClick={loadData}
+              className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 transition"
+              title="Refresh Radar"
+            >
+              <RefreshCw className="w-4 h-4" />
+            </button>
+          </div>
+
+          <div className="p-3 rounded-xl bg-emerald-50/80 border border-emerald-200 text-xs text-emerald-900 space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="font-bold">Target Center:</span>
+              <span className="font-mono">{config.libraryLatitude}, {config.libraryLongitude}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="font-bold">Geofence Radius:</span>
+              <span>{config.geofenceRadiusMeters} meters</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="font-bold">Verified Students Plotted:</span>
+              <span className="font-bold text-emerald-700">{onSiteAttendanceRecords.length + onSiteVisitors.length} students</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 2: ACTIVE ON-SITE VISITORS */}
       {adminTab === 'visitors' && (
         <div className="space-y-2.5">
           {filteredVisitors.length === 0 ? (
             <div className="bg-white border border-slate-200 rounded-2xl p-8 text-center text-xs text-slate-500">
-              {onlyExactLocation
-                ? 'No active students currently detected inside the exact library location.'
-                : 'No visitor sessions recorded yet.'}
+              No students currently standing on library coordinates.
             </div>
           ) : (
             filteredVisitors.map((v) => {
@@ -428,18 +474,13 @@ export default function LibraryAdminPortal() {
               return (
                 <div
                   key={v.id}
-                  className={`bg-white border rounded-2xl p-3.5 shadow-xs transition flex flex-col gap-2 ${
-                    v.isAtLibrary
-                      ? 'border-emerald-300 ring-1 ring-emerald-200'
-                      : 'border-slate-200'
-                  }`}
+                  className="bg-white border border-emerald-200 rounded-2xl p-3.5 shadow-xs transition flex flex-col gap-2 ring-1 ring-emerald-100"
                 >
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
                       <div
-                        className={`w-2.5 h-2.5 rounded-full ${
-                          isRecent ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300'
-                        }`}
+                        className={`w-2.5 h-2.5 rounded-full ${isRecent ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300'
+                          }`}
                         title={isRecent ? 'Online Now' : 'Idle'}
                       />
                       <span className="font-mono font-bold text-xs text-slate-900">
@@ -450,29 +491,12 @@ export default function LibraryAdminPortal() {
                       </span>
                     </div>
 
-                    {/* Exact Location Status */}
-                    <span
-                      className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                        v.isAtLibrary
-                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                          : 'bg-rose-50 text-rose-700 border border-rose-200'
-                      }`}
-                    >
-                      {v.isAtLibrary ? (
-                        <>
-                          <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                          AT LIBRARY ({v.distanceMeters}m away)
-                        </>
-                      ) : (
-                        <>
-                          <XCircle className="w-3 h-3 text-rose-600" />
-                          OFF-SITE ({v.distanceMeters > 1000 ? `${(v.distanceMeters / 1000).toFixed(1)}km` : `${v.distanceMeters}m`} away)
-                        </>
-                      )}
+                    <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                      STANDING ON COORDINATES ({v.distanceMeters}m from center)
                     </span>
                   </div>
 
-                  {/* Student Details if available */}
                   <div className="flex items-center justify-between text-[11px] text-slate-600 pt-1 border-t border-slate-100">
                     <div>
                       {v.studentName ? (
@@ -480,7 +504,7 @@ export default function LibraryAdminPortal() {
                           👤 {v.studentName} {v.studentId ? `(${v.studentId})` : ''}
                         </span>
                       ) : (
-                        <span className="text-slate-400 italic">Browsing Portal (Not submitted yet)</span>
+                        <span className="text-slate-400 italic">Student Device</span>
                       )}
                     </div>
                     <span className="font-mono text-[10px] text-slate-400">
@@ -494,18 +518,18 @@ export default function LibraryAdminPortal() {
         </div>
       )}
 
-      {/* TAB 2: STUDENT ATTENDANCE CARDS */}
+      {/* TAB 3: STUDENT ATTENDANCE CARDS ON COORDINATES */}
       {adminTab === 'logs' && (
         <div className="space-y-3">
           {filteredRecords.length === 0 ? (
             <div className="bg-white border border-slate-200 rounded-2xl p-8 text-center text-xs text-slate-500">
-              No student records found matching filter.
+              No on-site attendance passes recorded yet.
             </div>
           ) : (
             filteredRecords.map((r) => (
               <div
                 key={r.id}
-                className="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-xs flex flex-col justify-between gap-3"
+                className="bg-white border border-emerald-100 rounded-2xl p-3.5 shadow-xs flex flex-col justify-between gap-3 ring-1 ring-emerald-50"
               >
                 <div className="flex items-center gap-3">
                   <button
@@ -524,14 +548,9 @@ export default function LibraryAdminPortal() {
                       <h4 className="text-xs font-bold text-slate-900 truncate">
                         {r.studentName}
                       </h4>
-                      <span
-                        className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                          r.locationIn.isWithinGeofence
-                            ? 'bg-emerald-50 text-emerald-700'
-                            : 'bg-rose-50 text-rose-700'
-                        }`}
-                      >
-                        {r.locationIn.isWithinGeofence ? '✓ At Library' : 'Off-Site'}
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
+                        <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                        On Coordinates ({r.locationIn?.distanceFromLibraryMeters || 0}m)
                       </span>
                     </div>
                     <div className="flex items-center gap-1.5 mt-0.5">
@@ -539,11 +558,10 @@ export default function LibraryAdminPortal() {
                         ID: {r.studentId} • Section: {r.gradeSection}
                       </span>
                       <span
-                        className={`text-[9px] font-bold px-1.5 py-0.2 rounded ${
-                          r.status === 'completed'
-                            ? 'bg-slate-100 text-slate-600'
-                            : 'bg-blue-50 text-blue-700'
-                        }`}
+                        className={`text-[9px] font-bold px-1.5 py-0.2 rounded ${r.status === 'completed'
+                          ? 'bg-slate-100 text-slate-600'
+                          : 'bg-emerald-50 text-emerald-700'
+                          }`}
                       >
                         {r.status === 'completed' ? 'Checked Out' : 'Active Pass'}
                       </span>
@@ -551,11 +569,9 @@ export default function LibraryAdminPortal() {
                     <p className="text-[11px] text-slate-700 truncate mt-0.5">
                       📖 {r.bookTitle}
                     </p>
-                    {r.ipAddress && (
-                      <p className="text-[10px] text-blue-600 font-mono mt-0.5">
-                        IP: {r.ipAddress}
-                      </p>
-                    )}
+                    <p className="text-[10px] text-slate-400 font-mono mt-0.5">
+                      GPS: {r.locationIn.latitude.toFixed(6)}, {r.locationIn.longitude.toFixed(6)}
+                    </p>
                   </div>
                 </div>
 
@@ -596,14 +612,14 @@ export default function LibraryAdminPortal() {
         </div>
       )}
 
-      {/* SETTINGS MODAL */}
+      {/* SETTINGS MODAL (NO PLACEHOLDERS) */}
       {isSettingsOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
           <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
             <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
               <h3 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
-                <Settings className="w-4 h-4 text-blue-600" />
-                GPS Location &amp; System Settings
+                <Settings className="w-4 h-4 text-emerald-600" />
+                GPS Coordinates &amp; Calibration
               </h3>
               <button
                 onClick={() => setIsSettingsOpen(false)}
@@ -622,12 +638,12 @@ export default function LibraryAdminPortal() {
                   type="text"
                   value={config.libraryName}
                   onChange={(e) => setConfig({ ...config, libraryName: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white"
                 />
               </div>
 
-              {/* Exact GPS Center Calibration */}
-              <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2">
+              {/* Exact GPS Center Calibration & Quick Presets */}
+              <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2.5">
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-slate-800">Target Library Coordinates</span>
                   <button
@@ -637,6 +653,45 @@ export default function LibraryAdminPortal() {
                     className="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-semibold transition"
                   >
                     {isCalibratingGps ? 'Reading...' : 'Calibrate GPS'}
+                  </button>
+                </div>
+
+                {/* Quick Presets */}
+                <div className="flex gap-1.5 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setConfig({
+                        ...config,
+                        libraryLatitude: 14.339101,
+                        libraryLongitude: 121.085350,
+                        geofenceRadiusMeters: 30,
+                      });
+                    }}
+                    className={`px-2 py-1 rounded-lg text-[10px] font-bold border transition ${Math.abs(config.libraryLatitude - 14.339101) < 0.0001
+                      ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
+                      }`}
+                  >
+                    📍 Testing Site (14.339101, 121.085350)
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setConfig({
+                        ...config,
+                        libraryLatitude: 14.328227,
+                        libraryLongitude: 121.090423,
+                        geofenceRadiusMeters: 30,
+                      });
+                    }}
+                    className={`px-2 py-1 rounded-lg text-[10px] font-bold border transition ${Math.abs(config.libraryLatitude - 14.328227) < 0.0001
+                      ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
+                      }`}
+                  >
+                    🏛️ Campus Library (14.328227, 121.090423)
                   </button>
                 </div>
 
@@ -668,7 +723,7 @@ export default function LibraryAdminPortal() {
                   <input
                     type="number"
                     value={config.geofenceRadiusMeters}
-                    onChange={(e) => setConfig({ ...config, geofenceRadiusMeters: parseInt(e.target.value) || 60 })}
+                    onChange={(e) => setConfig({ ...config, geofenceRadiusMeters: parseInt(e.target.value) || 30 })}
                     className="w-full px-2 py-1 bg-white border border-slate-200 rounded font-mono text-[11px]"
                   />
                 </div>
@@ -683,53 +738,18 @@ export default function LibraryAdminPortal() {
                   type="url"
                   value={config.webhookUrl}
                   onChange={(e) => setConfig({ ...config, webhookUrl: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-mono focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-mono focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white"
                 />
                 <button
                   type="button"
                   onClick={handleTestWebhook}
-                  className="mt-1.5 text-blue-600 hover:text-blue-700 font-semibold text-[11px]"
+                  className="mt-1.5 text-emerald-700 hover:text-emerald-800 font-semibold text-[11px]"
                 >
                   Test Webhook Connection
                 </button>
                 {testWebhookStatus && (
                   <p className="text-[11px] text-slate-600 mt-1">{testWebhookStatus}</p>
                 )}
-              </div>
-
-              {/* Connected Cloud Storage Info */}
-              <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2">
-                <span className="font-bold text-slate-800 block text-[11px]">Connected Cloud Storage</span>
-                
-                <div className="flex items-center justify-between gap-2 p-2 bg-white rounded-lg border border-slate-200">
-                  <div className="min-w-0">
-                    <span className="text-[10px] text-slate-500 font-semibold block">Google Sheet Log</span>
-                    <span className="text-[10px] font-mono text-slate-700 truncate block">16ntBPPdctHxaBggT3iK2lZDAVIz63C_hobln0vwkv78</span>
-                  </div>
-                  <a
-                    href={(CONFIG as any).librarySheetUrl || 'https://docs.google.com/spreadsheets/d/16ntBPPdctHxaBggT3iK2lZDAVIz63C_hobln0vwkv78/edit'}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="px-2 py-1 rounded bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-semibold text-[10px] flex items-center gap-1 shrink-0"
-                  >
-                    Open <ExternalLink className="w-2.5 h-2.5" />
-                  </a>
-                </div>
-
-                <div className="flex items-center justify-between gap-2 p-2 bg-white rounded-lg border border-slate-200">
-                  <div className="min-w-0">
-                    <span className="text-[10px] text-slate-500 font-semibold block">Google Drive Media Folder</span>
-                    <span className="text-[10px] font-mono text-slate-700 truncate block">1qgy2Dyr_yUFTdNoqzXAsFPQIqXUznUr7</span>
-                  </div>
-                  <a
-                    href={(CONFIG as any).libraryDriveFolderUrl || 'https://drive.google.com/drive/folders/1qgy2Dyr_yUFTdNoqzXAsFPQIqXUznUr7'}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="px-2 py-1 rounded bg-blue-50 text-blue-700 hover:bg-blue-100 font-semibold text-[10px] flex items-center gap-1 shrink-0"
-                  >
-                    Open <ExternalLink className="w-2.5 h-2.5" />
-                  </a>
-                </div>
               </div>
 
               {/* Admin Pin */}
@@ -741,7 +761,7 @@ export default function LibraryAdminPortal() {
                   type="text"
                   value={config.adminPin}
                   onChange={(e) => setConfig({ ...config, adminPin: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white"
                 />
               </div>
 
@@ -755,7 +775,7 @@ export default function LibraryAdminPortal() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs"
+                  className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs"
                 >
                   Save Settings
                 </button>
