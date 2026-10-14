@@ -309,6 +309,9 @@ export async function fetchLiveAttendanceRecords(config?: LibraryConfig): Promis
 }
 
 
+// In-memory cache to prevent duplicate rapid sync calls for the exact same record & action
+const recentSyncCache = new Map<string, number>();
+
 /**
  * Sends attendance log and base64 images directly to Google Apps Script Webhook.
  * Google Apps Script saves the images directly to Google Drive folders and appends rows to Google Sheets.
@@ -322,6 +325,19 @@ export async function syncRecordToGoogleDriveAndSheets(
   }
 
   const isTimeOut = record.status === 'completed' && Boolean(record.timeOut);
+  const actionName = isTimeOut ? 'time_out' : 'library_attendance_sync';
+  const dedupeKey = `${record.studentId.trim().toLowerCase()}__${actionName}__${record.id}`;
+  const now = Date.now();
+
+  // Deduplication check: drop duplicate network uploads within 20 seconds for the exact same student, action, and record
+  const lastSyncTime = recentSyncCache.get(dedupeKey);
+  if (lastSyncTime && now - lastSyncTime < 20000) {
+    return {
+      success: true,
+      message: 'Log already queued / synced. Duplicate upload prevented.',
+    };
+  }
+  recentSyncCache.set(dedupeKey, now);
   const payload = {
     action: isTimeOut ? 'time_out' : 'library_attendance_sync',
     id: record.id,
@@ -370,6 +386,7 @@ export async function syncRecordToGoogleDriveAndSheets(
       message: 'Log and media successfully queued to Google Drive and Google Sheets!',
     };
   } catch (error) {
+    recentSyncCache.delete(dedupeKey);
     console.error('Error syncing to Google Apps Script:', error);
     return {
       success: false,

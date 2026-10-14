@@ -381,39 +381,52 @@ export default function MobileLibraryAttendancePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // 1. Strict synchronous double-submission lock
+    // 1. Strict synchronous double-submission lock immediately
     if (isSubmittingRef.current || isSubmitting) {
       return;
     }
+    isSubmittingRef.current = true;
+    setIsSubmitting(true);
+
+    const unlock = () => {
+      isSubmittingRef.current = false;
+      setIsSubmitting(false);
+    };
 
     if (!studentId.trim() || !studentName.trim() || !gradeSection.trim()) {
       alert('Please fill out Student ID, Name, and Section.');
+      unlock();
       return;
     }
 
     if (!bookTitle.trim()) {
       alert('Please enter the book or reading material title.');
+      unlock();
       return;
     }
 
     if (!selfiePhoto) {
       alert('Please take a quick selfie holding the book.');
+      unlock();
       return;
     }
 
     if (!bookPhoto) {
       alert('Please take or upload a photo of the book.');
+      unlock();
       return;
     }
 
     if (!librarianName.trim()) {
       alert('Please fill out the Librarian Full Name.');
+      unlock();
       return;
     }
 
     if (!librarianSignature) {
       alert('Librarian must sign using the touch screen before submitting.');
       setIsSignatureExpanded(true);
+      unlock();
       return;
     }
 
@@ -429,12 +442,9 @@ export default function MobileLibraryAttendancePage() {
         `Student "${studentName.trim()}" (${studentId.trim()}) already has an ACTIVE library session!\n\nPlease Time Out the current session before logging in again.`
       );
       setActiveSessionRecord(existingActive);
+      unlock();
       return;
     }
-
-    // 3. Synchronously lock submission before any async operations
-    isSubmittingRef.current = true;
-    setIsSubmitting(true);
 
     try {
       // 4. Geofence Verification Check: Passive verification on submit
@@ -461,6 +471,7 @@ export default function MobileLibraryAttendancePage() {
             )} away from the campus perimeter.`
           );
         }
+        unlock();
         return;
       }
 
@@ -730,7 +741,7 @@ export default function MobileLibraryAttendancePage() {
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1.5">
                   <GraduationCap className="w-3.5 h-3.5 text-slate-400" />
-                  <span>Section / Grade</span>
+                  <span>Section</span>
                   <span className="text-rose-500">*</span>
                 </label>
                 <input
@@ -1011,7 +1022,7 @@ export default function MobileLibraryAttendancePage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-4 px-6 rounded-2xl bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-bold text-sm transition shadow-lg shadow-slate-900/15 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-4 px-6 rounded-2xl bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-bold text-sm transition shadow-lg shadow-slate-900/15 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
           >
             {isSubmitting ? (
               <>

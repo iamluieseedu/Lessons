@@ -112,8 +112,20 @@ function doGet(e) {
 
 /**
  * Pangunahing receiver ng attendance records, selfies, book photos, at e-signatures
+ * May Script Lock at Multi-level Deduplication para maiwasan ang duplicate entries sa Google Sheets at Google Drive
  */
 function doPost(e) {
+  // 1. Script Lock - strictly serialize requests across all devices to prevent concurrent race conditions
+  var lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(30000); // Maghintay ng hanggang 30 segundo
+  } catch (lockErr) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "busy",
+      message: "Server busy processing another device. Please retry in a few seconds."
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+
   try {
     if (!e || !e.postData || !e.postData.contents) {
       return ContentService.createTextOutput(JSON.stringify({
@@ -132,7 +144,9 @@ function doPost(e) {
     var ss = getSpreadsheet_();
     var sheet = ss.getSheetByName("Library_Logs");
 
-    // Check if this is a TIME OUT action
+    // =========================================================================
+    // ACTION 1: TIME OUT (I-update ang umiiral na row, HUWAG GUMAWA NG BAGONG ROW)
+    // =========================================================================
     var isTimeOutAction = data && (data.action === "time_out" || (data.status && data.status.toString().toLowerCase() === "completed" && data.timeOut));
     if (isTimeOutAction) {
       if (!sheet) {
@@ -185,9 +199,8 @@ function doPost(e) {
             var todayStr = Utilities.formatDate(new Date(), Session.getScriptTimeZone() || "GMT+8", "yyyy-MM-dd");
             var todayFolder = getOrCreateFolder_(todayStr, mainFolder);
             var cardFolder = getOrCreateFolder_("Digital_Cards", todayFolder);
-            var studentClean = (data.studentId || "student").toString().replace(/[^a-zA-Z0-9_-]/g, "_");
-            var prefix = studentClean + "_completed_" + Utilities.formatDate(new Date(), Session.getScriptTimeZone() || "GMT+8", "HHmmss");
-            var cardUrl = saveBase64Image_(cardFolder, data.digitalCardBase64, prefix + "_card_pass.png", "image/png");
+            var prefixTimeout = (data.id || (dataStudentClean + "_" + todayStr)).toString().replace(/[^a-zA-Z0-9_-]/g, "_");
+            var cardUrl = saveBase64Image_(cardFolder, data.digitalCardBase64, prefixTimeout + "_completed_pass.png", "image/png");
             if (cardUrl) {
               sheet.getRange(targetRow, 16).setValue('=HYPERLINK("' + cardUrl + '", "🪪 View Card Pass (Completed)")');
             }
@@ -210,31 +223,49 @@ function doPost(e) {
       }
     }
 
-    // Check if record ID already exists or student already has an ACTIVE session (Double entry prevention)
+    // =========================================================================
+    // ACTION 2: TIME IN (DEDUPLICATION CHECK - HUWAG MAG-UPLOAD KUNG NANDOON NA)
+    // =========================================================================
     if (sheet && data) {
       var lastRowCheck = sheet.getLastRow();
       if (lastRowCheck > 1) {
-        var existingData = sheet.getRange(2, 2, lastRowCheck - 1, 7).getValues(); // col 2 (ID) to col 8 (Status)
+        var existingData = sheet.getRange(2, 1, lastRowCheck - 1, 8).getValues(); // col 1 (Timestamp) to col 8 (Status)
         var checkId = (data.id || "").toString().trim().toLowerCase();
         var checkStudent = (data.studentId || "").toString().trim().toLowerCase();
+        var nowMs = new Date().getTime();
 
-        for (var k = 0; k < existingData.length; k++) {
-          var rowRecordId = (existingData[k][0] || "").toString().trim().toLowerCase(); // Col 2: Record ID
-          var rowStudentId = (existingData[k][1] || "").toString().trim().toLowerCase(); // Col 3: Student ID
-          var rowStatus = (existingData[k][6] || "").toString().trim().toUpperCase(); // Col 8: Status
+        for (var k = existingData.length - 1; k >= 0; k--) {
+          var rowTs = new Date(existingData[k][0]).getTime();
+          var rowRecordId = (existingData[k][1] || "").toString().trim().toLowerCase(); // Col 2: Record ID
+          var rowStudentId = (existingData[k][2] || "").toString().trim().toLowerCase(); // Col 3: Student ID
+          var rowStatus = (existingData[k][7] || "").toString().trim().toUpperCase(); // Col 8: Status
 
+          // 1. Exact Record ID match -> ALREADY LOGGED!
           if (checkId && rowRecordId === checkId) {
             return ContentService.createTextOutput(JSON.stringify({
               status: "success",
               message: "Record already logged in Google Sheets (Double entry prevented).",
+              alreadyExists: true,
               existingRow: k + 2
             })).setMimeType(ContentService.MimeType.JSON);
           }
 
+          // 2. Student already ACTIVE in library -> ALREADY LOGGED!
           if (checkStudent && rowStudentId === checkStudent && rowStatus === "ACTIVE") {
             return ContentService.createTextOutput(JSON.stringify({
               status: "warning",
               message: "Student already has an ACTIVE session in Google Sheets. Double entry prevented.",
+              alreadyExists: true,
+              existingRow: k + 2
+            })).setMimeType(ContentService.MimeType.JSON);
+          }
+
+          // 3. Same student submitted within the last 45 seconds (Rapid double-click / network retry guard)
+          if (checkStudent && rowStudentId === checkStudent && !isNaN(rowTs) && (nowMs - rowTs < 45000)) {
+            return ContentService.createTextOutput(JSON.stringify({
+              status: "success",
+              message: "Duplicate entry within 45s prevented for student.",
+              alreadyExists: true,
               existingRow: k + 2
             })).setMimeType(ContentService.MimeType.JSON);
           }
@@ -242,7 +273,7 @@ function doPost(e) {
       }
     }
 
-    // 1. Kumuha o mag-set up ng Google Sheet Tab
+    // 1. Kumuha o mag-set up ng Google Sheet Tab kung bago pa
     if (!sheet) {
       sheet = ss.insertSheet("Library_Logs");
       var headers = [
@@ -291,9 +322,10 @@ function doPost(e) {
 
     var studentClean = (data.studentId || "student").toString().replace(/[^a-zA-Z0-9_-]/g, "_");
     var timestampId = Utilities.formatDate(new Date(), Session.getScriptTimeZone() || "GMT+8", "HHmmss");
-    var prefix = studentClean + "_" + timestampId;
+    var recordClean = (data.id || (studentClean + "_" + timestampId)).toString().replace(/[^a-zA-Z0-9_-]/g, "_");
+    var prefix = recordClean;
 
-    // 3. I-save ang mga Litrato at Lagda sa Google Drive
+    // 3. I-save ang mga Litrato at Lagda sa Google Drive (Deduplication enabled gamit ang Record ID prefix)
     var selfieUrl = saveBase64Image_(selfieFolder, data.selfiePhotoBase64, prefix + "_selfie.jpg", "image/jpeg");
     var bookUrl = saveBase64Image_(bookFolder, data.bookPhotoBase64, prefix + "_book.jpg", "image/jpeg");
     var signatureUrl = saveBase64Image_(sigFolder, data.librarianSignatureBase64, prefix + "_signature.png", "image/png");
@@ -357,17 +389,29 @@ function doPost(e) {
       status: "error",
       message: error.toString()
     })).setMimeType(ContentService.MimeType.JSON);
+  } finally {
+    try {
+      lock.releaseLock();
+    } catch (eLock) {}
   }
 }
 
 /**
  * Helper para mag-save ng Base64 Image papuntang Google Drive File
+ * May Drive-level deduplication para hindi gumawa ng dobleng files sa folder
  */
 function saveBase64Image_(folder, base64Data, filename, mimeType) {
   if (!base64Data || typeof base64Data !== 'string' || base64Data.length < 30) {
     return "";
   }
   try {
+    // DRIVE DEDUPLICATION: Kung may kaparehong filename na sa folder, gamitin ang umiiral na file URL
+    var existingFiles = folder.getFilesByName(filename);
+    if (existingFiles.hasNext()) {
+      var existingFile = existingFiles.next();
+      return existingFile.getUrl();
+    }
+
     var raw = base64Data;
     if (raw.indexOf(",") > -1) {
       raw = raw.split(",")[1];
