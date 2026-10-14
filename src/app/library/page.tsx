@@ -490,7 +490,7 @@ export default function MobileLibraryAttendancePage() {
         id: `CARD-${Date.now().toString(36).toUpperCase()}-${Math.floor(100 + Math.random() * 900)}`,
         studentId: studentId.trim(),
         studentName: studentName.trim(),
-        gradeSection: gradeSection.trim(),
+        gradeSection: gradeSection.trim().toUpperCase(),
         purpose,
         bookTitle: bookTitle.trim(),
         selfiePhotoBase64: selfiePhoto,
@@ -748,8 +748,9 @@ export default function MobileLibraryAttendancePage() {
                   type="text"
                   required
                   value={gradeSection}
-                  onChange={(e) => setGradeSection(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-50/80 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition shadow-2xs"
+                  onChange={(e) => setGradeSection(e.target.value.toUpperCase())}
+                  className="w-full px-3.5 py-2.5 bg-slate-50/80 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition shadow-2xs uppercase"
+                  style={{ textTransform: 'uppercase' }}
                 />
               </div>
 
