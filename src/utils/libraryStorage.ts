@@ -27,14 +27,17 @@ export function getLibraryConfig(): LibraryConfig {
         parsed.webhookUrl.includes('AKfycbxsXk0_2OnQ_7cy7keJhQBIstZ3YzNPQ0zNVvIXo7tHEZo_OKEdTQaVs4eXtWPXrkHkQA') ||
         parsed.webhookUrl.includes('AKfycbxELtqYLe');
       const effectiveWebhook = isOutdated ? DEFAULT_WEBHOOK : parsed.webhookUrl;
-      const effectiveLat =
-        parsed.libraryLatitude === 14.328227
-          ? DEFAULT_LIBRARY_CONFIG.libraryLatitude
-          : parsed.libraryLatitude || DEFAULT_LIBRARY_CONFIG.libraryLatitude;
-      const effectiveLon =
-        parsed.libraryLongitude === 121.090423
-          ? DEFAULT_LIBRARY_CONFIG.libraryLongitude
-          : parsed.libraryLongitude || DEFAULT_LIBRARY_CONFIG.libraryLongitude;
+      const isOldCoord =
+        !parsed.libraryLatitude ||
+        parsed.libraryLatitude === 14.339101 ||
+        parsed.libraryLatitude === 14.328227 ||
+        Math.abs(parsed.libraryLatitude - 14.339101) < 0.0001;
+      const effectiveLat = isOldCoord
+        ? DEFAULT_LIBRARY_CONFIG.libraryLatitude
+        : parsed.libraryLatitude;
+      const effectiveLon = isOldCoord
+        ? DEFAULT_LIBRARY_CONFIG.libraryLongitude
+        : parsed.libraryLongitude;
       const effectiveRadius =
         parsed.geofenceRadiusMeters === 60
           ? DEFAULT_LIBRARY_CONFIG.geofenceRadiusMeters

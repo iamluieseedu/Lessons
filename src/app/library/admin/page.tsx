@@ -681,17 +681,17 @@ export default function LibraryAdminPortal() {
                     onClick={() => {
                       setConfig({
                         ...config,
-                        libraryLatitude: 14.328227,
-                        libraryLongitude: 121.090423,
+                        libraryLatitude: 14.328171,
+                        libraryLongitude: 121.090469,
                         geofenceRadiusMeters: 30,
                       });
                     }}
-                    className={`px-2 py-1 rounded-lg text-[10px] font-bold border transition ${Math.abs(config.libraryLatitude - 14.328227) < 0.0001
+                    className={`px-2 py-1 rounded-lg text-[10px] font-bold border transition ${Math.abs(config.libraryLatitude - 14.328171) < 0.0001
                       ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
                       : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
                       }`}
                   >
-                    🏛️ Campus Library (14.328227, 121.090423)
+                    🏛️ Campus Library (14.328171, 121.090469)
                   </button>
                 </div>
 

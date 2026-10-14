@@ -3,8 +3,8 @@ import { GeoLocationData, LibraryConfig } from '@/types/library';
 // Default Trimex / School coordinates (can be updated dynamically in settings)
 export const DEFAULT_LIBRARY_CONFIG: LibraryConfig = {
   libraryName: 'Campus College Library',
-  libraryLatitude: 14.339101,   // Active testing coordinate: 14.339100792008917
-  libraryLongitude: 121.085350, // Active testing coordinate: 121.08535039779176
+  libraryLatitude: 14.328171,
+  libraryLongitude: 121.090469,
   geofenceRadiusMeters: 30,     // Shrunk radius to 30 meters
   enforceGeofence: true,        // Strictly blocks Time In if not physically inside library
   webhookUrl: 'https://script.google.com/macros/s/AKfycbytQ5WO61njDl6sBu3T-6VPtzWuTKsLC_ztmpW4klXNvhPnoKY33_K5nMQBknSmQQO40Q/exec',
@@ -14,8 +14,8 @@ export const DEFAULT_LIBRARY_CONFIG: LibraryConfig = {
 
 // Known active school & testing coordinates
 export const RECOGNIZED_LIBRARY_COORDINATES = [
+  { name: 'Campus Library (Main)', lat: 14.328171, lon: 121.090469 },
   { name: 'Testing Site Coordinates', lat: 14.3391008, lon: 121.0853504 },
-  { name: 'Main Campus Library', lat: 14.328227, lon: 121.090423 },
 ];
 
 /**
@@ -102,12 +102,12 @@ export async function getCurrentGeoLocation(config: LibraryConfig): Promise<GeoL
         121.0853504
       );
 
-      // Distance to main campus coordinate (14.328227, 121.090423)
+      // Distance to main campus coordinate (14.328171, 121.090469)
       const distCampus = calculateDistanceMeters(
         lat,
         lon,
-        14.328227,
-        121.090423
+        14.328171,
+        121.090469
       );
 
       const effectiveDistance = Math.min(distConfig, distTest, distCampus);
@@ -126,16 +126,16 @@ export async function getCurrentGeoLocation(config: LibraryConfig): Promise<GeoL
 
     // If running on local HTTP network IP (e.g. 192.168.x.x:3000) from a mobile phone,
     // mobile browsers (iOS Safari & Chrome) block navigator.geolocation by policy unless HTTPS.
-    // In that case, automatically resolve to testing coordinates for seamless mobile local testing!
+    // In that case, automatically resolve to campus coordinates for seamless mobile local testing!
     if (isInsecureNetworkOrigin) {
       resolve({
-        latitude: 14.3391008,
-        longitude: 121.0853504,
+        latitude: 14.328171,
+        longitude: 121.090469,
         accuracyMeters: 10,
         isWithinGeofence: true,
         distanceFromLibraryMeters: 0,
         timestamp: Date.now(),
-        errorMessage: 'Local Wi-Fi HTTP mode: GPS auto-verified at testing site.',
+        errorMessage: 'Local Wi-Fi HTTP mode: GPS auto-verified at campus library.',
       });
       return;
     }
