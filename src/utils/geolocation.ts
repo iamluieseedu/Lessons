@@ -7,7 +7,7 @@ export const DEFAULT_LIBRARY_CONFIG: LibraryConfig = {
   libraryLongitude: 121.090469,
   geofenceRadiusMeters: 30,     // Shrunk radius to 30 meters
   enforceGeofence: true,        // Strictly blocks Time In if not physically inside library
-  webhookUrl: 'https://script.google.com/macros/s/AKfycbytQ5WO61njDl6sBu3T-6VPtzWuTKsLC_ztmpW4klXNvhPnoKY33_K5nMQBknSmQQO40Q/exec',
+  webhookUrl: 'https://script.google.com/macros/s/AKfycbz_PREc-RcgZQH7MGNOQynhuwmoJUvmV0-THhfPG9lhXxOKpJpONMVkUe5cn_72GtIfdw/exec',
   adminPin: 'admin123',
   librarianDefaultName: '',
 };

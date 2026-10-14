@@ -25,7 +25,8 @@ export function getLibraryConfig(): LibraryConfig {
         !parsed.webhookUrl ||
         parsed.webhookUrl.includes('AKfycbxDqFEe9zV720wrMho') ||
         parsed.webhookUrl.includes('AKfycbxsXk0_2OnQ_7cy7keJhQBIstZ3YzNPQ0zNVvIXo7tHEZo_OKEdTQaVs4eXtWPXrkHkQA') ||
-        parsed.webhookUrl.includes('AKfycbxELtqYLe');
+        parsed.webhookUrl.includes('AKfycbxELtqYLe') ||
+        parsed.webhookUrl.includes('AKfycbytQ5WO61njDl6sBu3T-6VPtzWuTKsLC_ztmpW4klXNvhPnoKY33_K5nMQBknSmQQO40Q');
       const effectiveWebhook = isOutdated ? DEFAULT_WEBHOOK : parsed.webhookUrl;
       const isOldCoord =
         !parsed.libraryLatitude ||

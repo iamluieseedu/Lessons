@@ -5,7 +5,7 @@ export const CONFIG = {
   webhookUrl: 'https://script.google.com/a/macros/faculty.trimexcolleges.edu.ph/s/AKfycbyCoQCeJzEjCuYFKARWqCFC7jGLFujyHutn0gmLebrElOk8nzIPx3Begv-VaiOKWnrpIg/exec',
   
   // Dedicated Library Attendance Google Apps Script Webhook:
-  libraryWebhookUrl: 'https://script.google.com/macros/s/AKfycbytQ5WO61njDl6sBu3T-6VPtzWuTKsLC_ztmpW4klXNvhPnoKY33_K5nMQBknSmQQO40Q/exec',
+  libraryWebhookUrl: 'https://script.google.com/macros/s/AKfycbz_PREc-RcgZQH7MGNOQynhuwmoJUvmV0-THhfPG9lhXxOKpJpONMVkUe5cn_72GtIfdw/exec',
   
   // Google Sheets Attendance Database:
   librarySheetUrl: 'https://docs.google.com/spreadsheets/d/16ntBPPdctHxaBggT3iK2lZDAVIz63C_hobln0vwkv78/edit',
