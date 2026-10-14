@@ -101,6 +101,18 @@ export function saveAttendanceRecord(record: LibraryAttendanceRecord): LibraryAt
       updated = [...current];
       updated[existingIndex] = record;
     } else {
+      // Double entry guard: prevent duplicate active record for the same student
+      if (record.status === 'active') {
+        const activeDuplicate = current.find(
+          (r) =>
+            r.status === 'active' &&
+            r.studentId.trim().toLowerCase() === record.studentId.trim().toLowerCase()
+        );
+        if (activeDuplicate) {
+          console.warn('Prevented duplicate active attendance entry for:', record.studentId);
+          return current;
+        }
+      }
       updated = [record, ...current];
     }
 

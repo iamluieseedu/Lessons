@@ -145,6 +145,10 @@ export default function MobileLibraryAttendancePage() {
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  // Synchronous double-click / double-submission locks
+  const isSubmittingRef = useRef(false);
+  const isCheckingOutRef = useRef(false);
+
   const handleSelfieFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -178,20 +182,29 @@ export default function MobileLibraryAttendancePage() {
   const refreshRecords = useCallback(() => {
     const all = getAttendanceRecords();
     setRecords(all);
-    // If the device has an active session from before, we can keep track of it
     const active = all.find((r) => r.status === 'active');
-    if (active && !activeSessionRecord) {
-      setActiveSessionRecord(active);
+    if (active) {
+      setActiveSessionRecord((prev) => prev || active);
     }
-  }, [activeSessionRecord]);
+  }, []);
 
-  // Explicit GPS Request Handler with User Confirmation
+  // Explicit GPS Request Handler with User Confirmation (Triggered on Click)
   const requestEnableGPS = useCallback(async (currentConf: LibraryConfig) => {
     setIsAcquiringLocation(true);
     setHasRequestedLocation(true);
     try {
       const realLoc = await getCurrentGeoLocation(currentConf);
       setLocation(realLoc);
+      if (realLoc.isWithinGeofence) {
+        setToastMessage('✓ Location verified! You are inside the library.');
+        setTimeout(() => setToastMessage(null), 4000);
+      } else if (realLoc.latitude !== 0) {
+        setToastMessage(`📍 Outside library radius (${formatDistance(realLoc.distanceFromLibraryMeters)} away).`);
+        setTimeout(() => setToastMessage(null), 5000);
+      } else if (realLoc.errorMessage) {
+        setToastMessage(`⚠️ ${realLoc.errorMessage}`);
+        setTimeout(() => setToastMessage(null), 6000);
+      }
       if (clientIp) {
         recordVisitorSession(clientIp, realLoc);
       }
@@ -363,9 +376,14 @@ export default function MobileLibraryAttendancePage() {
     setIsSignatureExpanded(false);
   };
 
-  // Submit Time In -> Generates Cute Card & Switches Action to Time Out
+  // Submit Time In -> Generates Card & Switches Action to Time Out (With Double-Entry Protection)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // 1. Strict synchronous double-submission lock
+    if (isSubmittingRef.current || isSubmitting) {
+      return;
+    }
 
     if (!studentId.trim() || !studentName.trim() || !gradeSection.trim()) {
       alert('Please fill out Student ID, Name, and Section.');
@@ -398,99 +416,132 @@ export default function MobileLibraryAttendancePage() {
       return;
     }
 
-    // Geofence Verification Check (With Librarian Override support)
-    const isAtLibrary =
-      librarianOverrideOnSite || (location && location.isWithinGeofence);
-
-    if (!isAtLibrary) {
+    // 2. Active Session Double-Entry Guard: Prevent duplicate active session for the same student
+    const currentRecords = getAttendanceRecords();
+    const existingActive = currentRecords.find(
+      (r) =>
+        r.status === 'active' &&
+        r.studentId.trim().toLowerCase() === studentId.trim().toLowerCase()
+    );
+    if (existingActive) {
       alert(
-        `Time In Locked: You are not verified at the Library.\n\nYour current location is ${
-          location ? formatDistance(location.distanceFromLibraryMeters) : 'unverified'
-        } away from the Library coordinates.\n\nUse the "Enable GPS" or "Set Location as Library" button on top to verify your location.`
+        `Student "${studentName.trim()}" (${studentId.trim()}) already has an ACTIVE library session!\n\nPlease Time Out the current session before logging in again.`
       );
+      setActiveSessionRecord(existingActive);
       return;
     }
 
+    // 3. Synchronously lock submission before any async operations
+    isSubmittingRef.current = true;
     setIsSubmitting(true);
-    const currentLocation = location || {
-      latitude: config.libraryLatitude,
-      longitude: config.libraryLongitude,
-      accuracyMeters: 10,
-      isWithinGeofence: true,
-      distanceFromLibraryMeters: 0,
-      timestamp: Date.now(),
-    };
 
-    const nowIso = new Date().toISOString();
+    try {
+      // 4. Geofence Verification Check with Automatic User-Gesture Prompt Trigger
+      let isAtLibrary =
+        librarianOverrideOnSite || (location && location.isWithinGeofence);
 
-    const newRecord: LibraryAttendanceRecord = {
-      id: `CARD-${Date.now().toString(36).toUpperCase()}-${Math.floor(100 + Math.random() * 900)}`,
-      studentId: studentId.trim(),
-      studentName: studentName.trim(),
-      gradeSection: gradeSection.trim(),
-      purpose,
-      bookTitle: bookTitle.trim(),
-      selfiePhotoBase64: selfiePhoto,
-      bookPhotoBase64: bookPhoto,
-      timeIn: nowIso,
-      timeOut: '',
-      durationMinutes: 0,
-      locationIn: currentLocation,
-      ipAddress: clientIp || 'Protected',
-      librarianSignatureBase64: librarianSignature,
-      librarianName: librarianName.trim(),
-      status: 'active',
-    };
-
-    if (clientIp) {
-      recordVisitorSession(clientIp, currentLocation, studentId.trim(), studentName.trim());
-    }
-
-    // Generate Cute Digital Card PNG
-    const cardDataUrl = await generateDigitalCardCanvas(newRecord, config);
-    newRecord.digitalCardBase64 = cardDataUrl;
-
-    // Save locally
-    saveAttendanceRecord(newRecord);
-    refreshRecords();
-
-    // Immediately display Cute Card on screen and switch action to Time Out
-    setActiveSessionRecord(newRecord);
-
-    // Push to Google Sheets & Drive in background
-    syncRecordToGoogleDriveAndSheets(newRecord, config)
-      .then((res) => {
-        if (res.success) {
-          setToastMessage('✓ Time In logged! Cute Library Card generated and backed up to Google Drive.');
+      if (!isAtLibrary) {
+        const acquired = await requestEnableGPS(config);
+        if (librarianOverrideOnSite || (acquired && acquired.isWithinGeofence)) {
+          isAtLibrary = true;
         } else {
-          setToastMessage(`✓ Time In Cute Card generated for ${newRecord.studentName}!`);
+          alert(
+            `Location Verification Required: You must be physically at the library to record attendance.\n\n${
+              acquired && acquired.latitude !== 0
+                ? 'Distance: ' + formatDistance(acquired.distanceFromLibraryMeters) + ' away (Radius: ' + config.geofenceRadiusMeters + 'm)'
+                : (acquired?.errorMessage || 'Please tap "Allow Location" in your browser.')
+            }`
+          );
+          return;
         }
-      })
-      .catch(() => {
-        setToastMessage(`✓ Time In Cute Card generated for ${newRecord.studentName}!`);
-      })
-      .finally(() => {
-        setIsSubmitting(false);
-      });
+      }
+      const currentLocation = location || {
+        latitude: config.libraryLatitude,
+        longitude: config.libraryLongitude,
+        accuracyMeters: 10,
+        isWithinGeofence: true,
+        distanceFromLibraryMeters: 0,
+        timestamp: Date.now(),
+      };
 
-    // Reset entry fields for next session
-    setStudentId('');
-    setStudentName('');
-    setGradeSection('');
-    setBookTitle('');
-    setSelfiePhoto('');
-    setBookPhoto('');
-    setLibrarianSignature('');
-    setHasDrawnOnCanvas(false);
-    setIsSignatureExpanded(false);
+      const nowIso = new Date().toISOString();
 
-    setTimeout(() => setToastMessage(null), 5000);
+      const newRecord: LibraryAttendanceRecord = {
+        id: `CARD-${Date.now().toString(36).toUpperCase()}-${Math.floor(100 + Math.random() * 900)}`,
+        studentId: studentId.trim(),
+        studentName: studentName.trim(),
+        gradeSection: gradeSection.trim(),
+        purpose,
+        bookTitle: bookTitle.trim(),
+        selfiePhotoBase64: selfiePhoto,
+        bookPhotoBase64: bookPhoto,
+        timeIn: nowIso,
+        timeOut: '',
+        durationMinutes: 0,
+        locationIn: currentLocation,
+        ipAddress: clientIp || 'Protected',
+        librarianSignatureBase64: librarianSignature,
+        librarianName: librarianName.trim(),
+        status: 'active',
+      };
+
+      if (clientIp) {
+        recordVisitorSession(clientIp, currentLocation, studentId.trim(), studentName.trim());
+      }
+
+      // Generate Digital Card PNG
+      const cardDataUrl = await generateDigitalCardCanvas(newRecord, config);
+      newRecord.digitalCardBase64 = cardDataUrl;
+
+      // Save locally (storage-level double entry check included)
+      saveAttendanceRecord(newRecord);
+      refreshRecords();
+
+      // Immediately display Card on screen and switch action to Time Out
+      setActiveSessionRecord(newRecord);
+
+      // Reset entry fields for next session
+      setStudentId('');
+      setStudentName('');
+      setGradeSection('');
+      setBookTitle('');
+      setSelfiePhoto('');
+      setBookPhoto('');
+      setLibrarianSignature('');
+      setHasDrawnOnCanvas(false);
+      setIsSignatureExpanded(false);
+
+      // Push to Google Sheets & Drive in background
+      syncRecordToGoogleDriveAndSheets(newRecord, config)
+        .then((res) => {
+          if (res.success) {
+            setToastMessage('✓ Time In logged & backed up to Google Cloud.');
+          } else {
+            setToastMessage(`✓ Time In recorded for ${newRecord.studentName}!`);
+          }
+        })
+        .catch(() => {
+          setToastMessage(`✓ Time In recorded for ${newRecord.studentName}!`);
+        })
+        .finally(() => {
+          setIsSubmitting(false);
+          isSubmittingRef.current = false;
+        });
+
+      setTimeout(() => setToastMessage(null), 5000);
+    } catch (err) {
+      console.error('Submission error:', err);
+      alert('An error occurred while saving attendance. Please try again.');
+      setIsSubmitting(false);
+      isSubmittingRef.current = false;
+    }
   };
 
-  // Confirm Time Out (When student leaves)
+  // Confirm Time Out (When student leaves - with double click lock)
   const handleConfirmTimeOut = async () => {
-    if (!activeSessionRecord) return;
+    if (!activeSessionRecord || isCheckingOutRef.current || isCheckingOut) return;
 
+    isCheckingOutRef.current = true;
     setIsCheckingOut(true);
     try {
       const nowIso = new Date().toISOString();
@@ -504,7 +555,7 @@ export default function MobileLibraryAttendancePage() {
         status: 'completed',
       };
 
-      // Regenerate Cute Card with completed Time Out
+      // Regenerate Card with completed Time Out
       const cardDataUrl = await generateDigitalCardCanvas(updatedRecord, config);
       updatedRecord.digitalCardBase64 = cardDataUrl;
 
@@ -517,7 +568,7 @@ export default function MobileLibraryAttendancePage() {
       syncRecordToGoogleDriveAndSheets(updatedRecord, config).catch(() => {});
 
       setToastMessage(
-        `✓ Time Out recorded for ${updatedRecord.studentName}! Total stay: ${durationMinutes} mins 🌸`
+        `✓ Time Out recorded for ${updatedRecord.studentName}! Total stay: ${durationMinutes} mins.`
       );
       setTimeout(() => setToastMessage(null), 6000);
     } catch (err) {
@@ -525,6 +576,7 @@ export default function MobileLibraryAttendancePage() {
       alert('Failed to process checkout. Please try again.');
     } finally {
       setIsCheckingOut(false);
+      isCheckingOutRef.current = false;
     }
   };
 
@@ -551,46 +603,95 @@ export default function MobileLibraryAttendancePage() {
         </div>
       )}
 
-      {/* PASSIVE GPS NOTIFICATION (Only shown if permission is needed or location is unverified) */}
-      {!isAtLibraryConfirmed && (
-        <div className="bg-amber-50/95 border border-amber-200 rounded-2xl p-3 text-xs text-amber-900 flex items-center justify-between gap-2 shadow-xs animate-fade-in">
-          <div className="flex items-center gap-2 min-w-0">
-            <MapPin className="w-4 h-4 text-amber-600 shrink-0" />
-            <span className="truncate">
-              {location && location.latitude !== 0 && !location.isWithinGeofence
-                ? `Location is ${formatDistance(location.distanceFromLibraryMeters)} from library (Limit: ${config.geofenceRadiusMeters}m).`
-                : 'Please allow location access to verify you are at the library.'}
-            </span>
+      {/* STANDARD LOCATION PERMISSION & VERIFICATION BANNER */}
+      {!isAtLibraryConfirmed ? (
+        <div className="bg-gradient-to-r from-blue-50 via-indigo-50/50 to-emerald-50 border border-blue-200/80 rounded-2xl p-3.5 text-xs text-slate-800 shadow-sm animate-fade-in space-y-2">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                <MapPin className="w-4 h-4 animate-bounce" />
+              </div>
+              <div className="min-w-0">
+                <span className="font-bold text-slate-900 block text-xs">
+                  {location && location.latitude !== 0 && !location.isWithinGeofence
+                    ? `Outside Library Radius (${formatDistance(location.distanceFromLibraryMeters)} away)`
+                    : 'Library Location Access Required'}
+                </span>
+                <p className="text-[11px] text-slate-600 leading-snug">
+                  {location && location.latitude !== 0 && !location.isWithinGeofence
+                    ? `You must be within ${config.geofenceRadiusMeters}m of the library to record attendance.`
+                    : location?.errorMessage
+                    ? location.errorMessage
+                    : 'Please tap "Allow Location" to verify you are currently inside the library.'}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1.5 shrink-0">
+              <button
+                type="button"
+                onClick={() => requestEnableGPS(config)}
+                disabled={isAcquiringLocation}
+                className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold text-xs shadow-md shadow-blue-600/25 transition flex items-center gap-1.5"
+              >
+                {isAcquiringLocation ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <span>Checking...</span>
+                  </>
+                ) : (
+                  <>
+                    <Compass className="w-3.5 h-3.5" />
+                    <span>Allow Location</span>
+                  </>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setLibrarianOverrideOnSite(true)}
+                className="px-2.5 py-2 rounded-xl bg-white border border-slate-200 text-slate-600 font-semibold text-[11px] hover:bg-slate-100 transition shadow-2xs"
+                title="Librarian On-Site Verification Override"
+              >
+                Override
+              </button>
+            </div>
           </div>
 
-          <div className="flex items-center gap-1.5 shrink-0">
-            <button
-              type="button"
-              onClick={() => requestEnableGPS(config)}
-              disabled={isAcquiringLocation}
-              className="px-2.5 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-[10px] shadow-xs transition"
-            >
-              {isAcquiringLocation ? 'Checking...' : 'Verify Location'}
-            </button>
-            {location && location.latitude !== 0 && !location.isWithinGeofence && (
+          {location && location.latitude !== 0 && !location.isWithinGeofence && (
+            <div className="pt-1.5 border-t border-slate-200/60 flex items-center justify-between text-[11px]">
+              <span className="text-slate-500 font-mono text-[10px]">
+                Your GPS: {location.latitude.toFixed(5)}, {location.longitude.toFixed(5)}
+              </span>
               <button
                 type="button"
                 onClick={handleCalibrateAsLibrary}
-                className="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] shadow-xs transition"
-                title="Calibrate library to current coordinates"
+                className="text-emerald-700 font-bold hover:underline"
               >
-                Set Location
+                Set Location as Library
               </button>
-            )}
-            <button
-              type="button"
-              onClick={() => setLibrarianOverrideOnSite(true)}
-              className="px-2 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-semibold text-[10px] hover:bg-slate-50 transition"
-              title="Librarian On-Site Verification"
-            >
-              Override
-            </button>
+            </div>
+          )}
+        </div>
+      ) : (
+        /* Verified Location Indicator */
+        <div className="bg-emerald-50 border border-emerald-200/80 rounded-2xl px-3.5 py-2 text-xs text-emerald-900 flex items-center justify-between shadow-2xs animate-fade-in">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="font-bold text-emerald-800 text-[11px]">
+              ✓ Verified Inside Library
+            </span>
+            <span className="text-[10px] text-emerald-600">
+              ({location ? formatDistance(location.distanceFromLibraryMeters) : 'On-Premises'})
+            </span>
           </div>
+          <button
+            type="button"
+            onClick={() => requestEnableGPS(config)}
+            className="text-[10px] text-emerald-700 font-semibold hover:underline"
+          >
+            Re-check GPS
+          </button>
         </div>
       )}
 
@@ -958,13 +1059,18 @@ export default function MobileLibraryAttendancePage() {
           {/* SUBMIT BUTTON -> Issues Card & Transitions to Single Time Out View */}
           <button
             type="submit"
-            disabled={isSubmitting || !isAtLibraryConfirmed}
+            disabled={isSubmitting}
             className="w-full py-4 px-6 rounded-2xl bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-bold text-sm transition shadow-lg shadow-slate-900/15 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting ? (
               <>
                 <RefreshCw className="w-4 h-4 animate-spin text-emerald-400" />
                 <span>Recording Time In &amp; Generating Pass...</span>
+              </>
+            ) : !isAtLibraryConfirmed ? (
+              <>
+                <MapPin className="w-4 h-4 text-amber-400" />
+                <span>Verify Location &amp; Issue Pass</span>
               </>
             ) : (
               <>

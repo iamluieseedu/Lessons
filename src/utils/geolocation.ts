@@ -148,13 +148,13 @@ export async function getCurrentGeoLocation(config: LibraryConfig): Promise<GeoL
       } else if (error && 'code' in error) {
         switch (error.code) {
           case error.PERMISSION_DENIED:
-            msg = 'Location permission was denied. Please allow location access in your browser.';
+            msg = 'Location permission was denied. Tap the lock/tune icon in your browser address bar, set Location to "Allow", and tap "Allow Location".';
             break;
           case error.POSITION_UNAVAILABLE:
-            msg = 'Location unavailable or device location services are disabled.';
+            msg = 'Device GPS unavailable. Please make sure Location/GPS is turned ON in your phone settings and try again.';
             break;
           case error.TIMEOUT:
-            msg = 'Location request timed out. Please try again.';
+            msg = 'Location request timed out. Please tap "Allow Location" to retry.';
             break;
           default:
             msg = error.message || 'Location error occurred.';
@@ -175,19 +175,23 @@ export async function getCurrentGeoLocation(config: LibraryConfig): Promise<GeoL
     };
 
     try {
-      // Stage 1: Try with high accuracy
+      // Stage 1: Try with high accuracy (Standard 20s timeout so user can read browser permission dialog)
       navigator.geolocation.getCurrentPosition(
         handleSuccess,
         (err1) => {
+          // If explicitly denied, do not retry, show prompt guidance
+          if (err1 && err1.code === err1.PERMISSION_DENIED) {
+            handleFinalError(err1);
+            return;
+          }
           // Stage 2: Fallback to coarse accuracy if high accuracy failed
-          console.warn('High accuracy GPS failed, retrying with coarse location...', err1);
           try {
             navigator.geolocation.getCurrentPosition(
               handleSuccess,
               handleFinalError,
               {
                 enableHighAccuracy: false,
-                timeout: 8000,
+                timeout: 15000,
                 maximumAge: 60000,
               }
             );
@@ -197,7 +201,7 @@ export async function getCurrentGeoLocation(config: LibraryConfig): Promise<GeoL
         },
         {
           enableHighAccuracy: true,
-          timeout: 6000,
+          timeout: 20000, // 20s generous timeout so user has time to tap "Allow" in browser modal
           maximumAge: 30000,
         }
       );
@@ -205,6 +209,21 @@ export async function getCurrentGeoLocation(config: LibraryConfig): Promise<GeoL
       handleFinalError(err as Error);
     }
   });
+}
+
+/**
+ * Checks current browser geolocation permission status.
+ */
+export async function getGeolocationPermissionStatus(): Promise<'granted' | 'prompt' | 'denied' | 'unknown'> {
+  if (typeof window === 'undefined' || !navigator.permissions || !navigator.permissions.query) {
+    return 'unknown';
+  }
+  try {
+    const status = await navigator.permissions.query({ name: 'geolocation' });
+    return status.state;
+  } catch (e) {
+    return 'unknown';
+  }
 }
 
 /**

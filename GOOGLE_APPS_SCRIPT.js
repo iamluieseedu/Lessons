@@ -168,6 +168,35 @@ function doPost(e) {
       }
     }
 
+    // Check if record ID already exists or student already has an ACTIVE session (Double entry prevention)
+    if (sheet && data) {
+      var lastRowCheck = sheet.getLastRow();
+      if (lastRowCheck > 1) {
+        var existingData = sheet.getRange(2, 2, lastRowCheck - 1, 7).getValues(); // col 2 (ID) to col 8 (Status)
+        for (var k = 0; k < existingData.length; k++) {
+          var rowRecordId = existingData[k][0]; // Col 2: Record ID
+          var rowStudentId = (existingData[k][1] || "").toString().trim().toLowerCase(); // Col 3: Student ID
+          var rowStatus = (existingData[k][6] || "").toString().trim().toUpperCase(); // Col 8: Status
+
+          if (data.id && rowRecordId === data.id) {
+            return ContentService.createTextOutput(JSON.stringify({
+              status: "success",
+              message: "Record already logged in Google Sheets (Double entry prevented).",
+              existingRow: k + 2
+            })).setMimeType(ContentService.MimeType.JSON);
+          }
+
+          if (data.action !== "time_out" && data.studentId && rowStudentId === data.studentId.toString().trim().toLowerCase() && rowStatus === "ACTIVE") {
+            return ContentService.createTextOutput(JSON.stringify({
+              status: "warning",
+              message: "Student already has an ACTIVE session in Google Sheets. Double entry prevented.",
+              existingRow: k + 2
+            })).setMimeType(ContentService.MimeType.JSON);
+          }
+        }
+      }
+    }
+
     // 1. Kumuha o mag-set up ng Google Sheet Tab
     if (!sheet) {
       sheet = ss.insertSheet("Library_Logs");
