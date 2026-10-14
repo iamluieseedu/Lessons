@@ -671,13 +671,27 @@ export default function MobileLibraryAttendancePage() {
     }
   };
 
-  // Confirm Time Out (When student leaves - with double click lock & sync sequencing)
+  // Confirm Time Out (When student leaves - with double click lock, strict geofence verification & sync sequencing)
   const handleConfirmTimeOut = async () => {
     if (!activeSessionRecord || isCheckingOutRef.current || isCheckingOut) return;
 
     isCheckingOutRef.current = true;
     setIsCheckingOut(true);
     try {
+      // 1. STRICT GEOFENCE VERIFICATION FOR TIME OUT: Must be within campus library coordinates (14.328171, 121.090469)
+      const checkoutLoc = await getCurrentGeoLocation(config);
+      if (!checkoutLoc.isWithinGeofence) {
+        const distanceTxt = checkoutLoc.distanceFromLibraryMeters > 0
+          ? `${formatDistance(checkoutLoc.distanceFromLibraryMeters)} away`
+          : 'Outside library perimeter';
+        alert(
+          `⛔ INVALID TIME OUT:\n\nYou must be physically inside the Campus Library (${config.libraryLatitude}, ${config.libraryLongitude}) to time out.\n\nVerification: Red Dot (Outside Perimeter)\nDistance: ${distanceTxt}\n\nTime Out is strictly prohibited outside library grounds.`
+        );
+        setIsCheckingOut(false);
+        isCheckingOutRef.current = false;
+        return;
+      }
+
       // If initial Time In is still syncing in background, wait for it so the row exists before checkout!
       if (timeInSyncPromiseRef.current) {
         await timeInSyncPromiseRef.current.catch(() => {});
@@ -755,9 +769,55 @@ export default function MobileLibraryAttendancePage() {
             record={activeSessionRecord}
           />
 
-          {/* CRITICAL: Sabi ng user: after ma confirm, ONLY Time Out button nalang, nothing else na ibang button pa */}
+          {/* CRITICAL: Sabi ng user: after ma confirm, ONLY Time Out button nalang, strictly verified on campus coordinates */}
           {activeSessionRecord.status === 'active' && (
-            <div className="pt-2">
+            <div className="pt-2 space-y-2.5">
+              {/* Live Geofence Status for Time Out */}
+              <div
+                className={`p-3 rounded-2xl border flex items-center justify-between text-xs transition ${
+                  isAtLibraryConfirmed
+                    ? 'bg-emerald-50/90 border-emerald-200 text-emerald-900'
+                    : 'bg-rose-50/90 border-rose-200 text-rose-900'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <span className="relative flex h-3 w-3 flex-shrink-0">
+                    <span
+                      className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                        isAtLibraryConfirmed ? 'bg-emerald-400' : 'bg-rose-400'
+                      }`}
+                    />
+                    <span
+                      className={`relative inline-flex rounded-full h-3 w-3 ${
+                        isAtLibraryConfirmed ? 'bg-emerald-500' : 'bg-rose-500'
+                      }`}
+                    />
+                  </span>
+                  <div>
+                    <span className="font-bold text-xs block">
+                      {isAtLibraryConfirmed
+                        ? 'Inside Campus Library Coordinates'
+                        : 'Outside Campus Perimeter'}
+                    </span>
+                    <span className="text-[10px] opacity-80 font-mono">
+                      {isAtLibraryConfirmed
+                        ? '✓ Verified valid for Time Out'
+                        : `⛔ Red Dot: ${formatDistance(location?.distanceFromLibraryMeters || 0)} away — Time Out blocked`}
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => requestEnableGPS(config)}
+                  disabled={isAcquiringLocation}
+                  className="px-2.5 py-1 rounded-lg bg-white/80 border border-slate-200 text-[10px] font-bold text-slate-700 hover:bg-white transition flex items-center gap-1 shadow-2xs"
+                >
+                  <RefreshCw className={`w-3 h-3 ${isAcquiringLocation ? 'animate-spin' : ''}`} />
+                  Re-check
+                </button>
+              </div>
+
               <button
                 type="button"
                 onClick={handleConfirmTimeOut}

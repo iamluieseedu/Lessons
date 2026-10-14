@@ -94,21 +94,31 @@ export default function LibraryAdminPortal() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isCalibratingGps, setIsCalibratingGps] = useState(false);
   const [testWebhookStatus, setTestWebhookStatus] = useState<string | null>(null);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [lastSyncedTime, setLastSyncedTime] = useState<string>('');
 
   const loadData = async () => {
-    const loadedConfig = getLibraryConfig();
-    setConfig(loadedConfig);
-    // Fetch real-time cross-device records and sessions from server API
-    const live = await fetchLiveAttendanceRecords();
-    setRecords(live.records);
-    setVisitorSessions(live.visitorSessions);
-    setTotalPageViews(live.pageViews);
+    setIsSyncing(true);
+    try {
+      const loadedConfig = getLibraryConfig();
+      setConfig(loadedConfig);
+      // Fetch real-time cross-device records and sessions from Google Sheets & local cache
+      const live = await fetchLiveAttendanceRecords(loadedConfig);
+      setRecords(live.records);
+      setVisitorSessions(live.visitorSessions);
+      setTotalPageViews(live.pageViews);
+      setLastSyncedTime(new Date().toLocaleTimeString());
+    } catch (err) {
+      console.warn('Sync error:', err);
+    } finally {
+      setIsSyncing(false);
+    }
   };
 
   useEffect(() => {
     loadData();
-    // Auto-refresh active sessions every 3.5 seconds so admin sees students live
-    const interval = setInterval(loadData, 3500);
+    // Auto-refresh active sessions every 10 seconds so admin sees students live
+    const interval = setInterval(loadData, 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -271,6 +281,20 @@ export default function LibraryAdminPortal() {
         </div>
 
         <div className="flex items-center gap-1.5 flex-wrap justify-end">
+          {/* Real-time Google Sheets Cloud Sync Button */}
+          <button
+            type="button"
+            onClick={loadData}
+            disabled={isSyncing}
+            className="px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-semibold transition flex items-center gap-1.5 shadow-2xs disabled:opacity-50"
+            title={lastSyncedTime ? `Last synced: ${lastSyncedTime}` : 'Sync with Google Sheets'}
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin text-emerald-600' : ''}`} />
+            <span>{isSyncing ? 'Syncing...' : 'Sync Cloud'}</span>
+            {lastSyncedTime && !isSyncing && (
+              <span className="text-[10px] text-emerald-600 font-mono hidden md:inline">({lastSyncedTime})</span>
+            )}
+          </button>
           {/* Direct Link to Google Sheets */}
           <a
             href={(CONFIG as any).librarySheetUrl || 'https://docs.google.com/spreadsheets/d/16ntBPPdctHxaBggT3iK2lZDAVIz63C_hobln0vwkv78/edit'}
@@ -686,35 +710,14 @@ export default function LibraryAdminPortal() {
                     onClick={() => {
                       setConfig({
                         ...config,
-                        libraryLatitude: 14.339101,
-                        libraryLongitude: 121.085350,
-                        geofenceRadiusMeters: 30,
-                      });
-                    }}
-                    className={`px-2 py-1 rounded-lg text-[10px] font-bold border transition ${Math.abs(config.libraryLatitude - 14.339101) < 0.0001
-                      ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
-                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
-                      }`}
-                  >
-                    📍 Testing Site (14.339101, 121.085350)
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setConfig({
-                        ...config,
                         libraryLatitude: 14.328171,
                         libraryLongitude: 121.090469,
                         geofenceRadiusMeters: 30,
                       });
                     }}
-                    className={`px-2 py-1 rounded-lg text-[10px] font-bold border transition ${Math.abs(config.libraryLatitude - 14.328171) < 0.0001
-                      ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
-                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
-                      }`}
+                    className="px-2.5 py-1 rounded-lg text-[10px] font-bold border bg-emerald-100 text-emerald-800 border-emerald-300"
                   >
-                    🏛️ Campus Library (14.328171, 121.090469)
+                    🏛️ Official Campus Library (14.328171, 121.090469)
                   </button>
                 </div>
 

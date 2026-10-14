@@ -12,10 +12,9 @@ export const DEFAULT_LIBRARY_CONFIG: LibraryConfig = {
   librarianDefaultName: '',
 };
 
-// Known active school & testing coordinates
+// Official Campus Library Coordinates (14.328171, 121.090469)
 export const RECOGNIZED_LIBRARY_COORDINATES = [
-  { name: 'Campus Library (Main)', lat: 14.328171, lon: 121.090469 },
-  { name: 'Testing Site Coordinates', lat: 14.3391008, lon: 121.0853504 },
+  { name: 'Campus College Library', lat: 14.328171, lon: 121.090469 },
 ];
 
 /**
@@ -113,25 +112,22 @@ export async function getCurrentGeoLocation(config: LibraryConfig): Promise<GeoL
       });
     };
 
-    // If running on local HTTP network IP (e.g. 192.168.x.x:3000) from a mobile phone,
-    // mobile browsers (iOS Safari & Chrome) block navigator.geolocation by policy unless HTTPS.
-    // In that case, automatically resolve to campus coordinates for seamless mobile local testing!
     if (isInsecureNetworkOrigin) {
       resolve({
-        latitude: 14.328171,
-        longitude: 121.090469,
-        accuracyMeters: 10,
-        isWithinGeofence: true,
+        latitude: 0,
+        longitude: 0,
+        accuracyMeters: 0,
+        isWithinGeofence: false,
         distanceFromLibraryMeters: 0,
         timestamp: Date.now(),
-        errorMessage: 'Local Wi-Fi HTTP mode: GPS auto-verified at campus library.',
+        errorMessage: 'Mobile browsers block GPS on insecure HTTP. Please access via HTTPS (https://iamlesson.space/library) to verify coordinates.',
       });
       return;
     }
 
     const handleFinalError = (error?: GeolocationPositionError | Error | null) => {
       let msg = 'Unable to acquire location.';
-      
+
       if (isInsecureNetworkOrigin) {
         msg = 'Mobile browsers block GPS on local HTTP (192.168.x.x). Please test using testing coordinates.';
       } else if (error && 'code' in error) {
