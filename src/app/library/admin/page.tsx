@@ -36,7 +36,7 @@ import {
   fetchLiveAttendanceRecords,
 } from '@/utils/libraryStorage';
 import { getCurrentGeoLocation } from '@/utils/geolocation';
-import { DigitalLibraryCard } from '@/components/library/DigitalLibraryCard';
+import { DigitalLibraryCard, toDirectDriveUrl } from '@/components/library/DigitalLibraryCard';
 
 // Dynamically import Leaflet Google Map component with no SSR to prevent window errors
 const LibraryAdminMap = dynamic(
@@ -560,7 +560,7 @@ export default function LibraryAdminPortal() {
                     className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0"
                   >
                     {r.selfiePhotoBase64 ? (
-                      <img src={r.selfiePhotoBase64} alt="Selfie" className="w-full h-full object-cover" />
+                      <img src={toDirectDriveUrl(r.selfiePhotoBase64)} alt="Selfie" referrerPolicy="no-referrer" className="w-full h-full object-cover" />
                     ) : (
                       <Users className="w-6 h-6 m-3 text-slate-400" />
                     )}

@@ -284,12 +284,31 @@ export async function fetchLiveAttendanceRecords(config?: LibraryConfig): Promis
       if (res.ok) {
         const data = await res.json();
         if (data && data.status === 'success' && Array.isArray(data.records)) {
-          const combined = [...data.records];
+          // Merge remote records with local records so photo base64 or Drive URLs are preserved
+          const combined: LibraryAttendanceRecord[] = data.records.map((remoteRec: LibraryAttendanceRecord) => {
+            const localMatch = localRecords.find(
+              (l) => l.id === remoteRec.id || (l.studentId === remoteRec.studentId && l.timeIn.slice(0, 16) === remoteRec.timeIn.slice(0, 16))
+            );
+            return {
+              ...remoteRec,
+              selfiePhotoBase64: remoteRec.selfiePhotoBase64 || localMatch?.selfiePhotoBase64 || '',
+              bookPhotoBase64: remoteRec.bookPhotoBase64 || localMatch?.bookPhotoBase64 || '',
+              librarianSignatureBase64: remoteRec.librarianSignatureBase64 || localMatch?.librarianSignatureBase64 || '',
+              digitalCardBase64: remoteRec.digitalCardBase64 || localMatch?.digitalCardBase64 || '',
+              driveUrls: remoteRec.driveUrls || localMatch?.driveUrls,
+            };
+          });
+
           for (const locRec of localRecords) {
-            if (!combined.some((r) => r.id === locRec.id)) {
+            if (!combined.some((r: LibraryAttendanceRecord) => r.id === locRec.id)) {
               combined.push(locRec);
             }
           }
+
+          try {
+            localStorage.setItem(STORAGE_KEY_RECORDS, JSON.stringify(combined.slice(0, 50)));
+          } catch (storageErr) {}
+
           return {
             records: combined,
             visitorSessions: localSessions,

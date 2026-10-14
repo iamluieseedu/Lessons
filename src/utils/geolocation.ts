@@ -86,36 +86,22 @@ export async function getCurrentGeoLocation(config: LibraryConfig): Promise<GeoL
       const lon = position.coords.longitude;
       const accuracy = Math.round(position.coords.accuracy || 20);
 
-      // Distance to configured coordinate
-      const distConfig = calculateDistanceMeters(
+      // Target Library Coordinate (Default: 14.328171, 121.090469)
+      const targetLat = config.libraryLatitude || 14.328171;
+      const targetLon = config.libraryLongitude || 121.090469;
+
+      // Distance strictly to the campus library default coordinates
+      const effectiveDistance = calculateDistanceMeters(
         lat,
         lon,
-        config.libraryLatitude,
-        config.libraryLongitude
+        targetLat,
+        targetLon
       );
 
-      // Distance to testing site coordinate (14.339100792008917, 121.08535039779176)
-      const distTest = calculateDistanceMeters(
-        lat,
-        lon,
-        14.3391008,
-        121.0853504
-      );
-
-      // Distance to main campus coordinate (14.328171, 121.090469)
-      const distCampus = calculateDistanceMeters(
-        lat,
-        lon,
-        14.328171,
-        121.090469
-      );
-
-      const effectiveDistance = Math.min(distConfig, distTest, distCampus);
-      const configuredRadius = config.geofenceRadiusMeters || 35;
-      // Real-world mobile GPS tolerance: indoors or in concrete campus buildings, GPS accuracy is typically ±15m-30m.
-      // To ensure valid attendance when standing within range of the library:
-      const allowedRadius = Math.max(configuredRadius, 45);
-      const isWithin = effectiveDistance <= allowedRadius || (effectiveDistance - (accuracy / 2)) <= configuredRadius;
+      const configuredRadius = config.geofenceRadiusMeters || 30;
+      // Strict verification: only within library perimeter (with standard building GPS drift margin of ±5m)
+      const maxAllowedRadius = configuredRadius + 5;
+      const isWithin = effectiveDistance <= maxAllowedRadius;
 
       resolve({
         latitude: lat,

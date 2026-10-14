@@ -42,10 +42,12 @@ function doGet(e) {
         })).setMimeType(ContentService.MimeType.JSON);
       }
 
-      var data = sheet.getRange(2, 1, lastRow - 1, 15).getValues();
+      var data = sheet.getRange(2, 1, lastRow - 1, 18).getValues();
+      var formulas = sheet.getRange(2, 1, lastRow - 1, 18).getFormulas();
       var records = [];
       for (var i = data.length - 1; i >= 0; i--) {
         var row = data[i];
+        var formulaRow = formulas[i] || [];
         var timestamp = row[0];
         var recordId = row[1];
         var studentId = row[2];
@@ -58,8 +60,13 @@ function doGet(e) {
         var timeOut = row[9];
         var duration = row[10];
         var locStatus = row[11];
-        var coords = row[12];
-        var librarian = row[13];
+        var librarian = row[16] || row[13] || "Librarian";
+
+        // Kumuha ng clickable o direct Drive URLs para sa litrato, lagda, at pass
+        var selfieUrl = extractUrl_(row[12], formulaRow[12]);
+        var bookUrl = extractUrl_(row[13], formulaRow[13]);
+        var signatureUrl = extractUrl_(row[14], formulaRow[14]);
+        var cardPassUrl = extractUrl_(row[15], formulaRow[15]);
 
         if (recordId || studentId) {
           records.push({
@@ -74,17 +81,24 @@ function doGet(e) {
             timeOut: timeOut && timeOut !== "ACTIVE" ? new Date(timeOut).toISOString() : "",
             durationMinutes: parseInt(duration) || 0,
             locationIn: {
-              latitude: 14.339101,
-              longitude: 121.085350,
+              latitude: 14.328171,
+              longitude: 121.090469,
               accuracyMeters: 10,
               isWithinGeofence: String(locStatus).toUpperCase().indexOf("VERIFIED") >= 0,
               distanceFromLibraryMeters: 0,
               timestamp: Date.now()
             },
-            librarianName: librarian || "Librarian",
-            selfiePhotoBase64: "",
-            bookPhotoBase64: "",
-            librarianSignatureBase64: ""
+            librarianName: librarian,
+            selfiePhotoBase64: toDirectImageUrl_(selfieUrl),
+            bookPhotoBase64: toDirectImageUrl_(bookUrl),
+            librarianSignatureBase64: toDirectImageUrl_(signatureUrl),
+            digitalCardBase64: toDirectImageUrl_(cardPassUrl),
+            driveUrls: {
+              cardUrl: cardPassUrl,
+              bookUrl: bookUrl,
+              selfieUrl: selfieUrl,
+              signatureUrl: signatureUrl
+            }
           });
         }
       }
@@ -428,6 +442,40 @@ function saveBase64Image_(folder, base64Data, filename, mimeType) {
     Logger.log("Error saving " + filename + ": " + err.toString());
     return "";
   }
+}
+
+/**
+ * Helper para mag-extract ng URL mula sa formula na =HYPERLINK("url", "text") o plain text cell
+ */
+function extractUrl_(cellValue, cellFormula) {
+  if (cellFormula && typeof cellFormula === 'string') {
+    var match = cellFormula.match(/HYPERLINK\("([^"]+)"/i);
+    if (match && match[1]) {
+      return match[1].trim();
+    }
+  }
+  if (cellValue && typeof cellValue === 'string') {
+    var str = cellValue.trim();
+    if (str.indexOf("http://") === 0 || str.indexOf("https://") === 0) {
+      return str;
+    }
+  }
+  return "";
+}
+
+/**
+ * Helper para i-convert ang Google Drive view link papuntang direct image thumbnail URL
+ * Gumagana ito nang direkta sa <img> tags sa browser nang walang login popup
+ */
+function toDirectImageUrl_(url) {
+  if (!url || typeof url !== 'string') return "";
+  var trimmed = url.trim();
+  var fileIdMatch = trimmed.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (fileIdMatch && fileIdMatch[1]) {
+    var fileId = fileIdMatch[1];
+    return "https://drive.google.com/thumbnail?id=" + fileId + "&sz=w1000";
+  }
+  return trimmed;
 }
 
 /**

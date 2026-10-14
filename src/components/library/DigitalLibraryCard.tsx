@@ -34,6 +34,17 @@ function base64ToBlob(base64Data: string): Blob {
   return new Blob([byteNumbers], { type: contentType });
 }
 
+// Converts raw Google Drive links to reliable direct thumbnail URLs
+export function toDirectDriveUrl(url?: string): string {
+  if (!url) return '';
+  if (url.startsWith('data:') || url.startsWith('blob:')) return url;
+  const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (match && match[1]) {
+    return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
+  }
+  return url;
+}
+
 export function DigitalLibraryCard({
   record,
   cardImageUrl,
@@ -209,18 +220,42 @@ export function DigitalLibraryCard({
 
       {/* Card Body Display */}
       <div className="p-4 sm:p-5 space-y-3.5 bg-slate-50/50">
-        {/* Render Generated Card Image if available and completed */}
-        {imageToDisplay && isCompleted ? (
+        {/* Render Generated Card Image if available, completed, and NOT in modal */}
+        {imageToDisplay && isCompleted && !isModal ? (
           <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-sm bg-white">
             <img
-              src={imageToDisplay}
+              src={toDirectDriveUrl(imageToDisplay)}
               alt="Digital Library Card"
+              referrerPolicy="no-referrer"
               className="w-full object-contain bg-white"
             />
           </div>
         ) : (
           /* Prestigious Interactive Student ID Card UI */
           <div className="space-y-3.5">
+            {/* If in modal and card pass image is available, render card pass at top */}
+            {isModal && imageToDisplay && (
+              <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-sm bg-white mb-2">
+                <div className="bg-slate-900 text-white text-[10px] font-bold px-3 py-1 flex items-center justify-between">
+                  <span>🪪 Official Card Pass Preview</span>
+                  <a
+                    href={record.driveUrls?.cardUrl || toDirectDriveUrl(imageToDisplay)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-emerald-400 hover:text-emerald-300 underline font-semibold text-[10px]"
+                  >
+                    Open Pass in Drive ↗
+                  </a>
+                </div>
+                <img
+                  src={toDirectDriveUrl(imageToDisplay)}
+                  alt="Digital Library Card Pass"
+                  referrerPolicy="no-referrer"
+                  className="w-full object-contain bg-white max-h-60"
+                />
+              </div>
+            )}
+
             {/* Student Profile Card (Left Portrait, Right Metadata) */}
             <div className="bg-white rounded-2xl p-4 border border-slate-200/90 shadow-xs flex gap-4 items-start">
               {/* Portrait Photo Frame */}
@@ -228,8 +263,9 @@ export function DigitalLibraryCard({
                 <div className="w-24 sm:w-28 aspect-[3/4] rounded-xl overflow-hidden bg-slate-100 border-2 border-slate-200/90 shadow-2xs relative">
                   {record.selfiePhotoBase64 ? (
                     <img
-                      src={record.selfiePhotoBase64}
+                      src={toDirectDriveUrl(record.selfiePhotoBase64)}
                       alt={record.studentName}
+                      referrerPolicy="no-referrer"
                       className="w-full h-full object-cover"
                     />
                   ) : (
@@ -280,8 +316,9 @@ export function DigitalLibraryCard({
               {record.bookPhotoBase64 ? (
                 <div className="w-12 h-14 rounded-lg overflow-hidden border border-slate-200 flex-shrink-0 shadow-2xs">
                   <img
-                    src={record.bookPhotoBase64}
+                    src={toDirectDriveUrl(record.bookPhotoBase64)}
                     alt="Book cover"
+                    referrerPolicy="no-referrer"
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -373,8 +410,9 @@ export function DigitalLibraryCard({
                   {/* Clean natural signature line with 100% transparent ink stamp */}
                   <div className="relative w-36 sm:w-44 h-12 flex flex-col justify-end">
                     <img
-                      src={record.librarianSignatureBase64}
+                      src={toDirectDriveUrl(record.librarianSignatureBase64)}
                       alt="Librarian Signature"
+                      referrerPolicy="no-referrer"
                       className="absolute inset-0 w-full h-full object-contain pointer-events-none z-10"
                       style={{ mixBlendMode: 'multiply' }}
                     />
@@ -382,6 +420,74 @@ export function DigitalLibraryCard({
                       <span>Sign</span>
                       <span>Authorized</span>
                     </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Dedicated Admin Photo Inspection Gallery (Always visible in Admin modal) */}
+            {isModal && (
+              <div className="bg-slate-100/90 p-3 rounded-2xl border border-slate-200/90 space-y-2">
+                <span className="text-[10px] font-bold text-slate-700 uppercase tracking-wider block">
+                  📸 Uploaded Media &amp; Cloud Drive Files
+                </span>
+                <div className="grid grid-cols-2 gap-2">
+                  {/* Selfie Box */}
+                  <div className="p-2 rounded-xl bg-white border border-slate-200 flex flex-col gap-1.5 shadow-2xs">
+                    <span className="text-[10px] font-extrabold text-slate-700">Student Photo</span>
+                    {record.selfiePhotoBase64 ? (
+                      <div className="w-full aspect-[4/3] rounded-lg overflow-hidden bg-slate-100 relative border border-slate-200">
+                        <img
+                          src={toDirectDriveUrl(record.selfiePhotoBase64)}
+                          alt="Selfie"
+                          referrerPolicy="no-referrer"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-full aspect-[4/3] rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center text-[10px] text-slate-400">
+                        No selfie photo
+                      </div>
+                    )}
+                    {record.driveUrls?.selfieUrl && (
+                      <a
+                        href={record.driveUrls.selfieUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[10px] text-emerald-600 hover:text-emerald-700 font-bold underline"
+                      >
+                        Open on Drive ↗
+                      </a>
+                    )}
+                  </div>
+
+                  {/* Book Photo Box */}
+                  <div className="p-2 rounded-xl bg-white border border-slate-200 flex flex-col gap-1.5 shadow-2xs">
+                    <span className="text-[10px] font-extrabold text-slate-700">Book Cover</span>
+                    {record.bookPhotoBase64 ? (
+                      <div className="w-full aspect-[4/3] rounded-lg overflow-hidden bg-slate-100 relative border border-slate-200">
+                        <img
+                          src={toDirectDriveUrl(record.bookPhotoBase64)}
+                          alt="Book"
+                          referrerPolicy="no-referrer"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-full aspect-[4/3] rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center text-[10px] text-slate-400">
+                        No book photo
+                      </div>
+                    )}
+                    {record.driveUrls?.bookUrl && (
+                      <a
+                        href={record.driveUrls.bookUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[10px] text-emerald-600 hover:text-emerald-700 font-bold underline"
+                      >
+                        Open on Drive ↗
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>
@@ -445,6 +551,42 @@ export function DigitalLibraryCard({
               <p className="text-[10px] text-center text-slate-400">
                 ✓ Digital Library Card downloaded once for your checkout record.
               </p>
+            )}
+          </div>
+        )}
+
+        {/* Drive Media Quick Links in Modal */}
+        {isModal && record.driveUrls && (record.driveUrls.selfieUrl || record.driveUrls.bookUrl || record.driveUrls.cardUrl) && (
+          <div className="pt-2 border-t border-slate-200/80 flex flex-wrap gap-2 text-[10px]">
+            {record.driveUrls.selfieUrl && (
+              <a
+                href={record.driveUrls.selfieUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold flex items-center gap-1 transition"
+              >
+                📸 Drive Selfie
+              </a>
+            )}
+            {record.driveUrls.bookUrl && (
+              <a
+                href={record.driveUrls.bookUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold flex items-center gap-1 transition"
+              >
+                📖 Drive Book
+              </a>
+            )}
+            {record.driveUrls.cardUrl && (
+              <a
+                href={record.driveUrls.cardUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold flex items-center gap-1 transition"
+              >
+                🪪 Drive Card Pass
+              </a>
             )}
           </div>
         )}
