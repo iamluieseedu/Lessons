@@ -117,6 +117,12 @@ export default function LibraryAdminPortal() {
 
   useEffect(() => {
     loadData();
+    if (typeof window !== 'undefined') {
+      const savedAuth = localStorage.getItem('library_admin_auth');
+      if (savedAuth === 'true') {
+        setIsAuthorized(true);
+      }
+    }
     // Auto-refresh active sessions every 10 seconds so admin sees students live
     const interval = setInterval(loadData, 10000);
     return () => clearInterval(interval);
@@ -127,8 +133,21 @@ export default function LibraryAdminPortal() {
     if (pinInput === config.adminPin || pinInput === 'admin123') {
       setIsAuthorized(true);
       setPinError('');
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('library_admin_auth', 'true');
+      }
     } else {
-      setPinError('Incorrect PIN. Default is admin123');
+      setPinError('Incorrect PIN. Please try again.');
+    }
+  };
+
+  const handleLogout = () => {
+    if (confirm('Lock Admin Portal and log out?')) {
+      setIsAuthorized(false);
+      setPinInput('');
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('library_admin_auth');
+      }
     }
   };
 
@@ -188,26 +207,25 @@ export default function LibraryAdminPortal() {
   // Active visitors within last 15 minutes
   const activeCutoff = Date.now() - 15 * 60 * 1000;
   const activeVisitors = visitorSessions.filter((s) => s.lastActive >= activeCutoff);
-
-  // ONLY students verified standing on the coordinates (at the library)
-  const onSiteAttendanceRecords = records.filter((r) => r.locationIn?.isWithinGeofence);
   const onSiteVisitors = visitorSessions.filter((s) => s.isAtLibrary);
+  const onSiteAttendanceRecords = records.filter((r) => r.locationIn?.isWithinGeofence);
 
-  // Filtered On-Site Visitors (Exclusively standing on coordinates)
-  const filteredVisitors = onSiteVisitors.filter((s) => {
+  // Filtered on-site visitors (searched by name, ID, IP or device)
+  const filteredVisitors = onSiteVisitors.filter((v) => {
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       return (
-        s.ipAddress.toLowerCase().includes(q) ||
-        (s.studentName && s.studentName.toLowerCase().includes(q)) ||
-        (s.studentId && s.studentId.toLowerCase().includes(q))
+        (v.studentName && v.studentName.toLowerCase().includes(q)) ||
+        (v.studentId && v.studentId.toLowerCase().includes(q)) ||
+        v.ipAddress.toLowerCase().includes(q) ||
+        v.deviceType.toLowerCase().includes(q)
       );
     }
     return true;
   });
 
-  // Filtered On-Site Attendance Records (Exclusively standing on coordinates)
-  const filteredRecords = onSiteAttendanceRecords.filter((r) => {
+  // Filtered Attendance Records (Admin sees ALL records, with On Coordinates vs Off-Site status)
+  const filteredRecords = records.filter((r) => {
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       return (
@@ -330,13 +348,21 @@ export default function LibraryAdminPortal() {
           </button>
 
           <button
-            onClick={() => exportAttendanceToCSV(onSiteAttendanceRecords)}
-            disabled={onSiteAttendanceRecords.length === 0}
+            onClick={() => exportAttendanceToCSV(records)}
+            disabled={records.length === 0}
             className="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold transition flex items-center gap-1 disabled:opacity-50 shadow-xs"
-            title="Download CSV of On-Site Students"
+            title="Download CSV of Attendance Passes"
           >
             <Download className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">CSV</span>
+          </button>
+
+          <button
+            onClick={handleLogout}
+            className="p-2 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-rose-600 hover:bg-rose-50 hover:border-rose-200 transition shadow-xs"
+            title="Lock Admin Portal / Log Out"
+          >
+            <Lock className="w-4 h-4" />
           </button>
         </div>
       </div>
@@ -595,10 +621,17 @@ export default function LibraryAdminPortal() {
                       <h4 className="text-xs font-bold text-slate-900 truncate">
                         {r.studentName}
                       </h4>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
-                        <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                        On Coordinates ({r.locationIn?.distanceFromLibraryMeters || 0}m)
-                      </span>
+                      {r.locationIn?.isWithinGeofence ? (
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
+                          <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                          On Coordinates ({r.locationIn?.distanceFromLibraryMeters || 0}m)
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+                          Off-Site ({r.locationIn?.distanceFromLibraryMeters > 0 ? (r.locationIn.distanceFromLibraryMeters > 1000 ? `${(r.locationIn.distanceFromLibraryMeters / 1000).toFixed(1)}km` : `${r.locationIn.distanceFromLibraryMeters}m`) : 'No GPS'})
+                        </span>
+                      )}
                     </div>
                     <div className="flex items-center gap-1.5 mt-0.5">
                       <span className="text-[11px] text-slate-500 font-mono truncate">
@@ -784,10 +817,11 @@ export default function LibraryAdminPortal() {
                   Admin Passcode PIN
                 </label>
                 <input
-                  type="text"
+                  type="password"
+                  placeholder="Set Admin PIN"
                   value={config.adminPin}
                   onChange={(e) => setConfig({ ...config, adminPin: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white font-mono"
                 />
               </div>
 
@@ -811,11 +845,12 @@ export default function LibraryAdminPortal() {
         </div>
       )}
 
-      {/* Card Inspection Modal */}
+      {/* Card Inspection Modal (Admin only pass viewer with download) */}
       {inspectedRecord && (
         <DigitalLibraryCard
           isModal
           record={inspectedRecord}
+          isAdmin={true}
           onClose={() => setInspectedRecord(null)}
         />
       )}

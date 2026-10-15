@@ -20,6 +20,7 @@ interface DigitalLibraryCardProps {
   isModal?: boolean;
   onTimeOut?: () => void;
   isTimingOut?: boolean;
+  isAdmin?: boolean;
 }
 
 // Helper to safely convert Base64 data URL to binary Blob to prevent mobile browser 'Load failed' TypeError
@@ -52,6 +53,7 @@ export function DigitalLibraryCard({
   isModal = false,
   onTimeOut,
   isTimingOut = false,
+  isAdmin = false,
 }: DigitalLibraryCardProps) {
   const [downloadSuccess, setDownloadSuccess] = useState(false);
   const [hasDownloaded, setHasDownloaded] = useState(false);
@@ -511,8 +513,8 @@ export function DigitalLibraryCard({
           </div>
         )}
 
-        {/* Action Strip: ONLY render download button when session is completed (Time Out only!) */}
-        {isCompleted && (
+        {/* Action Strip: ONLY Admin can download the Official Digital Library Card */}
+        {isAdmin && (
           <div className="pt-2 flex flex-col gap-2">
             <button
               type="button"

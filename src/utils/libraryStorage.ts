@@ -375,11 +375,15 @@ export async function syncRecordToGoogleDriveAndSheets(
     timeOut: record.timeOut || '',
     durationMinutes: record.durationMinutes || 0,
     status: record.status,
-    locationStatus: record.locationIn.isWithinGeofence
+    locationStatus: !record.locationIn || record.locationIn.latitude === 0
+      ? `OFF-SITE (No GPS Detected - IP: ${record.ipAddress || 'Protected'})`
+      : record.locationIn.isWithinGeofence
       ? `VERIFIED INSIDE (${record.locationIn.distanceFromLibraryMeters}m)`
-      : `OUTSIDE PERIMETER (${record.locationIn.distanceFromLibraryMeters}m)`,
-    coordinatesIn: `${record.locationIn.latitude.toFixed(6)}, ${record.locationIn.longitude.toFixed(6)}`,
-    gpsAccuracy: `±${record.locationIn.accuracyMeters}m`,
+      : `OFF-SITE / OUTSIDE (${record.locationIn.distanceFromLibraryMeters}m away)`,
+    coordinatesIn: record.locationIn && record.locationIn.latitude !== 0
+      ? `${record.locationIn.latitude.toFixed(6)}, ${record.locationIn.longitude.toFixed(6)}`
+      : 'No GPS (Off-Site)',
+    gpsAccuracy: record.locationIn && record.locationIn.accuracyMeters ? `±${record.locationIn.accuracyMeters}m` : 'N/A',
     ipAddress: record.ipAddress || '',
     librarianName:
       record.librarianName && record.librarianName !== 'Head Librarian'
