@@ -247,13 +247,24 @@ function doPost(e) {
             var todayStr = Utilities.formatDate(new Date(), Session.getScriptTimeZone() || "GMT+8", "yyyy-MM-dd");
             var todayFolder = getOrCreateFolder_(todayStr, mainFolder);
             var cardFolder = getOrCreateFolder_("Digital_Cards", todayFolder);
-            var prefixTimeout = (data.id || (dataStudentClean + "_" + todayStr)).toString().replace(/[^a-zA-Z0-9_-]/g, "_");
+
+            // Kumuha ng malinis na pangalan ng student para sa filename
+            var studentNameFromRow = sheet.getRange(targetRow, 4).getValue() || "";
+            var nameCleanTimeout = (data.studentName || studentNameFromRow || "Student")
+              .toString()
+              .trim()
+              .replace(/\s+/g, "_")
+              .replace(/[^a-zA-Z0-9_-]/g, "");
+
+            var prefixTimeout = nameCleanTimeout + "_" + (data.id || (dataStudentClean + "_" + todayStr)).toString().replace(/[^a-zA-Z0-9_-]/g, "_");
+            var cardFilename = prefixTimeout + "_Card_Pass.png";
+
             // Deduplication: I-trash ang lumang active pass para 1 file lang ang manatili sa Digital_Cards folder
-            var oldCards = cardFolder.getFilesByName(prefixTimeout + "_card_pass.png");
+            var oldCards = cardFolder.getFilesByName(cardFilename);
             while (oldCards.hasNext()) {
               oldCards.next().setTrashed(true);
             }
-            var cardUrl = saveBase64Image_(cardFolder, data.digitalCardBase64, prefixTimeout + "_card_pass.png", "image/png");
+            var cardUrl = saveBase64Image_(cardFolder, data.digitalCardBase64, cardFilename, "image/png");
             if (cardUrl) {
               sheet.getRange(targetRow, 16).setValue('=HYPERLINK("' + cardUrl + '", "🪪 View Card Pass (Completed)")');
             }
@@ -371,16 +382,23 @@ function doPost(e) {
     var sigFolder = getOrCreateFolder_("Signatures", todayFolder);
     var cardFolder = getOrCreateFolder_("Digital_Cards", todayFolder);
 
+    // Kumuha ng malinis na pangalan ng student para ilagay sa filename ng lahat ng images
+    var studentNameClean = (data.studentName || "Student")
+      .toString()
+      .trim()
+      .replace(/\s+/g, "_")
+      .replace(/[^a-zA-Z0-9_-]/g, "");
+
     var studentClean = (data.studentId || "student").toString().replace(/[^a-zA-Z0-9_-]/g, "_");
     var timestampId = Utilities.formatDate(new Date(), Session.getScriptTimeZone() || "GMT+8", "HHmmss");
     var recordClean = (data.id || (studentClean + "_" + timestampId)).toString().replace(/[^a-zA-Z0-9_-]/g, "_");
-    var prefix = recordClean;
+    var prefix = studentNameClean + "_" + recordClean;
 
-    // 3. I-save ang mga Litrato at Lagda sa Google Drive (Deduplication enabled gamit ang Record ID prefix)
-    var selfieUrl = saveBase64Image_(selfieFolder, data.selfiePhotoBase64, prefix + "_selfie.jpg", "image/jpeg");
-    var bookUrl = saveBase64Image_(bookFolder, data.bookPhotoBase64, prefix + "_book.jpg", "image/jpeg");
-    var signatureUrl = saveBase64Image_(sigFolder, data.librarianSignatureBase64, prefix + "_signature.png", "image/png");
-    var cardUrl = saveBase64Image_(cardFolder, data.digitalCardBase64, prefix + "_card_pass.png", "image/png");
+    // 3. I-save ang mga Litrato at Lagda sa Google Drive na may Pangalan ng Student sa Filename
+    var selfieUrl = saveBase64Image_(selfieFolder, data.selfiePhotoBase64, prefix + "_Selfie.jpg", "image/jpeg");
+    var bookUrl = saveBase64Image_(bookFolder, data.bookPhotoBase64, prefix + "_Book.jpg", "image/jpeg");
+    var signatureUrl = saveBase64Image_(sigFolder, data.librarianSignatureBase64, prefix + "_Signature.png", "image/png");
+    var cardUrl = saveBase64Image_(cardFolder, data.digitalCardBase64, prefix + "_Card_Pass.png", "image/png");
 
     // 4. I-format ang Clickable Links para sa Google Sheet
     var selfieCell = selfieUrl ? '=HYPERLINK("' + selfieUrl + '", "📸 View Selfie")' : "None";

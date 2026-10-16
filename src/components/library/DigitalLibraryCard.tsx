@@ -92,7 +92,8 @@ export function DigitalLibraryCard({
         return;
       }
 
-      const filename = `LibraryPass_${record.studentId}_${new Date().toISOString().slice(0, 10)}.png`;
+      const cleanStudentName = (record.studentName || 'Student').trim().replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_-]/g, '');
+      const filename = `LibraryPass_${cleanStudentName}_${record.studentId}_${new Date().toISOString().slice(0, 10)}.png`;
 
       let blob: Blob;
       if (url.startsWith('data:')) {
