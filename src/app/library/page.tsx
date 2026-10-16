@@ -771,12 +771,21 @@ export default function MobileLibraryAttendancePage() {
       setRecords(getAttendanceRecords());
 
       // Sync updated checkout and departure book photo to Google Apps Script
-      await syncRecordToGoogleDriveAndSheets(updatedRecord, config).catch(() => { });
+      const syncResult = await syncRecordToGoogleDriveAndSheets(updatedRecord, config).catch((e) => {
+        console.warn('Checkout sync error:', e);
+        return { success: false, message: 'Offline/Sync error' };
+      });
       timeInSyncPromiseRef.current = null;
 
-      setToastMessage(
-        `✓ Time Out recorded for ${updatedRecord.studentName}! Total stay: ${durationMinutes} mins.`
-      );
+      if (syncResult && syncResult.success) {
+        setToastMessage(
+          `✓ Time Out & Book Photo recorded for ${updatedRecord.studentName}! (${durationMinutes} mins)`
+        );
+      } else {
+        setToastMessage(
+          `✓ Time Out recorded locally for ${updatedRecord.studentName}! Total stay: ${durationMinutes} mins.`
+        );
+      }
       setTimeout(() => setToastMessage(null), 6000);
     } catch (err) {
       console.error('Error during checkout:', err);

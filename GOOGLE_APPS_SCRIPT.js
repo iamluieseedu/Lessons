@@ -167,28 +167,17 @@ function doPost(e) {
     // =========================================================================
     var cache = CacheService.getScriptCache();
     var actionKey = isTimeOutAction ? "timeout" : "timein";
-    var cacheKeyStudent = dataStudentClean ? ("STUDENT_ACTION_" + dataStudentClean + "_" + actionKey) : "";
-    var cacheKeyRecord = dataIdClean ? ("RECORD_" + actionKey + "_" + dataIdClean) : "";
+    var cacheKeyRecord = dataIdClean ? ("REC_" + actionKey + "_" + dataIdClean) : "";
 
-    // If this student or record was already received within the last 60 seconds FOR THIS ACTION, drop it!
-    if (cacheKeyStudent && cache.get(cacheKeyStudent)) {
-      return ContentService.createTextOutput(JSON.stringify({
-        status: "success",
-        message: "Duplicate student request blocked by Server Cache (Already processed).",
-        alreadyExists: true
-      })).setMimeType(ContentService.MimeType.JSON);
-    }
+    // Huwag pahintulutan ang double-click sa loob ng 5 segundo para sa parehong record ID
     if (cacheKeyRecord && cache.get(cacheKeyRecord)) {
       return ContentService.createTextOutput(JSON.stringify({
         status: "success",
-        message: "Duplicate record ID blocked by Server Cache (Already processed).",
+        message: "Duplicate rapid click blocked by Server Cache (Already processed).",
         alreadyExists: true
       })).setMimeType(ContentService.MimeType.JSON);
     }
-
-    // Reserve cache keys for 60 seconds (blocks rapid double-clicks for the same action)
-    if (cacheKeyStudent) cache.put(cacheKeyStudent, "ACTIVE", 60);
-    if (cacheKeyRecord) cache.put(cacheKeyRecord, "ACTIVE", 60);
+    if (cacheKeyRecord) cache.put(cacheKeyRecord, "ACTIVE", 5);
 
     // Force flush any pending spreadsheet operations immediately
     SpreadsheetApp.flush();
@@ -218,11 +207,26 @@ function doPost(e) {
             var sId = (values[i][1] || "").toString().trim().toLowerCase();
             var rowStat = (values[i][6] || "").toString().trim().toUpperCase();
 
-            // Match by exact Record ID OR match by student ID where record was not completed
-            if ((dataIdClean && recId === dataIdClean) ||
-                (dataStudentClean && sId === dataStudentClean && rowStat !== "COMPLETED")) {
+            // Priority 1: Match by exact Record ID
+            if (dataIdClean && recId === dataIdClean) {
               targetRow = i + 2;
               break;
+            }
+            // Priority 2: Match by student ID where status is still ACTIVE
+            if (dataStudentClean && sId === dataStudentClean && rowStat !== "COMPLETED") {
+              targetRow = i + 2;
+              break;
+            }
+          }
+
+          // Fallback: Kung hindi nahanap sa active, kunin ang pinakabagong row ng student ID
+          if (targetRow <= 0 && dataStudentClean) {
+            for (var i = values.length - 1; i >= 0; i--) {
+              var sId = (values[i][1] || "").toString().trim().toLowerCase();
+              if (sId === dataStudentClean) {
+                targetRow = i + 2;
+                break;
+              }
             }
           }
         }
@@ -255,21 +259,31 @@ function doPost(e) {
         var prefixTimeout = nameCleanTimeout + "_" + (data.id || (dataStudentClean + "_" + todayStr)).toString().replace(/[^a-zA-Z0-9_-]/g, "_");
 
         // 1. Kung may Departure Book Photo sa Time Out, i-save sa Book_Photos folder at Col 14
-        if (data.bookPhotoBase64) {
+        if (data.bookPhotoBase64 && data.bookPhotoBase64.length > 30) {
           try {
             var bookFolder = getOrCreateFolder_("Book_Photos", todayFolder);
             var bookFilename = prefixTimeout + "_Book.jpg";
+
+            // Linisin ang lumang file kung mayroon man upang laging fresh ang ma-save
+            var oldBooks = bookFolder.getFilesByName(bookFilename);
+            while (oldBooks.hasNext()) {
+              try {
+                oldBooks.next().setTrashed(true);
+              } catch (tErr) {}
+            }
+
             var bookUrl = saveBase64Image_(bookFolder, data.bookPhotoBase64, bookFilename, "image/jpeg");
             if (bookUrl) {
               sheet.getRange(targetRow, 14).setValue('=HYPERLINK("' + bookUrl + '", "📖 View Book Photo")');
+              Logger.log("✓ Book photo saved for " + prefixTimeout + ": " + bookUrl);
             }
           } catch (bookErr) {
-            console.error("Book photo update error during timeout: " + bookErr);
+            Logger.log("Book photo update error during timeout: " + bookErr.toString());
           }
         }
 
         // 2. If updated digital card pass is provided, update Drive pass and Col 16 hyperlink
-        if (data.digitalCardBase64) {
+        if (data.digitalCardBase64 && data.digitalCardBase64.length > 30) {
           try {
             var cardFolder = getOrCreateFolder_("Digital_Cards", todayFolder);
             var cardFilename = prefixTimeout + "_Card_Pass.png";
@@ -277,14 +291,17 @@ function doPost(e) {
             // Deduplication: I-trash ang lumang active pass para 1 file lang ang manatili sa Digital_Cards folder
             var oldCards = cardFolder.getFilesByName(cardFilename);
             while (oldCards.hasNext()) {
-              oldCards.next().setTrashed(true);
+              try {
+                oldCards.next().setTrashed(true);
+              } catch (tErr) {}
             }
             var cardUrl = saveBase64Image_(cardFolder, data.digitalCardBase64, cardFilename, "image/png");
             if (cardUrl) {
               sheet.getRange(targetRow, 16).setValue('=HYPERLINK("' + cardUrl + '", "🪪 View Card Pass (Completed)")');
+              Logger.log("✓ Card pass updated for " + prefixTimeout + ": " + cardUrl);
             }
           } catch (cardErr) {
-            console.error("Card update error during timeout: " + cardErr);
+            Logger.log("Card update error during timeout: " + cardErr.toString());
           }
         }
 
@@ -491,20 +508,28 @@ function saveBase64Image_(folder, base64Data, filename, mimeType) {
     return "";
   }
   try {
-    // DRIVE DEDUPLICATION: Kung may kaparehong filename na sa folder, gamitin ang umiiral na file URL
+    // Kung may lumang file na may parehong filename, i-trash muna para updated file ang mai-save
     var existingFiles = folder.getFilesByName(filename);
-    if (existingFiles.hasNext()) {
-      var existingFile = existingFiles.next();
-      return existingFile.getUrl();
+    while (existingFiles.hasNext()) {
+      try {
+        existingFiles.next().setTrashed(true);
+      } catch (tErr) {}
     }
 
     var raw = base64Data;
-    if (raw.indexOf(",") > -1) {
+    var detectedMime = mimeType || "image/jpeg";
+    if (raw.indexOf("data:") === 0 && raw.indexOf(";base64,") > -1) {
+      var mimeMatch = raw.match(/^data:([^;]+);base64,/);
+      if (mimeMatch && mimeMatch[1]) {
+        detectedMime = mimeMatch[1];
+      }
+      raw = raw.split(",")[1];
+    } else if (raw.indexOf(",") > -1) {
       raw = raw.split(",")[1];
     }
     raw = raw.replace(/\s/g, ''); // linisin ang whitespace
     var decoded = Utilities.base64Decode(raw);
-    var blob = Utilities.newBlob(decoded, mimeType || "image/jpeg", filename);
+    var blob = Utilities.newBlob(decoded, detectedMime, filename);
     var file = folder.createFile(blob);
     try {
       file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
@@ -654,7 +679,33 @@ function testSave() {
   };
 
   var res = doPost(mockPayload);
-  Logger.log("Test Result: " + res.getContent());
+  Logger.log("Test Time In Result: " + res.getContent());
+}
+
+/**
+ * Pindutin ang RUN para i-test ang TIME OUT FLOW kasama ang DEPARTURE BOOK PHOTO:
+ */
+function testTimeOutSave() {
+  var dummyPixel = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
+
+  var mockPayload = {
+    postData: {
+      contents: JSON.stringify({
+        action: "time_out",
+        id: "CARD-DEMO-001",
+        studentId: "2024-00123",
+        studentName: "Juan Dela Cruz (Demo)",
+        timeOut: new Date().toISOString(),
+        durationMinutes: 45,
+        status: "completed",
+        bookPhotoBase64: dummyPixel,
+        digitalCardBase64: dummyPixel
+      })
+    }
+  };
+
+  var res = doPost(mockPayload);
+  Logger.log("Test Time Out Result: " + res.getContent());
 }
 
 /**

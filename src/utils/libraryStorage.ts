@@ -354,12 +354,12 @@ export async function syncRecordToGoogleDriveAndSheets(
 
   const isTimeOut = record.status === 'completed' && Boolean(record.timeOut);
   const actionName = isTimeOut ? 'time_out' : 'library_attendance_sync';
-  const dedupeKey = `${record.studentId.trim().toLowerCase()}__${actionName}`;
+  const dedupeKey = `${record.id}__${actionName}`;
   const now = Date.now();
 
-  // Strict Client-side Deduplication: Drop ANY duplicate upload for the same student within 60 seconds
+  // Client-side Double-Click Protection: Drop rapid double clicks (within 4 seconds) for the SAME record
   const lastSyncTime = recentSyncCache.get(dedupeKey);
-  if (lastSyncTime && now - lastSyncTime < 60000) {
+  if (lastSyncTime && now - lastSyncTime < 4000) {
     return {
       success: true,
       message: 'Log already queued / synced. Duplicate upload prevented.',
