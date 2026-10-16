@@ -277,33 +277,46 @@ export default function MobileLibraryAttendancePage() {
     });
   }, [refreshRecords]);
 
-  // FIX: Accurate Desktop Cursor Alignment for Signature Canvas
-  useEffect(() => {
-    if (isSignatureExpanded && signatureCanvasRef.current) {
-      const canvas = signatureCanvasRef.current;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
+  // Small Embedded Signature Canvas Initialization & DPI Scaling
+  const initSmallCanvas = useCallback(() => {
+    const canvas = signatureCanvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
-      const rect = canvas.getBoundingClientRect();
-      const dpr = Math.max(1, window.devicePixelRatio || 1);
+    const rect = canvas.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) return;
+    const dpr = Math.max(1, window.devicePixelRatio || 1);
 
-      // Lock internal buffer size to display dimensions with device pixel ratio
-      canvas.width = Math.round(rect.width * dpr);
-      canvas.height = Math.round(rect.height * dpr);
+    canvas.width = Math.round(rect.width * dpr);
+    canvas.height = Math.round(rect.height * dpr);
+    canvas.style.width = `${rect.width}px`;
+    canvas.style.height = `${rect.height}px`;
 
-      // Explicitly lock CSS display width & height to match rect
-      canvas.style.width = `${rect.width}px`;
-      canvas.style.height = `${rect.height}px`;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.lineWidth = 3.5 * dpr;
+    ctx.strokeStyle = '#000000'; // Pure black ink
 
-      // Clear buffer to ensure pure alpha-transparent background
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.lineWidth = 3.5 * dpr;
-      ctx.strokeStyle = '#000000'; // Pure black ink stroke
+    // If a signature already exists (e.g. from Full Screen mode), render it on small canvas
+    if (librarianSignature) {
+      const img = new Image();
+      img.onload = () => {
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      };
+      img.src = librarianSignature;
     }
-  }, [isSignatureExpanded]);
+  }, [librarianSignature]);
+
+  useEffect(() => {
+    const timer = setTimeout(initSmallCanvas, 60);
+    window.addEventListener('resize', initSmallCanvas);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', initSmallCanvas);
+    };
+  }, [initSmallCanvas]);
 
   // Accurate Coordinate Mapper: Translates client cursor to exact internal canvas buffer coordinates
   const getCanvasCoords = (e: React.PointerEvent<HTMLCanvasElement>) => {
@@ -356,31 +369,25 @@ export default function MobileLibraryAttendancePage() {
         e.currentTarget.releasePointerCapture(e.pointerId);
       } catch (err) { }
       setIsDrawing(false);
+      const canvas = signatureCanvasRef.current;
+      if (canvas) {
+        const sigData = canvas.toDataURL('image/png');
+        setLibrarianSignature(sigData);
+        setHasDrawnOnCanvas(true);
+      }
     }
   };
 
   const handleResetSignature = () => {
     const canvas = signatureCanvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
     setHasDrawnOnCanvas(false);
     setLibrarianSignature('');
-  };
-
-  const handleDoneSignature = () => {
-    if (!hasDrawnOnCanvas) {
-      alert('Librarian: Please sign on the line before tapping Done.');
-      return;
-    }
-    const canvas = signatureCanvasRef.current;
-    if (!canvas) return;
-
-    const sigData = canvas.toDataURL('image/png');
-    setLibrarianSignature(sigData);
-    setIsSignatureExpanded(false);
   };
 
   // Full Screen Signature Initialization & Drawing Engine
@@ -483,7 +490,23 @@ export default function MobileLibraryAttendancePage() {
     if (!canvas) return;
     const sigData = canvas.toDataURL('image/png');
     setLibrarianSignature(sigData);
+    setHasDrawnOnCanvas(true);
     setIsFullScreenSignature(false);
+
+    // Sync onto small embedded canvas
+    if (signatureCanvasRef.current) {
+      const smallCanvas = signatureCanvasRef.current;
+      const ctx = smallCanvas.getContext('2d');
+      if (ctx) {
+        ctx.clearRect(0, 0, smallCanvas.width, smallCanvas.height);
+        const img = new Image();
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, smallCanvas.width, smallCanvas.height);
+        };
+        img.src = sigData;
+      }
+    }
+
     setToastMessage('✓ Librarian signature saved successfully!');
     setTimeout(() => setToastMessage(null), 3000);
   };
@@ -1046,7 +1069,7 @@ export default function MobileLibraryAttendancePage() {
               />
             </div>
 
-            {/* Signature Section */}
+            {/* Signature Section: Embedded Small Box + Full Screen Option */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
@@ -1054,67 +1077,80 @@ export default function MobileLibraryAttendancePage() {
                   <span>Librarian Touch Signature</span>
                   <span className="text-rose-500">*</span>
                 </label>
-                {librarianSignature && !isSignatureExpanded && (
-                  <span className="text-[11px] text-emerald-700 font-bold flex items-center gap-1">
-                    <Check className="w-3.5 h-3.5 stroke-[2.5]" /> Verified Signature
-                  </span>
-                )}
+
+                <div className="flex items-center gap-2">
+                  {librarianSignature && (
+                    <button
+                      type="button"
+                      onClick={handleResetSignature}
+                      className="text-[11px] text-rose-600 hover:text-rose-700 font-bold flex items-center gap-1 transition"
+                      title="Clear Signature"
+                    >
+                      <RotateCcw className="w-3 h-3" />
+                      <span>Clear</span>
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setIsFullScreenSignature(true)}
+                    className="px-2.5 py-1 text-[11px] font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100/80 border border-emerald-200/80 rounded-lg transition flex items-center gap-1 shadow-2xs"
+                    title="Open Fullscreen Signature Pad"
+                  >
+                    <Maximize2 className="w-3.5 h-3.5 text-emerald-700" />
+                    <span>Full Screen</span>
+                  </button>
+                </div>
               </div>
 
-              {!librarianSignature && (
+              {/* Small Embedded Signature Canvas Box */}
+              <div className="relative w-full h-36 bg-white border-2 border-slate-200 hover:border-slate-300 focus-within:border-emerald-500 rounded-2xl overflow-hidden shadow-2xs group transition touch-none">
+                <canvas
+                  ref={signatureCanvasRef}
+                  onPointerDown={startDrawing}
+                  onPointerMove={draw}
+                  onPointerUp={stopDrawing}
+                  onPointerCancel={stopDrawing}
+                  className="w-full h-full cursor-crosshair block relative z-10 touch-none"
+                />
+
+                {/* Subtle Signature Baseline & Guide */}
+                <div className="absolute left-4 right-4 bottom-3 border-b border-dashed border-slate-200 pointer-events-none flex items-center justify-between text-[10px] text-slate-400 font-semibold select-none z-0">
+                  <span>✕ Sign on line (Finger / Stylus / Mouse)</span>
+                  <span className="text-[9px] text-slate-300">Ink: Black</span>
+                </div>
+
+                {/* Floating Full Screen Button inside canvas corner */}
                 <button
                   type="button"
                   onClick={() => setIsFullScreenSignature(true)}
-                  className="w-full py-4 px-4 rounded-2xl border-2 border-dashed border-emerald-500/40 bg-emerald-50/40 hover:bg-emerald-100/50 hover:border-emerald-500/60 active:scale-[0.99] text-emerald-900 font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2.5 shadow-2xs group"
+                  className="absolute top-2 right-2 z-20 px-2 py-1 bg-white/90 hover:bg-white border border-slate-200 text-slate-600 hover:text-emerald-700 rounded-lg text-[10px] font-bold flex items-center gap-1 shadow-2xs transition backdrop-blur-xs"
+                  title="If you need more signing space"
                 >
-                  <SignaturePenIcon className="w-5 h-5 text-emerald-700 group-hover:scale-110 transition" />
-                  <span>Tap to Sign (Open Full Screen Signature Mode)</span>
-                  <Maximize2 className="w-4 h-4 text-emerald-600 ml-1" />
+                  <Maximize2 className="w-3 h-3 text-emerald-600" />
+                  <span>Full Screen</span>
                 </button>
-              )}
 
-              {librarianSignature && (
-                <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-200 shadow-2xs">
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-36 relative flex items-center justify-center bg-white rounded-xl border border-slate-200/90 p-1">
-                      <img
-                        src={librarianSignature}
-                        alt="Signature"
-                        className="h-full w-full object-contain pointer-events-none"
-                        style={{ mixBlendMode: 'multiply' }}
-                      />
-                    </div>
-                    <div>
-                      <span className="text-xs font-bold text-slate-800 block">
-                        Signed by {librarianName && librarianName !== 'Head Librarian' ? librarianName : 'Librarian'}
-                      </span>
-                      <span className="text-[10px] text-emerald-700 font-semibold flex items-center gap-1">
-                        <Check className="w-3 h-3 stroke-[3]" /> Verified Signature
-                      </span>
-                    </div>
+                {/* Placeholder Guide when empty */}
+                {!librarianSignature && !hasDrawnOnCanvas && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-slate-400 gap-1 z-0">
+                    <SignaturePenIcon className="w-5 h-5 text-slate-300" />
+                    <span className="text-[11px] font-medium">Draw signature here</span>
+                    <span className="text-[9px] text-slate-400">or tap Full Screen if you need more space</span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => setIsFullScreenSignature(true)}
-                      className="px-3 py-1.5 text-xs font-bold text-slate-700 hover:text-slate-900 bg-white rounded-xl border border-slate-200 hover:bg-slate-50 transition shadow-2xs"
-                    >
-                      Re-sign
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setLibrarianSignature('');
-                        setHasDrawnFS(false);
-                      }}
-                      className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-xl transition"
-                      title="Clear Signature"
-                    >
-                      <RotateCcw className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-              )}
+                )}
+              </div>
+
+              {/* Status Note under signature */}
+              <div className="flex items-center justify-between px-1">
+                <span className="text-[10px] text-slate-400">
+                  Puwede mag-sign dito sa maliit, o i-tap ang Full Screen kung mas komportable.
+                </span>
+                {librarianSignature && (
+                  <span className="text-[10px] text-emerald-700 font-bold flex items-center gap-1">
+                    <Check className="w-3 h-3 stroke-[3]" /> Signature Verified
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
