@@ -21,6 +21,7 @@ import {
   RefreshCw,
   FileText,
   FolderOpen,
+  LogOut,
 } from 'lucide-react';
 
 import { CONFIG } from '@/config';
@@ -29,12 +30,14 @@ import {
   getLibraryConfig,
   saveLibraryConfig,
   getAttendanceRecords,
+  saveAttendanceRecord,
   deleteAttendanceRecord,
   exportAttendanceToCSV,
   getTotalPageViews,
   resetPageViews,
   getVisitorSessions,
   fetchLiveAttendanceRecords,
+  syncRecordToGoogleDriveAndSheets,
 } from '@/utils/libraryStorage';
 import { getCurrentGeoLocation } from '@/utils/geolocation';
 import { DigitalLibraryCard, toDirectDriveUrl } from '@/components/library/DigitalLibraryCard';
@@ -65,6 +68,7 @@ export default function LibraryAdminPortal() {
 
   // Active Admin Tab
   const [adminTab, setAdminTab] = useState<'map' | 'visitors' | 'logs'>('map');
+  const [passFilter, setPassFilter] = useState<'all' | 'active' | 'completed' | 'offsite'>('all');
 
   // Search & Modals
   const [searchQuery, setSearchQuery] = useState('');
@@ -134,6 +138,32 @@ export default function LibraryAdminPortal() {
       const updated = deleteAttendanceRecord(id);
       setRecords(updated);
     }
+  };
+
+  const handleAdminTimeOut = async (rec: LibraryAttendanceRecord) => {
+    const confirmed = confirm(`Record official Time Out / Checkout for ${rec.studentName}?`);
+    if (!confirmed) return;
+
+    const nowIso = new Date().toISOString();
+    const diffMs = new Date(nowIso).getTime() - new Date(rec.timeIn).getTime();
+    const durationMinutes = Math.max(1, Math.round(diffMs / (1000 * 60)));
+
+    const updated: LibraryAttendanceRecord = {
+      ...rec,
+      timeOut: nowIso,
+      durationMinutes,
+      status: 'completed',
+    };
+
+    saveAttendanceRecord(updated);
+    setRecords((prev) => prev.map((r) => (r.id === rec.id ? updated : r)));
+    if (inspectedRecord && inspectedRecord.id === rec.id) {
+      setInspectedRecord(updated);
+    }
+
+    try {
+      await syncRecordToGoogleDriveAndSheets(updated, config);
+    } catch (e) {}
   };
 
   const handleCalibrateCurrentGps = async () => {
@@ -224,6 +254,10 @@ export default function LibraryAdminPortal() {
 
   // Filtered Attendance Records (Admin sees ALL records, with On Coordinates vs Off-Site status)
   const filteredRecords = records.filter((r) => {
+    if (passFilter === 'active' && r.status !== 'active') return false;
+    if (passFilter === 'completed' && r.status !== 'completed') return false;
+    if (passFilter === 'offsite' && r.locationIn?.isWithinGeofence) return false;
+
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       return (
@@ -608,9 +642,54 @@ export default function LibraryAdminPortal() {
       {/* TAB 3: STUDENT ATTENDANCE CARDS ON COORDINATES */}
       {adminTab === 'logs' && (
         <div className="space-y-3">
+          {/* Quick Filter Chips */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <button
+              onClick={() => setPassFilter('all')}
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
+                passFilter === 'all'
+                  ? 'bg-slate-900 text-white shadow-xs'
+                  : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+              }`}
+            >
+              All ({records.length})
+            </button>
+            <button
+              onClick={() => setPassFilter('active')}
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1 ${
+                passFilter === 'active'
+                  ? 'bg-emerald-600 text-white shadow-xs'
+                  : 'bg-white text-emerald-700 hover:bg-emerald-50 border border-emerald-200'
+              }`}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              Active Inside ({records.filter((r) => r.status === 'active').length})
+            </button>
+            <button
+              onClick={() => setPassFilter('completed')}
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
+                passFilter === 'completed'
+                  ? 'bg-teal-700 text-white shadow-xs'
+                  : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+              }`}
+            >
+              Checked Out ({records.filter((r) => r.status === 'completed').length})
+            </button>
+            <button
+              onClick={() => setPassFilter('offsite')}
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
+                passFilter === 'offsite'
+                  ? 'bg-rose-700 text-white shadow-xs'
+                  : 'bg-white text-rose-700 hover:bg-rose-50 border border-rose-200'
+              }`}
+            >
+              Off-Site ({records.filter((r) => !r.locationIn?.isWithinGeofence).length})
+            </button>
+          </div>
+
           {filteredRecords.length === 0 ? (
             <div className="bg-white border border-slate-200 rounded-2xl p-8 text-center text-xs text-slate-500">
-              No on-site attendance passes recorded yet.
+              No on-site attendance passes match your current filter.
             </div>
           ) : (
             filteredRecords.map((r) => (
@@ -623,8 +702,13 @@ export default function LibraryAdminPortal() {
                     onClick={() => setInspectedRecord(r)}
                     className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0"
                   >
-                    {r.selfiePhotoBase64 ? (
-                      <img src={toDirectDriveUrl(r.selfiePhotoBase64)} alt="Selfie" referrerPolicy="no-referrer" className="w-full h-full object-cover" />
+                    {r.selfiePhotoBase64 || r.driveUrls?.selfieUrl ? (
+                      <img
+                        src={toDirectDriveUrl(r.driveUrls?.selfieUrl || r.selfiePhotoBase64)}
+                        alt="Selfie"
+                        referrerPolicy="no-referrer"
+                        className="w-full h-full object-cover"
+                      />
                     ) : (
                       <Users className="w-6 h-6 m-3 text-slate-400" />
                     )}
@@ -683,6 +767,17 @@ export default function LibraryAdminPortal() {
                   </div>
 
                   <div className="flex items-center gap-2">
+                    {r.status === 'active' && (
+                      <button
+                        onClick={() => handleAdminTimeOut(r)}
+                        className="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 font-semibold text-xs transition flex items-center gap-1"
+                        title="Force Time Out / Check Out student"
+                      >
+                        <LogOut className="w-3.5 h-3.5" />
+                        Time Out
+                      </button>
+                    )}
+
                     <button
                       onClick={() => setInspectedRecord(r)}
                       className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition flex items-center gap-1"

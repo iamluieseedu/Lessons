@@ -60,11 +60,14 @@ export function DigitalLibraryCard({
   const [isDownloading, setIsDownloading] = useState(false);
 
   const isCompleted = record.status === 'completed';
-  const imageToDisplay = cardImageUrl || record.digitalCardBase64;
+  const imageToDisplay = cardImageUrl || record.digitalCardBase64 || record.driveUrls?.cardUrl;
+  const selfieToDisplay = record.driveUrls?.selfieUrl || record.selfiePhotoBase64;
+  const bookToDisplay = record.driveUrls?.bookUrl || record.bookPhotoBase64;
+  const sigToDisplay = record.driveUrls?.sigUrl || record.librarianSignatureBase64;
 
   const handleDownload = async () => {
-    // Strictly restrict download to completed checkout (Time Out only!)
-    if (!isCompleted) {
+    // Strictly restrict download to completed checkout (Time Out only), unless Admin is downloading
+    if (!isCompleted && !isAdmin) {
       alert('Library Card download is only available upon Time Out.');
       return;
     }
@@ -264,9 +267,9 @@ export function DigitalLibraryCard({
               {/* Portrait Photo Frame */}
               <div className="relative flex-shrink-0">
                 <div className="w-24 sm:w-28 aspect-[3/4] rounded-xl overflow-hidden bg-slate-100 border-2 border-slate-200/90 shadow-2xs relative">
-                  {record.selfiePhotoBase64 ? (
+                  {selfieToDisplay ? (
                     <img
-                      src={toDirectDriveUrl(record.selfiePhotoBase64)}
+                      src={toDirectDriveUrl(selfieToDisplay)}
                       alt={record.studentName}
                       referrerPolicy="no-referrer"
                       className="w-full h-full object-cover"
@@ -316,10 +319,10 @@ export function DigitalLibraryCard({
 
             {/* Registered Material / Reading Item */}
             <div className="bg-white rounded-2xl p-3.5 border border-slate-200/90 shadow-xs flex items-center gap-3">
-              {record.bookPhotoBase64 ? (
+              {bookToDisplay ? (
                 <div className="w-12 h-14 rounded-lg overflow-hidden border border-slate-200 flex-shrink-0 shadow-2xs">
                   <img
-                    src={toDirectDriveUrl(record.bookPhotoBase64)}
+                    src={toDirectDriveUrl(bookToDisplay)}
                     alt="Book cover"
                     referrerPolicy="no-referrer"
                     className="w-full h-full object-cover"
@@ -413,7 +416,7 @@ export function DigitalLibraryCard({
                   {/* Clean natural signature line with 100% transparent ink stamp */}
                   <div className="relative w-36 sm:w-44 h-12 flex flex-col justify-end">
                     <img
-                      src={toDirectDriveUrl(record.librarianSignatureBase64)}
+                      src={toDirectDriveUrl(sigToDisplay)}
                       alt="Librarian Signature"
                       referrerPolicy="no-referrer"
                       className="absolute inset-0 w-full h-full object-contain pointer-events-none z-10"
@@ -438,10 +441,10 @@ export function DigitalLibraryCard({
                   {/* Selfie Box */}
                   <div className="p-2 rounded-xl bg-white border border-slate-200 flex flex-col gap-1.5 shadow-2xs">
                     <span className="text-[10px] font-extrabold text-slate-700">Student Photo</span>
-                    {record.selfiePhotoBase64 ? (
+                    {selfieToDisplay ? (
                       <div className="w-full aspect-[4/3] rounded-lg overflow-hidden bg-slate-100 relative border border-slate-200">
                         <img
-                          src={toDirectDriveUrl(record.selfiePhotoBase64)}
+                          src={toDirectDriveUrl(selfieToDisplay)}
                           alt="Selfie"
                           referrerPolicy="no-referrer"
                           className="w-full h-full object-cover"
@@ -467,10 +470,10 @@ export function DigitalLibraryCard({
                   {/* Book Photo Box */}
                   <div className="p-2 rounded-xl bg-white border border-slate-200 flex flex-col gap-1.5 shadow-2xs">
                     <span className="text-[10px] font-extrabold text-slate-700">Book Cover</span>
-                    {record.bookPhotoBase64 ? (
+                    {bookToDisplay ? (
                       <div className="w-full aspect-[4/3] rounded-lg overflow-hidden bg-slate-100 relative border border-slate-200">
                         <img
-                          src={toDirectDriveUrl(record.bookPhotoBase64)}
+                          src={toDirectDriveUrl(bookToDisplay)}
                           alt="Book"
                           referrerPolicy="no-referrer"
                           className="w-full h-full object-cover"

@@ -63,6 +63,7 @@ export interface LibraryAttendanceRecord {
     cardUrl?: string;
     bookUrl?: string;
     selfieUrl?: string;
+    sigUrl?: string;
   };
   notes?: string;
 }
