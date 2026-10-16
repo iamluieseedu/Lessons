@@ -185,8 +185,28 @@ export default function LibraryAdminPortal() {
   // Active visitors within last 15 minutes
   const activeCutoff = Date.now() - 15 * 60 * 1000;
   const activeVisitors = visitorSessions.filter((s) => s.lastActive >= activeCutoff);
-  const onSiteVisitors = visitorSessions.filter((s) => s.isAtLibrary);
   const onSiteAttendanceRecords = records.filter((r) => r.locationIn?.isWithinGeofence);
+  const activeAttendanceRecords = records.filter((r) => r.status === 'active' && r.locationIn?.isWithinGeofence);
+
+  // Active students standing on-site: merge active sessions and currently timed-in attendance passes
+  const onSiteVisitors = [
+    ...visitorSessions.filter((s) => s.isAtLibrary),
+    ...activeAttendanceRecords
+      .filter((r) => !visitorSessions.some((s) => s.studentId && s.studentId === r.studentId))
+      .map((r) => ({
+        id: r.id,
+        ipAddress: r.ipAddress || 'Student Device',
+        deviceType: 'Library Pass',
+        timestamp: new Date(r.timeIn).getTime(),
+        lastActive: new Date(r.timeIn).getTime(),
+        latitude: r.locationIn?.latitude || config.libraryLatitude,
+        longitude: r.locationIn?.longitude || config.libraryLongitude,
+        distanceMeters: r.locationIn?.distanceFromLibraryMeters || 0,
+        isAtLibrary: true,
+        studentId: r.studentId,
+        studentName: r.studentName,
+      })),
+  ];
 
   // Filtered on-site visitors (searched by name, ID, IP or device)
   const filteredVisitors = onSiteVisitors.filter((v) => {

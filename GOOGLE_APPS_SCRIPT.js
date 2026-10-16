@@ -77,8 +77,8 @@ function doGet(e) {
             purpose: String(purpose || "study"),
             bookTitle: String(bookTitle || "Library Resource"),
             status: status === "completed" ? "completed" : "active",
-            timeIn: timeIn ? new Date(timeIn).toISOString() : new Date().toISOString(),
-            timeOut: timeOut && timeOut !== "ACTIVE" ? new Date(timeOut).toISOString() : "",
+            timeIn: safeIsoDate_(timeIn, new Date().toISOString()),
+            timeOut: (status === "completed" && timeOut) ? safeIsoDate_(timeOut, "") : "",
             durationMinutes: parseInt(duration) || 0,
             locationIn: {
               latitude: 14.328171,
@@ -168,9 +168,9 @@ function doPost(e) {
     var cache = CacheService.getScriptCache();
     var actionKey = isTimeOutAction ? "timeout" : "timein";
     var cacheKeyStudent = dataStudentClean ? ("STUDENT_ACTION_" + dataStudentClean + "_" + actionKey) : "";
-    var cacheKeyRecord = dataIdClean ? ("RECORD_" + dataIdClean) : "";
+    var cacheKeyRecord = dataIdClean ? ("RECORD_" + actionKey + "_" + dataIdClean) : "";
 
-    // If this student or record was already received within the last 60 seconds, drop it immediately!
+    // If this student or record was already received within the last 60 seconds FOR THIS ACTION, drop it!
     if (cacheKeyStudent && cache.get(cacheKeyStudent)) {
       return ContentService.createTextOutput(JSON.stringify({
         status: "success",
@@ -186,9 +186,9 @@ function doPost(e) {
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
-    // Reserve cache keys for 60 seconds (or 300 seconds for record ID)
+    // Reserve cache keys for 60 seconds (blocks rapid double-clicks for the same action)
     if (cacheKeyStudent) cache.put(cacheKeyStudent, "ACTIVE", 60);
-    if (cacheKeyRecord) cache.put(cacheKeyRecord, "ACTIVE", 300);
+    if (cacheKeyRecord) cache.put(cacheKeyRecord, "ACTIVE", 60);
 
     // Force flush any pending spreadsheet operations immediately
     SpreadsheetApp.flush();
@@ -533,6 +533,30 @@ function toDirectImageUrl_(url) {
     return "https://drive.google.com/thumbnail?id=" + fileId + "&sz=w1000";
   }
   return trimmed;
+}
+
+/**
+ * Helper para ligtas na i-parse ang mga Date strings mula sa Google Sheets
+ * Hindi ito kailanman magtatapon ng RangeError: Invalid time value
+ */
+function safeIsoDate_(val, fallback) {
+  if (!val) return fallback || "";
+  if (val instanceof Date) {
+    if (!isNaN(val.getTime())) {
+      return val.toISOString();
+    }
+  }
+  var str = String(val).trim();
+  if (!str || str.toUpperCase().indexOf("ACTIVE") >= 0 || str.toUpperCase().indexOf("PENDING") >= 0) {
+    return fallback || "";
+  }
+  try {
+    var d = new Date(str);
+    if (!isNaN(d.getTime())) {
+      return d.toISOString();
+    }
+  } catch (e) {}
+  return fallback || str;
 }
 
 /**
