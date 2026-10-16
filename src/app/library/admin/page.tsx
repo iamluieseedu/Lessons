@@ -32,6 +32,7 @@ import {
   deleteAttendanceRecord,
   exportAttendanceToCSV,
   getTotalPageViews,
+  resetPageViews,
   getVisitorSessions,
   fetchLiveAttendanceRecords,
 } from '@/utils/libraryStorage';
@@ -404,9 +405,25 @@ export default function LibraryAdminPortal() {
         </div>
 
         <div className="bg-white border border-emerald-100 p-3 rounded-2xl shadow-xs">
-          <div className="text-[11px] font-semibold text-slate-500 flex items-center gap-1">
-            <Eye className="w-3.5 h-3.5 text-slate-600" />
-            Total Visits
+          <div className="text-[11px] font-semibold text-slate-500 flex items-center justify-between">
+            <span className="flex items-center gap-1">
+              <Eye className="w-3.5 h-3.5 text-slate-600" />
+              Total Visits
+            </span>
+            {totalPageViews > 0 && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (confirm('Reset total visits counter to 0?')) {
+                    resetPageViews();
+                    setTotalPageViews(0);
+                  }
+                }}
+                className="text-[9px] text-slate-400 hover:text-rose-500 transition underline"
+              >
+                Reset
+              </button>
+            )}
           </div>
           <div className="text-xl font-extrabold text-slate-900 mt-0.5">{totalPageViews}</div>
           <div className="text-[10px] text-slate-400">Library portal visits</div>

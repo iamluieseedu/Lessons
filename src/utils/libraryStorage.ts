@@ -203,6 +203,11 @@ export function incrementPageViews(): number {
   return current;
 }
 
+export function resetPageViews(): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(STORAGE_KEY_PAGE_VIEWS, '0');
+}
+
 export function recordVisitorSession(
   ip: string,
   location: any,

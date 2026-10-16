@@ -266,7 +266,12 @@ export default function MobileLibraryAttendancePage() {
       }
     }).catch(() => { });
 
-    incrementPageViews();
+    // Record page view only once per browser session/tab to avoid React StrictMode double-counting
+    if (typeof window !== 'undefined' && !sessionStorage.getItem('library_portal_session_visited')) {
+      sessionStorage.setItem('library_portal_session_visited', 'true');
+      incrementPageViews();
+    }
+
     fetchClientIpAddress().then((ip) => {
       setClientIp(ip);
     });
