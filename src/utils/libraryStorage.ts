@@ -394,10 +394,9 @@ export async function syncRecordToGoogleDriveAndSheets(
       record.librarianName && record.librarianName !== 'Head Librarian'
         ? record.librarianName
         : '',
-    // Base64 Images: Only upload selfie, book, and signature during initial Time In
-    // During Time Out, these are already stored in Google Drive; omitting them prevents duplicate uploads!
+    // Base64 Images: Selfie and signature uploaded at Time In; Book Photo uploaded at Time Out!
     selfiePhotoBase64: isTimeOut ? '' : (record.selfiePhotoBase64 || ''),
-    bookPhotoBase64: isTimeOut ? '' : (record.bookPhotoBase64 || ''),
+    bookPhotoBase64: record.bookPhotoBase64 || '',
     librarianSignatureBase64: isTimeOut ? '' : (record.librarianSignatureBase64 || ''),
     digitalCardBase64: record.digitalCardBase64 || '',
   };
@@ -553,7 +552,7 @@ export async function generateDigitalCardCanvas(
     ctx.textAlign = 'left';
 
     // Helper to draw an image safely onto canvas
-    const drawImageAsync = (dataUrl: string, x: number, y: number, w: number, h: number, radius = 8) => {
+    const drawImageAsync = (dataUrl: string, x: number, y: number, w: number, h: number, radius = 8, placeholderText = 'No Image Provided') => {
       return new Promise<void>((imgResolve) => {
         if (!dataUrl) {
           ctx.fillStyle = '#f8fafc';
@@ -563,9 +562,9 @@ export async function generateDigitalCardCanvas(
           ctx.fill();
           ctx.stroke();
           ctx.fillStyle = '#94a3b8';
-          ctx.font = '13px sans-serif';
+          ctx.font = '12px sans-serif';
           ctx.textAlign = 'center';
-          ctx.fillText('No Image Provided', x + w / 2, y + h / 2);
+          ctx.fillText(placeholderText, x + w / 2, y + h / 2);
           ctx.textAlign = 'left';
           imgResolve();
           return;
@@ -601,9 +600,9 @@ export async function generateDigitalCardCanvas(
     // Photos: Framed Formally
     Promise.all([
       // Student Portrait
-      drawImageAsync(record.selfiePhotoBase64, 40, 165, 200, 235, 8),
-      // Book Cover
-      drawImageAsync(record.bookPhotoBase64, 260, 165, 200, 235, 8),
+      drawImageAsync(record.selfiePhotoBase64, 40, 165, 200, 235, 8, 'Student Selfie'),
+      // Book Cover (Captured at Time Out)
+      drawImageAsync(record.bookPhotoBase64, 260, 165, 200, 235, 8, 'Book Photo (At Time Out)'),
     ]).then(() => {
       // Photo Labels (Clean formal institutional tags)
       ctx.fillStyle = '#475569';

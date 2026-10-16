@@ -240,23 +240,38 @@ function doPost(e) {
         sheet.getRange(targetRow, 11).setValue(durationFormatted);
         SpreadsheetApp.flush();
 
-        // If updated digital card pass is provided, update Drive pass and Col 16 hyperlink
+        var mainFolder = getMainDriveFolder_();
+        var todayStr = Utilities.formatDate(new Date(), Session.getScriptTimeZone() || "GMT+8", "yyyy-MM-dd");
+        var todayFolder = getOrCreateFolder_(todayStr, mainFolder);
+
+        // Kumuha ng malinis na pangalan ng student para sa filename
+        var studentNameFromRow = sheet.getRange(targetRow, 4).getValue() || "";
+        var nameCleanTimeout = (data.studentName || studentNameFromRow || "Student")
+          .toString()
+          .trim()
+          .replace(/\s+/g, "_")
+          .replace(/[^a-zA-Z0-9_-]/g, "");
+
+        var prefixTimeout = nameCleanTimeout + "_" + (data.id || (dataStudentClean + "_" + todayStr)).toString().replace(/[^a-zA-Z0-9_-]/g, "_");
+
+        // 1. Kung may Departure Book Photo sa Time Out, i-save sa Book_Photos folder at Col 14
+        if (data.bookPhotoBase64) {
+          try {
+            var bookFolder = getOrCreateFolder_("Book_Photos", todayFolder);
+            var bookFilename = prefixTimeout + "_Book.jpg";
+            var bookUrl = saveBase64Image_(bookFolder, data.bookPhotoBase64, bookFilename, "image/jpeg");
+            if (bookUrl) {
+              sheet.getRange(targetRow, 14).setValue('=HYPERLINK("' + bookUrl + '", "📖 View Book Photo")');
+            }
+          } catch (bookErr) {
+            console.error("Book photo update error during timeout: " + bookErr);
+          }
+        }
+
+        // 2. If updated digital card pass is provided, update Drive pass and Col 16 hyperlink
         if (data.digitalCardBase64) {
           try {
-            var mainFolder = getMainDriveFolder_();
-            var todayStr = Utilities.formatDate(new Date(), Session.getScriptTimeZone() || "GMT+8", "yyyy-MM-dd");
-            var todayFolder = getOrCreateFolder_(todayStr, mainFolder);
             var cardFolder = getOrCreateFolder_("Digital_Cards", todayFolder);
-
-            // Kumuha ng malinis na pangalan ng student para sa filename
-            var studentNameFromRow = sheet.getRange(targetRow, 4).getValue() || "";
-            var nameCleanTimeout = (data.studentName || studentNameFromRow || "Student")
-              .toString()
-              .trim()
-              .replace(/\s+/g, "_")
-              .replace(/[^a-zA-Z0-9_-]/g, "");
-
-            var prefixTimeout = nameCleanTimeout + "_" + (data.id || (dataStudentClean + "_" + todayStr)).toString().replace(/[^a-zA-Z0-9_-]/g, "_");
             var cardFilename = prefixTimeout + "_Card_Pass.png";
 
             // Deduplication: I-trash ang lumang active pass para 1 file lang ang manatili sa Digital_Cards folder
