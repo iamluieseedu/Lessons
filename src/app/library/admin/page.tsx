@@ -40,30 +40,7 @@ import { DigitalLibraryCard, toDirectDriveUrl } from '@/components/library/Digit
 
 // Dynamically import Leaflet Google Map component with no SSR to prevent window errors
 const LibraryAdminMap = dynamic(
-  () =>
-    import('@/components/library/LibraryAdminMap')
-      .then((m) => m.LibraryAdminMap || m.default)
-      .catch((err) => {
-        console.warn('ChunkLoadError on LibraryAdminMap, fallback active:', err);
-        return function FallbackMap() {
-          return (
-            <div className="h-80 w-full bg-slate-50 rounded-2xl flex flex-col items-center justify-center text-xs text-slate-500 gap-3 border border-slate-200 p-4 text-center">
-              <MapPin className="w-8 h-8 text-emerald-600 animate-pulse" />
-              <div>
-                <p className="font-bold text-slate-700">Map Component Ready</p>
-                <p className="text-[11px] text-slate-400">Map chunk was updating. Tap below to reload.</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => window.location.reload()}
-                className="px-3.5 py-1.5 bg-white border border-slate-200 rounded-lg text-slate-700 font-semibold text-xs hover:bg-slate-100 transition shadow-2xs"
-              >
-                Reload Map
-              </button>
-            </div>
-          );
-        };
-      }),
+  () => import('@/components/library/LibraryAdminMap'),
   {
     ssr: false,
     loading: () => (
