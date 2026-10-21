@@ -67,6 +67,81 @@ export default function DatabaseSystemsPage() {
           </p>
         </section>
 
+        {/* Hands-On Laboratory Manuals */}
+        <section className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 font-mono">
+                Practical Coursework
+              </span>
+              <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2 mt-0.5">
+                <Server className="w-5 h-5 text-emerald-600" />
+                <span>Hands-On Laboratory Activities</span>
+              </h2>
+            </div>
+            <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 self-start sm:self-auto">
+              2 Active Lab Tasks
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4">
+            {/* Part 2: Active continuation */}
+            <div className="p-5 rounded-2xl bg-gradient-to-br from-emerald-50/60 to-white border border-emerald-200/90 hover:border-emerald-300 transition shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-600 text-white">
+                    LAB PART 2
+                  </span>
+                  <span className="text-xs font-bold text-emerald-700">
+                    Week 8 &ndash; 9 Practical Lab
+                  </span>
+                </div>
+                <h3 className="text-base font-bold text-slate-900">
+                  Database Transactions, ACID Integrity &amp; Automated Triggers
+                </h3>
+                <p className="text-xs text-slate-600 leading-relaxed max-w-2xl">
+                  Continuation from the retail inventory schema: atomic multi-table sales with <code className="font-mono text-[11px] bg-slate-100 px-1 py-0.5 rounded">BEGIN/COMMIT/ROLLBACK</code>, granular savepoints, and automated triggers with <code className="font-mono text-[11px] bg-slate-100 px-1 py-0.5 rounded">RAISE(ABORT)</code>.
+                </p>
+              </div>
+
+              <Link
+                href="/courses/database-systems/transactions"
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition shrink-0"
+              >
+                <span>Launch Lab Manual</span>
+                <Play className="w-3.5 h-3.5 fill-current" />
+              </Link>
+            </div>
+
+            {/* Part 1: Previous Activity */}
+            <div className="p-5 rounded-2xl bg-slate-50/80 border border-slate-200 hover:border-slate-300 transition shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-200 text-slate-700">
+                    LAB PART 1
+                  </span>
+                  <span className="text-xs font-bold text-slate-500">
+                    Week 4 &ndash; 5 Practical Lab
+                  </span>
+                </div>
+                <h3 className="text-base font-bold text-slate-900">
+                  Advanced SQL Queries: Subqueries, Views &amp; Filtering
+                </h3>
+                <p className="text-xs text-slate-600 leading-relaxed max-w-2xl">
+                  Aggregate filtering with <code className="font-mono text-[11px] bg-white px-1 py-0.5 rounded border border-slate-200">HAVING</code>, single and multi-row subqueries, virtual <code className="font-mono text-[11px] bg-white px-1 py-0.5 rounded border border-slate-200">CREATE VIEW</code> tables, and index performance analysis with <code className="font-mono text-[11px] bg-white px-1 py-0.5 rounded border border-slate-200">EXPLAIN QUERY PLAN</code>.
+                </p>
+              </div>
+
+              <Link
+                href="/courses/database-systems/transactions"
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold transition shrink-0"
+              >
+                <span>Review Manual</span>
+              </Link>
+            </div>
+          </div>
+        </section>
+
         {/* 18-Week Syllabus Outline */}
         <section className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
           <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">

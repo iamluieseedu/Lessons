@@ -1041,6 +1041,23 @@ export default function Home() {
                 </button>
 
                 <button
+                  onClick={() => setTaskCourseFilter('database')}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer select-none ${
+                    taskCourseFilter === 'database'
+                      ? 'bg-emerald-600 text-white shadow-sm'
+                      : 'bg-white border border-slate-200 text-slate-600 hover:border-emerald-300 hover:text-emerald-700'
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                  <span>Database Systems</span>
+                  <span className={`text-[10px] font-mono font-black px-1.5 py-0.2 rounded-full ${
+                    taskCourseFilter === 'database' ? 'bg-emerald-800 text-white' : 'bg-emerald-50 text-emerald-700'
+                  }`}>
+                    {tasks.filter(t => t.courseFolderId === 'database').length}
+                  </span>
+                </button>
+
+                <button
                   onClick={() => setTaskCourseFilter('mobdev')}
                   className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer select-none ${
                     taskCourseFilter === 'mobdev'
@@ -1104,10 +1121,12 @@ export default function Home() {
                       // Dynamic course accent styling
                       const courseAccent = 
                         task.courseFolderId === 'webdev3' 
-                          ? { badge: 'bg-rose-50 text-rose-700 border-rose-200', bar: 'from-rose-500 via-red-500 to-indigo-500', hover: 'hover:border-rose-400/60' }
+                          ? { badge: 'bg-rose-50 text-rose-700 border-rose-200', bar: 'from-rose-500 via-red-500 to-indigo-500', hover: 'hover:border-rose-400/60', btn: 'from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 shadow-rose-600/20' }
                           : task.courseFolderId === 'mobdev'
-                          ? { badge: 'bg-sky-50 text-sky-700 border-sky-200', bar: 'from-sky-500 via-blue-500 to-indigo-500', hover: 'hover:border-sky-400/60' }
-                          : { badge: 'bg-teal-50 text-teal-700 border-teal-200', bar: 'from-teal-500 via-emerald-500 to-cyan-500', hover: 'hover:border-teal-400/60' };
+                          ? { badge: 'bg-sky-50 text-sky-700 border-sky-200', bar: 'from-sky-500 via-blue-500 to-indigo-500', hover: 'hover:border-sky-400/60', btn: 'from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 shadow-sky-600/20' }
+                          : task.courseFolderId === 'database'
+                          ? { badge: 'bg-emerald-50 text-emerald-700 border-emerald-200', bar: 'from-emerald-500 via-teal-500 to-cyan-500', hover: 'hover:border-emerald-400/60', btn: 'from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-emerald-600/20' }
+                          : { badge: 'bg-teal-50 text-teal-700 border-teal-200', bar: 'from-teal-500 via-emerald-500 to-cyan-500', hover: 'hover:border-teal-400/60', btn: 'from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 shadow-teal-600/20' };
 
                       return (
                         <div
@@ -1225,7 +1244,7 @@ export default function Home() {
                               href={task.launchUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex-1 py-2 px-3.5 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-lexend font-bold text-xs shadow-sm shadow-rose-600/20 active:scale-95 transition flex items-center justify-center gap-1.5"
+                              className={`flex-1 py-2 px-3.5 rounded-xl bg-gradient-to-r ${courseAccent.btn} text-white font-lexend font-bold text-xs shadow-sm active:scale-95 transition flex items-center justify-center gap-1.5`}
                             >
                               <FileCode className="w-3.5 h-3.5" />
                               <span>{task.actionText || 'Launch Lab Manual'}</span>
@@ -1251,18 +1270,27 @@ export default function Home() {
                       const isActive = task.status === 'active';
                       const isGraded = task.type === 'Graded Lab Task';
 
+                      const listAccent = 
+                        task.courseFolderId === 'webdev3' 
+                          ? { bar: 'from-rose-500 via-red-500 to-indigo-500', hover: 'hover:border-rose-400/60', text: 'group-hover:text-rose-600', icon: 'text-rose-500', btn: 'from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 shadow-rose-600/25' }
+                          : task.courseFolderId === 'mobdev'
+                          ? { bar: 'from-sky-500 via-blue-500 to-indigo-500', hover: 'hover:border-sky-400/60', text: 'group-hover:text-sky-600', icon: 'text-sky-500', btn: 'from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 shadow-sky-600/25' }
+                          : task.courseFolderId === 'database'
+                          ? { bar: 'from-emerald-500 via-teal-500 to-cyan-500', hover: 'hover:border-emerald-400/60', text: 'group-hover:text-emerald-600', icon: 'text-emerald-500', btn: 'from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-emerald-600/25' }
+                          : { bar: 'from-teal-500 via-emerald-500 to-cyan-500', hover: 'hover:border-teal-400/60', text: 'group-hover:text-teal-600', icon: 'text-teal-500', btn: 'from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 shadow-teal-600/25' };
+
                       return (
                         <div
                           key={task.id}
                           className={`bg-white border rounded-3xl p-6 shadow-sm transition-all duration-300 relative overflow-hidden group ${
                             isActive 
-                              ? 'border-slate-200/90 hover:border-rose-400/60 hover:shadow-xl' 
+                              ? `border-slate-200/90 ${listAccent.hover} hover:shadow-xl` 
                               : 'border-slate-200/60 bg-slate-50/50 opacity-90'
                           }`}
                         >
                           {/* Top Accent line for graded task */}
                           {isActive && (
-                            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-rose-500 via-red-500 to-indigo-500" />
+                            <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${listAccent.bar}`} />
                           )}
 
                           <div className="flex flex-col gap-5">
@@ -1378,7 +1406,7 @@ export default function Home() {
                                   href={task.launchUrl}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="w-full sm:w-auto py-3 px-6 rounded-2xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-lexend font-bold text-xs shadow-lg shadow-rose-600/25 active:scale-95 transition flex items-center justify-center gap-2"
+                                  className={`w-full sm:w-auto py-3 px-6 rounded-2xl bg-gradient-to-r ${listAccent.btn} text-white font-lexend font-bold text-xs shadow-lg active:scale-95 transition flex items-center justify-center gap-2`}
                                 >
                                   <FileCode className="w-4 h-4" />
                                   <span>{task.actionText || 'Launch Lab Manual'}</span>

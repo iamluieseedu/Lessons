@@ -22,6 +22,73 @@ export interface CourseTask {
 
 export const DEFAULT_TASKS: CourseTask[] = [
   {
+    id: 'database-lab-transactions-triggers',
+    courseFolderId: 'database',
+    courseCode: 'IT-DB1',
+    courseTitle: 'Fundamentals of Database Systems',
+    title: 'Database Transactions, ACID Integrity & Automated Triggers',
+    badge: 'Laboratory Manual • Practical Lab',
+    phaseTag: 'Part 2: Transactions & Triggers',
+    type: 'Graded Lab Task',
+    difficulty: 'Intermediate',
+    status: 'active',
+    duration: '60 - 90 mins',
+    weekAlignment: 'Week 8 - 9 Practical Lab',
+    description: 'Build upon your retail inventory database schema: execute atomic multi-table sales with BEGIN TRANSACTION, COMMIT, and ROLLBACK, configure granular SAVEPOINT recovery, and design automated triggers for stock deduction, audit logging, and RAISE(ABORT) constraint validation.',
+    objectives: [
+      'Extend the retail inventory schema with orders, order_items, and inventory_audit_log tables',
+      'Execute atomic sales transactions ensuring multi-table consistency with BEGIN and COMMIT',
+      'Demonstrate Atomicity failure recovery by rolling back uncommitted operations via ROLLBACK',
+      'Establish intermediate transaction recovery checkpoints using SAVEPOINT and ROLLBACK TO',
+      'Implement AFTER INSERT triggers on order_items for automatic stock deduction',
+      'Deploy AFTER UPDATE triggers on products for automated inventory audit logging',
+      'Prevent overselling and negative stock levels with BEFORE INSERT triggers using RAISE(ABORT)'
+    ],
+    deliverables: [
+      'Screenshot 1: Atomic COMMIT Output (Orders & Products stock deduction)',
+      'Screenshot 2: ROLLBACK Atomicity Proof (Simulated payment failure leaves zero orphans)',
+      'Screenshot 3: SAVEPOINT Partial Recovery (Rolling back bad updates without losing orders)',
+      'Screenshot 4: Automated Trigger Execution (Deduction & audit logging without manual UPDATE)',
+      'Screenshot 5: RAISE(ABORT) Interception (SQLite blocking over-quantity purchase)'
+    ],
+    techStack: ['SQLite', 'ACID Transactions', 'COMMIT / ROLLBACK', 'SAVEPOINT', 'Database Triggers'],
+    launchUrl: '/courses/database-systems/transactions',
+    actionText: 'Launch Transactions Lab',
+    isExternal: false
+  },
+  {
+    id: 'database-lab-advanced-queries',
+    courseFolderId: 'database',
+    courseCode: 'IT-DB1',
+    courseTitle: 'Fundamentals of Database Systems',
+    title: 'Advanced SQL Queries: Subqueries, Views & Filtering',
+    badge: 'Laboratory Manual • Part 1',
+    phaseTag: 'Part 1: Queries, Views & Indexes',
+    type: 'Graded Lab Task',
+    difficulty: 'Intermediate',
+    status: 'completed',
+    duration: '60 mins',
+    weekAlignment: 'Week 4 - 5 Practical Lab',
+    description: 'Explore advanced SQL data retrieval strategies on the retail inventory schema: filter aggregated summary groups using HAVING, write single and multi-row subqueries, encapsulate multi-table joins into virtual views, and optimize queries with B-Tree indexes.',
+    objectives: [
+      'Filter grouped aggregate data using the HAVING clause',
+      'Construct single-row and multi-row subqueries within WHERE and FROM clauses',
+      'Create, query, and drop virtual tables using database views (CREATE VIEW)',
+      'Optimize query performance and examine execution paths using database indexes (CREATE INDEX and EXPLAIN QUERY PLAN)'
+    ],
+    deliverables: [
+      'Screenshot 1: Query 1.1 Result (Filtered supplier inventory using HAVING)',
+      'Screenshot 2: Query 2.1 Result (Products priced above overall average)',
+      'Screenshot 3: Query 2.2 Result (Suppliers linked to Display Monitors via subquery)',
+      'Screenshot 4: View Creation & Query 3.2 Result (v_product_catalog filtered output)',
+      'Screenshot 5: Index & Execution Plan Result (EXPLAIN QUERY PLAN demonstrating index scan)'
+    ],
+    techStack: ['SQLite', 'HAVING Clause', 'Subqueries', 'Database Views', 'B-Tree Indexes'],
+    launchUrl: '/courses/database-systems/transactions',
+    actionText: 'Review SQL Queries Lab',
+    isExternal: false
+  },
+  {
     id: 'laravel-lab-part-3-eloquent',
     courseFolderId: 'webdev3',
     courseCode: 'IT-WD3',

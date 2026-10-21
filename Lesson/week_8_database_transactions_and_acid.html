@@ -1,0 +1,1542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Transactions & ACID Guarantees | Visual Masterclass</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #06b6d4;
+            --primary-glow: rgba(6, 182, 212, 0.2);
+            --primary-border: rgba(6, 182, 212, 0.35);
+            --emerald: #10b981;
+            --emerald-glow: rgba(16, 185, 129, 0.2);
+            --amber: #f59e0b;
+            --rose: #f43f5e;
+            --purple: #a855f7;
+            --bg-canvas: #030712;
+            --bg-card: #0f172a;
+            --bg-card-alt: #1e293b;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --code-bg: #050b18;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-canvas);
+            color: var(--text-primary);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* 1280x720 Presentation Scalable Viewport */
+        .slide-viewport {
+            width: 1280px;
+            height: 720px;
+            background: radial-gradient(circle at 10% 10%, #0f172a 0%, #030712 90%);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            box-shadow: 0 35px 80px rgba(0, 0, 0, 0.9), 0 0 40px rgba(6, 182, 212, 0.08);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            transform-origin: center center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        /* Slide Transition Animations */
+        .slide {
+            display: none;
+            flex-grow: 1;
+            padding: 26px 46px;
+            height: calc(100% - 100px);
+            opacity: 0;
+            transform: scale(0.985);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .slide::-webkit-scrollbar {
+            width: 6px;
+        }
+        .slide::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 4px;
+        }
+
+        /* Slide Header */
+        .slide-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 12px;
+            height: 44px;
+            flex-shrink: 0;
+        }
+
+        .slide-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .slide-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 23px;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .slide-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .module-badge {
+            background: var(--primary-glow);
+            color: var(--primary);
+            border: 1px solid var(--primary-border);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Slide Content Container */
+        .slide-body {
+            flex-grow: 1;
+            display: flex;
+            gap: 22px;
+            align-items: stretch;
+            height: calc(100% - 56px);
+        }
+
+        .col-left, .col-right {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow: hidden;
+        }
+
+        .col-wide { flex: 1.35; }
+        .col-narrow { flex: 0.85; }
+
+        /* Rich Cards */
+        .card {
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px 18px;
+            backdrop-filter: blur(10px);
+        }
+
+        .card-cyan { border-left: 4px solid var(--primary); }
+        .card-emerald { border-left: 4px solid var(--emerald); }
+        .card-rose { border-left: 4px solid var(--rose); }
+        .card-amber { border-left: 4px solid var(--amber); }
+        .card-purple { border-left: 4px solid var(--purple); }
+
+        .card-title {
+            font-size: 14.5px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #fff;
+        }
+
+        p, li {
+            font-size: 13px;
+            line-height: 1.55;
+            color: var(--text-secondary);
+        }
+
+        strong { color: #f1f5f9; }
+
+        ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        ul li {
+            position: relative;
+            padding-left: 18px;
+        }
+
+        ul li::before {
+            content: '▹';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        /* Code Blocks */
+        .code-box {
+            background: var(--code-bg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #cbd5e1;
+            overflow-x: auto;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 5px;
+        }
+
+        .sql-kw { color: #38bdf8; font-weight: 600; }
+        .sql-fn { color: #f43f5e; font-weight: 600; }
+        .sql-str { color: #a7f3d0; }
+        .sql-num { color: #fde047; }
+        .sql-cm { color: #64748b; font-style: italic; }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        /* Visual Table Comparison */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            text-align: left;
+        }
+        .data-table th {
+            background: rgba(255, 255, 255, 0.06);
+            color: #cbd5e1;
+            padding: 6px 10px;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .data-table td {
+            padding: 6px 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            color: #94a3b8;
+        }
+        .data-table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Interactive Simulator Styles */
+        .sim-container {
+            background: #020617;
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            border-radius: 12px;
+            padding: 16px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            height: 100%;
+        }
+
+        .sim-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sim-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            font-family: 'Fira Code', monospace;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #94a3b8;
+        }
+        .status-dot.active {
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+            animation: pulse 1.5s infinite;
+        }
+        .status-dot.danger {
+            background: var(--rose);
+            box-shadow: 0 0 10px var(--rose);
+            animation: pulse 0.7s infinite;
+        }
+        .status-dot.success {
+            background: var(--emerald);
+            box-shadow: 0 0 10px var(--emerald);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .ledger-row {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 14px;
+            align-items: center;
+        }
+
+        .account-card {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 14px;
+            text-align: center;
+        }
+        .account-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 2px;
+        }
+        .account-balance {
+            font-family: 'Outfit', sans-serif;
+            font-size: 26px;
+            font-weight: 800;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+        .account-diff {
+            font-size: 11px;
+            font-weight: 700;
+            height: 16px;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .sim-btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .sim-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 11.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .sim-btn:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-1px);
+        }
+        .sim-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+        .sim-btn-primary {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #020617;
+            font-weight: 700;
+        }
+        .sim-btn-primary:hover:not(:disabled) {
+            background: #22d3ee;
+        }
+        .sim-btn-danger {
+            background: var(--rose);
+            border-color: var(--rose);
+            color: #fff;
+        }
+        .sim-btn-success {
+            background: var(--emerald);
+            border-color: var(--emerald);
+            color: #020617;
+            font-weight: 700;
+        }
+
+        .sim-console {
+            background: #000;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+            color: #38bdf8;
+            height: 80px;
+            overflow-y: auto;
+            line-height: 1.5;
+        }
+
+        /* Slide Footer Controls */
+        .slide-footer {
+            height: 56px;
+            background: rgba(10, 15, 29, 0.95);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 35px;
+            position: relative;
+            z-index: 20;
+            flex-shrink: 0;
+        }
+
+        .progress-bar-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary) 0%, #38bdf8 50%, var(--emerald) 100%);
+            box-shadow: 0 0 10px var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-primary);
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .nav-btn:hover:not(:disabled) {
+            background: var(--primary);
+            color: #020617;
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .slide-selector {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-primary);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 12.5px;
+            cursor: pointer;
+            outline: none;
+        }
+        .slide-selector option {
+            background: #0f172a;
+            color: #fff;
+        }
+
+        .slide-counter {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            font-family: 'Fira Code', monospace;
+        }
+
+        .hero-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            height: 100%;
+            gap: 16px;
+        }
+        .hero-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 44px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #fff 30%, var(--primary) 70%, var(--purple) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.15;
+        }
+        .hero-desc {
+            max-width: 720px;
+            font-size: 16px;
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+        .hero-tags {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .tag-pill {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .image-box {
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #020617;
+        }
+        .image-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .callout {
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 12px;
+            line-height: 1.5;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .callout-amber {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: #fde68a;
+        }
+        .callout-rose {
+            background: rgba(244, 63, 94, 0.1);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+            color: #fecdd3;
+        }
+        .callout-emerald {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #a7f3d0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="slide-viewport">
+    
+    <!-- ===================================================================== -->
+    <!-- SLIDE 1: HERO COVER -->
+    <!-- ===================================================================== -->
+    <div class="slide active">
+        <div class="hero-wrap">
+            <div class="module-badge">
+                <i class="fa-solid fa-database"></i> Fundamentals of Database &bull; Week 8
+            </div>
+            <h1 class="hero-title">Database Transactions &amp; ACID Guarantees</h1>
+            <p class="hero-desc">
+                When you build real applications (Banking, E-Commerce, Flight Reservations), a single user action requires <strong>multiple database statements</strong>. Here is how databases ensure not a single row or peso ever gets corrupted.
+            </p>
+            <div class="hero-tags">
+                <span class="tag-pill"><i class="fa-solid fa-atom text-cyan-400"></i> Atomicity (All or Nothing)</span>
+                <span class="tag-pill"><i class="fa-solid fa-scale-balanced text-emerald-400"></i> Consistency</span>
+                <span class="tag-pill"><i class="fa-solid fa-shield-halved text-purple-400"></i> Isolation</span>
+                <span class="tag-pill"><i class="fa-solid fa-hard-drive text-amber-400"></i> Durability</span>
+                <span class="tag-pill"><i class="fa-solid fa-rotate-left text-rose-400"></i> ROLLBACK</span>
+            </div>
+            <div style="margin-top: 15px;">
+                <button class="nav-btn" onclick="nextSlide()" style="background: var(--primary); color: #020617;">
+                    Explore Lesson &amp; Interactive Demos <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- SLIDE 2: THE REAL-WORLD PROBLEM (GCASH / BANK TRANSFER OUTAGE) -->
+    <!-- ===================================================================== -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-title-wrap">
+                <div class="slide-title"><i class="fa-solid fa-triangle-exclamation text-rose"></i> Why Standard SQL Queries Fail in Real Life</div>
+                <div class="slide-subtitle">The GCash / Bank Transfer Scenario</div>
+            </div>
+            <div class="module-badge">Real-World Problem</div>
+        </div>
+        <div class="slide-body">
+            <div class="col-left col-wide">
+                <div class="card card-rose">
+                    <div class="card-title"><i class="fa-solid fa-money-bill-transfer"></i> The Action: Transferring ₱2,000 from Juan to Maria</div>
+                    <p>To move money between accounts, the database must execute two separate SQL commands:</p>
+                </div>
+                <div class="code-box">
+                    <div class="code-header"><span>Standard SQL Execution</span><span>⚠️ DANGEROUS WITHOUT TRANSACTIONS</span></div>
+<span class="sql-cm">-- Step 1: Deduct ₱2,000 from Juan's account (SUCCEEDS!)</span>
+<span class="sql-kw">UPDATE</span> accounts <span class="sql-kw">SET</span> balance = balance - <span class="sql-num">2000</span> <span class="sql-kw">WHERE</span> id = <span class="sql-num">101</span>;
+
+<span class="sql-cm">-- ⚡ [CRITICAL OUTAGE]: Server loses power or internet disconnects right here!</span>
+
+<span class="sql-cm">-- Step 2: Add ₱2,000 to Maria's account (NEVER RUNS!)</span>
+<span class="sql-kw">UPDATE</span> accounts <span class="sql-kw">SET</span> balance = balance + <span class="sql-num">2000</span> <span class="sql-kw">WHERE</span> id = <span class="sql-num">202</span>;
+                </div>
+                <div class="callout callout-rose">
+                    <i class="fa-solid fa-circle-xmark fa-lg"></i>
+                    <div>
+                        <strong>What just happened?</strong> Juan lost ₱2,000, but Maria never received it. The ₱2,000 vanished into thin air! Without transactions, databases are vulnerable to permanent financial corruption.
+                    </div>
+                </div>
+            </div>
+            <div class="col-right col-narrow">
+                <div class="card card-cyan" style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <div class="card-title"><i class="fa-solid fa-lightbulb"></i> What is a Transaction?</div>
+                        <p style="margin-bottom: 10px;">A transaction bundles multiple SQL statements into a single <strong>indivisible logical unit of work (LUW)</strong>.</p>
+                        
+                        <div class="card-title" style="color: var(--emerald);"><i class="fa-solid fa-shield-check"></i> The Golden Guarantee</div>
+                        <p>Either <strong>EVERY</strong> step completes successfully, or the entire operation is automatically cancelled and restored (<strong>ROLLBACK</strong>) as if nothing happened.</p>
+                    </div>
+                    <div class="callout callout-emerald">
+                        <i class="fa-solid fa-check-double"></i>
+                        <span>No half-done updates. No lost money. No corrupted records.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- SLIDE 3: VISUAL INFOGRAPHIC MAP -->
+    <!-- ===================================================================== -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-title-wrap">
+                <div class="slide-title"><i class="fa-solid fa-diagram-project text-cyan"></i> The Architecture of Database Transactions</div>
+                <div class="slide-subtitle">How ACID Protects Data from Memory to Storage</div>
+            </div>
+            <div class="module-badge">Architecture Overview</div>
+        </div>
+        <div class="slide-body">
+            <div class="image-box">
+                <img src="acid_transactions_diagram.jpg" alt="ACID Transactions Infographic" onerror="this.src='/acid_transactions_diagram.jpg'">
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- SLIDE 4: ATOMICITY EXPLAINED (ALL OR NOTHING) -->
+    <!-- ===================================================================== -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-title-wrap">
+                <div class="slide-title"><i class="fa-solid fa-atom text-cyan"></i> A &mdash; Atomicity: The "All or Nothing" Rule</div>
+                <div class="slide-subtitle">A transaction cannot be chopped into half-finished pieces</div>
+            </div>
+            <div class="module-badge">Pillar 1</div>
+        </div>
+        <div class="slide-body">
+            <div class="col-left">
+                <div class="card card-cyan">
+                    <div class="card-title">How Atomicity Works in SQL</div>
+                    <p>When you start a transaction, the database buffers your changes. It only makes them permanent if you reach the very end without an error.</p>
+                </div>
+                <div class="code-box">
+                    <div class="code-header"><span>Syntax Blueprint</span><span>TRANSACTION CONTROL</span></div>
+<span class="sql-kw">START TRANSACTION</span>;
+
+  <span class="sql-kw">UPDATE</span> accounts <span class="sql-kw">SET</span> balance = balance - <span class="sql-num">2000</span> <span class="sql-kw">WHERE</span> id = <span class="sql-num">101</span>;
+  <span class="sql-kw">UPDATE</span> accounts <span class="sql-kw">SET</span> balance = balance + <span class="sql-num">2000</span> <span class="sql-kw">WHERE</span> id = <span class="sql-num">202</span>;
+
+<span class="sql-cm">-- If ALL statements succeed:</span>
+<span class="sql-kw">COMMIT</span>;
+
+<span class="sql-cm">-- If ANY error, crash, or constraint violation happens:</span>
+<span class="sql-kw">ROLLBACK</span>;
+                </div>
+                <ul>
+                    <li><strong>COMMIT:</strong> Permanently saves all changes to disk.</li>
+                    <li><strong>ROLLBACK:</strong> Completely discards all changes and reverts the database to its exact initial state.</li>
+                </ul>
+            </div>
+            <div class="col-right">
+                <div class="card card-purple" style="height: 100%;">
+                    <div class="card-title"><i class="fa-solid fa-cookie-bite"></i> The Vending Machine Mental Model</div>
+                    <p style="margin-bottom: 12px;">Imagine buying chips from a vending machine:</p>
+                    <div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 12px; margin-bottom: 12px; font-size: 12.5px;">
+                        <strong>1. You insert ₱50:</strong> The machine holds your coin in the escrow buffer.<br>
+                        <strong>2. Coil turns:</strong> The snack drops through the beam sensor.<br>
+                        <strong>3. Success (COMMIT):</strong> The sensor detects the bag, drops your coin into the vault, and completes the sale.<br>
+                        <strong>4. Jammed (ROLLBACK):</strong> If the snack gets stuck, the machine <em>immediately refunds your ₱50</em>!
+                    </div>
+                    <div class="callout callout-emerald">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>The machine <strong>NEVER</strong> keeps your money while leaving you empty-handed. That is pure Atomicity!</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- SLIDE 5: CONSISTENCY EXPLAINED (PRESERVING RULES) -->
+    <!-- ===================================================================== -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-title-wrap">
+                <div class="slide-title"><i class="fa-solid fa-scale-balanced text-emerald"></i> C &mdash; Consistency: Preserving Database Rules</div>
+                <div class="slide-subtitle">Transactions can only take the DB from one valid state to another</div>
+            </div>
+            <div class="module-badge">Pillar 2</div>
+        </div>
+        <div class="slide-body">
+            <div class="col-left">
+                <div class="card card-emerald">
+                    <div class="card-title">What is Consistency?</div>
+                    <p>A database contains integrity rules: <strong>Primary Keys</strong>, <strong>Foreign Keys</strong>, and <strong>CHECK Constraints</strong>. A transaction is forbidden from violating any rule.</p>
+                </div>
+                <ul>
+                    <li><strong>No Negative Balances:</strong> <code>CHECK (balance &gt;= 0)</code> prevents anyone from withdrawing more than they own.</li>
+                    <li><strong>Conservation of Money:</strong> The total funds in the banking system must stay identical before and after any transfer.</li>
+                    <li><strong>Orphan Prevention:</strong> Foreign keys ensure you cannot create an order item for a product ID that doesn't exist.</li>
+                </ul>
+                <div class="callout callout-amber" style="margin-top: 6px;">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>If an update attempts to set a balance to -₱500, the DBMS halts the query instantly and forces an automatic rollback.</span>
+                </div>
+            </div>
+            <div class="col-right">
+                <div class="card card-cyan" style="height: 100%;">
+                    <div class="card-title"><i class="fa-solid fa-table"></i> Before &amp; After State Invariant</div>
+                    <table class="data-table" style="margin-bottom: 12px;">
+                        <thead>
+                            <tr>
+                                <th>Account</th>
+                                <th>Before Transfer</th>
+                                <th>After Transfer</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Juan (101)</td>
+                                <td>₱10,000</td>
+                                <td style="color: var(--primary);">₱8,000</td>
+                            </tr>
+                            <tr>
+                                <td>Maria (202)</td>
+                                <td>₱3,000</td>
+                                <td style="color: var(--primary);">₱5,000</td>
+                            </tr>
+                            <tr style="font-weight: bold; background: rgba(16, 185, 129, 0.1);">
+                                <td>Total Funds</td>
+                                <td>₱13,000</td>
+                                <td style="color: var(--emerald);">₱13,000 (Preserved!)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p style="font-size: 12px;"><strong>Rule Enforced:</strong> Total money in the system is conserved. Zero phantom money was created or lost.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- SLIDE 6: ISOLATION & CONCURRENCY (SHOOPEE / CONCERT TICKETS) -->
+    <!-- ===================================================================== -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-title-wrap">
+                <div class="slide-title"><i class="fa-solid fa-shield-halved text-purple"></i> I &mdash; Isolation: Handling Concurrent Users</div>
+                <div class="slide-subtitle">Shopee Flash Sales &amp; Concert Ticket Booking Race Conditions</div>
+            </div>
+            <div class="module-badge">Pillar 3</div>
+        </div>
+        <div class="slide-body">
+            <div class="col-left col-wide">
+                <div class="card card-purple">
+                    <div class="card-title">The Concurrency Nightmare (Race Conditions)</div>
+                    <p>Imagine there is only <strong>1 iPhone remaining</strong> in stock during a 12:00 midnight Flash Sale. Two buyers (User A and User B) click "Place Order" at the exact same millisecond!</p>
+                </div>
+                <div class="grid-2">
+                    <div class="card" style="padding: 10px; border-left: 3px solid var(--rose);">
+                        <strong style="color: var(--rose);"><i class="fa-solid fa-xmark"></i> Without Isolation:</strong>
+                        <p style="font-size: 11.5px; margin-top: 4px;">Both see stock = 1 $\to$ both orders succeed $\to$ stock drops to -1! Two customers paid, but the company only has 1 phone!</p>
+                    </div>
+                    <div class="card" style="padding: 10px; border-left: 3px solid var(--emerald);">
+                        <strong style="color: var(--emerald);"><i class="fa-solid fa-check"></i> With Isolation (Row Locks):</strong>
+                        <p style="font-size: 11.5px; margin-top: 4px;">User A's transaction locks the row. User B waits in line until A commits. Then B is told: "Out of Stock".</p>
+                    </div>
+                </div>
+                <div class="code-box" style="margin-top: 4px;">
+                    <div class="code-header"><span>Pessimistic Locking in SQL</span></div>
+<span class="sql-cm">-- Locks the stock row so no one else can read or touch it until we COMMIT!</span>
+<span class="sql-kw">SELECT</span> stock_qty <span class="sql-kw">FROM</span> products <span class="sql-kw">WHERE</span> id = <span class="sql-num">99</span> <span class="sql-kw">FOR UPDATE</span>;
+                </div>
+            </div>
+            <div class="col-right col-narrow">
+                <div class="card card-cyan" style="height: 100%;">
+                    <div class="card-title"><i class="fa-solid fa-layer-group"></i> What is a "Dirty Read"?</div>
+                    <p style="font-size: 12px; margin-bottom: 8px;">A <strong>Dirty Read</strong> happens when User B reads uncommitted changes made by User A.</p>
+                    <div style="background: rgba(0,0,0,0.3); border-radius: 6px; padding: 10px; font-size: 11.5px;">
+                        1. Juan transfers ₱5,000 to Maria.<br>
+                        2. Maria's screen immediately shows ₱5,000.<br>
+                        3. Juan's transaction errors out and ROLS BACK.<br>
+                        4. Maria tries to spend money that was never truly committed!
+                    </div>
+                    <p style="font-size: 12px; margin-top: 8px; color: var(--primary);"><strong>Isolation prevents this:</strong> Other users only see committed data.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- SLIDE 7: DURABILITY & WRITE-AHEAD LOGGING (WAL) -->
+    <!-- ===================================================================== -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-title-wrap">
+                <div class="slide-title"><i class="fa-solid fa-hard-drive text-amber"></i> D &mdash; Durability: Surviving Power Cuts &amp; Reboots</div>
+                <div class="slide-subtitle">Once Committed, Data is Written to Non-Volatile Disk Forever</div>
+            </div>
+            <div class="module-badge">Pillar 4</div>
+        </div>
+        <div class="slide-body">
+            <div class="col-left">
+                <div class="card card-amber">
+                    <div class="card-title">What is Durability?</div>
+                    <p>Once you receive the message <strong>"Transaction Committed Successfully"</strong>, the changes are permanent. Even if an earthquake unplugged the database server 1 millisecond later, the data is completely safe.</p>
+                </div>
+                <ul>
+                    <li><strong>RAM is Volatile:</strong> Data stored only in memory disappears the instant electricity drops.</li>
+                    <li><strong>Write-Ahead Logging (WAL):</strong> Before writing to the complex database tables, the engine appends the transaction changes to an ultra-fast, append-only disk log file.</li>
+                    <li><strong>Crash Recovery:</strong> When the server reboots:
+                        <ul>
+                            <li style="margin-top: 3px;"><strong>REDO Phase:</strong> Replays all committed transactions from the WAL log.</li>
+                            <li><strong>UNDO Phase:</strong> Erases any incomplete, uncommitted transactions.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-right">
+                <div class="card card-cyan" style="height: 100%;">
+                    <div class="card-title"><i class="fa-solid fa-server"></i> The 2-Tier Storage Flow</div>
+                    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 6px;">
+                        <div style="background: rgba(244, 63, 94, 0.1); border: 1px solid rgba(244, 63, 94, 0.3); border-radius: 8px; padding: 10px;">
+                            <strong style="color: var(--rose);"><i class="fa-solid fa-microchip"></i> RAM (Volatile Memory)</strong>
+                            <p style="font-size: 11.5px; margin-top: 2px;">Blazing fast, but wipes clean during power failure.</p>
+                        </div>
+                        <div style="text-align: center; color: var(--primary);"><i class="fa-solid fa-arrow-down"></i> Flush to Disk on COMMIT</div>
+                        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 10px;">
+                            <strong style="color: var(--emerald);"><i class="fa-solid fa-hard-drive"></i> NVMe SSD / Disk (Non-Volatile)</strong>
+                            <p style="font-size: 11.5px; margin-top: 2px;">Guaranteed to survive crashes, reboots, and power cuts.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- SLIDE 8: INTERACTIVE SIMULATION 1: LIVE BANK TRANSFER & OUTAGE -->
+    <!-- ===================================================================== -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-title-wrap">
+                <div class="slide-title"><i class="fa-solid fa-flask text-cyan"></i> Live Simulation: Bank Transfer &amp; Server Crash</div>
+                <div class="slide-subtitle">Experience how Atomicity and Rollback save funds in real time</div>
+            </div>
+            <div class="module-badge">Interactive Simulator 1</div>
+        </div>
+        <div class="slide-body">
+            <div class="sim-container" style="width: 100%;">
+                <div class="sim-header">
+                    <div>
+                        <strong style="color: #fff; font-size: 14px;">Live Relational Ledger Session</strong>
+                        <p style="font-size: 11.5px; color: var(--text-muted);">Transfer Amount: <span style="color: var(--primary); font-weight: 700;">₱2,000.00</span></p>
+                    </div>
+                    <div class="sim-status" id="sim1-status-pill">
+                        <span class="status-dot" id="sim1-dot"></span>
+                        <span id="sim1-status-text">SESSION IDLE (AUTOCOMMIT ACTIVE)</span>
+                    </div>
+                </div>
+
+                <div class="ledger-row">
+                    <div class="account-card" id="card-juan">
+                        <div class="account-name"><i class="fa-solid fa-user"></i> Sender: Juan Cruz (ID: 101)</div>
+                        <div class="account-balance" id="bal-juan">₱10,000.00</div>
+                        <div class="account-diff" id="diff-juan" style="color: var(--rose);"></div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                        <i class="fa-solid fa-arrow-right-arrow-left fa-2x" style="color: var(--text-muted);" id="sim1-arrow"></i>
+                        <span style="font-size: 10.5px; font-weight: 700; color: var(--text-muted);" id="sim1-tx-state">NO ACTIVE TX</span>
+                    </div>
+                    <div class="account-card" id="card-maria">
+                        <div class="account-name"><i class="fa-solid fa-user"></i> Receiver: Maria Santos (ID: 202)</div>
+                        <div class="account-balance" id="bal-maria">₱3,000.00</div>
+                        <div class="account-diff" id="diff-maria" style="color: var(--emerald);"></div>
+                    </div>
+                </div>
+
+                <div class="sim-btn-group">
+                    <button class="sim-btn sim-btn-primary" id="btn-step1" onclick="sim1Step1()">
+                        1. START TRANSACTION
+                    </button>
+                    <button class="sim-btn" id="btn-step2" onclick="sim1Step2()" disabled>
+                        2. Debit Juan (-₱2,000)
+                    </button>
+                    <button class="sim-btn sim-btn-danger" id="btn-crash" onclick="sim1Crash()" disabled>
+                        ⚡ 3. SIMULATE POWER CRASH!
+                    </button>
+                    <button class="sim-btn sim-btn-primary" id="btn-step3" onclick="sim1Step3()" disabled>
+                        4. Credit Maria (+₱2,000)
+                    </button>
+                    <button class="sim-btn sim-btn-success" id="btn-commit" onclick="sim1Commit()" disabled>
+                        5. COMMIT
+                    </button>
+                    <button class="sim-btn sim-btn-danger" id="btn-rollback" onclick="sim1Rollback('USER_MANUAL')" disabled>
+                        <i class="fa-solid fa-rotate-left"></i> ROLLBACK
+                    </button>
+                    <button class="sim-btn" onclick="sim1Reset()" style="margin-left: auto;">
+                        <i class="fa-solid fa-arrows-rotate"></i> Reset
+                    </button>
+                </div>
+
+                <div class="sim-console" id="sim1-console">
+[READY]: Click '1. START TRANSACTION' to begin the financial ledger demonstration.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- SLIDE 9: INTERACTIVE SIMULATION 2: SAVEPOINT & PARTIAL ROLLBACK -->
+    <!-- ===================================================================== -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-title-wrap">
+                <div class="slide-title"><i class="fa-solid fa-bookmark text-amber"></i> Live Simulation: SAVEPOINT &amp; Partial Rollback</div>
+                <div class="slide-subtitle">Undo mistakes without having to cancel the entire shopping cart</div>
+            </div>
+            <div class="module-badge">Interactive Simulator 2</div>
+        </div>
+        <div class="slide-body">
+            <div class="col-left">
+                <div class="card card-amber">
+                    <div class="card-title">What is a SAVEPOINT?</div>
+                    <p>Normally, a <code>ROLLBACK</code> wipes out <em>everything</em> in the transaction. A <strong>SAVEPOINT</strong> creates a checkpoint in the middle of your work so you can roll back <strong>only the flawed step</strong>.</p>
+                </div>
+                <div class="code-box">
+                    <div class="code-header"><span>SQL Syntax</span></div>
+<span class="sql-kw">START TRANSACTION</span>;
+  <span class="sql-kw">INSERT INTO</span> cart <span class="sql-kw">VALUES</span> (<span class="sql-str">'Keyboard'</span>, <span class="sql-num">1200</span>);
+  <span class="sql-kw">SAVEPOINT</span> after_keyboard;
+
+  <span class="sql-cm">-- User adds invalid item (e.g. out-of-stock GPU)</span>
+  <span class="sql-kw">INSERT INTO</span> cart <span class="sql-kw">VALUES</span> (<span class="sql-str">'RTX 4090'</span>, <span class="sql-num">95000</span>);
+
+  <span class="sql-cm">-- Roll back ONLY to savepoint! Keeps the Keyboard!</span>
+  <span class="sql-kw">ROLLBACK TO</span> after_keyboard;
+<span class="sql-kw">COMMIT</span>;
+                </div>
+            </div>
+            <div class="col-right">
+                <div class="sim-container" style="height: 100%;">
+                    <div class="sim-header">
+                        <strong style="color: #fff; font-size: 13.5px;">E-Commerce Checkout Cart</strong>
+                        <span id="sim2-cart-total" style="color: var(--primary); font-family: 'Fira Code', monospace; font-size: 12px; font-weight: 700;">Cart: ₱0 (0 items)</span>
+                    </div>
+                    <div id="sim2-items-list" style="display: flex; flex-direction: column; gap: 6px; min-height: 100px; background: rgba(0,0,0,0.3); border-radius: 8px; padding: 10px;">
+                        <span style="color: var(--text-muted); font-size: 12px; font-style: italic;">Cart is empty.</span>
+                    </div>
+                    <div class="sim-btn-group">
+                        <button class="sim-btn sim-btn-primary" onclick="sim2AddItem('Mechanical Keyboard', 1200)">
+                            + Add Keyboard (₱1,200)
+                        </button>
+                        <button class="sim-btn" onclick="sim2SetSavepoint()">
+                            <i class="fa-solid fa-bookmark"></i> Set SAVEPOINT
+                        </button>
+                        <button class="sim-btn sim-btn-danger" onclick="sim2AddInvalidItem()">
+                            + Add Out-of-Stock Item!
+                        </button>
+                        <button class="sim-btn" onclick="sim2RollbackSavepoint()" id="btn-sim2-rb" disabled>
+                            <i class="fa-solid fa-rotate-left"></i> Rollback to Savepoint
+                        </button>
+                        <button class="sim-btn sim-btn-success" onclick="sim2Commit()">
+                            <i class="fa-solid fa-check"></i> COMMIT Cart
+                        </button>
+                    </div>
+                    <div class="sim-console" id="sim2-console" style="height: 65px;">
+[CART READY]: Add an item to start the transaction session.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- SLIDE 10: BACKEND CODE PATTERNS (PHP / PDO & NODE.JS) -->
+    <!-- ===================================================================== -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-title-wrap">
+                <div class="slide-title"><i class="fa-solid fa-code text-cyan"></i> How Backend Developers Use Transactions</div>
+                <div class="slide-subtitle">Production Code in PHP (Laravel/PDO) and Node.js</div>
+            </div>
+            <div class="module-badge">Production Code</div>
+        </div>
+        <div class="slide-body">
+            <div class="col-left">
+                <div class="card card-cyan">
+                    <div class="card-title"><i class="fa-brands fa-php"></i> PHP / PDO Pattern (try ... catch)</div>
+                </div>
+                <div class="code-box">
+<span class="sql-kw">&lt;?php</span>
+<span class="sql-kw">try</span> {
+    <span class="sql-str">$pdo</span>-&gt;<span class="sql-fn">beginTransaction</span>();
+
+    <span class="sql-str">$stmt1</span> = <span class="sql-str">$pdo</span>-&gt;<span class="sql-fn">prepare</span>(<span class="sql-str">"UPDATE accounts SET balance = balance - ? WHERE id = ?"</span>);
+    <span class="sql-str">$stmt1</span>-&gt;<span class="sql-fn">execute</span>([<span class="sql-num">2000</span>, <span class="sql-num">101</span>]);
+
+    <span class="sql-str">$stmt2</span> = <span class="sql-str">$pdo</span>-&gt;<span class="sql-fn">prepare</span>(<span class="sql-str">"UPDATE accounts SET balance = balance + ? WHERE id = ?"</span>);
+    <span class="sql-str">$stmt2</span>-&gt;<span class="sql-fn">execute</span>([<span class="sql-num">2000</span>, <span class="sql-num">202</span>]);
+
+    <span class="sql-cm">// Both succeeded! Make it permanent:</span>
+    <span class="sql-str">$pdo</span>-&gt;<span class="sql-fn">commit</span>();
+} <span class="sql-kw">catch</span> (<span class="sql-fn">Exception</span> <span class="sql-str">$e</span>) {
+    <span class="sql-cm">// If ANY error occurred, undo everything!</span>
+    <span class="sql-str">$pdo</span>-&gt;<span class="sql-fn">rollBack</span>();
+}
+                </div>
+            </div>
+            <div class="col-right">
+                <div class="card card-emerald">
+                    <div class="card-title"><i class="fa-brands fa-node-js"></i> Node.js / PostgreSQL Pattern</div>
+                </div>
+                <div class="code-box">
+<span class="sql-kw">const</span> client = <span class="sql-kw">await</span> pool.<span class="sql-fn">connect</span>();
+<span class="sql-kw">try</span> {
+    <span class="sql-kw">await</span> client.<span class="sql-fn">query</span>(<span class="sql-str">'BEGIN'</span>);
+
+    <span class="sql-kw">await</span> client.<span class="sql-fn">query</span>(
+        <span class="sql-str">'UPDATE accounts SET balance = balance - $1 WHERE id = $2'</span>,
+        [<span class="sql-num">2000</span>, <span class="sql-num">101</span>]
+    );
+    <span class="sql-kw">await</span> client.<span class="sql-fn">query</span>(
+        <span class="sql-str">'UPDATE accounts SET balance = balance + $1 WHERE id = $2'</span>,
+        [<span class="sql-num">2000</span>, <span class="sql-num">202</span>]
+    );
+
+    <span class="sql-kw">await</span> client.<span class="sql-fn">query</span>(<span class="sql-str">'COMMIT'</span>);
+} <span class="sql-kw">catch</span> (err) {
+    <span class="sql-kw">await</span> client.<span class="sql-fn">query</span>(<span class="sql-str">'ROLLBACK'</span>);
+} <span class="sql-kw">finally</span> {
+    client.<span class="sql-fn">release</span>();
+}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- SLIDE 11: HANDS-ON STUDENT LAB ACTIVITY SPECIFICATION -->
+    <!-- ===================================================================== -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-title-wrap">
+                <div class="slide-title"><i class="fa-solid fa-laptop-code text-emerald"></i> Hands-On Lab: The Black Friday Order System</div>
+                <div class="slide-subtitle">Write your own fault-tolerant checkout transaction in SQL</div>
+            </div>
+            <div class="module-badge">Lab Guide</div>
+        </div>
+        <div class="slide-body">
+            <div class="col-left col-wide">
+                <div class="card card-emerald">
+                    <div class="card-title">Lab Objective: Build a Bulletproof Checkout Transaction</div>
+                    <p>You must write a complete SQL script simulating an online purchase with stock verification and error handling.</p>
+                </div>
+                <ul>
+                    <li><strong>Task 1 (Setup Schema):</strong> Create <code>products</code> with <code>CHECK (stock_qty &gt;= 0)</code>, <code>orders</code>, and <code>order_items</code>.</li>
+                    <li><strong>Task 2 (Happy Path):</strong> Execute a 3-step transaction (insert order, insert line items, deduct stock), then <code>COMMIT</code>.</li>
+                    <li><strong>Task 3 (Simulated Over-order):</strong> Customer orders 15 items when only 3 remain. Catch the check constraint violation and execute <code>ROLLBACK</code>.</li>
+                    <li><strong>Task 4 (Verification):</strong> Write a query proving that zero orphan rows were left in <code>orders</code> after the rollback.</li>
+                </ul>
+            </div>
+            <div class="col-right col-narrow">
+                <div class="card card-cyan" style="height: 100%;">
+                    <div class="card-title"><i class="fa-solid fa-award"></i> Evaluation Criteria (100 pts)</div>
+                    <ul style="font-size: 12px; gap: 8px;">
+                        <li><strong>Correct TCL Syntax (30 pts):</strong> Proper use of <code>START TRANSACTION</code>, <code>COMMIT</code>, and <code>ROLLBACK</code>.</li>
+                        <li><strong>Integrity Preservation (30 pts):</strong> Zero orphan records upon error.</li>
+                        <li><strong>Constraint Handling (20 pts):</strong> Schema effectively blocks negative stock.</li>
+                        <li><strong>Proof &amp; Screenshots (20 pts):</strong> Clean before/after verification outputs.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- SLIDE 12: SUMMARY CHEAT SHEET -->
+    <!-- ===================================================================== -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-title-wrap">
+                <div class="slide-title"><i class="fa-solid fa-star text-amber"></i> Quick Reference &amp; Key Takeaways</div>
+                <div class="slide-subtitle">The 4 Golden Rules of Database Reliability</div>
+            </div>
+            <div class="module-badge">Summary</div>
+        </div>
+        <div class="slide-body">
+            <div class="grid-4" style="width: 100%;">
+                <div class="card card-cyan">
+                    <strong style="color: var(--primary); font-size: 16px;">Atomicity (A)</strong>
+                    <p style="font-size: 12px; margin-top: 6px;"><strong>All or Nothing.</strong> If even 1 statement fails out of 10, the database rolls back to 0. No partial updates.</p>
+                </div>
+                <div class="card card-emerald">
+                    <strong style="color: var(--emerald); font-size: 16px;">Consistency (C)</strong>
+                    <p style="font-size: 12px; margin-top: 6px;"><strong>No Broken Rules.</strong> Constraints, foreign keys, and non-negative balances are strictly preserved.</p>
+                </div>
+                <div class="card card-purple">
+                    <strong style="color: var(--purple); font-size: 16px;">Isolation (I)</strong>
+                    <p style="font-size: 12px; margin-top: 6px;"><strong>No Cross-Interference.</strong> Concurrent users cannot read uncommitted (dirty) data from other users.</p>
+                </div>
+                <div class="card card-amber">
+                    <strong style="color: var(--amber); font-size: 16px;">Durability (D)</strong>
+                    <p style="font-size: 12px; margin-top: 6px;"><strong>Disk Permanence.</strong> Committed data survives power loss and hardware crashes via Write-Ahead Logs.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- FOOTER CONTROLS -->
+    <!-- ===================================================================== -->
+    <div class="slide-footer">
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 14px;">
+            <button class="nav-btn" id="prev-btn" onclick="prevSlide()" disabled>
+                <i class="fa-solid fa-chevron-left"></i> Previous
+            </button>
+            <button class="nav-btn" id="next-btn" onclick="nextSlide()">
+                Next <i class="fa-solid fa-chevron-right"></i>
+            </button>
+            <span class="slide-counter" id="slide-counter-val">1 / 12</span>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 14px;">
+            <select class="slide-selector" id="slide-selector" onchange="jumpToSlide(parseInt(this.value))">
+                <option value="0">1. Cover: Transactions & ACID</option>
+                <option value="1">2. The GCash / Bank Problem</option>
+                <option value="2">3. ACID Architecture Map</option>
+                <option value="3">4. Atomicity (All or Nothing)</option>
+                <option value="4">5. Consistency (Rules & Invariants)</option>
+                <option value="5">6. Isolation (Concurrency & Race Conditions)</option>
+                <option value="7">7. Durability (WAL & Storage)</option>
+                <option value="8">8. Live Simulator: Bank Transfer & Outage</option>
+                <option value="9">9. Live Simulator: SAVEPOINT</option>
+                <option value="10">10. Backend Code (PHP & Node)</option>
+                <option value="11">11. Hands-On Lab Assignment</option>
+                <option value="12">12. Summary Cheat Sheet</option>
+            </select>
+            <span style="font-size: 11px; color: var(--text-muted); font-family: 'Fira Code', monospace;">[←/→] Navigate</span>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+
+    function updateSlide() {
+        slides.forEach((s, idx) => {
+            s.classList.toggle('active', idx === currentSlide);
+        });
+
+        document.getElementById('prev-btn').disabled = (currentSlide === 0);
+        document.getElementById('next-btn').disabled = (currentSlide === totalSlides - 1);
+        document.getElementById('slide-counter-val').textContent = `${currentSlide + 1} / ${totalSlides}`;
+        document.getElementById('slide-selector').value = currentSlide;
+
+        const progress = ((currentSlide + 1) / totalSlides) * 100;
+        document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function nextSlide() {
+        if (currentSlide < totalSlides - 1) {
+            currentSlide++;
+            updateSlide();
+        }
+    }
+
+    function prevSlide() {
+        if (currentSlide > 0) {
+            currentSlide--;
+            updateSlide();
+        }
+    }
+
+    function jumpToSlide(idx) {
+        if (idx >= 0 && idx < totalSlides) {
+            currentSlide = idx;
+            updateSlide();
+        }
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+            e.preventDefault();
+            nextSlide();
+        } else if (e.key === 'ArrowLeft' || e.key === 'Backspace') {
+            e.preventDefault();
+            prevSlide();
+        }
+    });
+
+    function resizePresentation() {
+        const viewport = document.querySelector('.slide-viewport');
+        if (!viewport) return;
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+        const buffer = 30;
+        const scaleX = (windowWidth - buffer) / 1280;
+        const scaleY = (windowHeight - buffer) / 720;
+        const scale = Math.min(scaleX, scaleY, 1);
+        viewport.style.transform = `scale(${scale})`;
+    }
+    window.addEventListener('resize', resizePresentation);
+    window.addEventListener('load', resizePresentation);
+
+    // =========================================================================
+    // SIMULATION 1: BANK TRANSFER & SYSTEM CRASH ENGINE
+    // =========================================================================
+    let sim1State = {
+        inTransaction: false,
+        juanBal: 10000,
+        mariaBal: 3000,
+        initialJuan: 10000,
+        initialMaria: 3000,
+        step: 0
+    };
+
+    function logSim1(msg) {
+        const consoleEl = document.getElementById('sim1-console');
+        const time = new Date().toLocaleTimeString();
+        consoleEl.innerHTML += `\n[${time}]: ${msg}`;
+        consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+
+    function sim1Step1() {
+        sim1State.inTransaction = true;
+        sim1State.step = 1;
+        document.getElementById('sim1-dot').className = 'status-dot active';
+        document.getElementById('sim1-status-text').textContent = 'TRANSACTION IN PROGRESS (BUFFERED)';
+        document.getElementById('sim1-status-pill').style.background = 'rgba(6, 182, 212, 0.15)';
+        document.getElementById('sim1-tx-state').textContent = 'TX: ACTIVE';
+        document.getElementById('sim1-tx-state').style.color = 'var(--primary)';
+
+        document.getElementById('btn-step1').disabled = true;
+        document.getElementById('btn-step2').disabled = false;
+        document.getElementById('btn-rollback').disabled = false;
+
+        logSim1("SQL > START TRANSACTION; -- Allocated session ID #89201.");
+    }
+
+    function sim1Step2() {
+        sim1State.step = 2;
+        sim1State.juanBal -= 2000;
+        document.getElementById('bal-juan').textContent = `₱${sim1State.juanBal.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+        document.getElementById('diff-juan').textContent = '-₱2,000.00 (PENDING)';
+
+        document.getElementById('btn-step2').disabled = true;
+        document.getElementById('btn-crash').disabled = false;
+        document.getElementById('btn-step3').disabled = false;
+
+        logSim1("SQL > UPDATE accounts SET balance = balance - 2000 WHERE id = 101; -- [IN MEMORY BUFFER]");
+        logSim1("⚠️ ₱2,000 deducted from Juan, but Maria has NOT received it yet!");
+    }
+
+    function sim1Crash() {
+        document.getElementById('sim1-dot').className = 'status-dot danger';
+        document.getElementById('sim1-status-text').textContent = '⚡ SERVER OUTAGE / POWER FAILURE DETECTED!';
+        document.getElementById('sim1-status-pill').style.background = 'rgba(244, 63, 94, 0.2)';
+        document.getElementById('sim1-tx-state').textContent = '⚡ SYSTEM CRASH';
+        document.getElementById('sim1-tx-state').style.color = 'var(--rose)';
+
+        document.getElementById('btn-crash').disabled = true;
+        document.getElementById('btn-step3').disabled = true;
+        document.getElementById('btn-commit').disabled = true;
+
+        logSim1("🚨 POWER LOSS: Database server shut down unexpectedly!");
+        logSim1("❓ If this were standard SQL without transactions, ₱2,000 would be lost forever!");
+        logSim1("🛡️ ACID Crash Recovery Engine initiates rollback...");
+        setTimeout(() => {
+            sim1Rollback("AUTOMATIC CRASH RECOVERY");
+        }, 1200);
+    }
+
+    function sim1Step3() {
+        sim1State.step = 3;
+        sim1State.mariaBal += 2000;
+        document.getElementById('bal-maria').textContent = `₱${sim1State.mariaBal.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+        document.getElementById('diff-maria').textContent = '+₱2,000.00 (PENDING)';
+
+        document.getElementById('btn-step3').disabled = true;
+        document.getElementById('btn-crash').disabled = true;
+        document.getElementById('btn-commit').disabled = false;
+
+        logSim1("SQL > UPDATE accounts SET balance = balance + 2000 WHERE id = 202; -- [IN MEMORY BUFFER]");
+        logSim1("✅ Both updates finished in memory. Ready to COMMIT.");
+    }
+
+    function sim1Commit() {
+        document.getElementById('sim1-dot').className = 'status-dot success';
+        document.getElementById('sim1-status-text').textContent = 'TRANSACTION COMMITTED (PERMANENT ON DISK)';
+        document.getElementById('sim1-status-pill').style.background = 'rgba(16, 185, 129, 0.15)';
+        document.getElementById('sim1-tx-state').textContent = 'COMMITTED';
+        document.getElementById('sim1-tx-state').style.color = 'var(--emerald)';
+
+        document.getElementById('diff-juan').textContent = '';
+        document.getElementById('diff-maria').textContent = '';
+
+        document.getElementById('btn-commit').disabled = true;
+        document.getElementById('btn-rollback').disabled = true;
+
+        logSim1("SQL > COMMIT; -- WAL buffer flushed to non-volatile disk.");
+        logSim1("🎉 DURABILITY GUARANTEED: Juan: ₱8,000.00 | Maria: ₱5,000.00. Funds completely intact!");
+    }
+
+    function sim1Rollback(triggerSource = "USER") {
+        sim1State.juanBal = sim1State.initialJuan;
+        sim1State.mariaBal = sim1State.initialMaria;
+
+        document.getElementById('bal-juan').textContent = `₱${sim1State.juanBal.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+        document.getElementById('bal-maria').textContent = `₱${sim1State.mariaBal.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+        document.getElementById('diff-juan').textContent = '';
+        document.getElementById('diff-maria').textContent = '';
+
+        document.getElementById('sim1-dot').className = 'status-dot';
+        document.getElementById('sim1-status-text').textContent = 'TRANSACTION ROLLED BACK (RESTORED)';
+        document.getElementById('sim1-status-pill').style.background = 'rgba(255, 255, 255, 0.05)';
+        document.getElementById('sim1-tx-state').textContent = 'RESTORED';
+        document.getElementById('sim1-tx-state').style.color = 'var(--text-muted)';
+
+        document.getElementById('btn-step1').disabled = false;
+        document.getElementById('btn-step2').disabled = true;
+        document.getElementById('btn-step3').disabled = true;
+        document.getElementById('btn-crash').disabled = true;
+        document.getElementById('btn-commit').disabled = true;
+        document.getElementById('btn-rollback').disabled = true;
+
+        logSim1(`SQL > ROLLBACK; -- Triggered by [${triggerSource}].`);
+        logSim1("🛡️ ATOMICITY PROVEN: All pending updates reverted! Zero funds lost.");
+    }
+
+    function sim1Reset() {
+        sim1State.juanBal = 10000;
+        sim1State.mariaBal = 3000;
+        sim1State.initialJuan = 10000;
+        sim1State.initialMaria = 3000;
+        sim1State.inTransaction = false;
+        sim1State.step = 0;
+
+        document.getElementById('bal-juan').textContent = '₱10,000.00';
+        document.getElementById('bal-maria').textContent = '₱3,000.00';
+        document.getElementById('diff-juan').textContent = '';
+        document.getElementById('diff-maria').textContent = '';
+
+        document.getElementById('sim1-dot').className = 'status-dot';
+        document.getElementById('sim1-status-text').textContent = 'SESSION IDLE (AUTOCOMMIT ACTIVE)';
+        document.getElementById('sim1-status-pill').style.background = 'rgba(255, 255, 255, 0.05)';
+        document.getElementById('sim1-tx-state').textContent = 'NO ACTIVE TX';
+        document.getElementById('sim1-tx-state').style.color = 'var(--text-muted)';
+
+        document.getElementById('btn-step1').disabled = false;
+        document.getElementById('btn-step2').disabled = true;
+        document.getElementById('btn-step3').disabled = true;
+        document.getElementById('btn-crash').disabled = true;
+        document.getElementById('btn-commit').disabled = true;
+        document.getElementById('btn-rollback').disabled = true;
+
+        document.getElementById('sim1-console').textContent = "[RESET]: Simulator restored to pristine initial state.";
+    }
+
+    // =========================================================================
+    // SIMULATION 2: SAVEPOINT SHOPPING CART ENGINE
+    // =========================================================================
+    let sim2Cart = [];
+    let sim2SavepointIndex = -1;
+
+    function logSim2(msg) {
+        const consoleEl = document.getElementById('sim2-console');
+        const time = new Date().toLocaleTimeString();
+        consoleEl.innerHTML += `\n[${time}]: ${msg}`;
+        consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+
+    function renderSim2Cart() {
+        const container = document.getElementById('sim2-items-list');
+        const totalEl = document.getElementById('sim2-cart-total');
+
+        if (sim2Cart.length === 0) {
+            container.innerHTML = '<span style="color: var(--text-muted); font-size: 12px; font-style: italic;">Cart is empty.</span>';
+            totalEl.textContent = 'Cart: ₱0 (0 items)';
+            return;
+        }
+
+        let total = 0;
+        let html = '';
+        sim2Cart.forEach((item, index) => {
+            total += item.price;
+            const isSavepoint = (index === sim2SavepointIndex);
+            html += `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 8px; border-radius: 6px; background: rgba(255,255,255,0.05); font-size: 12px;">
+                    <span>${item.name} ${item.invalid ? '<span style="color: var(--rose); font-weight: bold;">[OUT OF STOCK ERROR]</span>' : ''}</span>
+                    <span style="font-family: 'Fira Code', monospace; color: var(--primary);">₱${item.price.toLocaleString()}</span>
+                </div>
+            `;
+            if (isSavepoint) {
+                html += `
+                    <div style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--amber); font-weight: 700; padding: 2px 0;">
+                        <i class="fa-solid fa-bookmark"></i> SAVEPOINT: after_keyboard
+                    </div>
+                `;
+            }
+        });
+        container.innerHTML = html;
+        totalEl.textContent = `Cart: ₱${total.toLocaleString()} (${sim2Cart.length} items)`;
+    }
+
+    function sim2AddItem(name, price) {
+        sim2Cart.push({ name, price, invalid: false });
+        renderSim2Cart();
+        logSim2(`SQL > INSERT INTO cart VALUES ('${name}', ${price});`);
+    }
+
+    function sim2SetSavepoint() {
+        if (sim2Cart.length === 0) {
+            logSim2("⚠️ Please add at least one item before setting a SAVEPOINT.");
+            return;
+        }
+        sim2SavepointIndex = sim2Cart.length - 1;
+        document.getElementById('btn-sim2-rb').disabled = false;
+        renderSim2Cart();
+        logSim2("SQL > SAVEPOINT after_keyboard; -- Checkpoint created in transaction log.");
+    }
+
+    function sim2AddInvalidItem() {
+        sim2Cart.push({ name: 'RTX 4090 GPU', price: 95000, invalid: true });
+        renderSim2Cart();
+        logSim2("🚨 SQL ERROR: CHECK (stock_qty >= 0) violated! Product is out of stock!");
+        logSim2("💡 Notice: Click 'Rollback to Savepoint' to drop the GPU while keeping the Keyboard!");
+    }
+
+    function sim2RollbackSavepoint() {
+        if (sim2SavepointIndex === -1) return;
+        sim2Cart = sim2Cart.slice(0, sim2SavepointIndex + 1);
+        renderSim2Cart();
+        logSim2("SQL > ROLLBACK TO SAVEPOINT after_keyboard;");
+        logSim2("✅ Out-of-stock item dropped! Preceding items safely preserved.");
+    }
+
+    function sim2Commit() {
+        const hasInvalid = sim2Cart.some(i => i.invalid);
+        if (hasInvalid) {
+            logSim2("❌ CANNOT COMMIT: Cart contains an out-of-stock error! Roll back to savepoint first.");
+            return;
+        }
+        logSim2("SQL > COMMIT; -- Cart checked out permanently! Transaction closed.");
+        sim2Cart = [];
+        sim2SavepointIndex = -1;
+        renderSim2Cart();
+        document.getElementById('btn-sim2-rb').disabled = true;
+    }
+
+    updateSlide();
+    resizePresentation();
+</script>
+
+</body>
+</html>
