@@ -240,7 +240,7 @@ export const DEFAULT_TASKS: CourseTask[] = [
       'Completed submission screenshots of all screens'
     ],
     techStack: ['Android Studio Arctic Fox', 'Kotlin', 'XML Layouts', 'Android Activities', 'Intents'],
-    launchUrl: '/mobdev/',
+    launchUrl: '/mobdev/index.html',
     actionText: 'Launch Mob Dev 1 Manual',
     isExternal: true
   },
