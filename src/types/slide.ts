@@ -46,7 +46,20 @@ export type SlideType =
   | 'linear_vs_nonlinear_branching_lab'
   | 'multimedia_authoring_studio'
   | 'multimedia_products_interactive_matrix'
-  | 'delivery_bandwidth_speed_race';
+  | 'delivery_bandwidth_speed_race'
+  | 'a11y_contrast_matrix'
+  | 'color_blindness_lens'
+  | 'screen_reader_announcer'
+  | 'touch_target_hitbox_lab'
+  | 'prefers_reduced_motion_studio'
+  | 'db_group_by_studio'
+  | 'db_cascade_simulator'
+  | 'db_erd_cardinality_tester'
+  | 'db_injection_shield'
+  | 'db_join_matrix_visualizer'
+  | 'responsive_viewport_reflow_lab'
+  | 'font_history_modular_scale_studio'
+  | 'layout_grid_gestalt_inspector';
 
 export interface CalloutBox {
   title?: string;

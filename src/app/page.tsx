@@ -90,17 +90,30 @@ const COURSE_FOLDERS: CourseFolderDef[] = [
     filter: (l) => l.course === 'Web Dev 3' || l.id.startsWith('webdev3-') || l.id === 'laravel11'
   },
   {
-    id: 'mediadsn',
-    code: 'IT-MD1',
-    title: 'Interactive Media Design & UI/UX',
-    courseTrack: 'Interactive Digital Systems',
-    description: 'Deconstructing human-computer interaction loops, cognitive user models, Norman\'s interactivity principles, UI visual hierarchy, 8pt grids, color theory, WCAG contrast accessibility, and UX journey mapping.',
-    level: 'Interaction & UI/UX Track',
-    badgeColor: 'bg-purple-50 text-purple-700 border-purple-200/80',
-    gradient: 'from-purple-600 to-pink-600',
-    glow: 'shadow-purple-500/10',
-    borderAccent: 'border-purple-200 hover:border-purple-400',
-    filter: (l) => l.id.startsWith('mediadsn') || l.course === 'Interactive Media Design' || l.course === 'Multimedia Design'
+    id: 'hci',
+    code: 'IT-HCI1',
+    title: 'Human-Computer Interaction (HCI)',
+    courseTrack: 'UI/UX & Cognitive Systems',
+    description: 'Deconstructing human-computer interaction loops, cognitive user models, Norman\'s interactivity principles, mobile touch ergonomics, information architecture, ethical HCI, and usability audits.',
+    level: 'HCI & UI/UX Track',
+    badgeColor: 'bg-indigo-50 text-indigo-700 border-indigo-200/80',
+    gradient: 'from-indigo-600 via-purple-600 to-pink-600',
+    glow: 'shadow-indigo-500/10',
+    borderAccent: 'border-indigo-200 hover:border-indigo-400',
+    filter: (l) => l.course === 'Human-Computer Interaction' || l.course === 'Interactive Media Design' || l.id.startsWith('mediadsn') || l.id.startsWith('hci')
+  },
+  {
+    id: 'multimedia',
+    code: 'IT-MM1',
+    title: 'Introduction to Multimedia',
+    courseTrack: '5 Core Elements & Production',
+    description: 'Master the 5 fundamental elements of multimedia (Text, Graphics, Audio, Animation, Video), non-linear interactive systems, advanced production techniques, multimedia integration, and final project critique.',
+    level: 'Multimedia Track',
+    badgeColor: 'bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200/80',
+    gradient: 'from-violet-600 via-fuchsia-600 to-pink-600',
+    glow: 'shadow-fuchsia-500/10',
+    borderAccent: 'border-fuchsia-200 hover:border-fuchsia-400',
+    filter: (l) => l.course === 'Introduction to Multimedia' || l.id.startsWith('multimedia') || l.course === 'Multimedia Design'
   },
   {
     id: 'webdev1',
@@ -240,14 +253,24 @@ export default function Home() {
               if (existingIdx === -1) {
                 updated.push(defLesson);
                 hasChanges = true;
-              } else if (updated[existingIdx].course !== defLesson.course || !updated[existingIdx].competencies) {
-                updated[existingIdx] = { 
-                  ...defLesson, 
-                  ...updated[existingIdx], 
-                  course: defLesson.course, 
-                  competencies: defLesson.competencies 
-                };
-                hasChanges = true;
+              } else {
+                // Ensure default lessons stay fresh with latest titles, courses, and competencies
+                if (
+                  updated[existingIdx].title !== defLesson.title ||
+                  updated[existingIdx].course !== defLesson.course ||
+                  updated[existingIdx].description !== defLesson.description ||
+                  !updated[existingIdx].competencies
+                ) {
+                  updated[existingIdx] = {
+                    ...updated[existingIdx],
+                    ...defLesson,
+                    title: defLesson.title,
+                    course: defLesson.course,
+                    description: defLesson.description,
+                    competencies: defLesson.competencies
+                  };
+                  hasChanges = true;
+                }
               }
             });
             
@@ -716,6 +739,11 @@ export default function Home() {
                     <div className="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between text-[10px] font-bold text-slate-500">
                       <div className="flex items-center gap-1.5 truncate">
                         <span>{folderLessonCount} {folderLessonCount === 1 ? 'Lesson' : 'Lessons'}</span>
+                        {folder.id === 'mobdev' && (
+                          <span className="text-[9px] font-black px-1.5 py-0.2 rounded bg-pink-100 text-pink-700 border border-pink-200 font-mono">
+                            ★ EXAM
+                          </span>
+                        )}
                         {folderActiveTasksCount > 0 && (
                           <span 
                             onClick={(e) => {
@@ -868,7 +896,54 @@ export default function Home() {
 
           {/* VIEW MODE 1: PRESENTATION CARDS */}
           {viewMode === 'cards' && (
-            <div className={`grid gap-6 ${showAds ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}>
+            <div className="space-y-6">
+              {openFolderId === 'mobdev' && (
+                <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white shadow-xl border border-indigo-500/30 relative overflow-hidden">
+                  <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-pink-500 text-white shadow-sm shadow-pink-500/30">
+                          ★ Practical Exam
+                        </span>
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-sky-500/20 text-sky-300 border border-sky-400/30">
+                          Arctic Fox 2020.3.1
+                        </span>
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                          Static UI (No Database)
+                        </span>
+                      </div>
+                      <h3 className="text-xl sm:text-2xl font-black font-lexend tracking-tight text-white mb-1.5">
+                        Mob Dev 1: Practical Exam &amp; Lab Manuals
+                      </h3>
+                      <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+                        Step-by-step laboratory manuals and the complete Midterm/Final Practical Exam for Android Studio Arctic Fox. 100% static XML layouts &amp; Intent navigation.
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5 w-full md:w-auto shrink-0">
+                      <a
+                        href="/mobdev/exam.html"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="w-full sm:w-auto px-5 py-3 rounded-xl bg-gradient-to-r from-pink-500 via-rose-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 text-white text-xs font-black shadow-lg shadow-pink-600/30 transition flex items-center justify-center gap-2 font-lexend"
+                      >
+                        <Award className="w-4 h-4" />
+                        <span>Launch Practical Exam</span>
+                      </a>
+                      <a
+                        href="/mobdev/index.html"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="w-full sm:w-auto px-5 py-3 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-black shadow-lg shadow-sky-600/30 transition flex items-center justify-center gap-2 font-lexend"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        <span>Launch Campus Connect</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className={`grid gap-6 ${showAds ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}>
               {displayedLessons.map((lesson: Lesson) => {
                 const isWeekActive = lesson.isActive;
 
@@ -948,13 +1023,49 @@ export default function Home() {
                     {/* Action Buttons */}
                     <div className="pt-3 border-t border-slate-100 flex flex-col gap-2">
                       <div>
-                        <Link
-                          href={`/lesson/?id=${lesson.id}`}
-                          className="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-600/10 active:scale-[0.98] transition flex items-center justify-center gap-2 font-lexend"
-                        >
-                          <BookOpen className="w-3.5 h-3.5" />
-                          <span>Read</span>
-                        </Link>
+                        {lesson.id === 'mobdev1-exam' ? (
+                          <div className="flex flex-col gap-1.5">
+                            <a
+                              href="/mobdev/exam.html"
+                              className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:to-pink-500 text-white text-xs font-black shadow-md shadow-purple-600/20 active:scale-[0.98] transition flex items-center justify-center gap-2 font-lexend"
+                            >
+                              <ExternalLink className="w-3.5 h-3.5" />
+                              <span>Launch Practical Exam Manual</span>
+                            </a>
+                            <Link
+                              href={`/lesson/?id=${lesson.id}`}
+                              className="w-full py-2 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold transition flex items-center justify-center gap-1.5 font-lexend"
+                            >
+                              <BookOpen className="w-3 h-3" />
+                              <span>View Exam Slide Deck</span>
+                            </Link>
+                          </div>
+                        ) : lesson.id === 'mobdev3-w1' ? (
+                          <div className="flex flex-col gap-1.5">
+                            <a
+                              href="/mobdev/index.html"
+                              className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 text-white text-xs font-bold shadow-md shadow-sky-600/20 active:scale-[0.98] transition flex items-center justify-center gap-2 font-lexend"
+                            >
+                              <ExternalLink className="w-3.5 h-3.5" />
+                              <span>Launch Campus Connect Manual</span>
+                            </a>
+                            <Link
+                              href={`/lesson/?id=${lesson.id}`}
+                              className="w-full py-2 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold transition flex items-center justify-center gap-1.5 font-lexend"
+                            >
+                              <BookOpen className="w-3 h-3" />
+                              <span>View Slide Outline</span>
+                            </Link>
+                          </div>
+                        ) : (
+                          <Link
+                            href={`/lesson/?id=${lesson.id}`}
+                            className="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-600/10 active:scale-[0.98] transition flex items-center justify-center gap-2 font-lexend"
+                          >
+                            <BookOpen className="w-3.5 h-3.5" />
+                            <span>Read</span>
+                          </Link>
+                        )}
                       </div>
 
                       <div className="flex items-center justify-between text-[11px] text-slate-400 pt-1">
@@ -976,6 +1087,7 @@ export default function Home() {
                 );
               })}
             </div>
+          </div>
           )}
 
           {/* VIEW MODE 2: LABORATORY TASKS & MIGRATION MANUALS */}
@@ -1600,7 +1712,8 @@ export default function Home() {
             <ul className="space-y-1.5 text-[11.5px] text-slate-500">
               <li><Link href="/courses/event-driven-programming/" className="hover:text-indigo-600 transition">IT-EDP1: Event-Driven Programming</Link></li>
               <li><Link href="/courses/laravel-framework/" className="hover:text-indigo-600 transition">IT-WD3: Laravel 11 Framework</Link></li>
-              <li><Link href="/courses/interactive-media-design/" className="hover:text-indigo-600 transition">IT-MD1: Interactive Media Design</Link></li>
+              <li><Link href="/courses/interactive-media-design/" className="hover:text-indigo-600 transition">IT-HCI1: Human-Computer Interaction (HCI)</Link></li>
+              <li><Link href="/courses/interactive-media-design/" className="hover:text-indigo-600 transition">IT-MM1: Introduction to Multimedia</Link></li>
               <li><Link href="/courses/database-systems/" className="hover:text-indigo-600 transition">IT-DB1: Database Management Systems</Link></li>
               <li><Link href="/courses/cpp-programming/" className="hover:text-indigo-600 transition">CS-CPP1: Object-Oriented C++</Link></li>
               <li><Link href="/courses/web-development-fundamentals/" className="hover:text-indigo-600 transition">IT-WD1: Web Development 1</Link></li>

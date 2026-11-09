@@ -1,0 +1,2226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusVibe Social App — Mob Dev 1 Practical Exam Manual (Static UI, No Database)</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lexend:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #6366f1;         /* Indigo */
+            --primary-dark: #4f46e5;
+            --primary-bg: #eef2ff;
+            --primary-border: #c7d2fe;
+            --accent-pink: #ec4899;     /* Rose Pink */
+            --accent-pink-bg: #fdf2f8;
+            --accent-emerald: #10b981;
+            --accent-emerald-bg: #dcfce7;
+            --accent-amber: #f59e0b;
+            --accent-amber-bg: #fef3c7;
+            
+            --bg-base: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-card: #ffffff;
+            --bg-subtle: #f1f5f9;
+            --border: #cbd5e1;
+            
+            --text-title: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+            
+            --code-bg: #0f172a;
+            --code-header: #1e293b;
+            --code-text: #f8fafc;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-body);
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.7;
+            font-size: 15px;
+            padding-bottom: 120px;
+            overflow-x: hidden;
+        }
+
+        /* Top Navbar */
+        .top-navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(16px);
+            border-bottom: 2px solid var(--border);
+            padding: 12px 24px;
+        }
+
+        .top-navbar-inner {
+            max-width: 1220px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-title);
+            font-weight: 800;
+            font-size: 16px;
+            font-family: 'Lexend', sans-serif;
+        }
+
+        .nav-brand i {
+            color: var(--primary);
+            font-size: 22px;
+        }
+
+        .nav-badge-pill {
+            background: #fdf2f8;
+            color: #be185d;
+            border: 1px solid #fbcfe8;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .main-container {
+            max-width: 1220px;
+            margin: 0 auto;
+            padding: 24px 20px 0;
+        }
+
+        /* Hero Banner */
+        .hero-banner {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #ec4899 100%);
+            border-radius: 20px;
+            padding: 36px 32px;
+            color: white;
+            box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.3);
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-banner::after {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 240px;
+            height: 240px;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+        }
+
+        .hero-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .hero-title {
+            font-family: 'Lexend', sans-serif;
+            font-size: 32px;
+            font-weight: 800;
+            line-height: 1.25;
+            margin-bottom: 10px;
+        }
+
+        .hero-desc {
+            font-size: 16px;
+            color: #e0e7ff;
+            max-width: 840px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        /* The 3 Golden Rules Bar */
+        .golden-rules-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 28px;
+            border: 2px solid var(--primary-border);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.08);
+        }
+
+        .golden-rules-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Lexend', sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary-dark);
+            margin-bottom: 14px;
+        }
+
+        .rules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 14px;
+        }
+
+        .rule-box {
+            background: #f8fafc;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 16px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .rule-num {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            font-weight: 800;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .rule-text strong {
+            display: block;
+            color: var(--text-title);
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .rule-text p {
+            font-size: 12.5px;
+            color: var(--text-muted);
+            line-height: 1.45;
+        }
+
+        /* Quick Jumper Navigation */
+        .nav-pills-bar {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 4px 0 16px;
+            margin-bottom: 24px;
+            scrollbar-width: thin;
+        }
+
+        .step-pill {
+            background: #ffffff;
+            border: 1.5px solid var(--border);
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--text-body);
+            text-decoration: none;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .step-pill:hover {
+            border-color: var(--primary);
+            color: var(--primary-dark);
+            background: var(--primary-bg);
+            transform: translateY(-1px);
+        }
+
+        /* Step Section Styling */
+        .lab-section {
+            background: #ffffff;
+            border-radius: 16px;
+            border: 2px solid var(--border);
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--bg-subtle);
+            padding-bottom: 16px;
+        }
+
+        .section-num {
+            background: linear-gradient(135deg, var(--primary), var(--accent-pink));
+            color: white;
+            font-family: 'Lexend', sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+        }
+
+        .section-title-wrap h2 {
+            font-family: 'Lexend', sans-serif;
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-title);
+        }
+
+        .section-title-wrap p {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        /* Step-by-Step Instruction Cards */
+        .instruction-step {
+            background: #f8fafc;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+        }
+
+        .instruction-step strong {
+            color: var(--text-title);
+            font-size: 15px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .click-badge {
+            background: #e2e8f0;
+            color: #0f172a;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            font-family: 'Fira Code', monospace;
+            border: 1px solid #cbd5e1;
+        }
+
+        .file-location-card {
+            background: #f1f5f9;
+            border-left: 4px solid var(--primary);
+            padding: 12px 16px;
+            border-radius: 0 10px 10px 0;
+            margin: 14px 0 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .file-loc-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .file-loc-badge {
+            background: var(--primary);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 11px;
+        }
+
+        .file-loc-path {
+            font-family: 'Fira Code', monospace;
+            font-weight: 600;
+            color: var(--text-title);
+        }
+
+        .file-loc-action {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        /* Code Block Container */
+        .code-container {
+            background: var(--code-bg);
+            border-radius: 12px;
+            margin: 14px 0 20px;
+            overflow: hidden;
+            border: 1px solid #334155;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .code-header {
+            background: var(--code-header);
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #334155;
+        }
+
+        .code-file-name {
+            color: #94a3b8;
+            font-family: 'Fira Code', monospace;
+            font-size: 12.5px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .copy-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .copy-btn:hover {
+            background: #2563eb;
+            transform: scale(1.02);
+        }
+
+        .copy-btn.copied {
+            background: #10b981;
+        }
+
+        pre {
+            margin: 0;
+            padding: 18px 20px;
+            overflow-x: auto;
+            max-height: 480px;
+        }
+
+        code {
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+
+        /* Screen Preview Card */
+        .screen-preview-card {
+            background: linear-gradient(to bottom right, #f8fafc, #f1f5f9);
+            border: 2px dashed #cbd5e1;
+            border-radius: 14px;
+            padding: 20px;
+            margin: 16px 0;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .screen-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: white;
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .screen-info h4 {
+            font-family: 'Lexend', sans-serif;
+            font-size: 16px;
+            color: var(--text-title);
+            margin-bottom: 2px;
+        }
+
+        .screen-info p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* Flow Diagram */
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            background: #ffffff;
+            border: 2px solid var(--primary-border);
+            border-radius: 14px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .flow-node {
+            background: #f8fafc;
+            border: 2px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 10px 16px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--text-title);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+
+        .flow-node.start {
+            border-color: var(--primary);
+            background: var(--primary-bg);
+            color: var(--primary-dark);
+        }
+
+        .flow-arrow {
+            color: #94a3b8;
+            font-size: 18px;
+            font-weight: 900;
+        }
+
+        /* Troubleshooting Grid */
+        .trouble-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 14px;
+            margin-top: 14px;
+        }
+
+        .trouble-card {
+            background: #fef2f2;
+            border: 1.5px solid #fecaca;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .trouble-title {
+            color: #991b1b;
+            font-weight: 800;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .trouble-card p {
+            font-size: 13px;
+            color: #7f1d1d;
+            margin-bottom: 10px;
+        }
+
+        .trouble-fix {
+            background: white;
+            border: 1px solid #fca5a5;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #1e293b;
+        }
+
+        /* Checkbox Checklist */
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f8fafc;
+            border: 1.5px solid var(--border);
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .checklist-item:hover {
+            border-color: var(--primary);
+            background: #ffffff;
+        }
+
+        .checklist-item.done {
+            background: var(--accent-emerald-bg);
+            border-color: var(--accent-emerald);
+        }
+
+        .check-box {
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            border: 2px solid #94a3b8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            background: white;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .checklist-item.done .check-box {
+            background: var(--accent-emerald);
+            border-color: var(--accent-emerald);
+        }
+
+        .check-text {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: var(--text-title);
+        }
+
+        .checklist-item.done .check-text {
+            text-decoration: line-through;
+            color: #065f46;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP NAVBAR -->
+    <header class="top-navbar">
+        <div class="top-navbar-inner">
+            <a href="/" class="nav-brand">
+                <i class="fa-solid fa-shapes"></i>
+                <span>CampusVibe Social</span>
+                <span class="nav-badge-pill">Practical Exam Task</span>
+            </a>
+            <div style="font-size: 13px; font-weight: 700; color: var(--text-muted); display: flex; align-items: center; gap: 8px;">
+                <span>Android Studio Arctic Fox (2020.3.1)</span>
+                <span style="background: #e2e8f0; padding: 2px 8px; border-radius: 6px;">Kotlin</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+
+        <!-- HERO BANNER -->
+        <div class="hero-banner">
+            <span class="hero-tag"><i class="fa-solid fa-star"></i> Midterm / Final Practical Examination</span>
+            <h1 class="hero-title">CampusVibe: 4-Screen Social Media App</h1>
+            <p class="hero-desc">
+                Follow this simple step-by-step exam guide to create <b>CampusVibe</b>, a modern campus social networking Android application! 
+                Pure static UI layout design and button-click Intent navigation (<b>static muna, strictly zero database or backend required</b>). 
+                Erase the file, copy the code with one click, and paste it into Android Studio Arctic Fox!
+            </p>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <span style="background: rgba(255,255,255,0.25); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700;">
+                    ✓ Zero Database Required
+                </span>
+                <span style="background: rgba(255,255,255,0.25); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700;">
+                    ✓ 4 Connected Activities
+                </span>
+                <span style="background: rgba(255,255,255,0.25); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700;">
+                    ✓ 1-Click Code Copy Buttons
+                </span>
+                <span style="background: rgba(255,255,255,0.25); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700;">
+                    ✓ Arctic Fox 2020.3.1 Compatible
+                </span>
+            </div>
+        </div>
+
+        <!-- 3 GOLDEN RULES OF PASTING -->
+        <div class="golden-rules-card">
+            <div class="golden-rules-title">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <span>The 3 Golden Rules (How to Avoid Any Errors!)</span>
+            </div>
+            <div class="rules-grid">
+                <div class="rule-box">
+                    <div class="rule-num">1</div>
+                    <div class="rule-text">
+                        <strong>Erase Everything First!</strong>
+                        <p>Open the target file in Android Studio, press <b>Ctrl + A</b> (select all), then press <b>Backspace</b>. The file must be totally empty before pasting.</p>
+                    </div>
+                </div>
+                <div class="rule-box">
+                    <div class="rule-num">2</div>
+                    <div class="rule-text">
+                        <strong>Click "Copy Code"</strong>
+                        <p>Click the blue <b>Copy</b> button above each code snippet. It copies the complete, tested, and error-free code to your clipboard.</p>
+                    </div>
+                </div>
+                <div class="rule-box">
+                    <div class="rule-num">3</div>
+                    <div class="rule-text">
+                        <strong>Press Ctrl + V (Paste)</strong>
+                        <p>Click inside the empty file and press <b>Ctrl + V</b>. Save with <b>Ctrl + S</b>. Never paste code inside existing code!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- QUICK JUMPER PILLS -->
+        <div class="nav-pills-bar">
+            <a href="#step-overview" class="step-pill"><i class="fa-solid fa-map"></i> App Flow</a>
+            <a href="#step-0" class="step-pill"><i class="fa-solid fa-folder-plus"></i> Step 0: New Project</a>
+            <a href="#step-1" class="step-pill"><i class="fa-solid fa-palette"></i> Step 1: Colors & Drawables</a>
+            <a href="#step-2" class="step-pill"><i class="fa-solid fa-door-open"></i> Step 2: Welcome Screen</a>
+            <a href="#step-3" class="step-pill"><i class="fa-solid fa-newspaper"></i> Step 3: Campus Feed</a>
+            <a href="#step-4" class="step-pill"><i class="fa-solid fa-pen-to-square"></i> Step 4: Create Post</a>
+            <a href="#step-5" class="step-pill"><i class="fa-solid fa-user"></i> Step 5: Student Profile</a>
+            <a href="#step-6" class="step-pill"><i class="fa-solid fa-file-code"></i> Step 6: Manifest Check</a>
+            <a href="#step-7" class="step-pill"><i class="fa-solid fa-circle-play"></i> Step 7: Run & Test</a>
+            <a href="#step-rubric" class="step-pill"><i class="fa-solid fa-clipboard-check"></i> Rubric & Checklist</a>
+        </div>
+
+        <!-- APP ARCHITECTURE OVERVIEW -->
+        <section id="step-overview" class="lab-section">
+            <div class="section-header">
+                <div class="section-num"><i class="fa-solid fa-diagram-project"></i></div>
+                <div class="section-title-wrap">
+                    <h2>Exam App Structure: CampusVibe (4 Screens)</h2>
+                    <p>Understanding how the 4 Activities connect through button click events</p>
+                </div>
+            </div>
+
+            <div class="flow-diagram">
+                <div class="flow-node start">
+                    <div>Screen 1</div>
+                    <div><b>Welcome Splash</b></div>
+                    <small>MainActivity</small>
+                </div>
+                <div class="flow-arrow">➔</div>
+                <div class="flow-node">
+                    <div>Screen 2</div>
+                    <div><b>Campus Feed</b></div>
+                    <small>FeedActivity</small>
+                </div>
+                <div class="flow-arrow">⇄</div>
+                <div class="flow-node">
+                    <div>Screen 3</div>
+                    <div><b>Create Post</b></div>
+                    <small>CreatePostActivity</small>
+                </div>
+                <div class="flow-arrow">⇄</div>
+                <div class="flow-node">
+                    <div>Screen 4</div>
+                    <div><b>Student Profile</b></div>
+                    <small>ProfileActivity</small>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 16px;">
+                <div class="screen-preview-card">
+                    <div class="screen-icon"><i class="fa-solid fa-sparkles"></i></div>
+                    <div class="screen-info">
+                        <h4>1. Welcome Splash</h4>
+                        <p>Branded logo, app tagline, "ENTER FEED" and "VIEW PROFILE" navigation buttons.</p>
+                    </div>
+                </div>
+                <div class="screen-preview-card">
+                    <div class="screen-icon"><i class="fa-solid fa-rss"></i></div>
+                    <div class="screen-info">
+                        <h4>2. Campus Feed</h4>
+                        <p>Scrollable timeline with topic tags (#CS_Club, #TechExpo) and interactive post cards.</p>
+                    </div>
+                </div>
+                <div class="screen-preview-card">
+                    <div class="screen-icon"><i class="fa-solid fa-pen-nib"></i></div>
+                    <div class="screen-info">
+                        <h4>3. Create Post</h4>
+                        <p>Post title input, category selector, multi-line caption area, and Publish button with Toast.</p>
+                    </div>
+                </div>
+                <div class="screen-preview-card">
+                    <div class="screen-icon"><i class="fa-solid fa-id-badge"></i></div>
+                    <div class="screen-info">
+                        <h4>4. Student Profile</h4>
+                        <p>Profile banner, avatar, student metadata, stats counters (Posts, Followers), and Logout.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- STEP 0: CREATE PROJECT -->
+        <section id="step-0" class="lab-section">
+            <div class="section-header">
+                <div class="section-num">0</div>
+                <div class="section-title-wrap">
+                    <h2>Step 0: Create the Project in Android Studio Arctic Fox</h2>
+                    <p>Scaffolding an Empty Activity project with exact settings</p>
+                </div>
+            </div>
+
+            <div class="instruction-step">
+                <strong><i class="fa-solid fa-mouse-pointer"></i> Instructions for Arctic Fox (2020.3.1):</strong>
+                <ol style="margin-left: 20px; margin-top: 8px; line-height: 1.8;">
+                    <li>Open <b>Android Studio Arctic Fox</b>.</li>
+                    <li>Click <span class="click-badge">New Project</span> (or <code>File ➔ New ➔ New Project</code>).</li>
+                    <li>Under <b>Phone and Tablet</b>, select <span class="click-badge">Empty Activity</span>, then click <b>Next</b>.</li>
+                    <li>Fill in these exact configuration details:
+                        <ul style="margin-left: 20px; margin-top: 6px;">
+                            <li><b>Name:</b> <code>CampusVibe</code></li>
+                            <li><b>Package name:</b> <code>com.example.campusvibe</code></li>
+                            <li><b>Save location:</b> (Keep default or your preferred folder)</li>
+                            <li><b>Language:</b> <b>Kotlin</b> <span style="color: #e11d48; font-weight: 700;">(Do NOT select Java!)</span></li>
+                            <li><b>Minimum SDK:</b> <b>API 21: Android 5.0 (Lollipop)</b></li>
+                        </ul>
+                    </li>
+                    <li>Click <span class="click-badge">Finish</span>.</li>
+                    <li>Wait 1 to 2 minutes for Gradle to finish downloading and syncing. You will see <b>BUILD SUCCESSFUL</b> in the bottom status bar.</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- STEP 1: COLORS, STRINGS & DRAWABLES -->
+        <section id="step-1" class="lab-section">
+            <div class="section-header">
+                <div class="section-num">1</div>
+                <div class="section-title-wrap">
+                    <h2>Step 1: Set Up Colors, Text Strings & Vector Drawables</h2>
+                    <p>Configuring the modern social media theme palette and custom button borders</p>
+                </div>
+            </div>
+
+            <!-- 1.1 colors.xml -->
+            <div class="file-location-card">
+                <div class="file-loc-left">
+                    <span class="file-loc-badge">File 1 of 5</span>
+                    <span class="file-loc-path">📁 app ➔ res ➔ values ➔ colors.xml</span>
+                </div>
+                <span class="file-loc-action">Ctrl+A ➔ Delete ➔ Paste</span>
+            </div>
+            <div class="code-container">
+                <div class="code-header">
+                    <span class="code-file-name"><i class="fa-solid fa-code"></i> colors.xml</span>
+                    <button class="copy-btn" onclick="copyCode('code-colors-xml', this)"><i class="fa-regular fa-copy"></i> Copy Colors XML</button>
+                </div>
+                <pre><code id="code-colors-xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;resources&gt;
+    &lt;!-- CampusVibe Social Media Theme Palette --&gt;
+    &lt;color name="primary_indigo"&gt;#6366F1&lt;/color&gt;
+    &lt;color name="primary_indigo_dark"&gt;#4F46E5&lt;/color&gt;
+    &lt;color name="accent_pink"&gt;#EC4899&lt;/color&gt;
+    &lt;color name="accent_emerald"&gt;#10B981&lt;/color&gt;
+    &lt;color name="accent_amber"&gt;#F59E0B&lt;/color&gt;
+    &lt;color name="bg_canvas"&gt;#F8FAFC&lt;/color&gt;
+    &lt;color name="surface_white"&gt;#FFFFFF&lt;/color&gt;
+    &lt;color name="card_subtle"&gt;#EEF2FF&lt;/color&gt;
+    &lt;color name="border_light"&gt;#CBD5E1&lt;/color&gt;
+    &lt;color name="text_headline"&gt;#0F172A&lt;/color&gt;
+    &lt;color name="text_muted"&gt;#64748B&lt;/color&gt;
+    &lt;color name="text_danger"&gt;#EF4444&lt;/color&gt;
+&lt;/resources&gt;</code></pre>
+            </div>
+
+            <!-- 1.2 strings.xml -->
+            <div class="file-location-card">
+                <div class="file-loc-left">
+                    <span class="file-loc-badge">File 2 of 5</span>
+                    <span class="file-loc-path">📁 app ➔ res ➔ values ➔ strings.xml</span>
+                </div>
+                <span class="file-loc-action">Ctrl+A ➔ Delete ➔ Paste</span>
+            </div>
+            <div class="code-container">
+                <div class="code-header">
+                    <span class="code-file-name"><i class="fa-solid fa-code"></i> strings.xml</span>
+                    <button class="copy-btn" onclick="copyCode('code-strings-xml', this)"><i class="fa-regular fa-copy"></i> Copy Strings XML</button>
+                </div>
+                <pre><code id="code-strings-xml">&lt;resources&gt;
+    &lt;string name="app_name"&gt;CampusVibe&lt;/string&gt;
+    &lt;string name="welcome_title"&gt;CampusVibe&lt;/string&gt;
+    &lt;string name="welcome_tagline"&gt;Connect. Share. Vibe with your campus peers.&lt;/string&gt;
+    &lt;string name="btn_enter_feed"&gt;EXPLORE CAMPUS FEED&lt;/string&gt;
+    &lt;string name="btn_view_profile"&gt;MY STUDENT PROFILE&lt;/string&gt;
+&lt;/resources&gt;</code></pre>
+            </div>
+
+            <!-- 1.3 rounded_card.xml -->
+            <div class="instruction-step">
+                <strong><i class="fa-solid fa-plus-circle"></i> Create Drawable 1:</strong>
+                In the left Project tree, right-click folder <span class="click-badge">drawable</span> (<code>app ➔ res ➔ drawable</code>) ➔ <b>New</b> ➔ <b>Drawable Resource File</b> ➔ File name: <code>rounded_card.xml</code> ➔ Click <b>OK</b>.
+            </div>
+            <div class="file-location-card">
+                <div class="file-loc-left">
+                    <span class="file-loc-badge">File 3 of 5</span>
+                    <span class="file-loc-path">📁 app ➔ res ➔ drawable ➔ rounded_card.xml</span>
+                </div>
+                <span class="file-loc-action">Ctrl+A ➔ Delete ➔ Paste</span>
+            </div>
+            <div class="code-container">
+                <div class="code-header">
+                    <span class="code-file-name"><i class="fa-solid fa-code"></i> rounded_card.xml</span>
+                    <button class="copy-btn" onclick="copyCode('code-card-xml', this)"><i class="fa-regular fa-copy"></i> Copy Rounded Card XML</button>
+                </div>
+                <pre><code id="code-card-xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;shape xmlns:android="http://schemas.android.com/apk/res/android"&gt;
+    &lt;solid android:color="@color/surface_white" /&gt;
+    &lt;stroke android:width="1.5dp" android:color="@color/border_light" /&gt;
+    &lt;corners android:radius="14dp" /&gt;
+&lt;/shape&gt;</code></pre>
+            </div>
+
+            <!-- 1.4 edit_text_border.xml -->
+            <div class="instruction-step">
+                <strong><i class="fa-solid fa-plus-circle"></i> Create Drawable 2:</strong>
+                Right-click <span class="click-badge">drawable</span> ➔ <b>New</b> ➔ <b>Drawable Resource File</b> ➔ File name: <code>edit_text_border.xml</code> ➔ Click <b>OK</b>.
+            </div>
+            <div class="file-location-card">
+                <div class="file-loc-left">
+                    <span class="file-loc-badge">File 4 of 5</span>
+                    <span class="file-loc-path">📁 app ➔ res ➔ drawable ➔ edit_text_border.xml</span>
+                </div>
+                <span class="file-loc-action">Ctrl+A ➔ Delete ➔ Paste</span>
+            </div>
+            <div class="code-container">
+                <div class="code-header">
+                    <span class="code-file-name"><i class="fa-solid fa-code"></i> edit_text_border.xml</span>
+                    <button class="copy-btn" onclick="copyCode('code-border-xml', this)"><i class="fa-regular fa-copy"></i> Copy Input Border XML</button>
+                </div>
+                <pre><code id="code-border-xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;shape xmlns:android="http://schemas.android.com/apk/res/android"&gt;
+    &lt;solid android:color="@color/surface_white" /&gt;
+    &lt;stroke android:width="1.5dp" android:color="@color/border_light" /&gt;
+    &lt;corners android:radius="10dp" /&gt;
+&lt;/shape&gt;</code></pre>
+            </div>
+
+            <!-- 1.5 logo.xml -->
+            <div class="instruction-step">
+                <strong><i class="fa-solid fa-plus-circle"></i> Create Drawable 3:</strong>
+                Right-click <span class="click-badge">drawable</span> ➔ <b>New</b> ➔ <b>Drawable Resource File</b> ➔ File name: <code>logo.xml</code> ➔ Click <b>OK</b>.
+            </div>
+            <div class="file-location-card">
+                <div class="file-loc-left">
+                    <span class="file-loc-badge">File 5 of 5</span>
+                    <span class="file-loc-path">📁 app ➔ res ➔ drawable ➔ logo.xml</span>
+                </div>
+                <span class="file-loc-action">Ctrl+A ➔ Delete ➔ Paste</span>
+            </div>
+            <div class="code-container">
+                <div class="code-header">
+                    <span class="code-file-name"><i class="fa-solid fa-code"></i> logo.xml</span>
+                    <button class="copy-btn" onclick="copyCode('code-logo-xml', this)"><i class="fa-regular fa-copy"></i> Copy App Logo XML</button>
+                </div>
+                <pre><code id="code-logo-xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="96dp"
+    android:height="96dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"&gt;
+    &lt;!-- Modern Social Chat / Spark Bubble Logo --&gt;
+    &lt;path
+        android:fillColor="#6366F1"
+        android:pathData="M20,2H4C2.9,2 2,2.9 2,4V22L6,18H20C21.1,18 22,17.1 22,16V4C22,2.9 21.1,2 20,2M12,6L13.5,9.5L17,11L13.5,12.5L12,16L10.5,12.5L7,11L10.5,9.5L12,6Z" /&gt;
+&lt;/vector&gt;</code></pre>
+            </div>
+        </section>
+
+        <!-- STEP 2: SCREEN 1 — WELCOME / SPLASH SCREEN -->
+        <section id="step-2" class="lab-section">
+            <div class="section-header">
+                <div class="section-num">2</div>
+                <div class="section-title-wrap">
+                    <h2>Step 2: Screen 1 — Welcome Splash Screen (`MainActivity`)</h2>
+                    <p>Building the entry screen with logo, intro typography, and Intent navigation buttons</p>
+                </div>
+            </div>
+
+            <!-- 2.1 activity_main.xml -->
+            <div class="file-location-card">
+                <div class="file-loc-left">
+                    <span class="file-loc-badge">Layout XML</span>
+                    <span class="file-loc-path">📁 app ➔ res ➔ layout ➔ activity_main.xml</span>
+                </div>
+                <span class="file-loc-action">Code Mode ➔ Ctrl+A ➔ Delete ➔ Paste</span>
+            </div>
+            <div class="code-container">
+                <div class="code-header">
+                    <span class="code-file-name"><i class="fa-solid fa-code"></i> activity_main.xml</span>
+                    <button class="copy-btn" onclick="copyCode('code-act-main-xml', this)"><i class="fa-regular fa-copy"></i> Copy Welcome XML</button>
+                </div>
+                <pre><code id="code-act-main-xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="28dp"
+    android:background="@color/bg_canvas"&gt;
+
+    &lt;!-- App Vector Logo --&gt;
+    &lt;ImageView
+        android:layout_width="110dp"
+        android:layout_height="110dp"
+        android:src="@drawable/logo"
+        android:contentDescription="CampusVibe Logo" /&gt;
+
+    &lt;!-- App Title --&gt;
+    &lt;TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/welcome_title"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:textColor="@color/primary_indigo_dark"
+        android:layout_marginTop="16dp" /&gt;
+
+    &lt;!-- Badge Pill --&gt;
+    &lt;TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mob Dev 1 Practical Exam • Arctic Fox"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:textColor="@color/primary_indigo"
+        android:background="@color/card_subtle"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:layout_marginTop="8dp" /&gt;
+
+    &lt;!-- Subtitle --&gt;
+    &lt;TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/welcome_tagline"
+        android:textSize="14sp"
+        android:textColor="@color/text_muted"
+        android:textAlignment="center"
+        android:layout_marginTop="14dp"
+        android:layout_marginBottom="36dp" /&gt;
+
+    &lt;!-- Button 1: Enter Campus Feed --&gt;
+    &lt;Button
+        android:id="@+id/btnEnterFeed"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="@string/btn_enter_feed"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:backgroundTint="@color/primary_indigo"
+        android:textColor="@color/surface_white" /&gt;
+
+    &lt;!-- Button 2: Go to Student Profile --&gt;
+    &lt;Button
+        android:id="@+id/btnGoProfile"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="@string/btn_view_profile"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:backgroundTint="@color/surface_white"
+        android:textColor="@color/primary_indigo_dark"
+        android:layout_marginTop="12dp" /&gt;
+
+&lt;/LinearLayout&gt;</code></pre>
+            </div>
+
+            <!-- 2.2 MainActivity.kt -->
+            <div class="file-location-card">
+                <div class="file-loc-left">
+                    <span class="file-loc-badge">Kotlin Logic</span>
+                    <span class="file-loc-path">📁 app ➔ java ➔ com.example.campusvibe ➔ MainActivity.kt</span>
+                </div>
+                <span class="file-loc-action">Ctrl+A ➔ Delete ➔ Paste</span>
+            </div>
+            <div class="code-container">
+                <div class="code-header">
+                    <span class="code-file-name"><i class="fa-solid fa-file-code"></i> MainActivity.kt</span>
+                    <button class="copy-btn" onclick="copyCode('code-main-kt', this)"><i class="fa-regular fa-copy"></i> Copy MainActivity Kotlin</button>
+                </div>
+                <pre><code id="code-main-kt">package com.example.campusvibe
+
+import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.widget.Button
+import android.widget.Toast
+
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        val btnEnterFeed = findViewById&lt;Button&gt;(R.id.btnEnterFeed)
+        val btnGoProfile = findViewById&lt;Button&gt;(R.id.btnGoProfile)
+
+        // 1. Tapping EXPLORE FEED navigates to FeedActivity
+        btnEnterFeed.setOnClickListener {
+            Toast.makeText(this, "Opening Campus Feed...", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, FeedActivity::class.java)
+            startActivity(intent)
+        }
+
+        // 2. Tapping MY STUDENT PROFILE navigates to ProfileActivity
+        btnGoProfile.setOnClickListener {
+            val intent = Intent(this, ProfileActivity::class.java)
+            startActivity(intent)
+        }
+    }
+}</code></pre>
+            </div>
+            <p style="font-size: 13px; color: #b91c1c; margin-top: 6px;">
+                💡 <i>Note: If Android Studio displays red text on <code>FeedActivity</code> or <code>ProfileActivity</code>, do not worry! They will turn normal as soon as you create those files in Steps 3 and 5.</i>
+            </p>
+        </section>
+
+        <!-- STEP 3: SCREEN 2 — CAMPUS FEED -->
+        <section id="step-3" class="lab-section">
+            <div class="section-header">
+                <div class="section-num">3</div>
+                <div class="section-title-wrap">
+                    <h2>Step 3: Screen 2 — Campus Social Feed (`FeedActivity`)</h2>
+                    <p>Creating the scrollable community feed with interactive post cards and top action bar</p>
+                </div>
+            </div>
+
+            <!-- How to create FeedActivity in Arctic Fox -->
+            <div class="instruction-step">
+                <strong><i class="fa-solid fa-plus-circle"></i> How to create FeedActivity in Android Studio:</strong>
+                <ol style="margin-left: 20px; margin-top: 6px; line-height: 1.8;">
+                    <li>In the left Project panel, find: <code>app ➔ java ➔ com.example.campusvibe</code>.</li>
+                    <li><b>Right-click</b> on the folder <span class="click-badge">com.example.campusvibe</span>.</li>
+                    <li>Click <b>New</b> ➔ <b>Activity</b> ➔ click <span class="click-badge">Empty Activity</span>.</li>
+                    <li>In the dialog, type Activity Name: <code>FeedActivity</code> (Layout name will auto-fill to <code>activity_feed</code>).</li>
+                    <li>Click <b>Finish</b> and wait a few seconds.</li>
+                </ol>
+            </div>
+
+            <!-- 3.1 activity_feed.xml -->
+            <div class="file-location-card">
+                <div class="file-loc-left">
+                    <span class="file-loc-badge">Layout XML</span>
+                    <span class="file-loc-path">📁 app ➔ res ➔ layout ➔ activity_feed.xml</span>
+                </div>
+                <span class="file-loc-action">Code Mode ➔ Ctrl+A ➔ Delete ➔ Paste</span>
+            </div>
+            <div class="code-container">
+                <div class="code-header">
+                    <span class="code-file-name"><i class="fa-solid fa-code"></i> activity_feed.xml</span>
+                    <button class="copy-btn" onclick="copyCode('code-feed-xml', this)"><i class="fa-regular fa-copy"></i> Copy Feed XML</button>
+                </div>
+                <pre><code id="code-feed-xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_canvas"&gt;
+
+    &lt;LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="18dp"&gt;
+
+        &lt;!-- Top Header Bar --&gt;
+        &lt;LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp"&gt;
+
+            &lt;LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"&gt;
+
+                &lt;TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CampusVibe Feed"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary_indigo_dark" /&gt;
+
+                &lt;TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Latest stories and updates"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_muted" /&gt;
+            &lt;/LinearLayout&gt;
+
+            &lt;Button
+                android:id="@+id/btnHeaderNewPost"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="+ POST"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:backgroundTint="@color/accent_pink"
+                android:textColor="@color/surface_white" /&gt;
+        &lt;/LinearLayout&gt;
+
+        &lt;!-- Trending Topics Chips --&gt;
+        &lt;TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TRENDING TOPICS"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_muted"
+            android:layout_marginBottom="8dp" /&gt;
+
+        &lt;LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="18dp"&gt;
+
+            &lt;TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="#Hackathon2026"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="@color/primary_indigo"
+                android:background="@drawable/rounded_card"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
+                android:layout_marginEnd="8dp" /&gt;
+
+            &lt;TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="#TechExpo"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="@color/accent_pink"
+                android:background="@drawable/rounded_card"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
+                android:layout_marginEnd="8dp" /&gt;
+
+            &lt;TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="#CS_Club"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="@color/accent_emerald"
+                android:background="@drawable/rounded_card"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp" /&gt;
+        &lt;/LinearLayout&gt;
+
+        &lt;!-- POST CARD 1 --&gt;
+        &lt;LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/rounded_card"
+            android:padding="16dp"
+            android:layout_marginBottom="14dp"&gt;
+
+            &lt;LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="10dp"&gt;
+
+                &lt;TextView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:text="ML"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:textColor="@color/surface_white"
+                    android:background="@color/primary_indigo" /&gt;
+
+                &lt;LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="10dp"&gt;
+
+                    &lt;TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Maya Lin"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_headline"
+                        android:textSize="14sp" /&gt;
+
+                    &lt;TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="BSCS • 15m ago"
+                        android:textColor="@color/text_muted"
+                        android:textSize="11sp" /&gt;
+                &lt;/LinearLayout&gt;
+            &lt;/LinearLayout&gt;
+
+            &lt;TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Just finished our 2D Godot &amp; Android prototype for the University Tech Expo! 🎮🚀 Who wants to playtest and give feedback?"
+                android:textColor="@color/text_body"
+                android:textSize="13sp"
+                android:lineSpacingExtra="3dp"
+                android:layout_marginBottom="12dp" /&gt;
+
+            &lt;LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"&gt;
+
+                &lt;Button
+                    android:id="@+id/btnLikePost1"
+                    android:layout_width="0dp"
+                    android:layout_height="38dp"
+                    android:layout_weight="1"
+                    android:text="❤️ LIKE (24)"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:backgroundTint="@color/card_subtle"
+                    android:textColor="@color/primary_indigo_dark"
+                    android:layout_marginEnd="6dp" /&gt;
+
+                &lt;Button
+                    android:id="@+id/btnCommentPost1"
+                    android:layout_width="0dp"
+                    android:layout_height="38dp"
+                    android:layout_weight="1"
+                    android:text="💬 COMMENT"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:backgroundTint="@color/card_subtle"
+                    android:textColor="@color/text_muted" /&gt;
+            &lt;/LinearLayout&gt;
+        &lt;/LinearLayout&gt;
+
+        &lt;!-- POST CARD 2 --&gt;
+        &lt;LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/rounded_card"
+            android:padding="16dp"
+            android:layout_marginBottom="24dp"&gt;
+
+            &lt;LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="10dp"&gt;
+
+                &lt;TextView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:text="DK"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:textColor="@color/surface_white"
+                    android:background="@color/accent_pink" /&gt;
+
+                &lt;LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="10dp"&gt;
+
+                    &lt;TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Dave K."
+                        android:textStyle="bold"
+                        android:textColor="@color/text_headline"
+                        android:textSize="14sp" /&gt;
+
+                    &lt;TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="BSIT • 1 hour ago"
+                        android:textColor="@color/text_muted"
+                        android:textSize="11sp" /&gt;
+                &lt;/LinearLayout&gt;
+            &lt;/LinearLayout&gt;
+
+            &lt;TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Friendly reminder: The Android Studio Arctic Fox Practical Exam is happening today! Make sure your Kotlin layouts compile with zero errors. Good luck everyone! 💻⚡"
+                android:textColor="@color/text_body"
+                android:textSize="13sp"
+                android:lineSpacingExtra="3dp"
+                android:layout_marginBottom="12dp" /&gt;
+
+            &lt;Button
+                android:id="@+id/btnLikePost2"
+                android:layout_width="match_parent"
+                android:layout_height="38dp"
+                android:text="❤️ LIKE (58)"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:backgroundTint="@color/card_subtle"
+                android:textColor="@color/primary_indigo_dark" /&gt;
+        &lt;/LinearLayout&gt;
+
+        &lt;!-- Bottom Navigation Buttons --&gt;
+        &lt;Button
+            android:id="@+id/btnOpenProfile"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="VIEW MY STUDENT PROFILE"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:backgroundTint="@color/primary_indigo"
+            android:textColor="@color/surface_white"
+            android:layout_marginBottom="10dp" /&gt;
+
+        &lt;Button
+            android:id="@+id/btnBackToWelcome"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="← BACK TO WELCOME SCREEN"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:backgroundTint="@color/surface_white"
+            android:textColor="@color/text_muted" /&gt;
+
+    &lt;/LinearLayout&gt;
+&lt;/ScrollView&gt;</code></pre>
+            </div>
+
+            <!-- 3.2 FeedActivity.kt -->
+            <div class="file-location-card">
+                <div class="file-loc-left">
+                    <span class="file-loc-badge">Kotlin Logic</span>
+                    <span class="file-loc-path">📁 app ➔ java ➔ com.example.campusvibe ➔ FeedActivity.kt</span>
+                </div>
+                <span class="file-loc-action">Ctrl+A ➔ Delete ➔ Paste</span>
+            </div>
+            <div class="code-container">
+                <div class="code-header">
+                    <span class="code-file-name"><i class="fa-solid fa-file-code"></i> FeedActivity.kt</span>
+                    <button class="copy-btn" onclick="copyCode('code-feed-kt', this)"><i class="fa-regular fa-copy"></i> Copy Feed Kotlin</button>
+                </div>
+                <pre><code id="code-feed-kt">package com.example.campusvibe
+
+import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.widget.Button
+import android.widget.Toast
+
+class FeedActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_feed)
+
+        val btnHeaderNewPost = findViewById&lt;Button&gt;(R.id.btnHeaderNewPost)
+        val btnLikePost1 = findViewById&lt;Button&gt;(R.id.btnLikePost1)
+        val btnCommentPost1 = findViewById&lt;Button&gt;(R.id.btnCommentPost1)
+        val btnLikePost2 = findViewById&lt;Button&gt;(R.id.btnLikePost2)
+        val btnOpenProfile = findViewById&lt;Button&gt;(R.id.btnOpenProfile)
+        val btnBackToWelcome = findViewById&lt;Button&gt;(R.id.btnBackToWelcome)
+
+        // 1. Tapping + POST opens CreatePostActivity
+        btnHeaderNewPost.setOnClickListener {
+            val intent = Intent(this, CreatePostActivity::class.java)
+            startActivity(intent)
+        }
+
+        // 2. Interactive like button toasts
+        btnLikePost1.setOnClickListener {
+            Toast.makeText(this, "Liked Maya's project post! ❤️", Toast.LENGTH_SHORT).show()
+        }
+
+        btnCommentPost1.setOnClickListener {
+            Toast.makeText(this, "Comments section opened", Toast.LENGTH_SHORT).show()
+        }
+
+        btnLikePost2.setOnClickListener {
+            Toast.makeText(this, "Liked exam reminder! 💻", Toast.LENGTH_SHORT).show()
+        }
+
+        // 3. Tapping VIEW MY STUDENT PROFILE navigates to ProfileActivity
+        btnOpenProfile.setOnClickListener {
+            val intent = Intent(this, ProfileActivity::class.java)
+            startActivity(intent)
+        }
+
+        // 4. Return to Welcome Screen
+        btnBackToWelcome.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+    }
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- STEP 4: SCREEN 3 — CREATE POST -->
+        <section id="step-4" class="lab-section">
+            <div class="section-header">
+                <div class="section-num">4</div>
+                <div class="section-title-wrap">
+                    <h2>Step 4: Screen 3 — Create Post Screen (`CreatePostActivity`)</h2>
+                    <p>Designing the static post composer form with input fields, category tags, and publish action</p>
+                </div>
+            </div>
+
+            <!-- How to create CreatePostActivity in Arctic Fox -->
+            <div class="instruction-step">
+                <strong><i class="fa-solid fa-plus-circle"></i> How to create CreatePostActivity in Android Studio:</strong>
+                <ol style="margin-left: 20px; margin-top: 6px; line-height: 1.8;">
+                    <li>Right-click the folder <span class="click-badge">com.example.campusvibe</span> (<code>app ➔ java ➔ com.example.campusvibe</code>).</li>
+                    <li>Click <b>New</b> ➔ <b>Activity</b> ➔ click <span class="click-badge">Empty Activity</span>.</li>
+                    <li>In Activity Name, type: <code>CreatePostActivity</code>.</li>
+                    <li>Click <b>Finish</b>.</li>
+                </ol>
+            </div>
+
+            <!-- 4.1 activity_create_post.xml -->
+            <div class="file-location-card">
+                <div class="file-loc-left">
+                    <span class="file-loc-badge">Layout XML</span>
+                    <span class="file-loc-path">📁 app ➔ res ➔ layout ➔ activity_create_post.xml</span>
+                </div>
+                <span class="file-loc-action">Code Mode ➔ Ctrl+A ➔ Delete ➔ Paste</span>
+            </div>
+            <div class="code-container">
+                <div class="code-header">
+                    <span class="code-file-name"><i class="fa-solid fa-code"></i> activity_create_post.xml</span>
+                    <button class="copy-btn" onclick="copyCode('code-create-xml', this)"><i class="fa-regular fa-copy"></i> Copy Create Post XML</button>
+                </div>
+                <pre><code id="code-create-xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_canvas"&gt;
+
+    &lt;LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp"&gt;
+
+        &lt;!-- Top Bar --&gt;
+        &lt;TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Share to CampusVibe"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/primary_indigo_dark" /&gt;
+
+        &lt;TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Post an announcement, question, or campus vibe"
+            android:textSize="13sp"
+            android:textColor="@color/text_muted"
+            android:layout_marginBottom="24dp" /&gt;
+
+        &lt;!-- Field 1: Post Title --&gt;
+        &lt;TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="POST TITLE"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_headline"
+            android:layout_marginBottom="6dp" /&gt;
+
+        &lt;EditText
+            android:id="@+id/etPostTitle"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="e.g., Hackathon Team Recruitment"
+            android:textSize="14sp"
+            android:padding="12dp"
+            android:background="@drawable/edit_text_border"
+            android:layout_marginBottom="16dp" /&gt;
+
+        &lt;!-- Field 2: Category Selector --&gt;
+        &lt;TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SELECT CHANNEL"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_headline"
+            android:layout_marginBottom="6dp" /&gt;
+
+        &lt;LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="16dp"&gt;
+
+            &lt;Button
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_weight="1"
+                android:text="🎓 ACADEMIC"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:backgroundTint="@color/primary_indigo"
+                android:textColor="@color/surface_white"
+                android:layout_marginEnd="6dp" /&gt;
+
+            &lt;Button
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_weight="1"
+                android:text="🏆 EVENTS"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:backgroundTint="@color/card_subtle"
+                android:textColor="@color/text_muted"
+                android:layout_marginEnd="6dp" /&gt;
+
+            &lt;Button
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_weight="1"
+                android:text="💬 SOCIAL"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:backgroundTint="@color/card_subtle"
+                android:textColor="@color/text_muted" /&gt;
+        &lt;/LinearLayout&gt;
+
+        &lt;!-- Field 3: Story Content / Caption --&gt;
+        &lt;TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="WHAT'S ON YOUR MIND?"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_headline"
+            android:layout_marginBottom="6dp" /&gt;
+
+        &lt;EditText
+            android:id="@+id/etPostContent"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:hint="Type your message, questions, or ideas here..."
+            android:gravity="top|start"
+            android:textSize="14sp"
+            android:padding="12dp"
+            android:background="@drawable/edit_text_border"
+            android:layout_marginBottom="28dp" /&gt;
+
+        &lt;!-- Button 1: Publish Post --&gt;
+        &lt;Button
+            android:id="@+id/btnPublishPost"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:text="PUBLISH TO CAMPUS FEED"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:backgroundTint="@color/accent_pink"
+            android:textColor="@color/surface_white"
+            android:layout_marginBottom="12dp" /&gt;
+
+        &lt;!-- Button 2: Discard / Cancel --&gt;
+        &lt;Button
+            android:id="@+id/btnCancelPost"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="CANCEL &amp; DISCARD"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:backgroundTint="@color/surface_white"
+            android:textColor="@color/text_danger" /&gt;
+
+    &lt;/LinearLayout&gt;
+&lt;/ScrollView&gt;</code></pre>
+            </div>
+
+            <!-- 4.2 CreatePostActivity.kt -->
+            <div class="file-location-card">
+                <div class="file-loc-left">
+                    <span class="file-loc-badge">Kotlin Logic</span>
+                    <span class="file-loc-path">📁 app ➔ java ➔ com.example.campusvibe ➔ CreatePostActivity.kt</span>
+                </div>
+                <span class="file-loc-action">Ctrl+A ➔ Delete ➔ Paste</span>
+            </div>
+            <div class="code-container">
+                <div class="code-header">
+                    <span class="code-file-name"><i class="fa-solid fa-file-code"></i> CreatePostActivity.kt</span>
+                    <button class="copy-btn" onclick="copyCode('code-create-kt', this)"><i class="fa-regular fa-copy"></i> Copy Create Post Kotlin</button>
+                </div>
+                <pre><code id="code-create-kt">package com.example.campusvibe
+
+import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.widget.Button
+import android.widget.Toast
+
+class CreatePostActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_create_post)
+
+        val btnPublish = findViewById&lt;Button&gt;(R.id.btnPublishPost)
+        val btnCancel = findViewById&lt;Button&gt;(R.id.btnCancelPost)
+
+        // 1. Tapping PUBLISH shows toast and returns to Feed
+        btnPublish.setOnClickListener {
+            Toast.makeText(this, "Post published to CampusVibe! 🎉", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, FeedActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
+        // 2. Tapping CANCEL returns to Feed
+        btnCancel.setOnClickListener {
+            Toast.makeText(this, "Post discarded", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, FeedActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+    }
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- STEP 5: SCREEN 4 — STUDENT PROFILE -->
+        <section id="step-5" class="lab-section">
+            <div class="section-header">
+                <div class="section-num">5</div>
+                <div class="section-title-wrap">
+                    <h2>Step 5: Screen 4 — Student Profile Screen (`ProfileActivity`)</h2>
+                    <p>Designing student stats, badges, bio information, and return navigation</p>
+                </div>
+            </div>
+
+            <!-- How to create ProfileActivity in Arctic Fox -->
+            <div class="instruction-step">
+                <strong><i class="fa-solid fa-plus-circle"></i> How to create ProfileActivity in Android Studio:</strong>
+                <ol style="margin-left: 20px; margin-top: 6px; line-height: 1.8;">
+                    <li>Right-click the folder <span class="click-badge">com.example.campusvibe</span>.</li>
+                    <li>Click <b>New</b> ➔ <b>Activity</b> ➔ click <span class="click-badge">Empty Activity</span>.</li>
+                    <li>In Activity Name, type: <code>ProfileActivity</code>.</li>
+                    <li>Click <b>Finish</b>.</li>
+                </ol>
+            </div>
+
+            <!-- 5.1 activity_profile.xml -->
+            <div class="file-location-card">
+                <div class="file-loc-left">
+                    <span class="file-loc-badge">Layout XML</span>
+                    <span class="file-loc-path">📁 app ➔ res ➔ layout ➔ activity_profile.xml</span>
+                </div>
+                <span class="file-loc-action">Code Mode ➔ Ctrl+A ➔ Delete ➔ Paste</span>
+            </div>
+            <div class="code-container">
+                <div class="code-header">
+                    <span class="code-file-name"><i class="fa-solid fa-code"></i> activity_profile.xml</span>
+                    <button class="copy-btn" onclick="copyCode('code-profile-xml', this)"><i class="fa-regular fa-copy"></i> Copy Profile XML</button>
+                </div>
+                <pre><code id="code-profile-xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_canvas"&gt;
+
+    &lt;LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp"&gt;
+
+        &lt;!-- Profile Header Card --&gt;
+        &lt;LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/rounded_card"
+            android:padding="24dp"
+            android:layout_marginBottom="18dp"&gt;
+
+            &lt;!-- Avatar Circle --&gt;
+            &lt;TextView
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:text="AR"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="@color/surface_white"
+                android:gravity="center"
+                android:background="@color/primary_indigo"
+                android:layout_marginBottom="12dp" /&gt;
+
+            &lt;TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Alex Rivera"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_headline" /&gt;
+
+            &lt;TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BS Information Technology • 3rd Year"
+                android:textSize="12sp"
+                android:textColor="@color/primary_indigo_dark"
+                android:layout_marginTop="2dp" /&gt;
+
+            &lt;TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Student ID: 2023-IT-0492"
+                android:textSize="11sp"
+                android:textColor="@color/text_muted"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="14dp" /&gt;
+
+            &lt;!-- Stats Grid --&gt;
+            &lt;LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@color/card_subtle"
+                android:padding="12dp"
+                android:gravity="center"&gt;
+
+                &lt;LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical"&gt;
+
+                    &lt;TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="18"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_headline" /&gt;
+
+                    &lt;TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="POSTS"
+                        android:textSize="10sp"
+                        android:textColor="@color/text_muted" /&gt;
+                &lt;/LinearLayout&gt;
+
+                &lt;LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical"&gt;
+
+                    &lt;TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="342"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_headline" /&gt;
+
+                    &lt;TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="FOLLOWERS"
+                        android:textSize="10sp"
+                        android:textColor="@color/text_muted" /&gt;
+                &lt;/LinearLayout&gt;
+
+                &lt;LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical"&gt;
+
+                    &lt;TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="1.2k"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/accent_pink" /&gt;
+
+                    &lt;TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="VIBES"
+                        android:textSize="10sp"
+                        android:textColor="@color/text_muted" /&gt;
+                &lt;/LinearLayout&gt;
+            &lt;/LinearLayout&gt;
+        &lt;/LinearLayout&gt;
+
+        &lt;!-- Student Bio Card --&gt;
+        &lt;LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/rounded_card"
+            android:padding="18dp"
+            android:layout_marginBottom="18dp"&gt;
+
+            &lt;TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ABOUT ME"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_headline"
+                android:layout_marginBottom="6dp" /&gt;
+
+            &lt;TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Passionate student programmer exploring native Kotlin in Android Studio Arctic Fox. Always ready for hackathons and coffee! ☕💻"
+                android:textSize="13sp"
+                android:textColor="@color/text_body"
+                android:lineSpacingExtra="3dp" /&gt;
+        &lt;/LinearLayout&gt;
+
+        &lt;!-- Action Buttons --&gt;
+        &lt;Button
+            android:id="@+id/btnBackToFeed"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="BACK TO CAMPUS FEED"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:backgroundTint="@color/primary_indigo"
+            android:textColor="@color/surface_white"
+            android:layout_marginBottom="10dp" /&gt;
+
+        &lt;Button
+            android:id="@+id/btnEditProfile"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="EDIT PROFILE SETTINGS"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:backgroundTint="@color/surface_white"
+            android:textColor="@color/primary_indigo_dark"
+            android:layout_marginBottom="10dp" /&gt;
+
+        &lt;Button
+            android:id="@+id/btnLogoutProfile"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="LOG OUT &amp; EXIT"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:backgroundTint="@color/surface_white"
+            android:textColor="@color/text_danger" /&gt;
+
+    &lt;/LinearLayout&gt;
+&lt;/ScrollView&gt;</code></pre>
+            </div>
+
+            <!-- 5.2 ProfileActivity.kt -->
+            <div class="file-location-card">
+                <div class="file-loc-left">
+                    <span class="file-loc-badge">Kotlin Logic</span>
+                    <span class="file-loc-path">📁 app ➔ java ➔ com.example.campusvibe ➔ ProfileActivity.kt</span>
+                </div>
+                <span class="file-loc-action">Ctrl+A ➔ Delete ➔ Paste</span>
+            </div>
+            <div class="code-container">
+                <div class="code-header">
+                    <span class="code-file-name"><i class="fa-solid fa-file-code"></i> ProfileActivity.kt</span>
+                    <button class="copy-btn" onclick="copyCode('code-profile-kt', this)"><i class="fa-regular fa-copy"></i> Copy Profile Kotlin</button>
+                </div>
+                <pre><code id="code-profile-kt">package com.example.campusvibe
+
+import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.widget.Button
+import android.widget.Toast
+
+class ProfileActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_profile)
+
+        val btnBackToFeed = findViewById&lt;Button&gt;(R.id.btnBackToFeed)
+        val btnEditProfile = findViewById&lt;Button&gt;(R.id.btnEditProfile)
+        val btnLogout = findViewById&lt;Button&gt;(R.id.btnLogoutProfile)
+
+        // 1. Tapping BACK TO CAMPUS FEED navigates to FeedActivity
+        btnBackToFeed.setOnClickListener {
+            val intent = Intent(this, FeedActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
+        // 2. Tapping EDIT PROFILE displays simulated action toast
+        btnEditProfile.setOnClickListener {
+            Toast.makeText(this, "Profile settings clicked", Toast.LENGTH_SHORT).show()
+        }
+
+        // 3. Tapping LOG OUT returns to Welcome Splash screen
+        btnLogout.setOnClickListener {
+            Toast.makeText(this, "Logged out of CampusVibe", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+    }
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- STEP 6: ANDROID MANIFEST VERIFICATION -->
+        <section id="step-6" class="lab-section">
+            <div class="section-header">
+                <div class="section-num">6</div>
+                <div class="section-title-wrap">
+                    <h2>Step 6: Verify the Master Manifest (`AndroidManifest.xml`)</h2>
+                    <p>Ensuring all 4 Activities are declared and registered with Android OS</p>
+                </div>
+            </div>
+
+            <div class="file-location-card">
+                <div class="file-loc-left">
+                    <span class="file-loc-badge">Master Manifest</span>
+                    <span class="file-loc-path">📁 app ➔ manifests ➔ AndroidManifest.xml</span>
+                </div>
+                <span class="file-loc-action">Ctrl+A ➔ Delete ➔ Paste</span>
+            </div>
+            <div class="code-container">
+                <div class="code-header">
+                    <span class="code-file-name"><i class="fa-solid fa-file-code"></i> AndroidManifest.xml</span>
+                    <button class="copy-btn" onclick="copyCode('code-manifest-xml', this)"><i class="fa-regular fa-copy"></i> Copy AndroidManifest XML</button>
+                </div>
+                <pre><code id="code-manifest-xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.campusvibe"&gt;
+
+    &lt;application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.CampusVibe"&gt;
+
+        &lt;!-- Screen 1: Welcome Splash (Default Launcher) --&gt;
+        &lt;activity
+            android:name=".MainActivity"
+            android:exported="true"&gt;
+            &lt;intent-filter&gt;
+                &lt;action android:name="android.intent.action.MAIN" /&gt;
+                &lt;category android:name="android.intent.category.LAUNCHER" /&gt;
+            &lt;/intent-filter&gt;
+        &lt;/activity&gt;
+
+        &lt;!-- Screen 2: Campus Feed --&gt;
+        &lt;activity
+            android:name=".FeedActivity"
+            android:exported="false" /&gt;
+
+        &lt;!-- Screen 3: Create Post --&gt;
+        &lt;activity
+            android:name=".CreatePostActivity"
+            android:exported="false" /&gt;
+
+        &lt;!-- Screen 4: Student Profile --&gt;
+        &lt;activity
+            android:name=".ProfileActivity"
+            android:exported="false" /&gt;
+
+    &lt;/application&gt;
+
+&lt;/manifest&gt;</code></pre>
+            </div>
+            <div class="instruction-step">
+                <strong><i class="fa-solid fa-lightbulb"></i> Style Name Check:</strong>
+                If your project was named <code>CampusVibe</code>, the theme is <code>@style/Theme.CampusVibe</code>. If your Android Studio uses another theme name (like <code>@style/Theme.CampusVibeApp</code>), do not erase your existing theme attribute.
+            </div>
+        </section>
+
+        <!-- STEP 7: RUN AND TEST -->
+        <section id="step-7" class="lab-section">
+            <div class="section-header">
+                <div class="section-num">7</div>
+                <div class="section-title-wrap">
+                    <h2>Step 7: Press Play ▶ and Test Your App in Emulator!</h2>
+                    <p>Testing screen transitions, click responses, and layout responsiveness</p>
+                </div>
+            </div>
+
+            <div class="instruction-step">
+                <strong><i class="fa-solid fa-play"></i> Execution Steps:</strong>
+                <ol style="margin-left: 20px; margin-top: 8px; line-height: 1.8;">
+                    <li>Look at the top toolbar in Android Studio Arctic Fox.</li>
+                    <li>Ensure an emulator (like <b>Pixel 3a API 30</b>) or a connected phone is selected.</li>
+                    <li>Click the green <b>Run 'app'</b> button (<span style="color: #16a34a; font-weight: 800;">▶</span>) or press <b>Shift + F10</b>.</li>
+                    <li>Wait 30 to 60 seconds for Gradle to build and install the APK on your emulator.</li>
+                </ol>
+            </div>
+
+            <div class="trouble-grid">
+                <div class="trouble-card">
+                    <div class="trouble-title"><i class="fa-solid fa-circle-exclamation"></i> Red line on "FeedActivity"?</div>
+                    <p>Means you pasted MainActivity before creating the other Activities.</p>
+                    <div class="trouble-fix">
+                        <b>Easy Fix:</b> Complete Step 3, 4, and 5 by creating the Activities. Once created, the red lines disappear!
+                    </div>
+                </div>
+
+                <div class="trouble-card">
+                    <div class="trouble-title"><i class="fa-solid fa-circle-exclamation"></i> Red line on "@drawable/logo"?</div>
+                    <p>Means the vector logo file is missing inside your drawable folder.</p>
+                    <div class="trouble-fix">
+                        <b>Easy Fix:</b> Check Step 1.5. Right-click <code>drawable</code> ➔ New ➔ Drawable Resource File ➔ name it <code>logo</code> ➔ paste our code!
+                    </div>
+                </div>
+
+                <div class="trouble-card">
+                    <div class="trouble-title"><i class="fa-solid fa-circle-exclamation"></i> Code instead of visual preview?</div>
+                    <p>You are in "Code only" view in the XML editor.</p>
+                    <div class="trouble-fix">
+                        <b>Easy Fix:</b> Look at the top right of the editor. Click the button that says <b>Split</b> or <b>Design</b> to preview the mobile layout!
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SUBMISSION RUBRIC AND CHECKLIST -->
+        <section id="step-rubric" class="lab-section">
+            <div class="section-header">
+                <div class="section-num"><i class="fa-solid fa-clipboard-check"></i></div>
+                <div class="section-title-wrap">
+                    <h2>Practical Exam Rubric & Deliverables Checklist</h2>
+                    <p>Verify all required deliverables before final laboratory report submission</p>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <div class="checklist-item" onclick="toggleCheck(this)">
+                    <div class="check-box"><i class="fa-solid fa-check"></i></div>
+                    <div class="check-text">1. Scaffolding: Arctic Fox 2020.3.1 project created under package com.example.campusvibe (20 pts)</div>
+                </div>
+                <div class="checklist-item" onclick="toggleCheck(this)">
+                    <div class="check-box"><i class="fa-solid fa-check"></i></div>
+                    <div class="check-text">2. Screen 1 (Welcome Splash): Branded vector logo, typography, and 2 active navigation buttons (20 pts)</div>
+                </div>
+                <div class="checklist-item" onclick="toggleCheck(this)">
+                    <div class="check-box"><i class="fa-solid fa-check"></i></div>
+                    <div class="check-text">3. Screen 2 (Campus Feed): ScrollView feed with topics, post cards, like toasts, and Create Post trigger (25 pts)</div>
+                </div>
+                <div class="checklist-item" onclick="toggleCheck(this)">
+                    <div class="check-box"><i class="fa-solid fa-check"></i></div>
+                    <div class="check-text">4. Screen 3 (Create Post): Title, Category selector, multiline EditText, and publish action to Feed (15 pts)</div>
+                </div>
+                <div class="checklist-item" onclick="toggleCheck(this)">
+                    <div class="check-box"><i class="fa-solid fa-check"></i></div>
+                    <div class="check-text">5. Screen 4 (Student Profile): Student stats grid, bio card, Edit Profile toast, and Logout to Welcome (20 pts)</div>
+                </div>
+            </div>
+
+            <div style="background: var(--primary-bg); border: 2px solid var(--primary-border); border-radius: 12px; padding: 18px 22px;">
+                <h4 style="color: var(--primary-dark); font-family: 'Lexend', sans-serif; font-size: 16px; margin-bottom: 6px;">
+                    📷 Required Submission Screenshots
+                </h4>
+                <ul style="font-size: 13.5px; color: var(--text-body); margin-left: 20px; line-height: 1.8;">
+                    <li><b>Screenshot 1:</b> Welcome Screen running on emulator.</li>
+                    <li><b>Screenshot 2:</b> Campus Feed with active Like Toast message.</li>
+                    <li><b>Screenshot 3:</b> Create Post Screen with filled sample content.</li>
+                    <li><b>Screenshot 4:</b> Student Profile Screen showing stats and bio card.</li>
+                    <li><b>Screenshot 5:</b> Android Studio Project Tree showing all 4 Activities and Drawables.</li>
+                </ul>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- SCRIPT FOR COPY AND CHECKLIST -->
+    <script>
+        function copyCode(codeId, btnElement) {
+            const codeBlock = document.getElementById(codeId);
+            if (!codeBlock) return;
+            
+            const textToCopy = codeBlock.innerText;
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalHtml = btnElement.innerHTML;
+                btnElement.innerHTML = '<i class="fa-solid fa-check"></i> Copied to Clipboard!';
+                btnElement.classList.add('copied');
+                
+                setTimeout(() => {
+                    btnElement.innerHTML = originalHtml;
+                    btnElement.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+
+        function toggleCheck(item) {
+            item.classList.toggle('done');
+        }
+    </script>
+</body>
+</html>
+

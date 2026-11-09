@@ -41,6 +41,7 @@ import { mediaDsnWeek2SlidesData } from '@/data/mediaDsnWeek2SlidesData';
 import { multimediaIntroSlidesData } from '@/data/multimediaIntroSlidesData';
 import { webdevSlidesData } from '@/data/webdevSlidesData';
 import { databaseSlidesData } from '@/data/databaseSlidesData';
+import { databaseWeek2SlidesData } from '@/data/databaseWeek2SlidesData';
 import { getWebDev3Slides } from '@/data/webdev3SlidesData';
 import { DEFAULT_LESSONS, Lesson } from '@/data/lessons';
 import { SlideData } from '@/types/slide';
@@ -939,6 +940,7 @@ function TeacherGuideContent() {
     if (lessonId === 'mediadsn2') return mediaDsnWeek2SlidesData;
     if (lessonId === 'webdev1') return webdevSlidesData;
     if (lessonId === 'database1') return databaseSlidesData;
+    if (lessonId === 'database2') return databaseWeek2SlidesData;
     return laravelSlidesData;
   }, [lessonId]);
 

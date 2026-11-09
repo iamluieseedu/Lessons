@@ -1,8 +1,8 @@
-# Mobile Development Lab 3: Build Your First Multi-Screen App 📱✨
-**Subtitle:** Welcome Screen ➔ Login ➔ Sign Up ➔ Dashboard  
+# Mob Dev 1 Lab: School Campus Connect — Build Your First Multi-Screen App 📱✨
+**Subtitle:** School Campus Connect Portal (Static UI — No Database) | Welcome Screen ➔ Login ➔ Sign Up ➔ Dashboard  
 **Made For:** Absolute Beginners & Students (Super Easy 1-2-3 Step Guide!)  
 **Target Environment:** Android Studio Arctic Fox (2020.3.1)  
-**Language:** Kotlin | **UI:** XML Layouts & Traditional Activities | **Binding:** `findViewById`
+**Language:** Kotlin | **UI:** XML Layouts & Traditional Activities | **Binding:** `findViewById` | **Architecture:** Static UI Navigation (No Database Required)
 
 ---
 

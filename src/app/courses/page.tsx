@@ -45,14 +45,38 @@ export default function CoursesDirectoryPage() {
       slidesUrl: '/lesson/?id=laravel11'
     },
     {
-      code: 'IT-MD1',
-      title: 'Interactive Media Design & HCI',
-      badge: 'User Experience & UI Systems',
+      code: 'IT-MD1-LAB',
+      title: 'Mob Dev 1: Native Android (Arctic Fox)',
+      badge: 'Mobile App Development & Kotlin',
+      color: 'sky',
+      slug: 'mobdev',
+      duration: '18 Weeks • 3 Credits',
+      desc: 'Native Android application development using Kotlin, XML layout architecture, Activity lifecycles, and explicit Intents in Android Studio Arctic Fox (2020.3.1). Includes School Campus Connect and CampusVibe Practical Exam.',
+      topics: ['Android Studio Arctic Fox (2020.3.1) Scaffolding', 'Linear & ScrollView XML Layout Architecture', 'Explicit Intents & startActivity() Navigation', 'Kotlin setOnClickListener & Toast Feedback', 'CampusVibe 4-Screen Social Media Practical Exam'],
+      labUrl: '/mobdev/exam.html',
+      slidesUrl: '/mobdev/exam.html'
+    },
+    {
+      code: 'IT-HCI1',
+      title: 'Human-Computer Interaction (HCI)',
+      badge: 'UI/UX & Cognitive Systems',
       color: 'indigo',
       slug: 'interactive-media-design',
       duration: '18 Weeks • 3 Credits',
-      desc: 'Principles of Human-Computer Interaction (HCI), Donald Norman affordances and signifiers, visual hierarchy, 8-point grid systems, and WCAG accessibility standards.',
-      topics: ['Human-Computer Interaction Feedback Loops', 'Norman Affordances & Cultural Signifiers', '8-Point Grid & Visual Layout Balance', 'WCAG 2.1 AA Color Contrast Ratios', 'User-Centered Design (UCD) Frameworks'],
+      desc: 'Principles of Human-Computer Interaction (HCI), Donald Norman affordances and signifiers, visual hierarchy, mobile interface ergonomics, information architecture, and ethical HCI design.',
+      topics: ['HCI Feedback Loops & Mental Models', 'Norman Affordances, Signifiers & Feedback', 'Mobile Touch Targets & Responsive Ergonomics', 'Information Architecture & Navigation Trees', 'Ethical HCI, Dark Patterns & WCAG Standards'],
+      labUrl: '/#tasks',
+      slidesUrl: '/lesson/?id=mediadsn1'
+    },
+    {
+      code: 'IT-MM1',
+      title: 'Introduction to Multimedia',
+      badge: '5 Core Elements & Production',
+      color: 'purple',
+      slug: 'introduction-to-multimedia',
+      duration: '18 Weeks • 3 Credits',
+      desc: 'Master the 5 core elements of multimedia (Text, Graphics, Audio, Animation, Video), non-linear interactive hypermedia architectures, production workflows, and capstone presentation.',
+      topics: ['5 Core Elements of Multimedia', 'Vector Graphics vs Raster Bitmaps', 'Digital Audio Sampling & -14 LUFS Mastering', 'Keyframing, Frame Rates & Video Codecs', 'Linear vs Non-Linear Interactive Systems'],
       labUrl: '/#tasks',
       slidesUrl: '/lesson/?id=multimedia1'
     },
@@ -63,10 +87,10 @@ export default function CoursesDirectoryPage() {
       color: 'emerald',
       slug: 'database-systems',
       duration: '18 Weeks • 3 Credits',
-      desc: 'Comprehensive relational database theory, entity integrity, foreign keys, normalization (1NF through 3NF), ACID transactions, and parameterized SQL query security.',
-      topics: ['Relational Model & Foreign Key Constraints', 'ACID Transaction Properties (Atomicity)', 'Parameterized Prepared Statements', '3-Valued SQL Logic (NULL Evaluation)', 'Associative Tables for Many-to-Many Relationships'],
+      desc: 'Comprehensive relational database theory, entity integrity, foreign key cascades (CASCADE, SET NULL, RESTRICT), ERD Crow\'s Foot cardinality, GROUP BY & HAVING aggregations, and parameterized SQL query security.',
+      topics: ['ERD Crow\'s Foot Cardinality (1:1, 1:N, M:N)', 'Foreign Key Cascades & Referential Integrity', 'SQL Aggregations with GROUP BY & HAVING', 'Multi-Table INNER & OUTER JOIN Matrices', 'SQL Injection & Prepared Statements'],
       labUrl: '/#tasks',
-      slidesUrl: '/lesson/?id=database1'
+      slidesUrl: '/lesson/?id=database2'
     },
     {
       code: 'CS-CPP1',

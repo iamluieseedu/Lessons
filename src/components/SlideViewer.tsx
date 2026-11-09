@@ -20,6 +20,11 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({ slide }) => {
     slide.type === 'multimedia_authoring_studio' ||
     slide.type === 'multimedia_products_interactive_matrix' ||
     slide.type === 'delivery_bandwidth_speed_race' ||
+    slide.type === 'a11y_contrast_matrix' ||
+    slide.type === 'color_blindness_lens' ||
+    slide.type === 'screen_reader_announcer' ||
+    slide.type === 'touch_target_hitbox_lab' ||
+    slide.type === 'prefers_reduced_motion_studio' ||
     slide.type === 'cpp_compiler' ||
     slide.type === 'cpp_exercise';
 

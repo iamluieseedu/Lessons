@@ -7,10 +7,12 @@ import { slidesData } from '@/data/slidesData';
 import { laravelSlidesData } from '@/data/laravelSlidesData';
 import { mediaDsnSlidesData } from '@/data/mediaDsnSlidesData';
 import { mediaDsnWeek2SlidesData } from '@/data/mediaDsnWeek2SlidesData';
+import { mediaDsnAccessibilitySlidesData } from '@/data/mediaDsnAccessibilitySlidesData';
 import { multimediaIntroSlidesData } from '@/data/multimediaIntroSlidesData';
 import { webdevSlidesData } from '@/data/webdevSlidesData';
 import { cppSlidesData } from '@/data/cppSlidesData';
 import { databaseSlidesData } from '@/data/databaseSlidesData';
+import { databaseWeek2SlidesData } from '@/data/databaseWeek2SlidesData';
 import { SlideViewer } from '@/components/SlideViewer';
 import { NavigationControls } from '@/components/NavigationControls';
 import { ThumbnailDrawer } from '@/components/ThumbnailDrawer';
@@ -22,6 +24,19 @@ import { HeaderAd } from '@/components/HeaderAd';
 
 import { getWebDev3Slides } from '@/data/webdev3SlidesData';
 import { eventProgWeek1Slides } from '@/data/eventProgSlidesData';
+import { mobdevExamSlidesData, mobdevCampusConnectSlidesData } from '@/data/mobdevSlidesData';
+import {
+  mediaDsnMobileSlidesData,
+  mediaDsnIASlidesData,
+  mediaDsnEthicsSlidesData,
+  mediaDsnReviewSlidesData
+} from '@/data/mediaDsnAdvancedWeeksSlidesData';
+import {
+  multimediaProductionSlidesData,
+  multimediaIntegrationSlidesData,
+  multimediaFinalProjectSlidesData,
+  multimediaPresentationCritiqueSlidesData
+} from '@/data/multimediaAdvancedWeeksSlidesData';
 import { Lesson, DEFAULT_LESSONS } from '@/data/lessons';
 
 function SlidePageContent() {
@@ -135,18 +150,42 @@ function SlidePageContent() {
           setSlides(laravelSlidesData);
         } else if (found.id === 'multimedia1') {
           setSlides(multimediaIntroSlidesData);
+        } else if (found.id === 'multimedia-w14') {
+          setSlides(multimediaProductionSlidesData);
+        } else if (found.id === 'multimedia-w15') {
+          setSlides(multimediaIntegrationSlidesData);
+        } else if (found.id === 'multimedia-w16') {
+          setSlides(multimediaFinalProjectSlidesData);
+        } else if (found.id === 'multimedia-w17') {
+          setSlides(multimediaPresentationCritiqueSlidesData);
         } else if (found.id === 'mediadsn1') {
           setSlides(mediaDsnSlidesData);
         } else if (found.id === 'mediadsn2') {
           setSlides(mediaDsnWeek2SlidesData);
+        } else if (found.id === 'mediadsn-a11y' || found.id === 'mediadsn3') {
+          setSlides(mediaDsnAccessibilitySlidesData);
+        } else if (found.id === 'mediadsn-w14') {
+          setSlides(mediaDsnMobileSlidesData);
+        } else if (found.id === 'mediadsn-w15') {
+          setSlides(mediaDsnIASlidesData);
+        } else if (found.id === 'mediadsn-w16') {
+          setSlides(mediaDsnEthicsSlidesData);
+        } else if (found.id === 'mediadsn-w17') {
+          setSlides(mediaDsnReviewSlidesData);
         } else if (found.id === 'webdev1') {
           setSlides(webdevSlidesData);
         } else if (found.id === 'cpp1') {
           setSlides(cppSlidesData);
         } else if (found.id === 'database1') {
           setSlides(databaseSlidesData);
+        } else if (found.id === 'database2') {
+          setSlides(databaseWeek2SlidesData);
         } else if (found.id === 'eventprog-w1') {
           setSlides(eventProgWeek1Slides);
+        } else if (found.id === 'mobdev1-exam') {
+          setSlides(mobdevExamSlidesData);
+        } else if (found.id === 'mobdev3-w1') {
+          setSlides(mobdevCampusConnectSlidesData);
         } else {
           // Dynamic slide deck for custom uploaded lessons
           setSlides([
@@ -374,23 +413,49 @@ function SlidePageContent() {
       <div className="w-full max-w-[1920px] 2xl:max-w-[2400px] mx-auto flex flex-col lg:flex-row gap-3 items-start justify-center flex-grow">
         <div className="w-full flex-grow flex flex-col">
           {/* Top Bar / Header */}
-          <header className="flex items-center justify-between py-1.5 px-2 border-b border-slate-800 bg-slate-950/70 rounded-xl mb-1 shrink-0 backdrop-blur-md">
-            <div className="flex items-center gap-2">
-              <span className="p-1.5 rounded-lg bg-sky-500/10 text-sky-400 border border-sky-500/20">
+          <header className="flex items-center justify-between py-1.5 px-2 border-b border-slate-800 bg-slate-950/70 rounded-xl mb-1 shrink-0 backdrop-blur-md gap-2">
+            <div className="flex items-center gap-2 truncate">
+              <span className="p-1.5 rounded-lg bg-sky-500/10 text-sky-400 border border-sky-500/20 shrink-0">
                 <BookOpen className="w-4 h-4" />
               </span>
-              <h1 className="text-xs sm:text-sm font-extrabold text-slate-100 font-lexend tracking-tight">
+              <h1 className="text-xs sm:text-sm font-extrabold text-slate-100 font-lexend tracking-tight truncate">
                 {lesson.title} • Week {lesson.week}
               </h1>
             </div>
 
-            <Link
-              href="/"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-bold shadow-sm transition"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              Back to Library
-            </Link>
+            <div className="flex items-center gap-2 shrink-0">
+              {lesson.id === 'mobdev1-exam' && (
+                <a
+                  href="/mobdev/exam.html"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-pink-600 to-indigo-600 hover:from-pink-500 hover:to-indigo-500 text-white text-xs font-black shadow-md shadow-pink-600/20 transition"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  <span>Launch Exam Manual</span>
+                </a>
+              )}
+
+              {lesson.id === 'mobdev3-w1' && (
+                <a
+                  href="/mobdev/index.html"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 text-white text-xs font-black shadow-md shadow-sky-600/20 transition"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  <span>Launch Campus Connect Manual</span>
+                </a>
+              )}
+
+              <Link
+                href="/"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-bold shadow-sm transition"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Back to Library</span>
+              </Link>
+            </div>
           </header>
 
           {/* Main Slide Viewer Frame */}

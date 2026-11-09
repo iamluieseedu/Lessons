@@ -314,9 +314,29 @@ export const DEFAULT_LESSONS: Lesson[] = [
     competencies: ['Relational Schema & Keys', 'SQL Queries & JOIN Operations', '1NF-3NF Normalization', 'ACID Transactions & Integrity']
   },
   {
+    id: 'database2',
+    week: 2,
+    course: 'Fundamentals of Database',
+    title: 'Relational Data Modeling & Advanced SQL Operations',
+    description: 'Master relational architecture: ERD Crow\'s Foot cardinality (1:1, 1:N, M:N), foreign key cascading actions (CASCADE, SET NULL, RESTRICT), SQL aggregations with GROUP BY and HAVING, multi-table JOINs, subqueries, and SQL injection prevention with 5 live interactive database simulators.',
+    duration: '40 mins',
+    slidesCount: 24,
+    difficulty: 'Intermediate',
+    thumbnail: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?auto=format&fit=crop&w=800&q=80',
+    isActive: true,
+    quizEnabled: true,
+    competencies: [
+      'ERD Crow\'s Foot Cardinality (1:1, 1:N, M:N)',
+      'Foreign Key Cascades (CASCADE, SET NULL, RESTRICT)',
+      'GROUP BY & HAVING Group Aggregations',
+      'Multi-Table Joins & Subqueries',
+      'SQL Injection & Prepared Statements'
+    ]
+  },
+  {
     id: 'multimedia1',
     week: 1,
-    course: 'Interactive Media Design',
+    course: 'Introduction to Multimedia',
     title: 'Introduction to Multimedia: Fundamentals & 5 Elements',
     description: 'A dynamic, visual interactive slide presentation crafted for BS Multimedia students. Covers the definition of multimedia, the 5 core elements (Text, Graphic, Audio, Animation, Video), interactive hypermedia, linear vs non-linear systems, authoring tools, application domains, and the 6 multimedia products with 9 live interactive studio simulators.',
     duration: '25 mins',
@@ -335,11 +355,83 @@ export const DEFAULT_LESSONS: Lesson[] = [
     ]
   },
   {
+    id: 'multimedia-w14',
+    week: 14,
+    course: 'Introduction to Multimedia',
+    title: 'Multimedia Production Techniques',
+    description: 'Master advanced production techniques for multimedia: 3-phase pipelines (pre-production, production, post-production), non-destructive editing, LUFS loudness mastering (-14 LUFS), and color grading.',
+    duration: '35 mins',
+    slidesCount: 15,
+    difficulty: 'Intermediate',
+    thumbnail: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=800&q=80',
+    isActive: true,
+    quizEnabled: true,
+    competencies: [
+      'Learn advanced production techniques for multimedia.',
+      'Apply techniques to produce high-quality multimedia content.',
+      'Ensure consistency and quality in multimedia production.'
+    ]
+  },
+  {
+    id: 'multimedia-w15',
+    week: 15,
+    course: 'Introduction to Multimedia',
+    title: 'Multimedia Integration',
+    description: 'Integrate the 5 core multimedia elements into cohesive projects: Mayer’s Cognitive Theory of Multimedia Learning, temporal synchronization, automatic audio ducking, seamless transitions, and 60 FPS profiling.',
+    duration: '30 mins',
+    slidesCount: 15,
+    difficulty: 'Intermediate',
+    thumbnail: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80',
+    isActive: true,
+    quizEnabled: true,
+    competencies: [
+      'Integrate various multimedia elements to create cohesive projects.',
+      'Ensure smooth transitions and interactions between different media types.',
+      'Test and refine multimedia projects.'
+    ]
+  },
+  {
+    id: 'multimedia-w16',
+    week: 16,
+    course: 'Introduction to Multimedia',
+    title: 'Final Project Development',
+    description: 'Plan, design, and produce a comprehensive multimedia capstone project: vertical slice scoping, milestone sprint management, 3-2-1 backup protocols, and balancing creative artistry with technical rigor.',
+    duration: '40 mins',
+    slidesCount: 15,
+    difficulty: 'Advanced',
+    thumbnail: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=800&q=80',
+    isActive: true,
+    quizEnabled: true,
+    competencies: [
+      'Apply all learned skills to develop a final multimedia project.',
+      'Plan, design, and produce a comprehensive multimedia piece.',
+      'Focus on creativity, design principles, and technical skills.'
+    ]
+  },
+  {
+    id: 'multimedia-w17',
+    week: 17,
+    course: 'Introduction to Multimedia',
+    title: 'Project Presentation and Critique',
+    description: 'Professional multimedia project defense: the 5-minute pitch framework, constructive critique using the "I Like, I Wish, What If" model, post-critique refinement, and industry portfolio curation.',
+    duration: '35 mins',
+    slidesCount: 15,
+    difficulty: 'Advanced',
+    thumbnail: 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=800&q=80',
+    isActive: true,
+    quizEnabled: true,
+    competencies: [
+      'Present final multimedia projects to the class.',
+      'Receive and provide constructive feedback.',
+      'Refine and prepare projects for portfolio inclusion.'
+    ]
+  },
+  {
     id: 'mediadsn1',
     week: 1,
-    course: 'Interactive Media Design',
-    title: 'Introduction to Interactive Media Design',
-    description: 'Learn the basics, history, and key components of interactive media design, emphasizing user-centered digital experiences.',
+    course: 'Human-Computer Interaction',
+    title: 'Introduction to Human-Computer Interaction',
+    description: 'Learn the basics, history, and key components of Human-Computer Interaction and interactive system design, emphasizing user-centered digital experiences.',
     duration: '20 mins',
     slidesCount: 36,
     difficulty: 'Beginner',
@@ -351,7 +443,7 @@ export const DEFAULT_LESSONS: Lesson[] = [
   {
     id: 'mediadsn2',
     week: 2,
-    course: 'Interactive Media Design',
+    course: 'Human-Computer Interaction',
     title: 'Principles of Interactivity, UI & UX Design Basics',
     description: 'Master the fundamental principles of interactivity, engagement loops, spectrum of interactive media, UI layout and visual hierarchy (F/Z patterns, 8pt grid), 60-30-10 color theory, WCAG contrast accessibility, modular typography ladders, and UX research, personas, and user journey mapping with 8 live interactive simulations.',
     duration: '35 mins',
@@ -365,6 +457,98 @@ export const DEFAULT_LESSONS: Lesson[] = [
       "Understand how interactivity enhances cognitive engagement and explore diverse interactive media types.",
       "Apply UI design layout rules (visual hierarchy, 8pt grid), color theory (60-30-10, WCAG), and typography ladders.",
       "Master UX fundamentals: Jakob Nielsen's 10 heuristics, user research, archetypal personas, and user journey mapping."
+    ]
+  },
+  {
+    id: 'mediadsn-a11y',
+    week: 3,
+    course: 'Human-Computer Interaction',
+    title: 'Accessibility in Interactive Design',
+    description: 'Understand the importance of accessibility in interactive media design, learn to create accessible designs catering to all users including those with disabilities, and apply international accessibility guidelines (WCAG 2.1/2.2 Level AA, P.O.U.R., WAI-ARIA) with 5 live studio simulators.',
+    duration: '30 mins',
+    slidesCount: 30,
+    difficulty: 'Beginner',
+    thumbnail: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80',
+    isActive: true,
+    quizEnabled: true,
+    competencies: [
+      'Understand the importance of accessibility in interactive media design.',
+      'Learn to create accessible designs that cater to all users, including those with disabilities.',
+      'Apply accessibility guidelines and standards (WCAG 2.1/2.2 Level AA & P.O.U.R. Framework).'
+    ]
+  },
+  {
+    id: 'mediadsn-w14',
+    week: 14,
+    course: 'Human-Computer Interaction',
+    title: 'Designing for Mobile Interfaces & Responsive HCI',
+    description: 'Master cross-platform responsive HCI: mobile-to-desktop progressive enhancement, desktop-to-mobile graceful degradation, the 1993 CRT history of 16px font standards, avoiding the iOS input auto-zoom penalty, the 8-point grid system, and Gestalt F/Z eye-tracking layouts with 3 live interactive studios.',
+    duration: '40 mins',
+    slidesCount: 25,
+    difficulty: 'Intermediate',
+    thumbnail: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?auto=format&fit=crop&w=800&q=80',
+    isActive: true,
+    quizEnabled: true,
+    competencies: [
+      'Cross-platform responsiveness: Mobile-to-Desktop & Desktop-to-Mobile reflow.',
+      'The 16px universal font standard: 1993 NCSA Mosaic, 96 DPI CRT math & visual angles.',
+      'Eliminating the iOS 16px auto-zoom input penalty & modular type scales.',
+      'The 8-point grid system & sub-pixel anti-aliasing across 1.5x, 2x, and 3x DPI displays.',
+      'Cognitive layout patterns: Nielsen Norman F-Pattern, Z-Pattern & Gestalt grouping laws.'
+    ]
+  },
+  {
+    id: 'mediadsn-w15',
+    week: 15,
+    course: 'Human-Computer Interaction',
+    title: 'Information Architecture',
+    description: 'Understand the principles of information architecture, organize and structure complex digital content for usability, and develop production sitemaps, navigation schemes, and card sorting taxonomies.',
+    duration: '30 mins',
+    slidesCount: 15,
+    difficulty: 'Intermediate',
+    thumbnail: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=800&q=80',
+    isActive: true,
+    quizEnabled: true,
+    competencies: [
+      'Understand the principles of information architecture.',
+      'Organize and structure content for usability.',
+      'Develop sitemaps and navigation schemes.'
+    ]
+  },
+  {
+    id: 'mediadsn-w16',
+    week: 16,
+    course: 'Human-Computer Interaction',
+    title: 'Ethical Considerations in HCI',
+    description: 'Explore ethical issues in HCI design, deceptive dark patterns (Roach Motel, Confirmshaming), understand the critical importance of privacy and data protection (Privacy by Design), and apply ethical principles to interface design.',
+    duration: '30 mins',
+    slidesCount: 15,
+    difficulty: 'Intermediate',
+    thumbnail: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80',
+    isActive: true,
+    quizEnabled: true,
+    competencies: [
+      'Explore ethical issues in HCI design.',
+      'Understand the importance of privacy and data protection.',
+      'Apply ethical principles to interface design.'
+    ]
+  },
+  {
+    id: 'mediadsn-w17',
+    week: 17,
+    course: 'Human-Computer Interaction',
+    title: 'Review and Practical Applications',
+    description: 'Review key foundational concepts from the entire HCI curriculum, work on practical applications that integrate all learned topics, and apply advanced problem-solving skills to real-world interface scenarios and capstone audits.',
+    duration: '40 mins',
+    slidesCount: 15,
+    difficulty: 'Advanced',
+    thumbnail: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80',
+    isActive: true,
+    quizEnabled: true,
+    competencies: [
+      'Review key concepts from the course.',
+      'Work on practical applications that integrate all learned topics.',
+      'Apply problem-solving skills to real-world scenarios.'
     ]
   },
   {
@@ -407,8 +591,8 @@ export const DEFAULT_LESSONS: Lesson[] = [
     id: 'mobdev3-w1',
     week: 1,
     course: 'Mob Dev 1 Lab',
-    title: 'Building Your First Multi-Screen Android Application',
-    description: 'Master Android Studio Arctic Fox (2020.3.1), Activity lifecycles, explicit Intents, XML layouts, form input validation, and data passing across Welcome, Login, Sign Up, and Dashboard screens.',
+    title: 'School Campus Connect: Building Your First Multi-Screen Android Application',
+    description: 'Construct the 4-screen School Campus Connect student portal in Android Studio Arctic Fox (2020.3.1) using Kotlin and XML. Master static UI layout design and explicit Intent navigation across Welcome, Login, Sign Up, and Dashboard screens (static muna, strictly zero database or backend required).',
     duration: '45 mins',
     slidesCount: 16,
     difficulty: 'Beginner',
@@ -416,10 +600,29 @@ export const DEFAULT_LESSONS: Lesson[] = [
     isActive: true,
     quizEnabled: true,
     competencies: [
-      'Navigate Android Studio Arctic Fox (2020.3.1) and Empty Activity project scaffolding.',
-      'Construct traditional XML linear layouts, ScrollViews, TextViews, and EditTexts.',
-      'Implement explicit Intent screen navigation and Back Stack lifecycle management.',
-      'Safely pass and receive user state across screen boundaries using putExtra and getStringExtra.'
+      'Navigate Android Studio Arctic Fox (2020.3.1) and Empty Activity project scaffolding (API 21+).',
+      'Construct clean static XML layouts with LinearLayout, ScrollView, TextViews, and Buttons.',
+      'Implement explicit Intent screen navigation (startActivity) and Back Stack management on button clicks.',
+      'Connect 4 portal screens with Kotlin click listeners (purely static UI, zero database setup).'
+    ]
+  },
+  {
+    id: 'mobdev1-exam',
+    week: 2,
+    course: 'Mob Dev 1 Lab',
+    title: 'Practical Exam: CampusVibe Social Media Android App',
+    description: 'Hands-on practical examination: construct "CampusVibe", a 4-screen static student social media application in Android Studio Arctic Fox (2020.3.1) using Kotlin and XML (Welcome Splash, Campus Feed, Create Post, and Student Profile). Pure static UI navigation, strictly zero database required.',
+    duration: '120 mins',
+    slidesCount: 12,
+    difficulty: 'Beginner',
+    thumbnail: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80',
+    isActive: true,
+    quizEnabled: false,
+    competencies: [
+      'Scaffold an Empty Activity project in Android Studio Arctic Fox (API 21+).',
+      'Design modern multi-screen XML layouts with ScrollViews, custom shapes, and vector drawables.',
+      'Implement explicit Intent navigation (startActivity) and finish() between 4 connected screens.',
+      'Handle button click listener events with interactive Toast messages.'
     ]
   }
 ];

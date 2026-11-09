@@ -100,6 +100,25 @@ import {
   MultimediaProductsInteractiveMatrix,
   DeliveryBandwidthSpeedRace
 } from './InteractiveMultimediaIntroSimulations';
+import {
+  WcagContrastMatrixSimulator,
+  ColorBlindnessLensSimulator,
+  TouchTargetHitboxLab,
+  PrefersReducedMotionStudio,
+  ScreenReaderAnnouncerSimulator
+} from './InteractiveAccessibilitySimulations';
+import {
+  SqlAggregationStudio,
+  ForeignKeyCascadeSimulator,
+  ErdCardinalityTester,
+  SqlInjectionShield,
+  SqlJoinMatrixVisualizer
+} from './InteractiveDatabaseWeek2Simulations';
+import {
+  ResponsiveViewportReflowLab,
+  FontHistoryModularScaleStudio,
+  LayoutGridGestaltInspector
+} from './InteractiveResponsiveTypographySimulations';
 
 interface SlideContentProps {
   slide: SlideData;
@@ -4358,6 +4377,45 @@ export const SlideContent: React.FC<SlideContentProps> = ({ slide }) => {
   }
   if (slide.type === 'delivery_bandwidth_speed_race') {
     return <DeliveryBandwidthSpeedRace slide={slide} />;
+  }
+  if (slide.type === 'a11y_contrast_matrix') {
+    return <WcagContrastMatrixSimulator slide={slide} />;
+  }
+  if (slide.type === 'color_blindness_lens') {
+    return <ColorBlindnessLensSimulator slide={slide} />;
+  }
+  if (slide.type === 'touch_target_hitbox_lab') {
+    return <TouchTargetHitboxLab slide={slide} />;
+  }
+  if (slide.type === 'prefers_reduced_motion_studio') {
+    return <PrefersReducedMotionStudio slide={slide} />;
+  }
+  if (slide.type === 'screen_reader_announcer') {
+    return <ScreenReaderAnnouncerSimulator slide={slide} />;
+  }
+  if (slide.type === 'db_group_by_studio') {
+    return <SqlAggregationStudio slide={slide} />;
+  }
+  if (slide.type === 'db_cascade_simulator') {
+    return <ForeignKeyCascadeSimulator slide={slide} />;
+  }
+  if (slide.type === 'db_erd_cardinality_tester') {
+    return <ErdCardinalityTester slide={slide} />;
+  }
+  if (slide.type === 'db_injection_shield') {
+    return <SqlInjectionShield slide={slide} />;
+  }
+  if (slide.type === 'db_join_matrix_visualizer') {
+    return <SqlJoinMatrixVisualizer slide={slide} />;
+  }
+  if (slide.type === 'responsive_viewport_reflow_lab') {
+    return <ResponsiveViewportReflowLab slide={slide} />;
+  }
+  if (slide.type === 'font_history_modular_scale_studio') {
+    return <FontHistoryModularScaleStudio slide={slide} />;
+  }
+  if (slide.type === 'layout_grid_gestalt_inspector') {
+    return <LayoutGridGestaltInspector slide={slide} />;
   }
   if (slide.type === 'versus' || slide.type === 'comparison') {
     return (

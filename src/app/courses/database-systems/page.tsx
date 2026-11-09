@@ -10,7 +10,9 @@ import {
   Layers,
   ShieldCheck,
   Server,
-  Play
+  Play,
+  Sparkles,
+  ArrowRight
 } from 'lucide-react';
 
 export default function DatabaseSystemsPage() {
@@ -24,13 +26,22 @@ export default function DatabaseSystemsPage() {
             <span>All Courses</span>
           </Link>
 
-          <Link
-            href="/lesson/?id=database1"
-            className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition flex items-center gap-1.5"
-          >
-            <Play className="w-3 h-3 fill-current" />
-            <span>Database Slides</span>
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/lesson/?id=database2"
+              className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-emerald-600 text-white shadow-sm hover:bg-emerald-500 transition flex items-center gap-1.5 shadow-emerald-500/20"
+            >
+              <Sparkles className="w-3 h-3" />
+              <span>New: Week 2 Advanced SQL</span>
+            </Link>
+            <Link
+              href="/lesson/?id=database1"
+              className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition flex items-center gap-1.5"
+            >
+              <Play className="w-3 h-3 fill-current" />
+              <span>Week 1 Slides</span>
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -138,6 +149,46 @@ export default function DatabaseSystemsPage() {
               >
                 <span>Review Manual</span>
               </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Interactive Slide Decks Section */}
+        <section className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
+          <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+            <BookOpen className="w-5 h-5 text-emerald-600" />
+            <span>Interactive Lecture Presentations &amp; Simulators</span>
+          </h2>
+
+          <div className="space-y-3 text-xs sm:text-sm">
+            {/* Week 1 */}
+            <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 font-mono">Week 1 &bull; Core Foundations</span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-200 text-emerald-900 font-mono">55 Slides</span>
+              </div>
+              <h4 className="font-bold text-slate-900 text-sm mt-0.5 mb-1">Fundamentals of Database</h4>
+              <p className="text-slate-600">Relational modeling, SQL CRUD operations, multi-table joins, 1NF to 3NF normalization, ACID transactions, and live console simulations.</p>
+              <div className="mt-2.5 flex items-center gap-2">
+                <Link href="/lesson/?id=database1" className="text-xs font-bold text-emerald-700 hover:text-emerald-900 inline-flex items-center gap-1">
+                  <span>Open Week 1 Presentation</span> <ArrowRight className="w-3 h-3" />
+                </Link>
+              </div>
+            </div>
+
+            {/* Week 2 */}
+            <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 font-mono">Week 2 &bull; New Discussion</span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-600 text-white font-mono">24 Slides &bull; 5 Live Studios</span>
+              </div>
+              <h4 className="font-bold text-slate-900 text-sm mt-0.5 mb-1">Relational Data Modeling &amp; Advanced SQL Operations</h4>
+              <p className="text-slate-600">ERD Crow&apos;s Foot cardinality (1:1, 1:N, M:N), foreign key cascades (CASCADE, SET NULL, RESTRICT), GROUP BY &amp; HAVING aggregations, complex joins, and SQL injection security.</p>
+              <div className="mt-2.5 flex items-center gap-2">
+                <Link href="/lesson/?id=database2" className="text-xs font-bold text-emerald-700 hover:text-emerald-900 inline-flex items-center gap-1">
+                  <span>Launch Week 2 Presentation</span> <ArrowRight className="w-3 h-3" />
+                </Link>
+              </div>
             </div>
           </div>
         </section>

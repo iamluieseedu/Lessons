@@ -218,30 +218,62 @@ export const DEFAULT_TASKS: CourseTask[] = [
     courseFolderId: 'mobdev',
     courseCode: 'IT-MD1',
     courseTitle: 'Mob Dev 1 Lab',
-    title: 'Building Your First Multi-Screen Android Application',
-    badge: 'Laboratory Manual • Mob Dev 1',
-    phaseTag: 'Multi-Screen Navigation',
+    title: 'School Campus Connect: Building Your First Multi-Screen Android Application',
+    badge: 'Laboratory Manual • School Campus Connect',
+    phaseTag: 'Phase 1: Static Navigation (No Database)',
     type: 'Graded Lab Task',
     difficulty: 'Beginner',
     status: 'active',
     duration: '90 - 120 mins',
     weekAlignment: 'Week 1 - 2 Practical Lab',
-    description: 'Construct a 4-screen Android application in Android Studio Arctic Fox (2020.3.1) using Kotlin and XML: Welcome Page, Static Login Design, Sign Up Design, and Student Dashboard with direct button click navigation events.',
+    description: 'Construct the 4-screen "CampusConnect" student portal in Android Studio Arctic Fox (2020.3.1) using Kotlin and XML (static muna, strictly zero database or backend required): Welcome Screen, Static Login Design, Sign Up Design, and Student Dashboard with direct button click navigation events.',
     objectives: [
       'Scaffold an Empty Activity project in Android Studio Arctic Fox 2020.3.1 with API 21 minimum SDK',
       'Design clean static XML layouts with LinearLayout, ScrollView, TextViews, and Buttons',
       'Implement explicit Intents and startActivity() to navigate between 4 screens on button click',
-      'Attach Kotlin setOnClickListener events to trigger immediate screen transitions',
+      'Attach Kotlin setOnClickListener events to trigger immediate screen transitions (static muna, no database needed)',
       'Implement return navigation to Welcome screen and verify AndroidManifest declarations'
     ],
     deliverables: [
-      'Working 4-screen Android project running on emulator',
-      'Verified button click events navigating between Welcome, Dashboard, and Mock screens',
-      'Completed submission screenshots of all screens'
+      'Working 4-screen School Campus Connect Android project running on emulator',
+      'Verified button click events navigating between Welcome, Dashboard, Login, and Sign Up screens (static navigation)',
+      'Completed submission screenshots of all 4 screens in the emulator'
     ],
-    techStack: ['Android Studio Arctic Fox', 'Kotlin', 'XML Layouts', 'Android Activities', 'Intents'],
+    techStack: ['Android Studio Arctic Fox', 'Kotlin', 'XML Layouts', 'Android Activities', 'Explicit Intents', 'Static UI (No Database)'],
     launchUrl: '/mobdev/index.html',
-    actionText: 'Launch Mob Dev 1 Manual',
+    actionText: 'Launch Campus Connect Manual',
+    isExternal: true
+  },
+  {
+    id: 'android-exam-campusvibe',
+    courseFolderId: 'mobdev',
+    courseCode: 'IT-MD1',
+    courseTitle: 'Mob Dev 1 Lab',
+    title: 'Practical Exam: CampusVibe — Multi-Screen Social Media Android App',
+    badge: 'Practical Examination • Mob Dev 1',
+    phaseTag: 'Practical Exam: Social Media App (Static UI)',
+    type: 'Graded Lab Task',
+    difficulty: 'Beginner',
+    status: 'active',
+    duration: '120 - 150 mins',
+    weekAlignment: 'Midterm / Final Practical Exam',
+    description: 'Demonstrate your Android Studio Arctic Fox (2020.3.1) proficiency by building "CampusVibe", a 4-screen static student social media application (strictly zero database or backend required): Welcome Splash, Campus Feed with interactive post cards & like toasts, Create Post composer form, and Student Profile with stats and back-stack navigation.',
+    objectives: [
+      'Scaffold an Empty Activity project in Android Studio Arctic Fox (2020.3.1) under package com.example.campusvibe with API 21 minimum SDK',
+      'Design clean modern social media XML layouts using LinearLayout, ScrollView, custom shapes, and vector drawables',
+      'Implement explicit Intent navigation (startActivity) connecting all 4 screens (Welcome, Feed, Create Post, Profile)',
+      'Attach Kotlin setOnClickListener events and interactive Toast feedback on button actions (purely static, no database needed)',
+      'Declare and verify all 4 Activities inside AndroidManifest.xml and test full navigation flow in the emulator'
+    ],
+    deliverables: [
+      'Working 4-screen CampusVibe Android project running on emulator',
+      'Verified button click transitions across Welcome, Feed, Create Post, and Profile screens',
+      'Interactive Like Toast triggers and Post creation return flow',
+      'Submission screenshots of all 4 emulator screens and Android Studio Project Tree'
+    ],
+    techStack: ['Android Studio Arctic Fox', 'Kotlin', 'XML Layouts', 'Android Activities', 'Explicit Intents', 'Static UI (No Database)'],
+    launchUrl: '/mobdev/exam.html',
+    actionText: 'Launch Practical Exam Manual',
     isExternal: true
   },
   {
