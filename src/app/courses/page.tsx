@@ -81,6 +81,18 @@ export default function CoursesDirectoryPage() {
       slidesUrl: '/lesson/?id=multimedia1'
     },
     {
+      code: 'IT-DI1',
+      title: 'Digital Imaging',
+      badge: 'Typography, Pre-Press & Compositing',
+      color: 'rose',
+      slug: 'digital-imaging',
+      duration: '18 Weeks • 3 Credits',
+      desc: 'Professional digital imaging, typography anatomy and non-destructive text effects, CMYK/RGB pre-press color profiles, print resolution vs web optimization, advanced compositing, and portfolio critique.',
+      topics: ['Typography Mechanics & Layer Styles FX', 'Displacement Mapping & 3D Perspective', 'CMYK vs RGB & ICC Color Profiles (FOGRA39)', 'PPI vs DPI vs LPI & Halftone Screening', 'Frequency Separation & Master Portfolio Critique'],
+      labUrl: '/#tasks',
+      slidesUrl: '/lesson/?id=digitalimage-w14'
+    },
+    {
       code: 'IT-DB1',
       title: 'Database Management Systems',
       badge: 'Relational Data & SQL',

@@ -624,5 +624,79 @@ export const DEFAULT_LESSONS: Lesson[] = [
       'Implement explicit Intent navigation (startActivity) and finish() between 4 connected screens.',
       'Handle button click listener events with interactive Toast messages.'
     ]
+  },
+  // ==========================================
+  // DIGITAL IMAGING: OFFICIAL SYLLABUS TRACK
+  // ==========================================
+  {
+    id: 'digitalimage-w14',
+    week: 14,
+    course: 'Digital Imaging',
+    title: 'Typography and Text Effects',
+    description: 'Integrate typography into digital images with anatomical precision. Master tracking, kerning, leading, vector vs raster text, non-destructive layer styles, clipping masks, displacement mapping along fabric folds, and perspective 3D distortion.',
+    duration: '45 mins',
+    slidesCount: 15,
+    difficulty: 'Intermediate',
+    thumbnail: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=800&q=80',
+    isActive: true,
+    quizEnabled: true,
+    competencies: [
+      'Integrate text into digital images.',
+      'Apply typography principles and create text effects.',
+      'Use text layers and styles for creative designs.'
+    ]
+  },
+  {
+    id: 'digitalimage-w15',
+    week: 15,
+    course: 'Digital Imaging',
+    title: 'Preparing Images for Print and Web',
+    description: 'Prepare digital images for physical offset print and modern web distribution. Understand Additive RGB vs Subtractive CMYK, color profiles (sRGB, Adobe RGB, FOGRA39), resolution math (PPI vs DPI vs LPI), halftone screening, bleed/trim safety, and next-gen web optimization (WebP, AVIF).',
+    duration: '45 mins',
+    slidesCount: 15,
+    difficulty: 'Advanced',
+    thumbnail: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80',
+    isActive: true,
+    quizEnabled: true,
+    competencies: [
+      'Learn to prepare images for different outputs, including print and web.',
+      'Understand color profiles, print resolution, and web optimization techniques.'
+    ]
+  },
+  {
+    id: 'digitalimage-w16',
+    week: 16,
+    course: 'Digital Imaging',
+    title: 'Final Project Development',
+    description: 'Apply all learned skills to develop a final digital imaging capstone. Plan, design, and create a comprehensive composite series focusing on non-destructive smart objects, surgical Pen Tool/channel masking, perspective horizon alignment, directional lighting, frequency separation, and 3-2-1 backup discipline.',
+    duration: '60 mins',
+    slidesCount: 15,
+    difficulty: 'Advanced',
+    thumbnail: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=80',
+    isActive: true,
+    quizEnabled: true,
+    competencies: [
+      'Apply all learned skills to develop a final digital imaging project.',
+      'Plan, design, and create a comprehensive digital image or series.',
+      'Focus on creativity, design principles, and technical skills.'
+    ]
+  },
+  {
+    id: 'digitalimage-w17',
+    week: 17,
+    course: 'Digital Imaging',
+    title: 'Project Presentation and Critique',
+    description: 'Present final digital imaging projects to the class using the 5-minute pitch framework. Receive and provide constructive feedback with Liz Lerman\'s Critical Response Process, create before/after layer breakdowns and showreels, and curate your professional portfolio for Behance and ArtStation.',
+    duration: '60 mins',
+    slidesCount: 15,
+    difficulty: 'Advanced',
+    thumbnail: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80',
+    isActive: true,
+    quizEnabled: true,
+    competencies: [
+      'Present final digital imaging projects to the class.',
+      'Receive and provide constructive feedback.',
+      'Refine and prepare projects for portfolio inclusion.'
+    ]
   }
 ];

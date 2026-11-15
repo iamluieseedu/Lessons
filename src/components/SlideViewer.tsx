@@ -25,12 +25,15 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({ slide }) => {
     slide.type === 'screen_reader_announcer' ||
     slide.type === 'touch_target_hitbox_lab' ||
     slide.type === 'prefers_reduced_motion_studio' ||
+    slide.type === 'typography_text_effects_lab' ||
+    slide.type === 'print_vs_web_color_lab' ||
+    slide.type === 'digital_imaging_retouching_studio' ||
     slide.type === 'cpp_compiler' ||
     slide.type === 'cpp_exercise';
 
   return (
-    <div className="w-full max-w-[1920px] 2xl:max-w-[2400px] mx-auto px-1 sm:px-2 flex items-center justify-center transition-all duration-300 flex-grow">
-      <div className={`w-full h-[calc(100vh-140px)] min-h-[660px] ${
+    <div className="w-full max-w-6xl 2xl:max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 flex items-center justify-center transition-all duration-300 flex-grow py-2 md:py-4">
+      <div className={`w-full h-[calc(100vh-130px)] min-h-[640px] max-h-[940px] ${
         isSimulatorSlide
           ? 'bg-slate-950 border-slate-800 text-slate-100 shadow-indigo-950/40'
           : 'bg-white border-slate-200/90 text-slate-900 shadow-slate-300/40'

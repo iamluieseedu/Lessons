@@ -59,7 +59,10 @@ export type SlideType =
   | 'db_join_matrix_visualizer'
   | 'responsive_viewport_reflow_lab'
   | 'font_history_modular_scale_studio'
-  | 'layout_grid_gestalt_inspector';
+  | 'layout_grid_gestalt_inspector'
+  | 'typography_text_effects_lab'
+  | 'print_vs_web_color_lab'
+  | 'digital_imaging_retouching_studio';
 
 export interface CalloutBox {
   title?: string;

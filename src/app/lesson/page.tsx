@@ -37,6 +37,12 @@ import {
   multimediaFinalProjectSlidesData,
   multimediaPresentationCritiqueSlidesData
 } from '@/data/multimediaAdvancedWeeksSlidesData';
+import {
+  digitalImagingTypographySlidesData,
+  digitalImagingPrintWebSlidesData,
+  digitalImagingFinalProjectSlidesData,
+  digitalImagingPresentationCritiqueSlidesData
+} from '@/data/digitalImagingSlidesData';
 import { Lesson, DEFAULT_LESSONS } from '@/data/lessons';
 
 function SlidePageContent() {
@@ -186,6 +192,14 @@ function SlidePageContent() {
           setSlides(mobdevExamSlidesData);
         } else if (found.id === 'mobdev3-w1') {
           setSlides(mobdevCampusConnectSlidesData);
+        } else if (found.id === 'digitalimage-w14') {
+          setSlides(digitalImagingTypographySlidesData);
+        } else if (found.id === 'digitalimage-w15') {
+          setSlides(digitalImagingPrintWebSlidesData);
+        } else if (found.id === 'digitalimage-w16') {
+          setSlides(digitalImagingFinalProjectSlidesData);
+        } else if (found.id === 'digitalimage-w17') {
+          setSlides(digitalImagingPresentationCritiqueSlidesData);
         } else {
           // Dynamic slide deck for custom uploaded lessons
           setSlides([

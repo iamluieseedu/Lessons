@@ -119,6 +119,11 @@ import {
   FontHistoryModularScaleStudio,
   LayoutGridGestaltInspector
 } from './InteractiveResponsiveTypographySimulations';
+import {
+  TypographyTextEffectsLab,
+  PrintVsWebColorResolutionLab,
+  DigitalImagingRetouchingStudio
+} from './InteractiveDigitalImagingSimulations';
 
 interface SlideContentProps {
   slide: SlideData;
@@ -4417,6 +4422,15 @@ export const SlideContent: React.FC<SlideContentProps> = ({ slide }) => {
   if (slide.type === 'layout_grid_gestalt_inspector') {
     return <LayoutGridGestaltInspector slide={slide} />;
   }
+  if (slide.type === 'typography_text_effects_lab') {
+    return <TypographyTextEffectsLab slide={slide} />;
+  }
+  if (slide.type === 'print_vs_web_color_lab') {
+    return <PrintVsWebColorResolutionLab slide={slide} />;
+  }
+  if (slide.type === 'digital_imaging_retouching_studio') {
+    return <DigitalImagingRetouchingStudio slide={slide} />;
+  }
   if (slide.type === 'versus' || slide.type === 'comparison') {
     return (
       <div className="h-full w-full flex flex-col justify-between p-4 sm:p-6 md:p-10 relative z-10 text-slate-900 overflow-y-auto font-sans">
@@ -4614,123 +4628,183 @@ export const SlideContent: React.FC<SlideContentProps> = ({ slide }) => {
         )}
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 xl:gap-6 items-stretch flex-grow font-sans">
-        <div className={hasRightContent ? "xl:col-span-6 flex flex-col justify-between h-full py-1 md:py-2" : "xl:col-span-12 flex flex-col justify-between h-full py-1 md:py-2"}>
-          <div>
-            <h3 className="font-lexend text-base md:text-xl font-bold text-slate-800 mb-3 md:mb-3.5">
-              {slide.topicTitle}
-            </h3>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 items-start flex-grow font-sans">
+        {hasRightContent ? (
+          <>
+            <div className="lg:col-span-6 flex flex-col justify-between h-full py-1">
+              <div>
+                <h3 className="font-lexend text-base md:text-xl font-bold text-slate-800 mb-2.5 md:mb-3">
+                  {slide.topicTitle}
+                </h3>
 
-            {/* What It Does (The Goal) */}
-            {slide.whatItDoes && (
-              <div className="mb-3 p-3 rounded-xl bg-rose-500/[0.04] border border-rose-200 text-xs font-semibold leading-relaxed animate-fade-in font-sans">
-                <strong className="flex items-center gap-1.5 text-rose-800 font-lexend text-[11px] uppercase tracking-wider">
-                  <Target className="w-3.5 h-3.5 text-rose-600" />
-                  What It Does
-                </strong>
-                <p className="mt-1 font-sans font-medium text-slate-700">{slide.whatItDoes}</p>
-              </div>
-            )}
+                {/* What It Does (The Goal) */}
+                {slide.whatItDoes && (
+                  <div className="mb-3 p-3 rounded-xl bg-rose-500/[0.04] border border-rose-200 text-xs font-semibold leading-relaxed animate-fade-in font-sans">
+                    <strong className="flex items-center gap-1.5 text-rose-800 font-lexend text-[11px] uppercase tracking-wider">
+                      <Target className="w-3.5 h-3.5 text-rose-600" />
+                      What It Does & Practical Rule
+                    </strong>
+                    <p className="mt-1 font-sans font-medium text-slate-700">{slide.whatItDoes}</p>
+                  </div>
+                )}
 
-            {/* What Is Going On (Under the Hood) */}
-            {slide.whatIsGoingOn && (
-              <div className="mb-3 p-3 rounded-xl bg-indigo-500/[0.04] border border-indigo-200 text-xs font-semibold leading-relaxed animate-fade-in font-sans">
-                <strong className="flex items-center gap-1.5 text-indigo-800 font-lexend text-[11px] uppercase tracking-wider">
-                  <Cpu className="w-3.5 h-3.5 text-indigo-600" />
-                  What Is Going On Under The Hood
-                </strong>
-                <p className="mt-1 font-sans font-medium text-slate-700">{slide.whatIsGoingOn}</p>
-              </div>
-            )}
+                {/* What Is Going On (Under the Hood) */}
+                {slide.whatIsGoingOn && (
+                  <div className="mb-3 p-3 rounded-xl bg-indigo-500/[0.04] border border-indigo-200 text-xs font-semibold leading-relaxed animate-fade-in font-sans">
+                    <strong className="flex items-center gap-1.5 text-indigo-800 font-lexend text-[11px] uppercase tracking-wider">
+                      <Cpu className="w-3.5 h-3.5 text-indigo-600" />
+                      What Is Going On Under The Hood
+                    </strong>
+                    <p className="mt-1 font-sans font-medium text-slate-700">{slide.whatIsGoingOn}</p>
+                  </div>
+                )}
 
-            {/* Bullets */}
-            <div className="space-y-2.5 md:space-y-3 font-semibold text-slate-600">
-              {slide.bullets?.map((bullet, idx) => (
-                <div key={idx} className="flex items-start gap-2 animate-fade-in leading-relaxed font-sans font-medium">
-                  <span className={`w-1.5 h-1.5 rounded-full ${theme.iconColor} shrink-0 mt-2`} />
-                  <span>{bullet}</span>
+                {/* Bullets */}
+                <div className="space-y-2 md:space-y-2.5 font-semibold text-slate-600">
+                  {slide.bullets?.map((bullet, idx) => (
+                    <div key={idx} className="flex items-start gap-2.5 animate-fade-in leading-relaxed font-sans font-medium text-xs md:text-sm">
+                      <span className={`w-1.5 h-1.5 rounded-full ${theme.iconColor} shrink-0 mt-2`} />
+                      <span>{bullet}</span>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
 
-            {/* Layman Analogy */}
-            {slide.layman && (
-              <div className={`mt-3.5 p-3.5 rounded-xl border ${theme.borderAccent} ${theme.bgAccentOverlay} text-xs font-semibold leading-relaxed animate-fade-in font-sans`}>
-                <strong className={`flex items-center gap-1.5 ${theme.textAccentMuted} font-lexend`}>
-                  <Lightbulb className="w-4 h-4 text-amber-500" />
-                  {slide.layman.title}
-                </strong>
-                <p className="mt-1 font-sans font-medium text-slate-600">{slide.layman.text}</p>
-              </div>
-            )}
-
-            {/* Student Discussion Prompt */}
-            {slide.discussionPrompt && (
-              <div className="mt-3.5 p-3.5 rounded-xl bg-emerald-500/[0.04] border border-emerald-300 text-xs font-semibold leading-relaxed animate-fade-in font-sans">
-                <strong className="flex items-center gap-1.5 text-emerald-800 font-lexend text-[11px] uppercase tracking-wider">
-                  <Users className="w-4 h-4 text-emerald-600" />
-                  Class Discussion & Question
-                </strong>
-                <p className="mt-1 font-sans font-semibold text-emerald-950">{slide.discussionPrompt.question}</p>
-                {slide.discussionPrompt.hint && (
-                  <p className="mt-1.5 text-[11px] font-sans text-slate-500 italic bg-white/70 p-2 rounded-lg border border-emerald-100">
-                    💡 <strong>Class Discussion Hint:</strong> {slide.discussionPrompt.hint}
-                  </p>
+                {/* Layman Analogy */}
+                {slide.layman && (
+                  <div className={`mt-3 p-3 rounded-xl border ${theme.borderAccent} ${theme.bgAccentOverlay} text-xs font-semibold leading-relaxed animate-fade-in font-sans`}>
+                    <strong className={`flex items-center gap-1.5 ${theme.textAccentMuted} font-lexend text-[11px] uppercase tracking-wider`}>
+                      <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
+                      {slide.layman.title}
+                    </strong>
+                    <p className="mt-1 font-sans font-medium text-slate-600">{slide.layman.text}</p>
+                  </div>
                 )}
               </div>
-            )}
+            </div>
 
-            {/* Key Insight */}
-            {slide.keyInsight && (
-              <div className="mt-3.5 p-3.5 rounded-xl bg-amber-500/[0.03] border border-amber-205 text-xs font-semibold leading-relaxed animate-fade-in font-sans">
-                <strong className="flex items-center gap-1.5 text-amber-800 font-lexend">
-                  <Sparkles className="w-4 h-4 text-amber-500 animate-pulse" />
-                  {slide.keyInsight.title}
-                </strong>
-                <p className="mt-1 font-sans font-medium text-slate-600">{slide.keyInsight.text}</p>
+            {slide.image && <ImageFrame url={slide.image.url} caption={slide.image.caption} isLaravel={isLaravel} />}
+            {!slide.image && hasIllustration && (
+              <div className="lg:col-span-6 w-full min-h-[380px] lg:min-h-[460px] bg-slate-900 border border-slate-800 rounded-2xl p-3 sm:p-4 flex flex-col justify-between shadow-xl text-slate-200 mt-4 lg:mt-0">
+                <div className="flex justify-between items-center border-b border-slate-800 pb-2 mb-2 font-sans">
+                  <span className={`text-[11px] font-bold ${isLaravel ? 'text-rose-400' : isDatabase ? 'text-indigo-400' : 'text-sky-400'} font-lexend uppercase tracking-wider flex items-center gap-1.5`}>
+                    <span className={`w-2 h-2 rounded-full ${isLaravel ? 'bg-rose-500' : isDatabase ? 'bg-indigo-500' : 'bg-sky-500'} animate-pulse`} />
+                    {isLaravel ? 'Interactive Laravel Studio' : isDatabase ? 'Interactive Database Studio' : 'Concept Illustration'}
+                  </span>
+                  <Brain className={`w-4 h-4 ${isLaravel ? 'text-rose-400' : isDatabase ? 'text-indigo-400' : 'text-sky-400'}`} />
+                </div>
+                <ConceptIllustration slideId={slide.id} />
               </div>
             )}
-
-            {/* Real-World Industry Context */}
-            <div className="mt-3.5 p-3 rounded-xl bg-slate-900 text-slate-200 border border-slate-800 text-xs leading-relaxed animate-fade-in font-sans">
-              <div className="flex items-center justify-between mb-1.5 border-b border-slate-800 pb-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-400 flex items-center gap-1.5 font-lexend">
-                  <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-                  Real-World Industry Context
-                </span>
-                <span className="text-[9px] px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 font-mono">
-                  Production Standard
-                </span>
+            {!slide.image && !hasIllustration && hasCode && (
+              <div className="lg:col-span-6 w-full h-full flex flex-col mt-4 lg:mt-0">
+                <SlideCodeViewer code={slide.code!} isLaravel={isLaravel} isDatabase={isDatabase} />
               </div>
-              <p className="text-[11px] text-slate-300 font-medium">
-                Engineers in high-traffic web platforms (e.g. GitHub, Netflix, Stripe) leverage this pattern to enforce clean architecture, strict data validation, and predictable latency.
-              </p>
-            </div>
-          </div>
-        </div>
+            )}
+            {!slide.image && !hasIllustration && !hasCode && isLaravel && (
+              <div className="lg:col-span-6 w-full h-full flex flex-col mt-4 lg:mt-0">
+                <InteractiveLaravelStudio slide={slide} />
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            {/* Balanced 2-Column Presentation Layout when no right graphic */}
+            <div className="lg:col-span-7 flex flex-col justify-start space-y-3 py-1">
+              <div>
+                <h3 className="font-lexend text-base md:text-xl font-bold text-slate-800 mb-2.5 md:mb-3">
+                  {slide.topicTitle}
+                </h3>
 
-        {slide.image && <ImageFrame url={slide.image.url} caption={slide.image.caption} isLaravel={isLaravel} />}
-        {!slide.image && hasIllustration && (
-          <div className="xl:col-span-6 w-full min-h-[380px] lg:min-h-[460px] bg-slate-900 border border-slate-800 rounded-2xl p-3 sm:p-4 flex flex-col justify-between shadow-xl text-slate-200 mt-4 xl:mt-0">
-            <div className="flex justify-between items-center border-b border-slate-800 pb-2 mb-2 font-sans">
-              <span className={`text-[11px] font-bold ${isLaravel ? 'text-rose-400' : isDatabase ? 'text-indigo-400' : 'text-sky-400'} font-lexend uppercase tracking-wider flex items-center gap-1.5`}>
-                <span className={`w-2 h-2 rounded-full ${isLaravel ? 'bg-rose-500' : isDatabase ? 'bg-indigo-500' : 'bg-sky-500'} animate-pulse`} />
-                {isLaravel ? 'Interactive Laravel Studio' : isDatabase ? 'Interactive Database Studio' : 'Concept Illustration'}
-              </span>
-              <Brain className={`w-4 h-4 ${isLaravel ? 'text-rose-400' : isDatabase ? 'text-indigo-400' : 'text-sky-400'}`} />
+                {/* What It Does (The Goal) */}
+                {slide.whatItDoes && (
+                  <div className="mb-3 p-3 rounded-xl bg-rose-500/[0.04] border border-rose-200 text-xs font-semibold leading-relaxed animate-fade-in font-sans">
+                    <strong className="flex items-center gap-1.5 text-rose-800 font-lexend text-[11px] uppercase tracking-wider">
+                      <Target className="w-3.5 h-3.5 text-rose-600" />
+                      What It Does & Practical Rule
+                    </strong>
+                    <p className="mt-1 font-sans font-medium text-slate-700">{slide.whatItDoes}</p>
+                  </div>
+                )}
+
+                {/* Bullets */}
+                <div className="space-y-2 md:space-y-2.5 font-semibold text-slate-600 mb-3">
+                  {slide.bullets?.map((bullet, idx) => (
+                    <div key={idx} className="flex items-start gap-2.5 animate-fade-in leading-relaxed font-sans font-medium text-xs md:text-sm">
+                      <span className={`w-1.5 h-1.5 rounded-full ${theme.iconColor} shrink-0 mt-2`} />
+                      <span>{bullet}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Real-World Industry Context */}
+                <div className="p-3 rounded-xl bg-slate-900 text-slate-200 border border-slate-800 text-xs leading-relaxed animate-fade-in font-sans">
+                  <div className="flex items-center justify-between mb-1 border-b border-slate-800 pb-1">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-400 flex items-center gap-1.5 font-lexend">
+                      <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                      Real-World Production Standard
+                    </span>
+                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 font-mono">
+                      Industry Context
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-300 font-medium leading-relaxed">
+                    Senior creators at top creative studios and tech platforms leverage this standard to guarantee visual fidelity, predictable performance, and cross-platform compatibility.
+                  </p>
+                </div>
+              </div>
             </div>
-            <ConceptIllustration slideId={slide.id} />
-          </div>
-        )}
-        {!slide.image && !hasIllustration && hasCode && (
-          <div className="xl:col-span-6 w-full h-full flex flex-col mt-4 xl:mt-0">
-            <SlideCodeViewer code={slide.code!} isLaravel={isLaravel} isDatabase={isDatabase} />
-          </div>
-        )}
-        {!slide.image && !hasIllustration && !hasCode && isLaravel && (
-          <div className="xl:col-span-6 w-full h-full flex flex-col mt-4 xl:mt-0">
-            <InteractiveLaravelStudio slide={slide} />
-          </div>
+
+            <div className="lg:col-span-5 flex flex-col space-y-3 py-1">
+              {/* What Is Going On (Under the Hood) */}
+              {slide.whatIsGoingOn && (
+                <div className="p-3 rounded-xl bg-indigo-500/[0.04] border border-indigo-200 text-xs font-semibold leading-relaxed animate-fade-in font-sans">
+                  <strong className="flex items-center gap-1.5 text-indigo-800 font-lexend text-[11px] uppercase tracking-wider">
+                    <Cpu className="w-3.5 h-3.5 text-indigo-600" />
+                    What Is Going On Under The Hood
+                  </strong>
+                  <p className="mt-1 font-sans font-medium text-slate-700">{slide.whatIsGoingOn}</p>
+                </div>
+              )}
+
+              {/* Layman Analogy */}
+              {slide.layman && (
+                <div className={`p-3 rounded-xl border ${theme.borderAccent} ${theme.bgAccentOverlay} text-xs font-semibold leading-relaxed animate-fade-in font-sans`}>
+                  <strong className={`flex items-center gap-1.5 ${theme.textAccentMuted} font-lexend text-[11px] uppercase tracking-wider`}>
+                    <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
+                    {slide.layman.title}
+                  </strong>
+                  <p className="mt-1 font-sans font-medium text-slate-600">{slide.layman.text}</p>
+                </div>
+              )}
+
+              {/* Student Discussion Prompt */}
+              {slide.discussionPrompt && (
+                <div className="p-3 rounded-xl bg-emerald-500/[0.04] border border-emerald-300 text-xs font-semibold leading-relaxed animate-fade-in font-sans">
+                  <strong className="flex items-center gap-1.5 text-emerald-800 font-lexend text-[11px] uppercase tracking-wider">
+                    <Users className="w-4 h-4 text-emerald-600" />
+                    Class Discussion & Question
+                  </strong>
+                  <p className="mt-1 font-sans font-semibold text-emerald-950">{slide.discussionPrompt.question}</p>
+                  {slide.discussionPrompt.hint && (
+                    <p className="mt-1.5 text-[11px] font-sans text-slate-600 italic bg-white/80 p-2 rounded-lg border border-emerald-100">
+                      💡 <strong>Hint:</strong> {slide.discussionPrompt.hint}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* Key Insight */}
+              {slide.keyInsight && (
+                <div className="p-3 rounded-xl bg-amber-500/[0.04] border border-amber-300 text-xs font-semibold leading-relaxed animate-fade-in font-sans">
+                  <strong className="flex items-center gap-1.5 text-amber-800 font-lexend text-[11px] uppercase tracking-wider">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
+                    {slide.keyInsight.title}
+                  </strong>
+                  <p className="mt-1 font-sans font-medium text-slate-700">{slide.keyInsight.text}</p>
+                </div>
+              )}
+            </div>
+          </>
         )}
       </div>
     </div>
